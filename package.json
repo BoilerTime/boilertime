@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/mapldx/boilertime#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "firebase": "^9.17.1",
+    "firebase-admin": "^11.5.0"
   }
 }
