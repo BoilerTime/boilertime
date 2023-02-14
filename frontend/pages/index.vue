@@ -6,3 +6,4 @@
     Tailwind works :)
   </h2>
 </template>
+  
