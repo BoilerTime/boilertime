@@ -52,13 +52,14 @@ app.post('/api/forgotpassword', (req, res) => {
 });
 
 app.post('/api/resetpassword', (req, res) => {
-  const user_id = req.body.id;
+  const user_id = req.body.user_id;
   const new_password = req.body.password;
-  jwt.updatePassword({ user_id, new_password }).catch(err => {
+  jwt.updatePassword({ user_id, new_password }).then(
+    res.send('Password Updated')
+  ).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
-  res.send('Password Reset')
 });
 
 function authenticateToken(req, res, next) {

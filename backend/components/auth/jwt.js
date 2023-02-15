@@ -26,9 +26,9 @@ async function authenticate({ username, password }) {
     });
 }
 
-async function updatePassword({ id, newpwd }) {
-  const profile = await users.where('user_id', '==', id).get();
+async function updatePassword({ user_id, new_password }) {
+  const profile = await users.where('user_id', '==', user_id).get();
   profile.forEach(doc => {
-    doc.update({ password: newpwd });
+    doc.ref.update({ password: new_password });
   });
 }

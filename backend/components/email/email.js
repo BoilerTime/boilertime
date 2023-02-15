@@ -22,10 +22,10 @@ const users = db.collection('user_profile')
 
 
 async function getUID({ username }) {
-    const profile = await users.where('email', '==', username).get();
-    profile.forEach(doc => {
-      return (user_id = doc.data().user_id);
-    });
+  const profile = await users.where('email', '==', username).get();
+  profile.forEach(doc => {
+    return (user_id = doc.data().user_id);
+  });
 }
 
 async function sendEmail ({ mailOptions }) {
