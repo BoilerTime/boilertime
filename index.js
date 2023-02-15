@@ -21,10 +21,11 @@ const firebaseConfig = {
 
 
 
-const serviceAccount = require(firebaseConfig);
+
 
 initializeApp({
-  credential: cert(serviceAccount)
+  // add your own config.json file
+  credential: cert('./database/config.json')
 });
 
 const db = getFirestore();
