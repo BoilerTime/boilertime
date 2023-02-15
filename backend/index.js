@@ -41,7 +41,7 @@ app.post('/api/forgotpassword', (req, res) => {
       from: 'joshuajy03@gmail.com',
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      text: `localhost:3000/resetpassword?id=${user_id}`
+      html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
     res.send('Email Sent');
