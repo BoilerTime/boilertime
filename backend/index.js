@@ -32,6 +32,19 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+app.post('/api/resetpassword', (req, res) => {
+  const username = req.body.username;
+  //getuid
+  const uid = 0;
+  const mailOptions = {
+    from: 'youremail@gmail.com',
+    to: username,
+    subject: 'Reset BoilerTime Password',
+    text: ''
+  };
+  //send email with uid
+});
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
