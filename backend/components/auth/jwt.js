@@ -15,7 +15,8 @@ const db = getFirestore()
 const users = db.collection('user_profile')
 
 module.exports = {
-    authenticate
+    authenticate,
+    updatePassword
 }
 
 async function authenticate({ username, password }) {
@@ -23,4 +24,11 @@ async function authenticate({ username, password }) {
     profile.forEach(doc => {
       return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
     });
+}
+
+async function updatePassword({ user_id, new_password }) {
+  const profile = await users.where('user_id', '==', user_id).get();
+  profile.forEach(doc => {
+    doc.ref.update({ password: new_password });
+  });
 }

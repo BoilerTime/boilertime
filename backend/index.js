@@ -7,6 +7,7 @@ const port = 3001;
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const jwt = require('./components/auth/jwt');
+const sendEmail = require('./components/email/sendEmail')
 
 app.use(express.json());
 
@@ -27,6 +28,35 @@ app.post('/api/login', (req, res) => {
   jwt.authenticate({ username, password }).then(user => {
     res.json({ accessToken: accessToken, firstname: firstname });
   }).catch(err => {
+    console.log(err)
+    res.sendStatus(401);
+  });
+});
+
+app.post('/api/forgotpassword', (req, res) => {
+  const email = req.body.email;
+  //getuid
+  sendEmail.getUID({ email }).then(user => {
+    const mailOptions = {
+      from: 'joshuajy03@gmail.com',
+      to: `${email}`,
+      subject: 'Reset BoilerTime Password',
+      html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
+    }
+    sendEmail.sendEmail({ mailOptions });
+    res.send('Email Sent');
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(401);
+  });
+});
+
+app.post('/api/resetpassword', (req, res) => {
+  const user_id = req.body.user_id;
+  const new_password = req.body.password;
+  jwt.updatePassword({ user_id, new_password }).then(
+    res.send('Password Updated')
+  ).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
