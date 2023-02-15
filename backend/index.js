@@ -44,11 +44,21 @@ app.post('/api/forgotpassword', (req, res) => {
       text: `localhost:3000/resetpassword?id=${user_id}`
     }
     email.sendEmail({ mailOptions });
+    res.send('Email Sent');
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
-  res.send('Email Sent')
+});
+
+app.post('/api/resetpassword', (req, res) => {
+  const user_id = req.body.id;
+  const new_password = req.body.password;
+  jwt.updatePassword({ user_id, new_password }).catch(err => {
+    console.log(err)
+    res.sendStatus(401);
+  });
+  res.send('Password Reset')
 });
 
 function authenticateToken(req, res, next) {
