@@ -17,10 +17,6 @@ module.exports = {
   getUID
 }
 
-initializeApp({
-  credential: cert('../config.json')
-});
-
 const db = getFirestore()
 const users = db.collection('user_profile')
 
