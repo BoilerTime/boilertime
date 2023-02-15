@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
+
+const { collection, query, where, getDocs } = require('firebase/firestore');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -9,10 +13,26 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-  sendEmail
+  sendEmail,
+  getUID
 }
 
-async function sendEmail (mailOptions) {
+initializeApp({
+  credential: cert('../config.json')
+});
+
+const db = getFirestore()
+const users = db.collection('user_profile')
+
+
+async function getUID({ username }) {
+    const profile = await users.where('email', '==', username).get();
+    profile.forEach(doc => {
+      return (user_id = doc.data().user_id);
+    });
+}
+
+async function sendEmail ({ mailOptions }) {
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
       console.log(error);
