@@ -7,8 +7,8 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'youremail@gmail.com',
-    pass: 'yourpassword'
+    user: 'joshuajy03@gmail.com',
+    pass: 'ijmfpvigbyviysee'
   }
 });
 
@@ -21,8 +21,8 @@ const db = getFirestore()
 const users = db.collection('user_profile')
 
 
-async function getUID({ username }) {
-  const profile = await users.where('email', '==', username).get();
+async function getUID({ email }) {
+  const profile = await users.where('email', '==', email).get();
   profile.forEach(doc => {
     return (user_id = doc.data().user_id);
   });
