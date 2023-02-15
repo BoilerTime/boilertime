@@ -1,0 +1,56 @@
+{
+  "classes":
+    {
+      "test_class":
+      {
+        "course_number": "",
+        "course_name": "",
+        "course_id": "",
+        "course_description": ""
+      }
+    },
+    "ta_ratings":
+    {
+        "test_ta":
+        {
+          "ta_id": "",
+          "ta_name": ""
+        }
+    },
+    "classroom_ratings":
+      {
+        "testroom":
+        {
+          "classroom_id": "",
+          "overall_stars": "",
+          "ratings_count": ""
+        }
+      },
+    "generated_schedules":
+      {
+        "testuser":
+        {
+          "user_id": "",
+          "generated_user_schedule": ["", "", "", "", "", "", "", "", "", ""]
+          }
+      },
+      "professor_ratings":
+      {
+          "test_professor":
+          {
+            "professor_id": "",
+            "professor_name": ""
+          }
+      },
+      "user_profiles": {},
+      "user_schedules":
+      {
+        "testuser":
+        {
+          "optional_classes_count": "1",
+          "user_id": "",
+          "required_classes_count": 1,
+          "preferences_count": 1
+          }
+      }
+}
