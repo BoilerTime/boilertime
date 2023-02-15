@@ -7,8 +7,8 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'joshuajy03@gmail.com',
-    pass: 'ijmfpvigbyviysee'
+    user: 'email@gmail.com',
+    pass: 'noleak'
   }
 });
 
