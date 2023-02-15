@@ -12,7 +12,7 @@ app.use(express.json());
 
 initializeApp({
   // add your own config.json file
-  credential: cert('./backend/database/config.json')
+  credential: cert('./config.json')
 });
 
 const db = getFirestore();
