@@ -16,21 +16,22 @@ app.get('/api', (req, res) => {
   res.send('API live!')
 })
 
-app.get('/api/posts', authenticateToken, (req, res) => {
+app.get('/api/posts',(req, res) => {
   console.log(req.user.name);
   res.json(req.user.name);
 });
 
 app.post('/api/login', (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
 
-  jwt.authenticate({ username, password }).then(user => {
+  jwt.authenticateUser({ email, password }).then(user => {
     res.json({ accessToken: accessToken, firstname: firstname });
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
+  res.json(user);
 });
 
 app.post('/api/forgotpassword', (req, res) => {
@@ -62,22 +63,8 @@ app.post('/api/resetpassword', (req, res) => {
   });
 });
 
-function authenticateToken(req, res, next) {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (token == null) {
-    // we don't have a token
-    res.sendStatus(401);
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-      if (err) {
-        // user doesn't have access
-        res.sendStatus(403);
-      }
-      req.user = user;
-      next();
-  });
-}
+
+
 
 app.listen(port, () => {
   console.log(`BoilerTime API listening on port ${port}!`)
