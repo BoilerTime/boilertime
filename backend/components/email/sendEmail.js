@@ -20,7 +20,10 @@ module.exports = {
 const db = getFirestore()
 const users = db.collection('user_profile')
 
-
+/**
+ * Get the user_id given the email
+ * @param {string} email - The title of the book.
+ */
 async function getUID({ email }) {
   const profile = await users.where('email', '==', email).get();
   profile.forEach(doc => {
@@ -28,6 +31,10 @@ async function getUID({ email }) {
   });
 }
 
+/**
+ * Send email given mailOptions
+ * @param {json} mailOptions
+ */
 async function sendEmail ({ mailOptions }) {
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
