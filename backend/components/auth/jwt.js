@@ -1,4 +1,5 @@
 require('dotenv').config({path: '../.env'});
+require('../../firebase.js');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
@@ -6,10 +7,6 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 
 const { collection, query, where, getDocs } = require('firebase/firestore');
-
-initializeApp({
-  credential: cert('../config.json')
-});
 
 const db = getFirestore()
 const users = db.collection('user_profile')

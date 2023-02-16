@@ -14,11 +14,13 @@ app.use(express.json());
 //Route for /api. Add new event listeners as needed for new routes. 
 app.get('/api', (req, res) => {
   res.send('API live!')
-})
+});
 
-app.get('/api/posts',(req, res) => {
-  console.log(req.user.name);
-  res.json(req.user.name);
+//app.get('/api/:email/profile', jwt.authenticateToken, (req, res) => {
+app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+  console.log(req.body.email);
+  console.log(req.user);
+  res.json(req.body.email);
 });
 
 app.post('/api/login', (req, res) => {
@@ -27,11 +29,12 @@ app.post('/api/login', (req, res) => {
 
   jwt.authenticateUser({ email, password }).then(user => {
     res.json({ accessToken: accessToken, firstname: firstname });
+
+
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
-  res.json(user);
 });
 
 app.post('/api/forgotpassword', (req, res) => {
