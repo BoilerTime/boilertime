@@ -12,5 +12,8 @@
         </h1>
         <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
+        </p>
+      </div>
+    </div>
   </body>
 </template>
