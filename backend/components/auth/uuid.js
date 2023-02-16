@@ -1,12 +1,15 @@
 require('dotenv').config({path: '../.env'});
 require('../../firebase')
 const crypto = require('crypto');
+const config = require('../../../config.json');
+
+//Firebase Imports Only
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore'); 
 const db = getFirestore()
 const count = db.collection('uuidcount');
-const config = require('../../../config.json');
+
 
 const uuid = async function() {
     const currentCount = await count.doc('count').get();
