@@ -9,6 +9,11 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const db = getFirestore()
 const profiles = db.collection('user_profile');
 
+/**
+  * Create User creates a new user to enter into the database matching the parameters passed to it.
+  * @param {JSON} profile - A JSON representation of the user profile. Must include the user's first name, last name, and email address. 
+  * @returns {JSON} - The profile of the created user that was stored into the database. The name, email, and password will all match was was passed to the function, but there will be a new user_id field that represents the UUID that was assigned to the user upon creation. 
+**/
 const createuser = async function(profile) {
     //If the request is malformed, throw an error right away
     if((!(profile.email && profile.firstname && profile.lastname))) {
