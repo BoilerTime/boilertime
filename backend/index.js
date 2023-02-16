@@ -7,7 +7,7 @@ const port = 3001;
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const jwt = require('./components/auth/jwt');
-
+const uuid = require('./components/auth/uuid');
 app.use(express.json());
 
 //Route for /api. Add new event listeners as needed for new routes. 
