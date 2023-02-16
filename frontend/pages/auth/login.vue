@@ -11,24 +11,27 @@
         Wrong email/password combination
       </div>
 
-      <!--Email text & input box-->
-      <label for="email" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
-      <input type="email" id="email" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
-        placeholder="username@purdue.edu" required>
+      <form @submit.prevent="() => login()">
+        <!--Email text & input box-->
+        <label for="email" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
+        <input type="email" id="email" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
+          placeholder="username@purdue.edu" v-model="email" required>
 
-      <!--Password text & input box-->
-      <label for="password" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
-      <input type="password" id="password" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
-        placeholder="•••••••••" required>
+        <!--Password text & input box-->
+        <label for="password" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
+        <input type="password" id="password" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
+          placeholder="•••••••••" v-model="password" required>
 
-      <!--Attempts to login-->
-      <div class="container py-7 px-5 min-w-full flex flex-col items-center">
-        <button type="button" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
-          Login
-        </button>
-      </div>
+        <!--Attempts to login-->
+        <div class="container py-7 px-5 min-w-full flex flex-col items-center">
+          <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
+            Login
+          </button>
+        </div>
+      </form>
+
       <!--Currently redirects to index.vue, needs to be updated-->
       <div class="container py-0 px-10 mx-0 min-w-full flex flex-col items-center">
         <a href="../">
@@ -41,8 +44,26 @@
   </body>
 </template>
   
-<script>
-export default {
-  name:'Login'
+<script setup>
+import { ref } from 'vue'
+import { useUserStore } from "../../store/user"
+
+const email = ref('')
+const password = ref('')
+
+const userStore = useUserStore()
+
+const login = async () => {
+  await userStore.signIn(email.value, password.value);
+  if (!userStore.isLoggedIn) {
+    navigateTo("/auth/login");
+  } else {
+    // start temp fix, this is janky
+    const el = document.getElementById("__nuxt");
+    el.innerHTML = "";
+    // end temp fix
+    navigateTo("/app/home");
+  }
 }
+
 </script>
