@@ -8,6 +8,8 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const jwt = require('./components/auth/jwt');
 const uuid = require('./components/auth/uuid');
+const createuser = require('./components/auth/creatuser');
+
 app.use(express.json());
 
 //Route for /api. Add new event listeners as needed for new routes. 
@@ -32,6 +34,9 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+app.post('./api/createuser', (req, res) => {
+   console.log(createuser.createuser(req.body));
+})
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
