@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", {
     async signIn(email, password) {
       console.log(email, password)
       const res = await axios.post('http://localhost:3001/api/login', {
-        username: email,
+        email: email,
         password: password
       })
       const accessToken = await res.data.accessToken;
