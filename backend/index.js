@@ -70,13 +70,13 @@ app.post('/api/forgotpassword', (req, res) => {
   //getuid
   utils.getUID({ email }).then(user => {
     const mailOptions = {
-      from: 'joshuajy03@gmail.com',
+      from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
       html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.send('Email Sent');
+    res.json({user_id: user_id, email: email});
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
@@ -91,10 +91,11 @@ app.post('/api/forgotpassword', (req, res) => {
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
-  jwt.updatePassword({ user_id, new_password }).then(
-    res.send('Password Updated')
-  ).catch(err => {
+  utils.updatePassword({ user_id, new_password }).then(user => {
+    res.json({ password: password });
+  }).catch(err => {
     console.log(err)
+    res.sendStatus(500)
   })
 })
 
