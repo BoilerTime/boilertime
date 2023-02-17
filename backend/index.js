@@ -21,17 +21,29 @@ app.use(function(req, res, next) {
 });
 
 //Route for /api. Add new event listeners as needed for new routes. 
+/*
+ * This function gets a path for /api
+ */
 app.get('/api', (req, res) => {
   res.send('API live!')
 });
 
-//app.get('/api/:email/profile', jwt.authenticateToken, (req, res) => {
+/*
+ * Test function for confirming user token with the authentiacateToken method in jwt.js
+ * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
+ * @param {string} email - print the email of user to test correct user
+ */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   console.log(req.body.email);
   console.log(req.user);
   res.json(req.body.email);
 });
 
+/*
+ * This function lets a user login and generates a jwt token for them
+ * @param {string} email - Email of user
+ * @param {string} password - Hashed password of user 
+ */
 app.post('/api/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
