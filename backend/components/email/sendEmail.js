@@ -1,8 +1,4 @@
 const nodemailer = require('nodemailer');
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
-
-const { collection, query, where, getDocs } = require('firebase/firestore');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -13,24 +9,10 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-  sendEmail,
-  getUID
+  sendEmail
 }
 
-const db = getFirestore()
-const users = db.collection('user_profile')
 
-/**
- * Get the user_id given the email
- * @param {string} email - The email that the user wants to find the user_id for
- * @returns {string} - The user_id
- */
-async function getUID({ email }) {
-  const profile = await users.where('email', '==', email).get();
-  profile.forEach(doc => {
-    return (user_id = doc.data().user_id);
-  });
-}
 
 /**
  * Send email given mailOptions

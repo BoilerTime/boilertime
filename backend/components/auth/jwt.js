@@ -1,5 +1,4 @@
 require('dotenv').config({path: '../.env'});
-require('../../firebase.js');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 require('../../firebase')

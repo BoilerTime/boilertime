@@ -6,6 +6,8 @@ const uuid = require('./uuid.js');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore'); 
+const utils = require('../utils/utils.js');
+
 const db = getFirestore()
 const profiles = db.collection('user_profile');
 
@@ -31,7 +33,7 @@ const createuser = async function(profile) {
 	//throw new Error({'error': '403'});
     }
 
-    if(await findExistingUsers(profile.email)) {
+    if(await utils.findExistingUsers(profile.email)) {
 	let response = new Error();
 	response.error = 409;
 	throw response;
@@ -57,11 +59,6 @@ const createuser = async function(profile) {
     return userProfile;
 }
 
-const findExistingUsers = async function (email) {
-    const existingUsers = await profiles.where('email', '==', email).get();
-    //If there are existing users with the same email, return false
-    console.log(existingUsers.size);
-    return existingUsers.size > 0;
-}
+
 
 module.exports = {createuser};
