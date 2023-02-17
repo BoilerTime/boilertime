@@ -1,4 +1,4 @@
-database/config.json
+config.json
 
 # Logs
 logs
@@ -108,3 +108,7 @@ dist
 
 #node
 node_modules
+
+#lock files
+package-lock.json
+yarn.lock
