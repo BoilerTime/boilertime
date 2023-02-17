@@ -1,4 +1,3 @@
-require('dotenv').config({path: '../.env'});
 require('../../firebase')
 const crypto = require('crypto');
 const config = require('../../../config.json');
@@ -22,7 +21,7 @@ const uuid = async function() {
     }
     var cachedCount = currentCount.data().count
 
-    var newUUID =crypto.createHash("sha256").update(String(cachedCount + config.uuid_secret)).digest("base64");
+    var newUUID =crypto.createHash("sha256").update(String(cachedCount + process.env.UUID_SECRET)).digest("base64");
 
     cachedCount++;
     await count.doc('count').set({
