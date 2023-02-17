@@ -1,6 +1,17 @@
 <template>
-  <h1 class="text-3xl font-bold underline">
-    View all schedules here - auth protected
-  </h1>
+  <div>
+    <h1 class="text-3xl font-bold underline">
+      Welcome, {{ userStore.firstname }}
+    </h1>
+  </div>
 </template>
   
+<script setup>
+import { useUserStore } from "../../store/user"
+const userStore = useUserStore();
+
+if (!userStore.isLoggedIn) {
+  navigateTo("/auth/login");
+}
+
+</script>
