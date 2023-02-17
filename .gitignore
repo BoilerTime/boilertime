@@ -108,3 +108,7 @@ dist
 
 #node
 node_modules
+
+#lock files
+package-lock.json
+yarn.lock
