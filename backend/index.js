@@ -7,7 +7,10 @@ const port = 3001;
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const jwt = require('./components/auth/jwt');
+
 const sendEmail = require('./components/email/sendEmail')
+const uuid = require('./components/auth/uuid');
+const createuser = require('./components/auth/createuser');
 
 app.use(express.json());
 
@@ -81,12 +84,25 @@ app.post('/api/resetpassword', (req, res) => {
     res.send('Password Updated')
   ).catch(err => {
     console.log(err)
+    
+app.post('/api/createuser', (req, res) => {
+
+  createuser.createuser(req.body).then((user) => {
+    res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
+  }).catch(err => {
+    console.log(JSON.stringify(err))
+    res.sendStatus(err.error);
+  });
+
+})
+function authenticateToken(req, res, next) {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (token == null) {
+    // we don't have a token
     res.sendStatus(401);
   });
 });
-
-
-
 
 app.listen(port, () => {
   console.log(`BoilerTime API listening on port ${port}!`)

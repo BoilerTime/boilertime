@@ -2,6 +2,7 @@ require('dotenv').config({path: '../.env'});
 require('../../firebase.js');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+require('../../firebase')
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
