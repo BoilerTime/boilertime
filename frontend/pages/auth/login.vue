@@ -1,3 +1,6 @@
+<!--login.vue is the webpage users will see when attempting to login to BoilerTime.
+    This page contains a username and password entry, as well as the option to reset
+    your password.-->
 <template>
   <body class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
     <br />
@@ -22,7 +25,7 @@
         <label for="password" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
         <input type="password" id="password" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
-          placeholder="•••••••••" v-model="password" required>
+          v-model="password" required>
 
         <!--Attempts to login-->
         <div class="container py-7 px-5 min-w-full flex flex-col items-center">
@@ -32,7 +35,7 @@
         </div>
       </form>
 
-      <!--Currently redirects to index.vue, needs to be updated-->
+      <!--Currently redirects to index.vue, needs to be updated when forgot password functionality is added-->
       <div class="container py-0 px-10 mx-0 min-w-full flex flex-col items-center">
         <a href="../">
         <button type="button" class="bg-white hover:bg-gray-200 text-gray-400 font-bold py-1 px-2 rounded text-xs">
@@ -43,6 +46,7 @@
     </div>
   </body>
 </template>
+  
   
 <script setup>
 import { ref } from 'vue'
