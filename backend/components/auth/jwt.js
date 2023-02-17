@@ -17,6 +17,11 @@ module.exports = {
     authenticateToken
 }
 
+/**
+* A function to receive a pair of email and password and return a JWT on successful comparison with the database.
+* @param {string} email - the email of the user.
+* @param {string} password - a SHA-256 hashed password.
+*/
 async function authenticateUser({ email, password }) {
     const profile = await users.where('email', '==', email).where('password', '==', password).get();
     profile.forEach(doc => {
