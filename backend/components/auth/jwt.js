@@ -31,6 +31,10 @@ async function updatePassword({ user_id, new_password }) {
   });
 }
 
+/*
+ * This function authenicates the user token by the token in the .env file. If they match it will not send a 403 status error
+ * @param {string} user - if the tokens match we set the user to req.user so that we can use it in index.js
+ */
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
