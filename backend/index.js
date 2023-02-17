@@ -59,6 +59,10 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+/**
+ * Sends an email to reset the password
+ * @param {string} email - The email to send the password to
+ */
 app.post('/api/forgotpassword', (req, res) => {
   const email = req.body.email;
   //getuid
@@ -77,6 +81,11 @@ app.post('/api/forgotpassword', (req, res) => {
   });
 });
 
+/**
+ * Update Password Given User ID and Password
+ * @param {string} user_id - The user_id of the user that wants to update their password
+ * @param {string} password - The password
+ */
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
