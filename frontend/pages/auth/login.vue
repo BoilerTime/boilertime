@@ -53,7 +53,10 @@ const password = ref('')
 
 const userStore = useUserStore()
 
-const login = async () => {
+/**
+* A function to call the signIn function in the user store helper
+*/
+async function login() {
   await userStore.signIn(email.value, password.value);
   if (!userStore.isLoggedIn) {
     navigateTo("/auth/login");
