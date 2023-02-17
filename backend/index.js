@@ -50,8 +50,6 @@ app.post('/api/login', (req, res) => {
 
   jwt.authenticateUser({ email, password }).then(user => {
     res.json({ accessToken: accessToken, firstname: firstname });
-
-
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
