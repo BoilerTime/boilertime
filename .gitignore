@@ -108,3 +108,6 @@ dist
 
 #node
 node_modules
+
+*.lock
+package-lock.json
