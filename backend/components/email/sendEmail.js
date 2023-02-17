@@ -24,7 +24,7 @@ async function sendEmail ({ mailOptions }) {
       console.log("Failed to send becuase of error: " + error);
       throw new Error().error = 500;
     } else {
-      console.log('Email sent: ' + info.response);
+      //Do something
     }
   });
 }

@@ -12,6 +12,7 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const verifyaccount = require('./components/auth/verifyaccount');
 
 app.use(express.json());
 
@@ -104,10 +105,21 @@ app.post('/api/createuser', (req, res) => {
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
     console.log(JSON.stringify(err))
-    res.sendStatus(500);
+    res.sendStatus(err.error || 500);
   });
 
 })
+
+app.post('/api/verifyaccount', (req, res) => {
+  verifyaccount.verifyaccount(req.body.userID).then((user) => {
+    res.json(user);
+  }).catch(err => {
+    //console.log(err.error);
+    res.sendStatus(err || 500);
+  })
+})
+
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
