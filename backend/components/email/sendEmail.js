@@ -22,7 +22,8 @@ const users = db.collection('user_profile')
 
 /**
  * Get the user_id given the email
- * @param {string} email - The title of the book.
+ * @param {string} email - The email that the user wants to find the user_id for
+ * @returns {string} - The user_id
  */
 async function getUID({ email }) {
   const profile = await users.where('email', '==', email).get();
@@ -33,7 +34,7 @@ async function getUID({ email }) {
 
 /**
  * Send email given mailOptions
- * @param {json} mailOptions
+ * @param {JSON} mailOptions - Details of the email
  */
 async function sendEmail ({ mailOptions }) {
   transporter.sendMail(mailOptions, function(error, info){
