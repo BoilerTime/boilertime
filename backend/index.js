@@ -110,10 +110,14 @@ app.post('/api/createuser', (req, res) => {
 })
 
 app.post('/api/createschedule', (req, res) => {
-  schedule.addClasses(req.body).then((user) => {
-    res.send("Classes Input")
+  schedule.addClasses(req.body).then((input) => {
+    res.json({
+      "required_classes": req.body.required_classes,
+      "optional_classes": req.body.optional_classes,
+      "personal_preferences": req.body.personal_preferences
+    })
   }).catch(err => {
-    console.log(JSON.stringify(err))
+    console.log(err)
     res.sendStatus(500);
   });
 })

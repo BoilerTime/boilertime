@@ -19,13 +19,16 @@ module.exports = {
 **/
 async function addClasses(user) {
   const email = user.email;
-  const user_id = utils.getUID({email});
-  const schedule = await schedules.where('user_id', '==', user_id).get();
-  schedule.forEach(doc => {
-    doc.collection('sprint_2023').add({
-      required_classes: user.required_classes,
-      optional_classes: user.optional_classes,
-      personal_preferences: user.personal_preferences
+  const input = {
+    "required_classes": user.required_classes,
+    "optional_classes": user.optional_classes,
+    "personal_preferences": user.personal_preferences
+  };
+  await utils.getUID({ email }).then(async function (res) {
+    const schedule = await schedules.where('user_id', '==', user_id).get();
+    schedule.forEach(doc => {
+      db.collection('user_schedules').doc(doc.id).collection('spring_2023').add(input);
     });
   });
+
 }
