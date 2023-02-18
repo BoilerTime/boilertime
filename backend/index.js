@@ -12,6 +12,7 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const schedule = require('./components/schedule/schedule');
 
 app.use(express.json());
 
@@ -106,8 +107,17 @@ app.post('/api/createuser', (req, res) => {
     console.log(JSON.stringify(err))
     res.sendStatus(500);
   });
-
 })
+
+app.post('/api/createschedule', (req, res) => {
+  schedule.addClasses(req.body).then((user) => {
+    res.send("Classes Input")
+  }).catch(err => {
+    console.log(JSON.stringify(err))
+    res.sendStatus(500);
+  });
+})
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
