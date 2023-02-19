@@ -21,23 +21,14 @@
       <!--User interaction group-->
       <div class = "flex flex-row">
         <div class = "flex flex-col">
-          <label class = "font-bold text-left text-2xl" for = "class">
-            Class:
-          </label>
-          <input class = "border-2 border-gray-300 bg-white h-10 px-5
-                          rounded-lg text-sm focus:outline-none"
-                 type = "text" id = "class" v-model = "class_choice" />
+          <input type = "string" aria-describedby="class-search-bar" class="bg-gray-50 border border-gray-400 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
+          placeholder="Search..." v-model="class_choice" required/>          
         </div>
         <div class = "flex flex-col">
-          <label class = "font-bold text-left text-2xl" for = "class">
-            Required or Optional:
-          </label>
-          <select class = "border-2 border-gray-300 bg-white h-10 px-5
-                           rounded-lg text-sm focus:outline-none"
-                  id = "class" v-model = "personal_preferenes">
-            <option value = "required">Required</option>
-            <option value = "optional">Optional</option>
-          </select>
+          <button class = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Search
+          </button>
         </div>
       </div>
     </div>
@@ -55,6 +46,7 @@
         {{ classes }}
       </li>
     </ul>
+
   </body>
 </template>
 
