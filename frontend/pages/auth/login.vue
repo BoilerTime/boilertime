@@ -38,7 +38,7 @@
       <!--Currently redirects to index.vue, needs to be updated when forgot password functionality is added-->
       <div class="container py-0 px-10 mx-0 min-w-full flex flex-col items-center">
         <a href="../">
-        <button type="button" class="bg-white hover:bg-gray-200 text-gray-400 font-bold py-1 px-2 rounded text-xs">
+        <button @click="onLogin" type="button" class="bg-white hover:bg-gray-200 text-gray-400 font-bold py-1 px-2 rounded text-xs">
           Forgot Password?
         </button>
         </a>
@@ -46,7 +46,6 @@
     </div>
   </body>
 </template>
-  
   
 <script setup>
 import { ref } from 'vue'
@@ -72,5 +71,19 @@ async function login() {
     navigateTo("/app/home");
   }
 }
+</script>
 
+<script>
+export default {
+  name: 'login',
+  methods: {
+    onLogin() {
+      if (this.email == 'email@purdue.edu' && this.password == 'password') {
+        alert('Login Successful');
+      } else {
+        alert('Wrong username/password Combination');
+      }
+    }
+  }
+}
 </script>
