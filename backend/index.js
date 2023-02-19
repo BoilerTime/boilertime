@@ -108,6 +108,7 @@ app.post('/api/createuser', (req, res) => {
   });
 
 })
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];

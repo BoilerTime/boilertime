@@ -24,8 +24,14 @@ module.exports = {
 */
 async function authenticateUser({ email, password }) {
     const profile = await users.where('email', '==', email).where('password', '==', password).get();
+    const access_token = jwt.sign({sub: profile.id}, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+    const refresh_token = jwt.sign({sub: profile.id}, process.env.REFRESH_TOKEN, {expiresIn: '15s'});
+    
     profile.forEach(doc => {
-      return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
+      doc.ref.update({access_token: access_token});
+      doc.ref.update({refresh_token: refresh_token});
+      return (firstname = doc.data().firstname, accessToken = doc.data().accessToken);
+      //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
     });
 }
 
