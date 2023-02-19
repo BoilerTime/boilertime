@@ -15,7 +15,7 @@ module.exports = {
 
 /** 
   * Adds the given classes and preferences to the databases given the email
-  * @param {JSON} user - The json containing the email and classes
+  * @param {JSON} user - The json containing the email, required_classes, optional_classes and personal_preferences
 **/
 async function addClasses(user) {
   const email = user.email;
