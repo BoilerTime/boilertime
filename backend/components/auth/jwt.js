@@ -23,16 +23,22 @@ module.exports = {
 * @param {string} password - a SHA-256 hashed password.
 */
 async function authenticateUser({ email, password }) {
-    const profile = await users.where('email', '==', email).where('password', '==', password).get();
-    const access_token = jwt.sign({sub: profile.id}, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
-    const refresh_token = jwt.sign({sub: profile.id}, process.env.REFRESH_TOKEN, {expiresIn: '15s'});
-    
+  const profile = await users.where('email', '==', email).where('password', '==', password).get();
+  //const access_token = jwt.sign(process.env.ACCESS_TOKEN, {expiresIn: '1d'});
+  //const refresh_token = jwt.sign(email, process.env.REFRESH_TOKEN, {expiresIn: '1d'});
+
     profile.forEach(doc => {
-      doc.ref.update({access_token: access_token});
-      doc.ref.update({refresh_token: refresh_token});
-      return (firstname = doc.data().firstname, accessToken = doc.data().accessToken);
+    const user = {user_id: doc.data().user_id};
+    console.log(user.user_id + ' this is the user id');
+    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+    const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
+    console.log('printing out the user id ' + {sub: doc.data().user_id});
+    console.log('printing out the user id ' + doc.data().user_id);
+    doc.ref.update({access_token: access_token});
+    doc.ref.update({refresh_token: refresh_token});
+    return (firstname = doc.data().firstname, accessToken = doc.data().access_token, refreshToken = doc.data().refresh_token);
       //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
-    });
+  });
 }
 
 async function updatePassword({ user_id, new_password }) {
@@ -47,18 +53,61 @@ async function updatePassword({ user_id, new_password }) {
  * @param {string} user - if the tokens match we set the user to req.user so that we can use it in index.js
  */
 function authenticateToken(req, res, next) {
+  console.log('here');
   const authenticationHeader = req.headers['authorization'];
+  console.log(authenticationHeader + 'this is the auth header');
+  console.log(req.body.user_id + 'this is the id from req');
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  console.log(token);
   if (token == null) {
     // we don't have a token
+    console.log('token is null!');
     res.sendStatus(401);
   }
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
       if (err) {
-        // user doesn't have access
-        res.sendStatus(403);
+        // user doesn't have access since token is expired
+        // need to implement refresh acess token to create new access token here if refresh is valid itself
+        console.log('error verifying must not have matches or token is expired!!');
+        const user2 = {user_id: req.body.user_id};
+        console.log(req.body.user_id + 'this is the id from req');
+        generateNewAccessToken({ user_id: req.body.user_id }).then(newAccessToken => {
+            console.log(newAccessToken.toString() + ' < this is the accesstoken');
+
+            if (newAccessToken === undefined) {
+              console.log('invalid');
+              res.sendStatus(403);
+            }
+            else {
+              req.user = user2;
+              console.log('just generated a new access token');
+              next();
+            }
+        });
       }
-      req.user = user;
-      next();
+      else {
+        console.log('this is the user ' + user.user_id);
+        req.user = user;
+        next();
+      }
   });
+}
+
+async function generateNewAccessToken(user) {
+    const profile = await users.where('user_id', '==', user.user_id).get();
+    let newAccessToken = "";
+    profile.forEach(doc => {
+      if (doc.data().refresh_token === "") {
+          console.log('here refresh is invalid');
+          return undefined;
+      }
+      else {
+        console.log('here we in line 101 with  doc.data = ' + doc.data().user_id);
+        const user1 = {user_id: doc.data().user_id};
+        newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+        doc.ref.update({access_token: newAccessToken});
+        doc.ref.update({refresh_token: ""});
+        return newAccessToken;
+      }
+    });
 }
