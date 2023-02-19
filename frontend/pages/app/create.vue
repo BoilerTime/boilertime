@@ -19,11 +19,42 @@
       <br />
 
       <!--User interaction group-->
-      <div>
-        
+      <div class = "flex flex-row">
+        <div class = "flex flex-col">
+          <label class = "font-bold text-left text-2xl" for = "class">
+            Class:
+          </label>
+          <input class = "border-2 border-gray-300 bg-white h-10 px-5
+                          rounded-lg text-sm focus:outline-none"
+                 type = "text" id = "class" v-model = "class_choice" />
+        </div>
+        <div class = "flex flex-col">
+          <label class = "font-bold text-left text-2xl" for = "class">
+            Required or Optional:
+          </label>
+          <select class = "border-2 border-gray-300 bg-white h-10 px-5
+                           rounded-lg text-sm focus:outline-none"
+                  id = "class" v-model = "personal_preferenes">
+            <option value = "required">Required</option>
+            <option value = "optional">Optional</option>
+          </select>
+        </div>
       </div>
-      
     </div>
+
+    <!--Information debugging-->
+
+    <p> Search = {{ class_choice }}</p>
+    <ul>
+      <li v-for = "classes in optonal_classes" :key="classes">
+        {{ classes }}
+      </li>
+    </ul>
+    <ul>
+      <li v-for = "classes in required_classes" :key="classes">
+        {{ classes }}
+      </li>
+    </ul>
   </body>
 </template>
 
@@ -34,6 +65,7 @@ import { ref } from 'vue'
 import { useUserStore } from "../../store/user"
 
 const email = ref('')
+const class_choice = ref('')
 const optonal_classes = ref([])
 const personal_preferenes = ref([])
 const required_classes = ref([])
