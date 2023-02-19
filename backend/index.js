@@ -38,8 +38,6 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
-  console.log('profile id from index ' + req.body.user_id);
-  console.log(req.headers['authorization'].split(' ')[1]);
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
