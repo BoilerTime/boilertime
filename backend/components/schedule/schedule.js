@@ -15,20 +15,17 @@ module.exports = {
 
 /** 
   * Adds the given classes and preferences to the databases given the email
-  * @param {JSON} user - The json containing the email, required_classes, optional_classes and personal_preferences
+  * @param {JSON} user - The json containing the user_id, required_classes, optional_classes and personal_preferences
 **/
 async function addClasses(user) {
-  const email = user.email;
   const input = {
     "required_classes": user.required_classes,
     "optional_classes": user.optional_classes,
     "personal_preferences": user.personal_preferences
   };
-  await utils.getUID({ email }).then(async function (res) {
-    const schedule = await schedules.where('user_id', '==', user_id).get();
-    schedule.forEach(doc => {
-      db.collection('user_schedules').doc(doc.id).collection('spring_2023').add(input);
-    });
+  const schedule = await schedules.where('user_id', '==', user.user_id).get();
+  schedule.forEach(doc => {
+    db.collection('user_schedules').doc(doc.id).collection('spring_2023').add(input);
   });
 
 }
