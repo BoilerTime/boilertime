@@ -31,5 +31,14 @@ const findExistingUsers = async function (email) {
     return existingUsers.size > 0;
 }
 
+async function updateProfile(new_user_id, new_classification_year, new_firstname, new_lastname) {
+  //console.log(new_user_id + new_classification_year + new_firstname + new_lastname);
 
-module.exports = {getUID, findExistingUsers};
+  const profile = await users.where('user_id', '==', new_user_id).get();
+  profile.forEach(doc => {
+    doc.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
+  });
+}
+
+
+module.exports = {getUID, findExistingUsers, updateProfile};

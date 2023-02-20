@@ -29,7 +29,8 @@ async function authenticateUser({ email, password }) {
 
   profile.forEach(doc => {
     var user = {user_id: doc.data().user_id};
-    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+    // for testing changed this to 1d
+    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '1d'});
     const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
     user = {user_id: doc.data().user_id, accessToken: access_token};
     doc.ref.update({access_token: access_token});

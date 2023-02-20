@@ -38,6 +38,12 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+  const user_id = req.body.user_id;
+  const classification_year = req.body.classification_year;
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+  //console.log(user_id + classification_year + firstname + lastname);
+  utils.updateProfile(user_id, classification_year, firstname, lastname);
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
@@ -105,7 +111,6 @@ app.post('/api/createuser', (req, res) => {
     console.log(JSON.stringify(err))
     res.sendStatus(500);
   });
-
 })
 
 function authenticateToken(req, res, next) {
