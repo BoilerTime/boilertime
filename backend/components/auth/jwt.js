@@ -32,8 +32,7 @@ async function authenticateUser({ email, password }) {
     const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
     const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
     user = {user_id: doc.data().user_id, accessToken: access_token};
-    doc.ref.update({access_token: access_token});
-    doc.ref.update({refresh_token: refresh_token})
+    doc.ref.update({access_token: access_token, refresh_token: refresh_token});
     return (firstname = doc.data().firstname, accessToken = access_token, refreshToken = refresh_token);
     //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
   });
