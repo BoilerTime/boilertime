@@ -99,8 +99,7 @@ async function generateNewAccessToken(user) {
     else {
       const user1 = {user_id: doc.data().user_id};
       newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
-      doc.ref.update({access_token: newAccessToken});
-      doc.ref.update({refresh_token: ""});
+      doc.ref.update({access_token: newAccessToken, refresh_token: ""});
       return (newAccessToken1 = newAccessToken);
     }
   });
