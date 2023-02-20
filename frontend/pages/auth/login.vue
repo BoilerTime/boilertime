@@ -1,6 +1,89 @@
+<!--login.vue is the webpage users will see when attempting to login to BoilerTime.
+    This page contains a username and password entry, as well as the option to reset
+    your password.-->
 <template>
-  <h1 class="text-3xl font-bold underline">
-    Login here - public page
-  </h1>
+  <body class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
+    <br />
+    <div class="mx-auto my-10 5px max-w-sm p-6 bg-white border rounded-lg shadow sm:p-8 md:p-8 dark:bg-white">
+      
+      <!--Welcome back text-->
+      <h1 class="pb-4 text-center text-2x1 font-bold">Welcome Back</h1>
+      
+      <!--Incorrect email/password combo-->
+      <div class="pt-3 bg-red-500 w-full p-4 rounded text-white mb-3">
+        Wrong email/password combination
+      </div>
+
+      <form @submit.prevent="() => login()">
+        <!--Email text & input box-->
+        <label for="email" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
+        <input type="email" id="email" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
+          placeholder="username@purdue.edu" v-model="email" required>
+
+        <!--Password text & input box-->
+        <label for="password" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
+        <input type="password" id="password" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
+          v-model="password" required>
+
+        <!--Attempts to login-->
+        <div class="container py-7 px-5 min-w-full flex flex-col items-center">
+          <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
+            Login
+          </button>
+        </div>
+      </form>
+
+      <!--Currently redirects to index.vue, needs to be updated when forgot password functionality is added-->
+      <div class="container py-0 px-10 mx-0 min-w-full flex flex-col items-center">
+        <a href="../">
+        <button @click="onLogin" type="button" class="bg-white hover:bg-gray-200 text-gray-400 font-bold py-1 px-2 rounded text-xs">
+          Forgot Password?
+        </button>
+        </a>
+      </div>
+    </div>
+  </body>
 </template>
   
+<script setup>
+import { ref } from 'vue'
+import { useUserStore } from "../../store/user"
+
+const email = ref('')
+const password = ref('')
+
+const userStore = useUserStore()
+
+/**
+* A function to call the signIn function in the user store helper
+*/
+async function login() {
+  await userStore.signIn(email.value, password.value);
+  if (!userStore.isLoggedIn) {
+    navigateTo("/auth/login");
+  } else {
+    // start temp fix, this is janky
+    const el = document.getElementById("__nuxt");
+    el.innerHTML = "";
+    // end temp fix
+    navigateTo("/app/home");
+  }
+}
+</script>
+
+<script>
+export default {
+  name: 'login',
+  methods: {
+    onLogin() {
+      if (this.email == 'email@purdue.edu' && this.password == 'password') {
+        alert('Login Successful');
+      } else {
+        alert('Wrong username/password Combination');
+      }
+    }
+  }
+}
+</script>

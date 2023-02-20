@@ -8,29 +8,105 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const jwt = require('./components/auth/jwt');
 
+const sendEmail = require('./components/email/sendEmail')
+const uuid = require('./components/auth/uuid');
+const createuser = require('./components/auth/createuser');
+const utils = require('./components/utils/utils.js');
+
 app.use(express.json());
 
-//Route for /api. Add new event listeners as needed for new routes. 
-app.get('/api', (req, res) => {
-  res.send('API live!')
-})
-
-app.get('/api/posts', authenticateToken, (req, res) => {
-  console.log(req.user.name);
-  res.json(req.user.name);
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
 });
 
+//Route for /api. Add new event listeners as needed for new routes. 
+/*
+ * This function gets a path for /api
+ */
+app.get('/api', (req, res) => {
+  res.send('API live!')
+});
+
+/*
+ * Test function for confirming user token with the authentiacateToken method in jwt.js
+ * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
+ * @param {string} email - print the email of user to test correct user
+ */
+app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
+});
+
+/*
+ * This function lets a user login and generates a jwt token for them
+ * @param {string} email - Email of user
+ * @param {string} password - Hashed password of user 
+ */
 app.post('/api/login', (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
 
-  jwt.authenticate({ username, password }).then(user => {
-    res.json({ accessToken: accessToken, firstname: firstname });
+  jwt.authenticateUser({ email, password }).then(user => {
+    console.log(user);
+    console.log(accessToken);
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
   });
 });
+
+/**
+ * Sends an email to reset the password
+ * @param {string} email - The email to send the password to
+ */
+app.post('/api/forgotpassword', (req, res) => {
+  const email = req.body.email;
+  //getuid
+  utils.getUID({ email }).then(user => {
+    const mailOptions = {
+      from: 'joshuajy03@gmail.com',
+      to: `${email}`,
+      subject: 'Reset BoilerTime Password',
+      html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
+    }
+    sendEmail.sendEmail({ mailOptions });
+    res.send('Email Sent');
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(401);
+  });
+});
+
+/**
+ * Update Password Given User ID and Password
+ * @param {string} user_id - The user_id of the user that wants to update their password
+ * @param {string} password - The password
+ */
+app.post('/api/resetpassword', (req, res) => {
+  const user_id = req.body.user_id;
+  const new_password = req.body.password;
+  jwt.updatePassword({ user_id, new_password }).then(
+    res.send('Password Updated')
+  ).catch(err => {
+    console.log(err)
+  })
+})
+
+app.post('/api/createuser', (req, res) => {
+
+  createuser.createuser(req.body).then((user) => {
+    res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
+  }).catch(err => {
+    console.log(JSON.stringify(err))
+    res.sendStatus(500);
+  });
+
+})
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
@@ -38,16 +114,8 @@ function authenticateToken(req, res, next) {
   if (token == null) {
     // we don't have a token
     res.sendStatus(401);
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-      if (err) {
-        // user doesn't have access
-        res.sendStatus(403);
-      }
-      req.user = user;
-      next();
-  });
-}
+  };
+};
 
 app.listen(port, () => {
   console.log(`BoilerTime API listening on port ${port}!`)
