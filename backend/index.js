@@ -112,9 +112,47 @@ app.post('/api/createuser', (req, res) => {
 app.post('/api/createschedule', (req, res) => {
   schedule.addClasses(req.body).then((input) => {
     res.json({
-      "required_classes": req.body.required_classes,
-      "optional_classes": req.body.optional_classes,
-      "personal_preferences": req.body.personal_preferences
+      "schedule": [
+        {
+          "Class": "CS 180000",
+          "Credits" : 4,
+          "Title": "Problem Solving And Object-Oriented Programming",
+          "Lecture": {
+            "DaysOfWeek": "Monday, Wednesday, Friday",
+            "StartTime": "4:30",
+            "Duration": 110,
+          },
+          "Professor": "Turkstra",
+          "RMP": 4.3,
+          "Boiler Grades": 3.2,
+        },
+        {
+          "Class": "CS 24000",
+          "Credits" : 4,
+          "Title": "Programming in C",
+          "Lecture": {
+            "DaysOfWeek": "Monday, Wednesday, Friday",
+            "StartTime": "12:30",
+            "Duration": 50,
+          },
+          "Professor": "Gustavo",
+          "RMP": 3.3,
+          "Boiler Grades": 3.6,
+        },
+        {
+          "Class": "CS 18200",
+          "Credits" : 3,
+          "Title": "Foundations of Computer Science",
+          "Lecture": {
+            "DaysOfWeek": "Tuesday, Thursday",
+            "StartTime": "10:30",
+            "Duration": 50,
+          },
+          "Professor": "Selke",
+          "RMP": 2.5,
+          "Boiler Grades": 3.5,
+        }
+      ]
     })
   }).catch(err => {
     console.log(err)
