@@ -1,6 +1,6 @@
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
-
+const ratings = require('@mtucourses/rate-my-professors').default;
 const { collection, query, where, getDocs } = require('firebase/firestore');
 
 const db = getFirestore();
@@ -31,5 +31,12 @@ const findExistingUsers = async function (email) {
     return existingUsers.size > 0;
 }
 
+async function getProfessorRating(professor) {
+  const purdueid = 'U2Nob29sLTc4Mw=='
+  const teachers = await ratings.searchTeacher(professor, purdueid)
+  const teacher = await ratings.getTeacher(teachers[0].id)
+  return teacher;
+}
 
-module.exports = {getUID, findExistingUsers};
+
+module.exports = {getUID, findExistingUsers, getProfessorRating};

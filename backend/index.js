@@ -98,6 +98,21 @@ app.post('/api/resetpassword', (req, res) => {
   })
 })
 
+/**
+ * Update Password Given User ID and Password
+ * @param {string} user_id - The user_id of the user that wants to update their password
+ * @param {string} password - The password
+ */
+app.get('/api/ratemyprofessor', (req, res) => {
+  utils.getProfessorRating("Turkstra").then( teacher => {
+    res.json(teacher)
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  }
+  )
+})
+
 app.post('/api/createuser', (req, res) => {
 
   createuser.createuser(req.body).then((user) => {
