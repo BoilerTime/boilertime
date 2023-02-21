@@ -21,11 +21,11 @@ async function addClasses(user) {
   const input = {
     "required_classes": user.required_classes,
     "optional_classes": user.optional_classes,
-    "personal_preferences": user.personal_preferences
+    "personal_preferences": user.personal_preferences,
+    "timestamp": FieldValue.serverTimestamp()
   };
   const schedule = await schedules.where('user_id', '==', user.user_id).get();
   schedule.forEach(doc => {
     db.collection('user_schedules').doc(doc.id).collection('spring_2023').add(input);
   });
-
 }
