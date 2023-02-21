@@ -53,7 +53,7 @@ app.post('/api/login', (req, res) => {
   jwt.authenticateUser({ email, password }).then(user => {
     console.log(user);
     console.log(accessToken);
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
