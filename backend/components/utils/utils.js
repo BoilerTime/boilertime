@@ -31,6 +31,11 @@ const findExistingUsers = async function (email) {
     return existingUsers.size > 0;
 }
 
+/**
+ * Searches RMP for a professor
+ * @param {string} professor - The name of the professor
+ * @returns {JSON} - A json containing details about the professor
+ */
 async function getProfessorRating(professor) {
   const purdueid = 'U2Nob29sLTc4Mw=='
   const teachers = await ratings.searchTeacher(professor, purdueid)

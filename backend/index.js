@@ -99,9 +99,7 @@ app.post('/api/resetpassword', (req, res) => {
 })
 
 /**
- * Update Password Given User ID and Password
- * @param {string} user_id - The user_id of the user that wants to update their password
- * @param {string} password - The password
+ * Simple Query for RateMyProfessor
  */
 app.get('/api/ratemyprofessor', (req, res) => {
   utils.getProfessorRating("Turkstra").then( teacher => {
