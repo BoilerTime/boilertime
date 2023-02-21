@@ -118,8 +118,8 @@ app.post('/api/createschedule', (req, res) => {
           "Credits" : 4,
           "Title": "Problem Solving And Object-Oriented Programming",
           "Lecture": {
-            "DaysOfWeek": "Monday, Wednesday, Friday",
-            "StartTime": "4:30",
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "16:30",
             "Duration": 110,
           },
           "Professor": "Turkstra",
@@ -131,7 +131,7 @@ app.post('/api/createschedule', (req, res) => {
           "Credits" : 4,
           "Title": "Programming in C",
           "Lecture": {
-            "DaysOfWeek": "Monday, Wednesday, Friday",
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
             "StartTime": "12:30",
             "Duration": 50,
           },
@@ -144,7 +144,7 @@ app.post('/api/createschedule', (req, res) => {
           "Credits" : 3,
           "Title": "Foundations of Computer Science",
           "Lecture": {
-            "DaysOfWeek": "Tuesday, Thursday",
+            "DaysOfWeek": ["Tuesday", "Thursday"],
             "StartTime": "10:30",
             "Duration": 50,
           },
