@@ -2,9 +2,12 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const useUserStore = defineStore("user", {
-  state: () => ({
-    user: null,
-  }),
+  state: () => {
+    return {
+      user: null,
+    };
+  },
+  persist: true,
   /**
   * Getter functions for the user store variables retrieved from the backend login response.
   */
