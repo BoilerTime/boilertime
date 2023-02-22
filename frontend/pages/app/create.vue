@@ -28,13 +28,13 @@
 
         <button class = "bg-blue-500 hover:bg-blue-700 text-white
                          font-bold py-2 px-4 rounded"
-                type = "button" @click = "addClassRequired">
+                type = "button" @click = "add_class_required">
           Required
         </button>
 
         <button class = "bg-blue-500 hover:bg-blue-700 text-white
                          font-bold py-2 px-4 rounded"
-                type = "button" @click = "addClassOptional">
+                type = "button" @click = "add_class_optional">
           Optional
         </button>
 
@@ -63,22 +63,20 @@
 
 <script>
 
-//import{ add_classes } from "../backend/components/schedule/schedule.js"
-//const add_class = add_classes()
-
-import { useUserStore } from "../../store/user"
-const userStore = useUserStore()
+import axios from "axios";
 
 export default {
+
+  class_input: "",
+  url: "backend/components/schedule/schedule.js",
 
   data() {
 
     return {
-      user_id: "",
+      user_id: "dummy_user_id",
       optional_classes: [],
       personal_preferences: [],
       required_classes: [],
-      class_input: "",
     };
 
   },
@@ -100,10 +98,13 @@ export default {
     },
 
     submit() {
-      
+      axios.post(url, data())
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+      navigateTo("/app/loading");
     },
 
   },
-};
 
+};
 </script>
