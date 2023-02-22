@@ -12,54 +12,91 @@
       <h1 class = "font-bold text-left text-2xl" >
         Hi! Let's help you get started with your new schedule.
       </h1>
-      <h1 class = "font-bold text-leftr">
+      <h1 class = "font-bold text-left">
         To do so, search for your class in the bar below and mark it as required or optional.
         Please note that you are limited to 10 classes total.
       </h1>
-      <br />
+      <br/>
 
-      <!--User interaction group-->
-      <div class = "flex flex-row">
-        <div class = "flex flex-col">
-          <input type = "string" aria-describedby="class-search-bar" class="bg-gray-50 border border-gray-400 text-gray-900 text-sm rounded-lg
-          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500"
-          placeholder="Search..." v-model="class_choice" required/>          
-        </div>
-        <div class = "flex flex-col">
-          <button class = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Search
-          </button>
-        </div>
+      <!--User interaction group, fix positioning on the screen-->
+      <div>
+
+        <input class = "border-2 border-gray-300 bg-white h-10 px-5
+                        rounded-lg text-sm focus:outline-none"
+               type = "text" v-model = "class_input" placeholder = "Enter class...">
+
+        <button class = "bg-blue-500 hover:bg-blue-700 text-white
+                         font-bold py-2 px-4 rounded"
+                type = "button" @click = "addClassRequired">
+          Required
+        </button>
+
+        <button class = "bg-blue-500 hover:bg-blue-700 text-white
+                         font-bold py-2 px-4 rounded"
+                type = "button" @click = "addClassOptional">
+          Optional
+        </button>
+
+        <button class = "bg-blue-500 hover:bg-blue-700 text-white
+                         font-bold py-2 px-4 rounded"
+                type = "button" @click = "submit">
+          Done
+        </button>
+
+        <ul class="list-disc list-inside">
+          <!-- Loop through the array and display each item as a list item -->
+          <li class="mb-2 text-red-400" v-for="(item, index) in optional_classes" :key="index">{{ item }}</li>
+        </ul>
+
+        <ul class="list-disc list-inside">
+          <!-- Loop through the array and display each item as a list item -->
+          <li class="mb-2 text-cyan-400" v-for="(item, index) in required_classes" :key="index">{{ item }}</li>
+        </ul>
+
       </div>
     </div>
-
-    <!--Information debugging-->
-
-    <p> Search = {{ class_choice }}</p>
-    <ul>
-      <li v-for = "classes in optonal_classes" :key="classes">
-        {{ classes }}
-      </li>
-    </ul>
-    <ul>
-      <li v-for = "classes in required_classes" :key="classes">
-        {{ classes }}
-      </li>
-    </ul>
-
   </body>
 </template>
 
 <!-- Begin scripting section -->
 
-<script setup>
-import { ref } from 'vue'
-import { useUserStore } from "../../store/user"
+<script>
 
-const email = ref('')
-const class_choice = ref('')
-const optonal_classes = ref([])
-const personal_preferenes = ref([])
-const required_classes = ref([])
+export default {
+
+  data() {
+
+    return {
+      user_id: "",
+      optional_classes: [],
+      personal_preferences: [],
+      required_classes: [],
+      class_input: "",
+    };
+
+  },
+
+  methods: {
+
+    add_class_required() {
+      if (this.class_input !== "") {
+        this.required_classes.push(this.class_input);
+        this.class_input = "";
+      }
+    },
+
+    add_class_optional() {
+      if (this.class_input !== "") {
+        this.optional_classes.push(this.class_input);
+        this.class_input = "";
+      }
+    },
+
+    submit() {
+      //todo: send data to backend
+    },
+
+  },
+};
 
 </script>
