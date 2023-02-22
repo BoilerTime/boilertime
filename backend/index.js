@@ -19,7 +19,7 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
   next();
 });
@@ -37,7 +37,7 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/profile', jwt.authenticateToken, (req, res) => {
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 

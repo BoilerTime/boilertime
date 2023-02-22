@@ -68,8 +68,7 @@ function authenticateToken(req, res, next) {
         if (newAccessToken1 === undefined) {
           console.log('refresh token is invalid');
           res.sendStatus(403);
-        }
-        else {
+        } else {
           const user2 = {user_id: req.body.user_id, accessToken: newAccessToken1};
           req.user = user2;
           console.log('\n\nJUST GENERATED NEW ACCESTOKEN YOU STILL HAVE ACESS!!\n\n');

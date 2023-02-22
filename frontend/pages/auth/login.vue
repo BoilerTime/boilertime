@@ -72,18 +72,3 @@ async function login() {
   }
 }
 </script>
-
-<script>
-export default {
-  name: 'login',
-  methods: {
-    onLogin() {
-      if (this.email == 'email@purdue.edu' && this.password == 'password') {
-        alert('Login Successful');
-      } else {
-        alert('Wrong username/password Combination');
-      }
-    }
-  }
-}
-</script>
