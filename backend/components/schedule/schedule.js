@@ -25,7 +25,11 @@ async function addClasses(user) {
     "timestamp": FieldValue.serverTimestamp()
   };
   const schedule = await schedules.where('user_id', '==', user.user_id).get();
-  schedule.forEach(async function (doc) {
-    db.collection('user_schedules').doc(doc.id).collection('spring_2023').doc('schedule').set(input);
-  });
+  if (schedule.empty) {
+    throw new Error(500);
+  } else {
+    schedule.forEach(async function (doc) {
+      db.collection('user_schedules').doc(doc.id).collection('spring_2023').doc('schedule').set(input);
+    });
+  }
 }
