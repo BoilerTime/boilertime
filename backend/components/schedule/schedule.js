@@ -26,13 +26,6 @@ async function addClasses(user) {
   };
   const schedule = await schedules.where('user_id', '==', user.user_id).get();
   schedule.forEach(async function (doc) {
-    const current = await db.collection('user_schedules').doc(doc.id).collection('spring_2023').get();
-    if (current.empty) {
-      db.collection('user_schedules').doc(doc.id).collection('spring_2023').add(input);
-    } else {
-      current.forEach( doc2 => {
-        doc2.ref.set(input);
-      })
-    }
+    db.collection('user_schedules').doc(doc.id).collection('spring_2023').doc('schedule').set(input);
   });
 }
