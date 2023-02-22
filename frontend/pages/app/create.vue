@@ -12,13 +12,14 @@
       <h1 class = "font-bold text-left text-2xl" >
         Hi! Let's help you get started with your new schedule.
       </h1>
+      
       <h1 class = "font-bold text-left">
         To do so, search for your class in the bar below and mark it as required or optional.
         Please note that you are limited to 10 classes total.
       </h1>
       <br/>
 
-      <!--User interaction group, fix positioning on the screen-->
+      <!--User interaction group, fix positioning on the screen, fill lists as boxes-->
       <div>
 
         <input class = "border-2 border-gray-300 bg-white h-10 px-5
@@ -62,6 +63,12 @@
 
 <script>
 
+//import{ add_classes } from "../backend/components/schedule/schedule.js"
+//const add_class = add_classes()
+
+import { useUserStore } from "../../store/user"
+const userStore = useUserStore()
+
 export default {
 
   data() {
@@ -93,7 +100,7 @@ export default {
     },
 
     submit() {
-      //todo: send data to backend
+      
     },
 
   },
