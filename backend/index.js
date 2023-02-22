@@ -39,9 +39,7 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
-  console.log(req.body.email);
-  console.log(req.user);
-  res.json(req.body.email);
+  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
 /*
@@ -55,7 +53,8 @@ app.post('/api/login', (req, res) => {
 
   jwt.authenticateUser({ email, password }).then(user => {
     console.log(user);
-    res.json({ accessToken: accessToken, firstname: firstname });
+    console.log(accessToken);
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
