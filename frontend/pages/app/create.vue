@@ -142,7 +142,7 @@ export default {
 
     submit() {
       axios
-        .post("http://  localhost:3001/api/createschedule", this.return_data())
+        .post("http://localhost:3001/api/createschedule", this.return_data())
         .then((res) => {
           console.log(res);
           navigateTo("/app/loading");
