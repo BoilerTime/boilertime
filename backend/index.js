@@ -82,6 +82,27 @@ app.post('/api/forgotpassword', (req, res) => {
   });
 });
 
+app.get('/api/grades', async function (req, res) {
+  let instructor = req.query.instructor;
+  let course = req.query.course;
+  if (instructor) {
+    axios.get('https://boilergrades.com/api/grades?instructor=' + instructor).then(resp => {
+      res.json({data: resp.data});
+    });
+  }
+  else if (course) {
+    axios.get('https://boilergrades.com/api/grades?course=' + course).then(resp => {
+      res.json({data: resp.data});
+    });
+  }
+  else {
+    // send error bad request 400
+    res.sendStatus(400);
+  }
+
+
+});
+
 /**
  * Update Password Given User ID and Password
  * @param {string} user_id - The user_id of the user that wants to update their password
