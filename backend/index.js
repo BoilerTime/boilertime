@@ -15,6 +15,9 @@ const utils = require('./components/utils/utils.js');
 
 app.use(express.json());
 
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
@@ -23,6 +26,9 @@ app.use(function(req, res, next) {
   );
   next();
 });
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 
 //Route for /api. Add new event listeners as needed for new routes. 
 /*
