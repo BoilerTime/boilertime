@@ -15,7 +15,7 @@ const utils = require('./components/utils/utils.js');
 
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
-purdueio.purdueios();
+//purdueio.purdueios();
 
 app.use(express.json());
 
