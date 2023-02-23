@@ -1,7 +1,7 @@
 <!--forgotpassword.vue is a page dedicated to allowing users to begin the password reset process.
     It will ask for the user's email, then sending an email that they will-->
 <template>
-    <body class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
+    <div class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
         <br />
         <div class="mx-auto my-10 5px max-w-sm p-6 bg-white border rounded-lg shadow sm:p-8 md:p-8 dark:bg-white">
 
@@ -24,7 +24,7 @@
                 </div>
             </form>
         </div>
-    </body>
+    </div>
 </template>
 
 <script setup>
