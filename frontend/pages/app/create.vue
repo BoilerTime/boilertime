@@ -8,7 +8,7 @@
   <body class="h-screen bg-gray-200">
     <!--Begin window-->
     <div
-      class="grid grid-flow-row mx-auto my-24 w-4/5 bg-white rounded-lg shadow-lg p-8"
+      class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
     >
       <!--Intro-->
       <h1 class="font-extrabold text-left text-2xl">
@@ -61,7 +61,7 @@
       <!--User interaction group-->
       <div class="grid gap-4 grid-cols-2">
         <input
-          class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 rounded-lg text-sm focus:outline-none"
+          class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 rounded-lg text-sm focus:outline-blue-500"
           type="text"
           v-model="class_input"
           placeholder="Enter class..."
@@ -119,7 +119,7 @@ export default {
   methods: {
     return_data() {
       return {
-        user_id: "dummy_user_id",
+        user_id: "xyz",
         optional_classes: this.optional_classes,
         personal_preferences: [],
         required_classes: this.required_classes,
@@ -140,11 +140,18 @@ export default {
       }
     },
 
+    edit() {
+      //todo edit the schedule
+      if (this.required_classes !== "" || this.optional_classes !== "") {
+      }
+    },
+
     submit() {
       axios
         .post("http://localhost:3001/api/createschedule", this.return_data())
         .then((res) => {
           console.log(res);
+          //maybe wait for a response from server here before loading the next page
           navigateTo("/app/loading");
         })
         .catch((err) => console.log(err));
