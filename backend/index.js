@@ -111,8 +111,19 @@ app.get('/api/ratemyprofessor', (req, res) => {
   }).catch(err => {
     console.log(err)
     res.sendStatus(500);
-  }
-  )
+  })
+})
+
+/**
+ * Search Query
+ */
+app.get('/api/search', (req, res) => {
+  utils.getClassesFromDept(req.body.dept).then( array => {
+    res.json({classes: array})
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  })
 })
 
 app.post('/api/createuser', (req, res) => {
