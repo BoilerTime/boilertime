@@ -16,6 +16,7 @@ if (!userStore.isLoggedIn) {
   navigateTo("/auth/login");
 }
 
+/*
 async function verifyToken() {
   await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
   });
@@ -29,5 +30,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(interval);
 });
+*/
 
 </script>

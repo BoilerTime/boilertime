@@ -29,7 +29,6 @@ export const useUserStore = defineStore("user", {
     * @param {string} password - a SHA-256 hashed password.
     */
     async signIn(email, password) {
-      console.log(email, password)
       const res = await axios.post('http://localhost:3001/api/login', {
         email: email,
         password: password
@@ -55,7 +54,6 @@ export const useUserStore = defineStore("user", {
       }
       await axios.post('http://localhost:3001/api/profile', data, config)
       .then(response => {
-        console.log(response.data);
         if (response.data["authenticationToken"] != undefined) {
           this.user = {
             accessToken: response.data["authenticationToken"],
