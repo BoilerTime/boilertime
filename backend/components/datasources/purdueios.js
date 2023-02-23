@@ -6,7 +6,7 @@ require('../../firebase')
 //Firebase Imports Only
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
-const { collection, query, where, getDocs } = require('firebase/firestore'); 
+const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
 
 const db = getFirestore()
@@ -25,7 +25,7 @@ const purdueios = async function() {
 			subjects.push(res.Abbreviation);
 	});
 	console.log(subjects.length);
-	
+
 	//Get a list of all courses in the system
 	//for(var i=0; i<1; i++) {
 	for(var i=0; i<subjects.length; i++) {
@@ -34,7 +34,7 @@ const purdueios = async function() {
 
 	console.log(courses[0].courses.length);
 
-	//Now, get all sections for each course that exists 
+	//Now, get all sections for each course that exists
 
 	fs.writeFile('courses.json', JSON.stringify(courses), function (err) {
 		if (err) throw err;
@@ -66,20 +66,13 @@ const getCoursesBySubject = async function(subject) {
 const saveCourses = async function() {
 	let courseList = fs.readFileSync("courses.json");
 	courseList = JSON.parse(courseList);
-	await classLists.doc('spring_2023').set({"semester": "spring 2023"});
-	await classLists.doc('spring_2023').collection('CS').add({courses: false});
-	//classLists.add({title: "spring_2023"}, "spring_2023");
-	//let courseEntry = await classLists.add({title: "spring_2023"});
-	//console.log(courseEntry.id);
-	//console.log(await classLists.doc(courseEntry.id).get());
-	//console.log(courseEntry.toJson());
-	//First, let's organize by the subjects the classes are in
-	//console.log(db.collection(courseEntry.id));
+
 	let subjectDocs = [];
 	//let courseStore = db.collection(courseEntry.id);
 	let currentId;
-	for(let i = 0; i < 2; i++) {
-	//for(let i = 0; i < courseList.length; i++) {
+	//for(let i = 0; i < 2; i++) {
+	let courseCount = 0;
+	for(let i = 114; i < courseList.length; i++) {
 		await classLists.doc('spring_2023').collection(courseList[i].subject).add({hasCourses: true}).then((res) => {
     	//It worked, great! Don't need to do anything, though
 			//let currentId = res.id;
@@ -89,21 +82,36 @@ const saveCourses = async function() {
 		}).catch((err) => {
 			throw new Error().error = 500;
     })
+		console.log(i);
+		for(let j = 0; j < courseList[i].courses.length; j++) {
+			//console.log(j);
+			courseCount++;
+			console.log("Course Count: " + courseCount)
+			//console.log(courseList[i].courses[j]);
+			await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].Number).set({name: courseList[i].courses[j].Title, credits: courseList[i].courses[j].CreditHours, description: courseList[i].courses[j].Description, number: courseList[i].courses[j].Number});
+			for(let k = 0; k<courseList[i].courses[j].Sections.length; k++) {
+				//       console.log(courseList[i].courses[j].Sections[k].Sections.length);
+				let sectionsList = courseList[i].courses[j].Sections[k].Sections;
+				//console.log(sectionsList.length)
 
-		for(let j = 0; j < 2; j++) {
-			console.log(courseList[i].courses[j]);
-			await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].value.Number).set({exists: true});
-			for(let k = 0; k<courseList[i].courses[j].Classes.value.length; k++) {	
-				await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].Number).collection(courseList[i].courses[j].value.Classes[k].Id).add({exists: true});
+				for(let l = 0; l < sectionsList.length; l++) {
+					console.log({type: sectionsList[l]?.Meetings[0]?.Type || "none",
+					 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
+					 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+					 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
+					 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
+					 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"})
+					await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].Number).collection(courseList[i].courses[j].Sections[k].Id).doc(courseList[i].courses[j].Sections[k].Sections[l].Id).set(
+						{type: sectionsList[l]?.Meetings[0]?.Type || "none",
+						 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
+						 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+						 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
+						 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
+						 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"});
+				}
 			}
 		}
-
 	}
-
-
-
-	//await classLists.doc('spring_2023').collection(courseList[0].subject).doc('49000').set({exists: true});
-
 }
 
 
