@@ -1,4 +1,3 @@
-require('dotenv').config({path: '../.env'});
 require('../../firebase')
 const crypto = require('crypto');
 const config = require('../../../config.json');
@@ -14,7 +13,6 @@ const count = db.collection('uuidcount');
   * Returns a uniquely generated unique used ID based on the SHA-256 hash of a UUID count and an a key that MUST be set in the .env file prior to use.
   * @returns {Promise} A promise for a string representing the UUIDas described
 **/
-
 const uuid = async function() {
 	const currentCount = await count.doc('count').get();
   if(!currentCount.exists) {
@@ -25,8 +23,9 @@ const uuid = async function() {
   cachedCount++;
   await count.doc('count').set({
 		count: cachedCount
+
   })
   return newUUID;
 }
 
-module.exports = {uuid};
+module.exports = { uuid };

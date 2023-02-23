@@ -1,4 +1,4 @@
-require('dotenv').config({path: '../.env'});
+require('dotenv').config({ path: '../.env' });
 require('../../firebase')
 const emailvalidator = require('email-validator');
 const uuid = require('./uuid.js');
@@ -6,8 +6,10 @@ const uuid = require('./uuid.js');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore');
+
 const db = getFirestore()
 const profiles = db.collection('user_profile');
+const schedules = db.collection('user_schedules');
 
 /**
   * Create User creates a new user to enter into the database matching the parameters passed to it.
@@ -15,7 +17,7 @@ const profiles = db.collection('user_profile');
   * @returns {JSON} - The profile of the created user that was stored into the database. The name, email, and password will all match was was passed to the function, but there will be a new user_id field that represents the UUID that was assigned to the user upon creation.
 **/
 const createuser = async function(profile) {
-    //If the request is malformed, throw an error right away
+  //If the request is malformed, throw an error right away
 	if((!(profile.email && profile.firstname && profile.lastname && profile.gradmonth && profile.gradyear && profile.isGraduateStudent != undefined && profile.password))) {
 		console.log(profile.email + profile.firstname + profile.lastname + profile.gradmonth + profile.gradyear + profile.isGraduateStudent + profile.password)
 		let response = new Error();
@@ -64,6 +66,9 @@ const findExistingUsers = async function (email) {
   //If there are existing users with the same email, return false
 	console.log(existingUsers.size);
   return existingUsers.size > 0;
+
 }
 
-module.exports = {createuser};
+
+
+module.exports = { createuser };
