@@ -102,6 +102,19 @@ app.post('/api/resetpassword', (req, res) => {
   })
 })
 
+/**
+ * Simple Query for RateMyProfessor
+ */
+app.get('/api/ratemyprofessor', (req, res) => {
+  utils.getProfessorRating("Turkstra").then( teacher => {
+    res.json(teacher)
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  }
+  )
+})
+
 app.post('/api/createuser', (req, res) => {
 
   createuser.createuser(req.body).then((user) => {
