@@ -32,9 +32,8 @@ async function authenticateUser({ email, password }) {
     const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
     const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
     user = {user_id: doc.data().user_id, accessToken: access_token};
-    doc.ref.update({access_token: access_token});
-    doc.ref.update({refresh_token: refresh_token})
-    return (firstname = doc.data().firstname, accessToken = access_token, refreshToken = refresh_token);
+    doc.ref.update({access_token: access_token, refresh_token: refresh_token});
+    return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
     //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
   });
 }
@@ -69,8 +68,7 @@ function authenticateToken(req, res, next) {
         if (newAccessToken1 === undefined) {
           console.log('refresh token is invalid');
           res.sendStatus(403);
-        }
-        else {
+        } else {
           const user2 = {user_id: req.body.user_id, accessToken: newAccessToken1};
           req.user = user2;
           console.log('\n\nJUST GENERATED NEW ACCESTOKEN YOU STILL HAVE ACESS!!\n\n');
@@ -91,18 +89,30 @@ function authenticateToken(req, res, next) {
  */
 async function generateNewAccessToken(user) {
   const profile = await users.where('user_id', '==', user.user_id).get();
+  console.log(profile + " this is the profile")
+  //const refresh_token = await profile.data().refresh_token;
   let newAccessToken = "";
-  profile.forEach(doc => {
-    if (doc.data().refresh_token === "") {
-      console.log('here the refresh is invalid');
-      return (newAccessToken1 = undefined);
-    }
-    else {
-      const user1 = {user_id: doc.data().user_id};
-      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
-      doc.ref.update({access_token: newAccessToken});
-      doc.ref.update({refresh_token: ""});
-      return (newAccessToken1 = newAccessToken);
-    }
+  profile.forEach(async doc => {
+    const refresh_token = await doc.data().refresh_token;
+    console.log('this is the refreshtoken ' + refresh_token);
+    jwt.verify(doc.data().refresh_token, process.env.REFRESH_TOKEN, async (err, user) => {
+      if (err) {
+        console.log('\n\nTHE USER GAVE A RANDOM REFRESH TOKEN\n\n');
+        return (newAccessToken1 = undefined);
+
+      }
+      else {
+        if (doc.data().refresh_token === "") {
+          console.log('here the refresh is blank used too many times');
+          return (newAccessToken1 = undefined);
+        }
+        else {
+          const user1 = {user_id: doc.data().user_id};
+          newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+          doc.ref.update({access_token: newAccessToken, refresh_token: ""});
+          return (newAccessToken1 = newAccessToken);
+        }
+      }
+    });
   });
 }
