@@ -39,8 +39,8 @@ app.post('/api/createuser', (req, res) => {
   createuser.createuser(req.body).then((user) => {
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
-    console.log(JSON.stringify(err))
-    res.sendStatus(err.error);
+    //console.log(JSON.stringify(err))
+    res.sendStatus(err.error || 500);
   });
 
 })
