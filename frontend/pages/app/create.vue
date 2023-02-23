@@ -117,6 +117,7 @@ export default {
   },
 
   methods: {
+    //function to pass the current user data
     return_data() {
       return {
         user_id: "xyz",
@@ -125,27 +126,27 @@ export default {
         required_classes: this.required_classes,
       };
     },
-
+    //function to add a class to the required classes array
     add_class_required() {
       if (this.class_input !== "") {
         this.required_classes.push(this.class_input);
         this.class_input = "";
       }
     },
-
+    //function to add a class to the optional classes array
     add_class_optional() {
       if (this.class_input !== "") {
         this.optional_classes.push(this.class_input);
         this.class_input = "";
       }
     },
-
+    //function to edit the schedule
     edit() {
       //todo edit the schedule
       if (this.required_classes !== "" || this.optional_classes !== "") {
       }
     },
-
+    //function to submit the schedule to backend
     submit() {
       axios
         .post("http://localhost:3001/api/createschedule", this.return_data())
