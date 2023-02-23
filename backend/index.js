@@ -12,6 +12,7 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const schedule = require('./components/schedule/schedule');
 
 app.use(express.json());
 
@@ -105,7 +106,57 @@ app.post('/api/createuser', (req, res) => {
     console.log(JSON.stringify(err))
     res.sendStatus(500);
   });
+})
 
+app.post('/api/createschedule', (req, res) => {
+  schedule.addClasses(req.body).then((input) => {
+    res.json({
+      "schedule": [
+        {
+          "Class": "CS 180000",
+          "Credits" : 4,
+          "Title": "Problem Solving And Object-Oriented Programming",
+          "Lecture": {
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "16:30",
+            "Duration": 110,
+          },
+          "Professor": "Turkstra",
+          "RMP": 4.3,
+          "Boiler Grades": 3.2,
+        },
+        {
+          "Class": "CS 24000",
+          "Credits" : 4,
+          "Title": "Programming in C",
+          "Lecture": {
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "12:30",
+            "Duration": 50,
+          },
+          "Professor": "Gustavo",
+          "RMP": 3.3,
+          "Boiler Grades": 3.6,
+        },
+        {
+          "Class": "CS 18200",
+          "Credits" : 3,
+          "Title": "Foundations of Computer Science",
+          "Lecture": {
+            "DaysOfWeek": ["Tuesday", "Thursday"],
+            "StartTime": "10:30",
+            "Duration": 50,
+          },
+          "Professor": "Selke",
+          "RMP": 2.5,
+          "Boiler Grades": 3.5,
+        }
+      ]
+    })
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
 })
 
 function authenticateToken(req, res, next) {
