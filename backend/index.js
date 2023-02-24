@@ -60,6 +60,7 @@ app.post('/api/login', (req, res) => {
   jwt.authenticateUser({ email, password }).then(user => {
     //console.log(user);
     //console.log(accessToken);
+    console.log(`Login sucessful ${email}`)
     res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
   }).catch(err => {
     console.error(err)
@@ -98,6 +99,7 @@ app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
   utils.updatePassword({ user_id, new_password }).then(user => {
+    console.log(`Updated password to ${password}`)
     res.json({ password: password });
   }).catch(err => {
     console.error(err)
@@ -106,8 +108,8 @@ app.post('/api/resetpassword', (req, res) => {
 })
 
 app.post('/api/createuser', (req, res) => {
-
   createuser.createuser(req.body).then((user) => {
+    console.log(`Created user: ${email}`)
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
     //console.log(JSON.stringify(err))
@@ -118,6 +120,7 @@ app.post('/api/createuser', (req, res) => {
 
 app.post('/api/createschedule', (req, res) => {
   schedule.addClasses(req.body).then((input) => {
+    console.log("Schedule Added to Database")
     res.json({
       "schedule": [
         {
