@@ -31,7 +31,7 @@ async function getUID({ email }) {
 const findExistingUsers = async function (email) {
   const existingUsers = await users.where('email', '==', email).get();
   //If there are existing users with the same email, return false
-  console.log(existingUsers.size);
+  //console.log(existingUsers.size);
   return existingUsers.size > 0;
 }
 
