@@ -75,6 +75,7 @@ async function login() {
     }
   } catch (error) {
     // temp alert
+    console.log(error)
     alert("Incorrect username or password")
   }
 }

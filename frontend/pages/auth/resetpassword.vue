@@ -58,7 +58,7 @@ async function resetpassword() {
         navigateTo("/auth/login")
       })
       .catch(function (error) {
-        console.error
+        console.error(error)
       });
   } else {
     alert("Passwords do not match")

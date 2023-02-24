@@ -6,7 +6,7 @@
 <template>
   <!--Begin entire page-->
 
-  <body class="h-screen bg-gray-200">
+  <main class="h-screen bg-gray-200">
     <!--Begin window-->
     <div
       class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
@@ -97,7 +97,7 @@
         Done
       </button>
     </div>
-  </body>
+  </main>
 </template>
 
 <!-- Begin scripting section -->
@@ -155,7 +155,7 @@ export default {
           //maybe wait for a response from server here before loading the next page
           navigateTo("/app/loading");
         })
-        .catch((err) => console.error);
+        .catch((err) => console.error(err));
     },
   },
 };

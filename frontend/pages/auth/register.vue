@@ -1,7 +1,7 @@
 <!--register.vue is a page dedicated to allowing users to create a profile for the website.
     It will ask for an email, password, and then a password confirmation.-->
 <template>
-  <body class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
+  <main class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
     <br />
     <div class="mx-auto w-5/12 p-3 bg-white border rounded-lg shadow sm:p-7 md:p-8 dark:bg-white">
       <!--Welcome back text-->
@@ -54,7 +54,7 @@
         </div>
       </form>
     </div>
-  </body>
+  </main>
 </template>
     
 <script setup>
