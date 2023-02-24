@@ -5,8 +5,6 @@
   <h2 class="text-sm font-light italic">
     Tailwind works :)
   </h2>
-  <!--Button that takes you to login page-->
-  <div class="fixed top-2 right-2">
 
   <!--Button that takes you to login page-->
   <div class="fixed top-2 right-4">
@@ -26,6 +24,5 @@
       </button>
     </a>
   </div>
-
 </template>
   

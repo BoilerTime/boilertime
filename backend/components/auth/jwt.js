@@ -1,4 +1,4 @@
-require('dotenv').config({path: '../.env'});
+require('dotenv').config({ path: '../.env' });
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 require('../../firebase')
@@ -12,8 +12,8 @@ const db = getFirestore()
 const users = db.collection('user_profile')
 
 module.exports = {
-    authenticateUser,
-    authenticateToken
+  authenticateUser,
+  authenticateToken
 }
 
 /**
@@ -27,11 +27,11 @@ async function authenticateUser({ email, password }) {
   //const refresh_token = jwt.sign(email, process.env.REFRESH_TOKEN, {expiresIn: '1d'});
 
   profile.forEach(doc => {
-    var user = {user_id: doc.data().user_id};
-    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
+    var user = { user_id: doc.data().user_id };
+    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
     const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
-    user = {user_id: doc.data().user_id, accessToken: access_token};
-    doc.ref.update({access_token: access_token, refresh_token: refresh_token});
+    user = { user_id: doc.data().user_id, accessToken: access_token };
+    doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
     return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
     //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
   });
@@ -62,7 +62,7 @@ function authenticateToken(req, res, next) {
           console.log('refresh token is invalid');
           res.sendStatus(403);
         } else {
-          const user2 = {user_id: req.body.user_id, accessToken: newAccessToken1};
+          const user2 = { user_id: req.body.user_id, accessToken: newAccessToken1 };
           req.user = user2;
           console.log('\n\nJUST GENERATED NEW ACCESTOKEN YOU STILL HAVE ACESS!!\n\n');
           next();
@@ -100,9 +100,9 @@ async function generateNewAccessToken(user) {
           return (newAccessToken1 = undefined);
         }
         else {
-          const user1 = {user_id: doc.data().user_id};
-          newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, {expiresIn: '15s'});
-          doc.ref.update({access_token: newAccessToken, refresh_token: ""});
+          const user1 = { user_id: doc.data().user_id };
+          newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
+          doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
           return (newAccessToken1 = newAccessToken);
         }
       }

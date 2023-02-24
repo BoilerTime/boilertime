@@ -29,10 +29,10 @@ async function getUID({ email }) {
   * @returns {boolean} - A boolean representing whether or not there are matching users in the database.
 **/
 const findExistingUsers = async function (email) {
-    const existingUsers = await users.where('email', '==', email).get();
-    //If there are existing users with the same email, return false
-    console.log(existingUsers.size);
-    return existingUsers.size > 0;
+  const existingUsers = await users.where('email', '==', email).get();
+  //If there are existing users with the same email, return false
+  console.log(existingUsers.size);
+  return existingUsers.size > 0;
 }
 
 /**
@@ -42,14 +42,13 @@ const findExistingUsers = async function (email) {
  * @throws {500} if no user_id is found
  */
 async function updatePassword({ user_id, new_password }) {
-  const profile = await users.where('user_id', '==', user_id).get();
+  const profile = await users.doc(user_id).get();
   if (profile.empty) {
     throw new Error(500);
-  }
-  profile.forEach(doc => {
-    doc.ref.update({ password: new_password })
+  } else {
+    profile.ref.update({ password: new_password })
     return (password = new_password);
-  });
+  }
 }
 
-module.exports = {getUID, findExistingUsers, updatePassword};
+module.exports = { getUID, findExistingUsers, updatePassword };
