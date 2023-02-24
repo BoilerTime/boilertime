@@ -43,6 +43,10 @@ const user_id = route.query.user_id
 const password = ref('')
 const confpassword = ref('')
 
+/**
+ * A function that will make sure the user_id is correct and will then
+ * change the newly inputted password. 
+ */
 async function resetpassword() {
   if (password.value === confpassword.value) {
     await axios.post('http://localhost:3001/api/resetpassword', {
