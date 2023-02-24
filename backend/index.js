@@ -84,7 +84,7 @@ app.post('/api/forgotpassword', (req, res) => {
     sendEmail.sendEmail({ mailOptions });
     res.json({user_id: user_id, email: email});
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });
@@ -100,7 +100,7 @@ app.post('/api/resetpassword', (req, res) => {
   utils.updatePassword({ user_id, new_password }).then(user => {
     res.json({ password: password });
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(500)
   })
 })
@@ -162,7 +162,7 @@ app.post('/api/createschedule', (req, res) => {
       ]
     })
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(500);
   });
 })
