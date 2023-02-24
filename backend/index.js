@@ -58,11 +58,11 @@ app.post('/api/login', (req, res) => {
   const password = req.body.password;
 
   jwt.authenticateUser({ email, password }).then(user => {
-    console.log(user);
-    console.log(accessToken);
+    //console.log(user);
+    //console.log(accessToken);
     res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });

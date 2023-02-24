@@ -42,7 +42,7 @@ async function sendemail() {
   })
     .then(alert("Email has been sent"))
     .catch(function (error) {
-      console.log(error);
+      console.error(error);
       alert("User does not exist.")
     });
 }
