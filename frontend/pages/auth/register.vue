@@ -12,7 +12,7 @@
         <label for="email" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
         <input type="email" id="email" aria-describedby="helper-text-explanation"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="username@purdue.edu"
+            focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="username@purdue.edu"
           v-model="email" required>
         <div class="gap-8 columns-2">
           <!--First Name text & input box-->
@@ -20,7 +20,7 @@
             Name</label>
           <input type="firstname" id="firstname" aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-            focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="John" v-model="firstname"
+              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="John" v-model="firstname"
             required>
 
           <!--Last Name text & input box-->
@@ -28,7 +28,7 @@
             Name</label>
           <input type="lastname" id="lastname" aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-            focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="Doe" v-model="lastname"
+              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" placeholder="Doe" v-model="lastname"
             required>
         </div>
 
@@ -37,14 +37,14 @@
           <label for="password" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
           <input type="password" id="password" aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-            focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
+              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
 
           <!--Confirm Password text & input box-->
           <label for="confpassword" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Confirm
             Password</label>
           <input type="password" id="confpassword" aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-            focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
+              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
         </div>
         <!--Attempts to register-->
         <div class="container pt-5 px-5 min-w-full flex flex-col items-center">
@@ -81,10 +81,10 @@ async function signup() {
       password: password.value
     })
       .then(function (response) {
-        console.log(response);
+        //console.log(response);
       })
       .catch(function (error) {
-        console.log(error);
+        console.error
       });
   } else {
     alert("Passwords do not match")
