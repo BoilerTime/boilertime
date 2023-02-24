@@ -12,9 +12,8 @@ const db = getFirestore()
 const users = db.collection('user_profile')
 
 module.exports = {
-  authenticateUser,
-  updatePassword,
-  authenticateToken
+    authenticateUser,
+    authenticateToken
 }
 
 /**
@@ -38,12 +37,6 @@ async function authenticateUser({ email, password }) {
   });
 }
 
-async function updatePassword({ user_id, new_password }) {
-  const profile = await users.where('user_id', '==', user_id).get();
-  profile.forEach(doc => {
-    doc.ref.update({ password: new_password });
-  });
-}
 
 /*
  * This function authenicates the user token by the token in the .env file. If they match it will not send a 403 status error
