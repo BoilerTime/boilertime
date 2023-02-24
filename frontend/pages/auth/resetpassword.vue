@@ -14,13 +14,13 @@
           Password</label>
         <input type="password" id="password" aria-describedby="helper-text-explanation"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                      focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
+                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
         <!--Confirm Passord text & input box-->
         <label for="confpassword" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Confirm
           Password</label>
         <input type="password" id="confpassword" aria-describedby="helper-text-explanation"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                      focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
+                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
 
         <!--Attempts to login-->
         <div class="container py-7 px-5 min-w-full flex flex-col items-center">
@@ -58,7 +58,7 @@ async function resetpassword() {
         navigateTo("/auth/login")
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error)
       });
   } else {
     alert("Passwords do not match")
