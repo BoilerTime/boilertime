@@ -8,7 +8,9 @@
 
   <body class="h-screen bg-gray-200">
     <!--Begin window-->
-    <div class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8">
+    <div
+      class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
+    >
       <!--Intro-->
       <h1 class="font-extrabold text-left text-2xl">
         Hi 👋 Let's help you get started with your new schedule!
@@ -27,7 +29,11 @@
           <div class="mx-auto my-auto w-auto bg-gray-200 rounded-lg p-4">
             <ol class="list-decimal list-inside">
               <!-- Loop through the array and display each item as a list item -->
-              <li class="mb-2 font-bold" v-for="(item, index) in required_classes" :key="index">
+              <li
+                class="mb-2 font-bold"
+                v-for="(item, index) in required_classes"
+                :key="index"
+              >
                 {{ item }}
               </li>
             </ol>
@@ -39,7 +45,11 @@
           <div class="mx-auto my-auto w-auto bg-gray-200 rounded-lg p-4">
             <ol class="list-decimal list-inside">
               <!-- Loop through the array and display each item as a list item -->
-              <li class="mb-2 font-bold" v-for="(item, index) in optional_classes" :key="index">
+              <li
+                class="mb-2 font-bold"
+                v-for="(item, index) in optional_classes"
+                :key="index"
+              >
                 {{ item }}
               </li>
             </ol>
@@ -53,16 +63,25 @@
       <div class="grid gap-4 grid-cols-2">
         <input
           class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 rounded-lg text-sm focus:outline-blue-500"
-          type="text" v-model="class_input" placeholder="Enter class..." />
+          type="text"
+          v-model="class_input"
+          placeholder="Enter class..."
+        />
 
         <div class="flex gap-4 justify-self-center">
-          <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" type="button"
-            @click="add_class_required">
+          <button
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            type="button"
+            @click="add_class_required"
+          >
             Required
           </button>
 
-          <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="button"
-            @click="add_class_optional">
+          <button
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            type="button"
+            @click="add_class_optional"
+          >
             Optional
           </button>
         </div>
@@ -70,8 +89,11 @@
 
       <br />
       <!--Submit Button-->
-      <button class="w-1/8 justify-self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        type="button" @click="submit">
+      <button
+        class="w-1/8 justify-self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        type="button"
+        @click="submit"
+      >
         Done
       </button>
     </div>
@@ -130,11 +152,10 @@ export default {
       axios
         .post("http://localhost:3001/api/createschedule", this.return_data())
         .then((res) => {
-          console.log(res);
           //maybe wait for a response from server here before loading the next page
           navigateTo("/app/loading");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error);
     },
   },
 };
