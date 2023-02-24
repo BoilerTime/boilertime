@@ -12,17 +12,24 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const schedule = require('./components/schedule/schedule');
 
 app.use(express.json());
 
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
   next();
 });
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 
 //Route for /api. Add new event listeners as needed for new routes. 
 /*
@@ -37,10 +44,8 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
-  console.log(req.body.email);
-  console.log(req.user);
-  res.json(req.body.email);
+app.post('/api/profile', jwt.authenticateToken, (req, res) => {
+  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
 /*
@@ -54,7 +59,8 @@ app.post('/api/login', (req, res) => {
 
   jwt.authenticateUser({ email, password }).then(user => {
     console.log(user);
-    res.json({ accessToken: accessToken, firstname: firstname });
+    console.log(accessToken);
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
@@ -104,11 +110,63 @@ app.post('/api/createuser', (req, res) => {
   createuser.createuser(req.body).then((user) => {
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
-    console.log(JSON.stringify(err))
+    //console.log(JSON.stringify(err))
+    res.sendStatus(err.error || 500);
+
+  });
+})
+
+app.post('/api/createschedule', (req, res) => {
+  schedule.addClasses(req.body).then((input) => {
+    res.json({
+      "schedule": [
+        {
+          "Class": "CS 180000",
+          "Credits" : 4,
+          "Title": "Problem Solving And Object-Oriented Programming",
+          "Lecture": {
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "16:30",
+            "Duration": 110,
+          },
+          "Professor": "Turkstra",
+          "RMP": 4.3,
+          "Boiler Grades": 3.2,
+        },
+        {
+          "Class": "CS 24000",
+          "Credits" : 4,
+          "Title": "Programming in C",
+          "Lecture": {
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "12:30",
+            "Duration": 50,
+          },
+          "Professor": "Gustavo",
+          "RMP": 3.3,
+          "Boiler Grades": 3.6,
+        },
+        {
+          "Class": "CS 18200",
+          "Credits" : 3,
+          "Title": "Foundations of Computer Science",
+          "Lecture": {
+            "DaysOfWeek": ["Tuesday", "Thursday"],
+            "StartTime": "10:30",
+            "Duration": 50,
+          },
+          "Professor": "Selke",
+          "RMP": 2.5,
+          "Boiler Grades": 3.5,
+        }
+      ]
+    })
+  }).catch(err => {
+    console.log(err)
     res.sendStatus(500);
   });
-
 })
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
