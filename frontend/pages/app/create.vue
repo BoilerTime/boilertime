@@ -6,7 +6,7 @@
 <template>
   <!--Begin entire page-->
 
-  <main class="h-screen bg-gray-200">
+  <div class="h-screen p-8 bg-gray-200">
     <!--Begin window-->
     <div
       class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
@@ -97,7 +97,7 @@
         Done
       </button>
     </div>
-  </main>
+  </div>
 </template>
 
 <!-- Begin scripting section -->
