@@ -3,6 +3,7 @@ var express = require('express');
 require('dotenv').config({path: '../.env'});
 const app = express();
 // frontend runs on 3000, backend runs on 3001
+var axios = require('axios');
 const port = 3001;
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
@@ -12,6 +13,7 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const boilergrades = require('./components/datasources/boilergrades.js');
 
 app.use(express.json());
 
@@ -83,24 +85,9 @@ app.post('/api/forgotpassword', (req, res) => {
 });
 
 app.get('/api/grades', async function (req, res) {
-  let instructor = req.query.instructor;
-  let course = req.query.course;
-  if (instructor) {
-    axios.get('https://boilergrades.com/api/grades?instructor=' + instructor).then(resp => {
-      res.json({data: resp.data});
-    });
-  }
-  else if (course) {
-    axios.get('https://boilergrades.com/api/grades?course=' + course).then(resp => {
-      res.json({data: resp.data});
-    });
-  }
-  else {
-    // send error bad request 400
-    res.sendStatus(400);
-  }
-
-
+  await boilergrades.writeProfessors();
+  await boilergrades.writeClasses();
+  res.send('got professors');
 });
 
 /**
@@ -126,7 +113,6 @@ app.post('/api/createuser', (req, res) => {
     console.log(JSON.stringify(err))
     res.sendStatus(500);
   });
-
 })
 
 function authenticateToken(req, res, next) {
