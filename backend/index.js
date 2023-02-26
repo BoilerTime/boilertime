@@ -12,7 +12,9 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
+
 
 app.use(express.json());
 
@@ -114,7 +116,6 @@ app.post('/api/createuser', (req, res) => {
   }).catch(err => {
     //console.log(JSON.stringify(err))
     res.sendStatus(err.error || 500);
-
   });
 })
 
@@ -169,6 +170,16 @@ app.post('/api/createschedule', (req, res) => {
     res.sendStatus(500);
   });
 })
+
+app.post('/api/verifyaccount', (req, res) => {
+  verifyaccount.verifyaccount(req.body.userID).then((user) => {
+    res.json(user);
+  }).catch(err => {
+    //console.log(err.error);
+    res.sendStatus(err || 500);
+  })
+})
+
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
