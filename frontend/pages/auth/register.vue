@@ -138,11 +138,11 @@ import sha256 from 'js-sha256'
 const email = ref('')
 const firstname = ref('')
 const lastname = ref('')
-let password = ref('')
+const password = ref('')
 const confpassword = ref('')
 const gradmonth = ref('')
 const gradyear = ref('')
-const isGradStudent = ref('')
+const isGraduateStudent = ref('')
 
 /**
  * This function will take inputted data and create an account.
@@ -151,9 +151,9 @@ const isGradStudent = ref('')
 async function signup() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
-  console.log(newpassword);
-  console.log(newconfpassword);
-  if (newpassword.value===newconfpassword.value) {
+  //console.log(newpassword);
+  //console.log(newconfpassword);
+  if (newpassword===newconfpassword) {
     await axios.post('http://localhost:3001/api/createuser', {
       firstname: firstname.value,
       lastname: lastname.value,
@@ -161,7 +161,7 @@ async function signup() {
       password: newpassword,
       gradmonth: gradmonth,
       gradyear: gradyear.value,
-      isGradStudent: isGradStudent.value
+      isGraduateStudent: isGraduateStudent.value
     })
       .catch(function (error) {
         console.error();
