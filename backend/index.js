@@ -86,7 +86,7 @@ app.post('/api/forgotpassword', (req, res) => {
 
 app.get('/api/grades', async function (req, res) {
   await boilergrades.writeProfessors();
-  await boilergrades.writeClasses();
+  //await boilergrades.writeClasses();
   res.send('got professors');
 });
 
