@@ -51,4 +51,28 @@ async function updatePassword({ user_id, new_password }) {
   }
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword };
+/**
+ * Add bookmark
+ * @param {string} user_id - The user_id of the user having their bookmark updated
+ * @param {string} class_name - The class_name to add
+ */
+async function addBookmark(user_id, class_name) {
+  const profile = users.doc(user_id)
+  const union = await profile.update({
+    bookmarks: FieldValue.arrayUnion(class_name)
+  })
+}
+
+/**
+ * Remove bookmark
+ * @param {string} user_id - The user_id of the user having their bookmark updated
+ * @param {string} class_name - The class_name to add
+ */
+async function reomveBookmark(user_id, class_name) {
+  const profile = users.doc(user_id)
+  const union = await profile.update({
+    bookmarks: FieldValue.arrayRemove(class_name)
+  })
+}
+
+module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark };

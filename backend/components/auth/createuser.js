@@ -50,7 +50,8 @@ const createuser = async function (profile) {
     "user_id": userID,
     "grad_year": profile.gradyear,
     "grad_month": profile.gradmonth,
-    "is_grad_student": profile.isGraduateStudent
+    "is_grad_student": profile.isGraduateStudent,
+    "bookmarks": []
   }
 
   await profiles.doc(userID).set(userProfile).then((res) => {
