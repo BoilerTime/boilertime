@@ -134,7 +134,6 @@
    * It will also check to see if the passwords match.
    */
   async function signup() {
-    //console.log(password.value, confpassword.value)
     if (password.value===confpassword.value) {
       await axios.post('http://localhost:3001/api/createuser', {
         firstname: firstname.value,
