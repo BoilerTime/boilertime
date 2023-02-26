@@ -159,7 +159,7 @@ async function signup() {
       lastname: lastname.value,
       email: email.value,
       password: newpassword,
-      gradmonth: gradmonth,
+      gradmonth: gradmonth.value,
       gradyear: gradyear.value,
       isGraduateStudent: isGraduateStudent.value
     })
@@ -176,7 +176,7 @@ async function sendemail() {
   })
     .then(function () {
       alert("A verification email has been sent. Please verify before continuing.")
-      navigateTo("/auth/verifyaccount")
+      navigateTo("/auth/login")
     })
     .catch(function (error) {
       console.error(error)
