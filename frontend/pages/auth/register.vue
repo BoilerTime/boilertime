@@ -149,19 +149,16 @@ const isGradStudent = ref('')
  * It will also check to see if the passwords match.
  */
 async function signup() {
-  var hash = sha256.create();
-  hash.update(password.value);
-  password.value = hash.hex();
-
-  hash.update(confpassword.value);
-  confpassword.value = hash.hex();
-  if (password.value === confpassword.value) {
-    //console.log(password.value)
+  var newpassword = sha256(password.value);
+  var newconfpassword = sha256(confpassword.value);
+  console.log(newpassword);
+  console.log(newconfpassword);
+  if (newpassword.value===newconfpassword.value) {
     await axios.post('http://localhost:3001/api/createuser', {
       firstname: firstname.value,
       lastname: lastname.value,
       email: email.value,
-      password: password.value,
+      password: newpassword,
       gradmonth: gradmonth,
       gradyear: gradyear.value,
       isGradStudent: isGradStudent.value
@@ -179,7 +176,7 @@ async function sendemail() {
   })
     .then(function () {
       alert("A verification email has been sent. Please verify before continuing.")
-      navigateTo("/auth/verifyemail")
+      navigateTo("/auth/verifyaccount")
     })
     .catch(function (error) {
       console.error(error)
