@@ -39,6 +39,8 @@ app.get('/api', (req, res) => {
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
+  const grad_month = req.body.grad_month;
+  const grad_year = req.body.grad_year;
   const classification_year = req.body.classification_year;
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
