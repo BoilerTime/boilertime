@@ -180,7 +180,7 @@ app.post('/api/addbookmark', (req, res) => {
   const class_name = req.body.class_name;
   utils.addBookmark(user_id, class_name).then(user => {
     console.log(`Added Bookmark ${class_name}`)
-    res.json({ class_name: class_name });
+    res.json({ bookmarks: bookmarks });
   }).catch(err => {
     console.error(err)
     res.sendStatus(500)
@@ -197,7 +197,7 @@ app.post('/api/removebookmark', (req, res) => {
   const class_name = req.body.class_name;
   utils.reomveBookmark(user_id, class_name).then(user => {
     console.log(`Removed Bookmark ${class_name}`)
-    res.json({ class_name: class_name });
+    res.json({ bookmarks: bookmarks });
   }).catch(err => {
     console.error(err)
     res.sendStatus(500)

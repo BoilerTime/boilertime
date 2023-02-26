@@ -61,6 +61,9 @@ async function addBookmark(user_id, class_name) {
   const union = await profile.update({
     bookmarks: FieldValue.arrayUnion(class_name)
   })
+  const bookmarks = await getBookmarks(user_id).then((bookmarks) => {
+    return (bookmarks)
+  })
 }
 
 /**
@@ -73,6 +76,9 @@ async function reomveBookmark(user_id, class_name) {
   const union = await profile.update({
     bookmarks: FieldValue.arrayRemove(class_name)
   })
+  const bookmarks = await getBookmarks(user_id).then((bookmarks) => {
+    return (bookmarks)
+  })
 }
 
 /**
@@ -80,7 +86,7 @@ async function reomveBookmark(user_id, class_name) {
  * @param {string} user_id - The user_id of the user having their bookmark updated
  * @param {string} class_name - The class_name to add
  */
-async function getBookmarks(user_id, class_name) {
+async function getBookmarks(user_id) {
   const profile = await users.doc(user_id).get();
   if (!profile.exists) {
     throw new Error(500)
