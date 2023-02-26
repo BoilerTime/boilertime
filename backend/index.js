@@ -13,6 +13,8 @@ const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
 const schedule = require('./components/schedule/schedule');
+const getSchedule = require('./components/schedule/getschedule');
+const saveSchedule = require('./components/schedule/saveschedule');
 
 app.use(express.json());
 
@@ -127,14 +129,15 @@ app.post('/api/createschedule', (req, res) => {
           "Class": "CS 180000",
           "Credits" : 4,
           "Title": "Problem Solving And Object-Oriented Programming",
-          "Lecture": {
+          "Lecture": [{
             "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
             "StartTime": "16:30",
             "Duration": 110,
-          },
+          }],
           "Professor": "Turkstra",
           "RMP": 4.3,
           "Boiler Grades": 3.2,
+
         },
         {
           "Class": "CS 24000",
@@ -168,6 +171,12 @@ app.post('/api/createschedule', (req, res) => {
     console.error(err)
     res.sendStatus(500);
   });
+})
+
+app.get('/api/getoptimizedschedule', async (req, res) => {
+  let schedule = await getSchedule.getSchedule(req.body.user_id);
+  console.log(schedule)
+  res.send(schedule);
 })
 
 function authenticateToken(req, res, next) {
