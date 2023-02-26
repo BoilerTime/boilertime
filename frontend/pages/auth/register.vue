@@ -170,16 +170,4 @@ async function signup() {
     alert("Passwords do not match")
   }
 }
-async function sendemail() {
-  await axios.post('http://localhost:3001/api/createuser', {
-    email: email.value
-  })
-    .then(function () {
-      alert("A verification email has been sent. Please verify before continuing.")
-      navigateTo("/auth/login")
-    })
-    .catch(function (error) {
-      console.error(error)
-    });
-}
 </script>
