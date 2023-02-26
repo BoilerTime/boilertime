@@ -119,11 +119,12 @@
 <script setup>
   import { ref } from 'vue'
   import axios from 'axios'
+  import sha256 from 'js-sha256'
 
   const email = ref('')
   const firstname = ref('')
   const lastname = ref('')
-  const password = ref('')
+  let password = ref('')
   const confpassword = ref('')
   const gradmonth = ref('')
   const gradyear = ref('')
@@ -135,6 +136,10 @@
    */
   async function signup() {
     if (password.value===confpassword.value) {
+      var hash = sha256.create();
+      hash.update(password.value);
+      password.value = hash.hex();
+      //console.log(password.value)
       await axios.post('http://localhost:3001/api/createuser', {
         firstname: firstname.value,
         lastname: lastname.value,
@@ -150,5 +155,13 @@
     } else {
       alert("Passwords do not match")
     }
+  }
+
+  async function hash(password) {
+    const utf8 = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((bytes) => bytes.toString(16).padStart(2, '0')).join('');
+    return hashHex;
   }
 </script>
