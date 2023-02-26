@@ -15,7 +15,8 @@ async function writeProfessors() {
   instructors = await instructors.json();
   //console.log(instructors + ' printing instrcutors ');
   // instructors[0] = null, so we start at index 1
-  for (let i = 1177; i < instructors.length; i++) {
+  // was at 4132
+  for (let i = 1; i < 100; i++) {
     //for (let i = 1; i < instructors.length; i++) {
     //console.log(instructors[i]);
     let name = instructors[i].split(',');
@@ -25,6 +26,7 @@ async function writeProfessors() {
     //console.log(instructorID)
     try {
       //console.log((instructorID.value[0].Id) + ' VALUE ');
+      //professorList.doc(instructorID.value[0].Id).set({Name: instructors[i]})
       professorList.doc(instructorID.value[0].Id).set({Name: instructors[i]})
     } catch (err) {
       //console.log(err);
@@ -38,7 +40,7 @@ async function writeProfessors() {
     for (let [key, value] of courseMap) {
       //console.log(key + " = " + value);
       //console.log(value[3] + value[2] + " this is what the doc will be named and this is the gpa " + value[0]);
-      professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: value[0]});
+      professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: parseFloat(value[0])});
     }
     console.log('Instructors ' + i + '/' + instructors.length + ' done');
 
@@ -141,7 +143,7 @@ async function writeClasses(instructor) {
       courseMap.set(classes[j].title, [Number(((courseMap.get(classes[j].title)[0]*courseMap.get(classes[j].title)[1]) + avgGPA) / (courseMap.get(classes[j].title)[1] + 1)).toFixed(2),  (courseMap.get(classes[j].title)[1] + 1), classes[j].course_num, classes[j].subject]);
     }
     else {
-      courseMap.set(classes[j].title, [avgGPA, 1, classes[j].course_num, classes[j].subject]);
+      courseMap.set(classes[j].title, [Number(avgGPA).toFixed(2), 1, classes[j].course_num, classes[j].subject]);
     }
     //console.log(courseMap.size);
     //console.log([avgGPA, 0] + " < TESTING");

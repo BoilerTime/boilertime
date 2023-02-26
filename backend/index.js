@@ -3,7 +3,6 @@ var express = require('express');
 require('dotenv').config({path: '../.env'});
 const app = express();
 // frontend runs on 3000, backend runs on 3001
-var axios = require('axios');
 const port = 3001;
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
