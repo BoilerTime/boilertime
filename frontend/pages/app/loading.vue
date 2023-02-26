@@ -6,9 +6,7 @@
       <h1 class="font-extrabold text-3xl text-center my-16">
         Generating schedule...
       </h1>
-      <div
-        class="place-self-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600"
-      ></div>
+      <div class="place-self-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600"></div>
     </div>
   </div>
 </template>

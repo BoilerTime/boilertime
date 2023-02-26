@@ -24,6 +24,5 @@
       </button>
     </a>
   </div>
-
 </template>
   

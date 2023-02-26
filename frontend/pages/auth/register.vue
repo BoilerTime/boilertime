@@ -92,6 +92,7 @@
             <option value="2039">2039</option>
             <option value="2040">2040</option>
           </select>
+
         </div>
 
         <!--Grad/Undergrad checkbox-->
@@ -128,6 +129,7 @@
       </form>
     </div>
   </div>
+
 </template>
         
 <script setup>
@@ -135,14 +137,13 @@ import { ref } from 'vue'
 import axios from 'axios'
 import sha256 from 'js-sha256'
 
+
 const email = ref('')
 const firstname = ref('')
 const lastname = ref('')
 const password = ref('')
 const confpassword = ref('')
-const gradmonth = ref('')
-const gradyear = ref('')
-const isGraduateStudent = ref('')
+
 
 /**
  * This function will take inputted data and create an account.
@@ -154,6 +155,7 @@ async function signup() {
   //console.log(newpassword);
   //console.log(newconfpassword);
   if (newpassword===newconfpassword) {
+
     await axios.post('http://localhost:3001/api/createuser', {
       firstname: firstname.value,
       lastname: lastname.value,
@@ -165,6 +167,7 @@ async function signup() {
     })
       .catch(function (error) {
         console.error();
+
       });
   } else {
     alert("Passwords do not match")
