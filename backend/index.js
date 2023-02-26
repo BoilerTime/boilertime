@@ -170,6 +170,55 @@ app.post('/api/createschedule', (req, res) => {
   });
 })
 
+/**
+ * Add bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ * @param {string} class_name - The class that is being added to bookmark
+ */
+app.post('/api/addbookmark', (req, res) => {
+  const user_id = req.body.user_id;
+  const class_name = req.body.class_name;
+  utils.addBookmark(user_id, class_name).then(user => {
+    console.log(`Added Bookmark ${class_name}`)
+    res.json({ class_name: class_name });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+/**
+ * Remove bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ * @param {string} class_name - The class that is being removed from bookmarks
+ */
+app.post('/api/removebookmark', (req, res) => {
+  const user_id = req.body.user_id;
+  const class_name = req.body.class_name;
+  utils.reomveBookmark(user_id, class_name).then(user => {
+    console.log(`Removed Bookmark ${class_name}`)
+    res.json({ class_name: class_name });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+/**
+ * Add bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ */
+app.get('/api/getbookmarks', (req, res) => {
+  const user_id = req.body.user_id;
+  utils.getBookmarks(user_id).then(user => {
+    console.log("Retried Bookmarks from Databse")
+    res.json({ bookmarks: bookmarks });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];

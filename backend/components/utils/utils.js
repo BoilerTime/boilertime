@@ -75,4 +75,18 @@ async function reomveBookmark(user_id, class_name) {
   })
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark };
+/**
+ * Remove bookmark
+ * @param {string} user_id - The user_id of the user having their bookmark updated
+ * @param {string} class_name - The class_name to add
+ */
+async function getBookmarks(user_id, class_name) {
+  const profile = await users.doc(user_id).get();
+  if (!profile.exists) {
+    throw new Error(500)
+  } else {
+    return (bookmarks = profile.data().bookmarks);
+  }
+}
+
+module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks };
