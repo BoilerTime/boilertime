@@ -51,9 +51,6 @@ app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
-app.get('/api/grades', (req, res) => {
-  boilergrades.writeProfessors();
-})  
 
 /*
  * This function lets a user login and generates a jwt token for them
@@ -133,3 +130,10 @@ function authenticateToken(req, res, next) {
 app.listen(port, () => {
   console.log(`BoilerTime API listening on port ${port}!`)
 })
+
+/*
+ * Call for writing professors + classes + gpas to database
+app.get('/api/gpa', (req, res) => {
+  boilergrades.writeProfessors();
+})  
+*/
