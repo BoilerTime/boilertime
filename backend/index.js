@@ -13,17 +13,32 @@ const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+const verifyaccount = require('./components/auth/verifyaccount');
+const schedule = require('./components/schedule/schedule');
+const getSchedule = require('./components/schedule/getschedule');
+const saveSchedule = require('./components/schedule/saveschedule');
+
+
+//Data scraper imports
+const purdueio = require('./components/datasources/purdueios.js');
+//purdueio.purdueios();
 
 app.use(express.json());
 
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
   next();
 });
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 
 //Route for /api. Add new event listeners as needed for new routes. 
 /*
@@ -66,7 +81,7 @@ app.post('/api/login', (req, res) => {
     console.log(accessToken);
     res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });
@@ -80,15 +95,15 @@ app.post('/api/forgotpassword', (req, res) => {
   //getuid
   utils.getUID({ email }).then(user => {
     const mailOptions = {
-      from: 'joshuajy03@gmail.com',
+      from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
+      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${user_id}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.send('Email Sent');
+    res.json({user_id: user_id, email: email});
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });
@@ -101,22 +116,225 @@ app.post('/api/forgotpassword', (req, res) => {
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
-  jwt.updatePassword({ user_id, new_password }).then(
-    res.send('Password Updated')
-  ).catch(err => {
+  utils.updatePassword({ user_id, new_password }).then(user => {
+    console.log(`Updated password to ${password}`)
+    res.json({ password: password });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+/**
+ * Simple Query for RateMyProfessor
+ */
+app.get('/api/ratemyprofessor', (req, res) => {
+  utils.getProfessorRating("Turkstra").then( teacher => {
+    res.json(teacher)
+  }).catch(err => {
     console.log(err)
+    res.sendStatus(500);
+  })
+})
+
+/**
+ * Search Query
+ */
+app.get('/api/search', (req, res) => {
+  utils.getClassesFromDept(req.body.dept).then( array => {
+    res.json({classes: array})
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
   })
 })
 
 app.post('/api/createuser', (req, res) => {
-
   createuser.createuser(req.body).then((user) => {
+    console.log(`Created user: ${email}`)
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
-    console.log(JSON.stringify(err))
+    //console.log(JSON.stringify(err))
+    res.sendStatus(err.error || 500);
+  });
+})
+
+/* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
+app.get('/api/optimizedschedule', (req, res) => {
+  res.json({
+    "schedule":
+      [
+        {
+          "subject":"CS",
+          "number":"18000",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Problem Solving And Object-Oriented Programming",
+          "meetings":[
+            {
+                "instructorName":"Srinivasa Arun Yeragudipati",
+                 "startTime":"2023-02-21T20:30:00Z",
+                 "duration":"PT1H50M",
+                 "daysOfWeek":["Thursday"],
+                 "type":"Laboratory",
+                 "buildingCode":"HAAS",
+                 "buildingName":"Felix Haas Hall",
+                 "roomNumber":"G056"
+           },
+           {
+                "instructorName": "Srinivasa Arun Yeragudipati",
+                "startTime":"2023-02-21T20:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Thursday"],
+                "type":"Laboratory",
+                "buildingCode":"HAAS",
+                "buildingName":"Felix Haas Hall",
+                "roomNumber":"G056"
+            }
+          ]
+        },
+        {
+          "subject":"POL",
+          "number":"30000",
+          "creditHours":3,
+          "description":"Evening exams",
+          "name":"Introduction to Data Analytics",
+          "meetings":[
+            {
+                "instructorName":"Eric Waltenburg",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS",
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              }
+          ]
+        }
+    ]
+  })
+})
+
+app.post('/api/createschedule', (req, res) => {
+  schedule.addClasses(req.body).then((input) => {
+    console.log("Schedule Added to Database")
+    res.json({
+      "schedule": [
+        {
+          "Class": "CS 180000",
+          "Credits" : 4,
+          "Title": "Problem Solving And Object-Oriented Programming",
+          "Lecture": [{
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "16:30",
+            "Duration": 110,
+          }],
+          "Professor": "Turkstra",
+          "RMP": 4.3,
+          "Boiler Grades": 3.2,
+
+        },
+        {
+          "Class": "CS 24000",
+          "Credits" : 4,
+          "Title": "Programming in C",
+          "Lecture": {
+            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
+            "StartTime": "12:30",
+            "Duration": 50,
+          },
+          "Professor": "Gustavo",
+          "RMP": 3.3,
+          "Boiler Grades": 3.6,
+        },
+        {
+          "Class": "CS 18200",
+          "Credits" : 3,
+          "Title": "Foundations of Computer Science",
+          "Lecture": {
+            "DaysOfWeek": ["Tuesday", "Thursday"],
+            "StartTime": "10:30",
+            "Duration": 50,
+          },
+          "Professor": "Selke",
+          "RMP": 2.5,
+          "Boiler Grades": 3.5,
+        }
+      ]
+    })
+  }).catch(err => {
+    console.error(err)
     res.sendStatus(500);
   });
 })
+app.get('/api/getoptimizedschedule', async (req, res) => {
+  let schedule = await getSchedule.getSchedule(req.body.user_id);
+  console.log(schedule)
+  res.send(schedule);
+})
+
+
+
+/**
+ * Add bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ * @param {string} class_name - The class that is being added to bookmark
+ */
+app.post('/api/addbookmark', (req, res) => {
+  const user_id = req.body.user_id;
+  const class_name = req.body.class_name;
+  utils.addBookmark(user_id, class_name).then(user => {
+    console.log(`Added Bookmark ${class_name}`)
+    res.json({ bookmarks: bookmarks });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+/**
+ * Remove bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ * @param {string} class_name - The class that is being removed from bookmarks
+ */
+app.post('/api/removebookmark', (req, res) => {
+  const user_id = req.body.user_id;
+  const class_name = req.body.class_name;
+  utils.reomveBookmark(user_id, class_name).then(user => {
+    console.log(`Removed Bookmark ${class_name}`)
+    res.json({ bookmarks: bookmarks });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+/**
+ * Add bookmark given bookmark and user_id
+ * @param {string} user_id - The user_id of the user that wants to update their bookmark
+ */
+app.get('/api/getbookmarks', (req, res) => {
+  const user_id = req.body.user_id;
+  utils.getBookmarks(user_id).then(user => {
+    console.log("Retried Bookmarks from Databse")
+    res.json({ bookmarks: bookmarks });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
+app.post('/api/verifyaccount', (req, res) => {
+  verifyaccount.verifyaccount(req.body.userID).then((user) => {
+    res.json(user);
+  }).catch(err => {
+    //console.log(err.error);
+    res.sendStatus(err || 500);
+  })
+})
+
+
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
@@ -151,3 +369,4 @@ app.get('/api/gpa', async (req, res) => {
   */
   boilergrades.writeProfessors();
 })  
+
