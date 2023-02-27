@@ -14,6 +14,8 @@ const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
 const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
+const getSchedule = require('./components/schedule/getschedule');
+const saveSchedule = require('./components/schedule/saveschedule');
 
 
 //Data scraper imports
@@ -147,6 +149,63 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
+/* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
+app.get('/api/optimizedschedule', (req, res) => {
+  res.json({
+    "schedule":
+      [
+        {
+          "subject":"CS",
+          "number":"18000",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Problem Solving And Object-Oriented Programming",
+          "meetings":[
+            {
+                "instructorName":"Srinivasa Arun Yeragudipati",
+                 "startTime":"2023-02-21T20:30:00Z",
+                 "duration":"PT1H50M",
+                 "daysOfWeek":["Thursday"],
+                 "type":"Laboratory",
+                 "buildingCode":"HAAS",
+                 "buildingName":"Felix Haas Hall",
+                 "roomNumber":"G056"
+           },
+           {
+                "instructorName": "Srinivasa Arun Yeragudipati",
+                "startTime":"2023-02-21T20:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Thursday"],
+                "type":"Laboratory",
+                "buildingCode":"HAAS",
+                "buildingName":"Felix Haas Hall",
+                "roomNumber":"G056"
+            }
+          ]
+        },
+        {
+          "subject":"POL",
+          "number":"30000",
+          "creditHours":3,
+          "description":"Evening exams",
+          "name":"Introduction to Data Analytics",
+          "meetings":[
+            {
+                "instructorName":"Eric Waltenburg"
+                "startTme":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS"
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              }
+          ]
+        }
+    ]
+  })
+})
+
 app.post('/api/createschedule', (req, res) => {
   schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
@@ -156,14 +215,15 @@ app.post('/api/createschedule', (req, res) => {
           "Class": "CS 180000",
           "Credits" : 4,
           "Title": "Problem Solving And Object-Oriented Programming",
-          "Lecture": {
+          "Lecture": [{
             "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
             "StartTime": "16:30",
             "Duration": 110,
-          },
+          }],
           "Professor": "Turkstra",
           "RMP": 4.3,
           "Boiler Grades": 3.2,
+
         },
         {
           "Class": "CS 24000",
@@ -198,6 +258,13 @@ app.post('/api/createschedule', (req, res) => {
     res.sendStatus(500);
   });
 })
+
+app.get('/api/getoptimizedschedule', async (req, res) => {
+  let schedule = await getSchedule.getSchedule(req.body.user_id);
+  console.log(schedule)
+  res.send(schedule);
+})
+
 
 
 /**
@@ -257,6 +324,7 @@ app.post('/api/verifyaccount', (req, res) => {
     res.sendStatus(err || 500);
   })
 })
+
 
 
 function authenticateToken(req, res, next) {
