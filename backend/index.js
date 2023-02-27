@@ -45,7 +45,7 @@ app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   //console.log(user_id + classification_year + firstname + lastname);
-  utils.updateProfile(user_id, classification_year, firstname, lastname);
+  utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname);
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
