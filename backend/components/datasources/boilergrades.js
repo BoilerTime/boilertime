@@ -9,6 +9,29 @@ const utils = require('../utils/utils.js');
 const db = getFirestore()
 const professorList = db.collection('professor_profile');
 
+
+/*
+ * Call for getting an average gpa from professor 
+ * @param {string} prof_name - Name of the professor of the class 
+ * @param{string} class_name - Name of the class averageGPA is wanted for
+ * @return {number} returns the averageGPA
+ */
+async function getAverageGPA(prof_name, class_name) {
+    let instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + prof_name + '%27)')
+    instructorID = await instructorID.json();
+
+    var averageGPA = 0.0;
+    try {
+      let doc = await professorList.doc(instructorID.value[0].Id).collection('classes').doc(class_name).get();
+      doc = await doc.data();
+      return doc.average_gpa;
+    } catch (err) {
+      console.log(err)
+      console.log('prof+class not found in db');
+      return undefined;
+    }
+  
+}
 /*
  * This function gets all professors from boilergrades api
  * Then it goes through each professors classes they have taught, and calculates the averaage gpa for each section
@@ -130,5 +153,5 @@ function findGPA(gpa) {
   }
 }
 
-module.exports = {writeProfessors, writeClasses};
+module.exports = {writeProfessors, writeClasses, getAverageGPA}
 
