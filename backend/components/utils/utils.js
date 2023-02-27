@@ -126,4 +126,4 @@ async function getBookmarks(user_id) {
   }
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks };
+module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept };
