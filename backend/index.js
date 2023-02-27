@@ -120,6 +120,63 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
+/* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
+app.get('/api/optimizedschedule', (req, res) => {
+  res.json({
+    "schedule":
+      [
+        {
+          "subject":"CS",
+          "number":"18000",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Problem Solving And Object-Oriented Programming",
+          "meetings":[
+            {
+                "instructorName":"Srinivasa Arun Yeragudipati",
+                 "startTime":"2023-02-21T20:30:00Z",
+                 "duration":"PT1H50M",
+                 "daysOfWeek":["Thursday"],
+                 "type":"Laboratory",
+                 "buildingCode":"HAAS",
+                 "buildingName":"Felix Haas Hall",
+                 "roomNumber":"G056"
+           },
+           {
+                "instructorName": "Srinivasa Arun Yeragudipati",
+                "startTime":"2023-02-21T20:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Thursday"],
+                "type":"Laboratory",
+                "buildingCode":"HAAS",
+                "buildingName":"Felix Haas Hall",
+                "roomNumber":"G056"
+            }
+          ]
+        },
+        {
+          "subject":"POL",
+          "number":"30000",
+          "creditHours":3,
+          "description":"Evening exams",
+          "name":"Introduction to Data Analytics",
+          "meetings":[
+            {
+                "instructorName":"Eric Waltenburg"
+                "startTme":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS"
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              }
+          ]
+        }
+    ]
+  })
+})
+
 app.post('/api/createschedule', (req, res) => {
   schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
