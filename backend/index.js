@@ -191,12 +191,12 @@ app.get('/api/optimizedschedule', (req, res) => {
           "name":"Introduction to Data Analytics",
           "meetings":[
             {
-                "instructorName":"Eric Waltenburg"
+                "instructorName":"Eric Waltenburg",
                 "startTme":"2023-02-21T10:30:00Z",
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS"
+                "buildingCode":"HIKS",
                 "buildingName":"Hicks Undergraduate Library",
                 "roomNumber":"B288"
               }
