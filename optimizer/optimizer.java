@@ -13,6 +13,10 @@ public class Optimizer {
         System.out.println(population[0].getChromosome());
         population[1] = c1.mutate();
         System.out.println(population[1].getChromosome());
+        int[] times = {1200, 1400, 1600};
+        int[] durations = {50, 50, 50};
+        Individual i1 = new Individual("CS180", "100000011011010100101", times, durations);
+        System.out.println(i1);
     }
 
     /**
