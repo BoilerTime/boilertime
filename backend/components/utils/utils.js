@@ -1,11 +1,11 @@
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
-
+const ratings = require('@mtucourses/rate-my-professors').default;
 const { collection, query, where, getDocs } = require('firebase/firestore');
 
 const db = getFirestore();
 const users = db.collection('user_profile');
-
+const classes = db.collection('classes').doc('spring_2023');
 
 /**
  * Get the user_id given the email
@@ -36,6 +36,37 @@ const findExistingUsers = async function (email) {
 }
 
 /**
+ * Searches RMP for a professor
+ * @param {string} professor - The name of the professor
+ * @returns {JSON} - A json containing details about the professor
+ */
+async function getProfessorRating(professor) {
+  const purdueid = 'U2Nob29sLTc4Mw=='
+  const teachers = await ratings.searchTeacher(professor, purdueid)
+  const teacher = await ratings.getTeacher(teachers[0].id)
+  return teacher;
+}
+
+/**
+ * Iterates through all documents in a department
+ * @param {string} professor - The name of the professor
+ * @returns {JSON} - A json containing details about the professor
+ */
+async function getClassesFromDept(department) {
+  const numbers =  await classes.collection(department).get();
+  if (numbers.empty) {
+    throw new Error(500);
+  }
+  var output=new Array();
+  numbers.forEach(doc => {
+    if (doc.id.length == 5) {
+      output.push(`${department} ${doc.id}`);
+    }
+  })
+  return output
+}
+
+/*
  * Update the password 
  * @param {string} user_id - The user_id of the user having their password updated
  * @param {string} new_password - The user_id

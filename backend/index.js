@@ -16,6 +16,10 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 
 
+//Data scraper imports
+const purdueio = require('./components/datasources/purdueios.js');
+//purdueio.purdueios();
+
 app.use(express.json());
 
 /* REMOVE ON PRODUCTION */
@@ -106,6 +110,30 @@ app.post('/api/resetpassword', (req, res) => {
   }).catch(err => {
     console.error(err)
     res.sendStatus(500)
+  })
+})
+
+/**
+ * Simple Query for RateMyProfessor
+ */
+app.get('/api/ratemyprofessor', (req, res) => {
+  utils.getProfessorRating("Turkstra").then( teacher => {
+    res.json(teacher)
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  })
+})
+
+/**
+ * Search Query
+ */
+app.get('/api/search', (req, res) => {
+  utils.getClassesFromDept(req.body.dept).then( array => {
+    res.json({classes: array})
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
   })
 })
 
