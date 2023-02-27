@@ -139,7 +139,8 @@ app.listen(port, () => {
 app.get('/api/gpa', async (req, res) => {
   const prof_name = req.body.prof_name;
   const class_name = req.body.class_name;
-  const averageGPA = await boilergrades.getAverageGPA(prof_name, class_name);
+  //const averageGPA = await boilergrades.getAverageGPA(prof_name, class_name);
+  /*
   if (averageGPA === undefined) {
     // status 404 could not find class
     res.sendStatus(404);
@@ -147,7 +148,6 @@ app.get('/api/gpa', async (req, res) => {
   else {
     res.send({averageGPA: averageGPA});
   }
-  /* This call is to write professors to db, already done.
-  boilergrades.writeProfessors();
   */
+  boilergrades.writeProfessors();
 })  

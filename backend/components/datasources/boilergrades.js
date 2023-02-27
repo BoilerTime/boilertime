@@ -42,7 +42,7 @@ async function writeProfessors() {
   instructors = await instructors.json();
   // 6696 professors in boilergrades/api/indexes
   // index 0 is null
-  for (let i = 1; i < 6696; i++) {
+  for (let i = 0; i < 6696; i++) {
     let name = instructors[i].split(',');
     instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + name[1].trim() + ' ' + name[0] + '%27)')
     instructorID = await instructorID.json();
@@ -52,10 +52,22 @@ async function writeProfessors() {
       continue;
     }
     let courseMap = new Map();
-    courseMap = await writeClasses(instructors[i]);
-    for (let [key, value] of courseMap) {
-      professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: parseFloat(value[0])});
+    courseMap = await writeClasses(instructors[i], i);
+    if (courseMap === undefined) {
+      continue;
     }
+    for (let [key, value] of courseMap) {
+      if (key.indexOf('Honors') != -1) {
+        console.log('honors class here ' + key);
+        console.log('this is the value ' + value);
+        professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2] + '-Honors').set({average_gpa: parseFloat(value[0])});
+      }
+      else {
+        console.log('non honors class here this is the value ' + value);
+        professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: parseFloat(value[0])});
+      }
+    }
+    console.log('instructors done ' + i + '/' + '6696 and current professor = ' + instructors[i]); 
   }
 }
 
@@ -64,13 +76,22 @@ async function writeProfessors() {
  * @param {string} instructor - The instructor to parse data for each class they have taught.
  * @return {Map} - returns a map that has a key of course, and value of averageGPA to write into database
  */
-async function writeClasses(instructor) {
+async function writeClasses(instructor, index) {
   let instructors = await fetch('https://boilergrades.com/api/indexes')
   instructors = await instructors.json();
   let courseMap = new Map();
   let classes = '';
   classes = await fetch('https://boilergrades.com/api/grades/?instructor=' + instructor); 
   classes = await classes.json();
+  for (let i = 0; i < Object.keys(classes).length; i++) {
+    if (classes[i].title.indexOf('Honors') !== -1) {
+      console.log('This professor has an honors course ' + instructor + " and this is i " + index);
+      break;
+    }
+    else if (i === Object.keys(classes).length - 1) {
+      return undefined;
+    }
+  }
 
   for (let j = 0; j < Object.keys(classes).length; j++) {
     if (classes[j] === undefined) {
@@ -112,7 +133,7 @@ async function writeClasses(instructor) {
     else {
       courseMap.set(classes[j].title, [Number(avgGPA).toFixed(2), 1, classes[j].course_num, classes[j].subject]);
     }
-    //console.log(courseMap.get(classes[j].title) + " current map for " + classes[j].course_num);
+    //console.log(courseMap.get(classes[j].title) + " current map for " + classes[j].course_num + " " + classes[j].title);
   }
   return courseMap;
 }
