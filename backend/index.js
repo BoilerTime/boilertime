@@ -39,8 +39,21 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+  const user_id = req.body.user_id;
+  const grad_month = req.body.grad_month;
+  const grad_year = req.body.grad_year;
+  const grad_student = req.body.grad_student;
+  const classification_year = req.body.classification_year;
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+  //console.log(user_id + classification_year + firstname + lastname);
+  utils.updateProfile(user_id, classification_year, firstname, lastname);
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
+
+app.get('/api/grades', (req, res) => {
+  boilergrades.writeProfessors();
+})  
 
 /*
  * This function lets a user login and generates a jwt token for them
@@ -54,7 +67,7 @@ app.post('/api/login', (req, res) => {
   jwt.authenticateUser({ email, password }).then(user => {
     console.log(user);
     console.log(accessToken);
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
   }).catch(err => {
     console.log(err)
     res.sendStatus(401);
@@ -81,12 +94,6 @@ app.post('/api/forgotpassword', (req, res) => {
     console.log(err)
     res.sendStatus(401);
   });
-});
-
-app.get('/api/grades', async function (req, res) {
-  await boilergrades.writeProfessors();
-  //await boilergrades.writeClasses();
-  res.send('got professors');
 });
 
 /**
