@@ -6,7 +6,7 @@ public class Chromosome {
     private String data;
     private Random r;
 
-    
+
     public Chromosome(String chromosome) {
         this.data = chromosome;
         r = new Random();
@@ -27,6 +27,7 @@ public class Chromosome {
         char crh1[] = getCharChromsome(data);
         char crh2[] = getCharChromsome(cr2);
         for(int i = startPosition; i < endPosition; i++) {
+            
             char temp = crh1[i];
             crh1[i] = crh2[i];
             crh2[i] = temp;
@@ -34,6 +35,24 @@ public class Chromosome {
         results[0] = new Chromosome(new String(crh1));
         results[1] = new Chromosome(new String(crh2));
         return results;
+    }
+
+    /**
+     * This method mutates the chromsome in question by applying a random amount of mutations to randomly selected array indicies. Note -- a double mutation is possible to mutate then mutate a second time back to the origin
+     * @return {Chromosome} A new chromosome that has had the mutation applied to it 
+     */
+    public Chromosome mutate() {
+        char cr[] = getCharChromsome(data);
+        int totalMutations = randInRange(0, (cr.length-1)/2);
+        for(int i = 0; i <totalMutations; i++) {
+            if(cr[randInRange(0, cr.length-1)] == '0') {
+                cr[randInRange(0, cr.length-1)] = '1';
+            }
+            else {
+                cr[randInRange(0, cr.length-1)] = '0';
+            }
+        }
+        return new Chromosome(new String(cr));
     }
 
     /**
@@ -65,4 +84,6 @@ public class Chromosome {
         }
         return chromsome;
     }
+
+
 }
