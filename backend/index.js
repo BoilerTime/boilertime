@@ -144,7 +144,7 @@ app.post('/api/createuser', (req, res) => {
     console.log(`Created user: ${email}`)
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
-    //console.log(JSON.stringify(err))
+    console.log(JSON.stringify(err))
     res.sendStatus(err.error || 500);
   });
 })
@@ -265,8 +265,6 @@ app.get('/api/getoptimizedschedule', async (req, res) => {
   res.send(schedule);
 })
 
-<<<<<<< HEAD
-=======
 
 
 /**
@@ -318,7 +316,6 @@ app.get('/api/getbookmarks', (req, res) => {
   })
 })
 
->>>>>>> origin/main
 app.post('/api/verifyaccount', (req, res) => {
   verifyaccount.verifyaccount(req.body.userID).then((user) => {
     res.json(user);
