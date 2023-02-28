@@ -55,7 +55,7 @@
               Log in
               </button>
               <p class="mt-5 text-sm text-gray-500">
-                <a href="#" class="text-gray-700">Forgot password?</a>
+                <a href="/auth/forgotpassword" class="text-gray-700">Forgot password?</a>
               </p>
             </div>
           </form>
@@ -68,6 +68,7 @@
 <script setup>
   import { ref } from 'vue'
   import { useUserStore } from "../../store/user"
+  import sha256 from 'js-sha256'
   
   const email = ref('')
   const password = ref('')
@@ -78,8 +79,10 @@
   * A function to call the signIn function in the user store helper
   */
   async function login() {
+    var newpassword = sha256(password.value);
+    console.log(newpassword);
     try {
-      await userStore.signIn(email.value, password.value)
+      await userStore.signIn(email.value, newpassword.value)
       if (!userStore.isLoggedIn) {
         navigateTo("/auth/login")
       } else {
