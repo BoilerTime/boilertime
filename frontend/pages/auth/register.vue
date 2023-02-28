@@ -104,7 +104,7 @@
             <div class="flex items-center pl-3">
               <input id="isGraduateStudent" type="radio" value="false" name="isGraduateStudent"
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600
-                        dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" v-model="isGraduateStudent" required>
+                      dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" v-model="isGraduateStudent" required>
               <label for="isGraduateStudent"
                 class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Undergraduate</label>
             </div>
@@ -113,7 +113,7 @@
             <div class="flex items-center pl-3">
               <input id="isGraduateStudent" type="radio" value="true" name="isGraduateStudent"
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600
-                        dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" v-model="isGraduateStudent" required>
+                      dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" v-model="isGraduateStudent" required>
               <label for="gradstatus"
                 class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Graduate</label>
             </div>
@@ -141,6 +141,8 @@ const lastname = ref('')
 const password = ref('')
 const confpassword = ref('')
 const isGraduateStudent = ref('')
+
+
 /**
  * This function will take inputted data and create an account.
  * It will also check to see if the passwords match.

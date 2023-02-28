@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <h1 class="text-3xl font-bold underline">
-      Welcome, {{ userStore.firstname }}
-    </h1>
-  </div>
+  <main>
+    <NavBar />
+  </main>
 </template>
   
 <script setup>
