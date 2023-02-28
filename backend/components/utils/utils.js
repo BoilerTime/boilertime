@@ -34,11 +34,30 @@ const findExistingUsers = async function (email) {
 async function updateProfile(user_id, new_classification_year, new_firstname, new_lastname) {
   //console.log(new_user_id + new_classification_year + new_firstname + new_lastname);
 
-  const profile = await users.where('user_id', '==', user_id).get();
+  const profile = await users.doc(user_id).get();
+  profile.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
+  /*
   profile.forEach(doc => {
     doc.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
   });
+  */
 }
 
+function getStudentClass(grad_year, grad_month) {
+  let current_year = new Date().getFullYear();
+  console.log('this is the current year ' + current_year);
+  if (grad_year - current_year == 4) {
+    return 'freshman';
+  }
+  else if (grad_year - current_year == 3) {
+    return 'sophomore';
+  }
+  else if (grad_year - current_year == 2) {
+    return 'junior';
+  }
+  else if (grad_year - current_year == 1) {
+    return 'senior';
+  }
+}
 
-module.exports = {getUID, findExistingUsers, updateProfile};
+module.exports = {getUID, findExistingUsers, updateProfile, getStudentClass};
