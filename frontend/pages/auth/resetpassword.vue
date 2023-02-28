@@ -36,6 +36,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import sha256 from 'js-sha256'
 
 const route = useRoute()
 
@@ -48,10 +49,12 @@ const confpassword = ref('')
  * change the newly inputted password. 
  */
 async function resetpassword() {
-  if (password.value === confpassword.value) {
+  var newpassword = sha256(password.value);
+  var newconfpassword = sha256(confpassword.value);
+  if (newpassword.value === newconfpassword.value) {
     await axios.post('http://localhost:3001/api/resetpassword', {
       user_id: user_id,
-      password: password.value
+      password: newpassword
     })
       .then(function () {
         alert("Password has been reset.")

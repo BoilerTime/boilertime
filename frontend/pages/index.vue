@@ -6,9 +6,6 @@
     Tailwind works :)
   </h2>
   <!--Button that takes you to login page-->
-  <div class="fixed top-2 right-2">
-
-  <!--Button that takes you to login page-->
   <div class="fixed top-2 right-4">
 
     <a href="/auth/login">
