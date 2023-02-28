@@ -126,10 +126,12 @@ app.post('/api/resetpassword', (req, res) => {
 })
 
 /**
- * Simple Query for RateMyProfessor
+ * Query for Professor for RMP
  */
 app.get('/api/ratemyprofessor', (req, res) => {
-  utils.getProfessorRating("Turkstra").then( teacher => {
+  const professor = req.body.prof_name
+  utils.getProfessorRating(professor).then( teacher => {
+    console.log("Found Teacher in RMP")
     res.json(teacher)
   }).catch(err => {
     console.log(err)
