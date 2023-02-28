@@ -24,7 +24,6 @@ const verifyaccount = async function (userID) {
   //Now that we know the user exists and is not verified, we can mark them as verified
   var record;
   profile.forEach(doc => {
-    ;
     record = doc.data();
     if (record.isVerified) {
       throw new Error().error = 409;
