@@ -1,5 +1,4 @@
 <template>
-  <NavBar />
   <div v-if="isDataLoaded">
     <ClassDetails v-for="course in scheduleData" :key="course.name" :data="course" />
   </div>
