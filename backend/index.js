@@ -274,8 +274,6 @@ app.get('/api/getoptimizedschedule', async (req, res) => {
   res.send(schedule);
 })
 
-
-
 /**
  * Add bookmark given bookmark and user_id
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
@@ -354,7 +352,7 @@ app.listen(port, () => {
  * @param {string} prof_name - Name of the professor of the class 
  * @param{string} class_name - Name of the class averageGPA is wanted for
  */
-app.get('/api/gpa', async (req, res) => {
+app.post('/api/gpa', async (req, res) => {
   const prof_name = req.body.prof_name;
   const class_name = req.body.class_name;
   const averageGPA = await boilergrades.getAverageGPA(prof_name, class_name);
@@ -365,7 +363,7 @@ app.get('/api/gpa', async (req, res) => {
   else {
     res.send({averageGPA: averageGPA});
   }
-  /* This call is to write professors to db, already done.
+  /* This call is to write professor4s to db, already done.
   boilergrades.writeProfessors();
   */
 })  
