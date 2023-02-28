@@ -6,11 +6,29 @@
           <img class="h-10 w-auto" src="/logo.png" />
         </a>
       </div>
-      <div class="flex items-center justify-end">
+      <div v-if="isLoggedIn" class="flex items-center justify-end">
+        Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
+      </div>
+      <div v-else class="flex items-center justify-end">
         <a href="/auth/login" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log in</a>
         <a href="/auth/register" class="rounded-md bg-yellow-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-yellow-600">Sign up</a>
       </div>
     </nav>
   </header>
 </template>
-<script setup></script>
+
+<script setup>
+import { useUserStore } from "../store/user"
+
+let isLoggedIn = false;
+
+const userStore = useUserStore()
+
+try {
+} catch (err) {
+  console.log(err)
+}
+
+isLoggedIn = userStore.isLoggedIn
+
+</script>
