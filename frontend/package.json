@@ -8,6 +8,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@pinia-plugin-persistedstate/nuxt": "^1.0.0",
     "autoprefixer": "^10.4.13",
     "nuxt": "^3.2.0",
     "postcss": "^8.4.21",

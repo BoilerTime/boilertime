@@ -16,14 +16,20 @@ const schedule = require('./components/schedule/schedule');
 
 app.use(express.json());
 
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
   next();
 });
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
+/* REMOVE ON PRODUCTION */
 
 //Route for /api. Add new event listeners as needed for new routes. 
 /*
@@ -38,7 +44,7 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/profile', jwt.authenticateToken, (req, res) => {
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
@@ -52,11 +58,12 @@ app.post('/api/login', (req, res) => {
   const password = req.body.password;
 
   jwt.authenticateUser({ email, password }).then(user => {
-    console.log(user);
-    console.log(accessToken);
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
+    //console.log(user);
+    //console.log(accessToken);
+    console.log(`Login sucessful ${email}`)
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });
@@ -70,15 +77,15 @@ app.post('/api/forgotpassword', (req, res) => {
   //getuid
   utils.getUID({ email }).then(user => {
     const mailOptions = {
-      from: 'joshuajy03@gmail.com',
+      from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/resetpassword?id=${user_id}">Reset Password</a>`
+      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${user_id}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.send('Email Sent');
+    res.json({user_id: user_id, email: email});
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(401);
   });
 });
@@ -91,16 +98,18 @@ app.post('/api/forgotpassword', (req, res) => {
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
-  jwt.updatePassword({ user_id, new_password }).then(
-    res.send('Password Updated')
-  ).catch(err => {
-    console.log(err)
+  utils.updatePassword({ user_id, new_password }).then(user => {
+    console.log(`Updated password to ${password}`)
+    res.json({ password: password });
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500)
   })
 })
 
 app.post('/api/createuser', (req, res) => {
-
   createuser.createuser(req.body).then((user) => {
+    console.log(`Created user: ${email}`)
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
     //console.log(JSON.stringify(err))
@@ -111,6 +120,7 @@ app.post('/api/createuser', (req, res) => {
 
 app.post('/api/createschedule', (req, res) => {
   schedule.addClasses(req.body).then((input) => {
+    console.log("Schedule Added to Database")
     res.json({
       "schedule": [
         {
@@ -155,7 +165,7 @@ app.post('/api/createschedule', (req, res) => {
       ]
     })
   }).catch(err => {
-    console.log(err)
+    console.error(err)
     res.sendStatus(500);
   });
 })

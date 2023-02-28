@@ -5,7 +5,8 @@
 
 <template>
   <!--Begin entire page-->
-  <body class="h-screen bg-gray-200">
+
+  <div class="h-screen p-8 bg-gray-200">
     <!--Begin window-->
     <div
       class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
@@ -96,7 +97,7 @@
         Done
       </button>
     </div>
-  </body>
+  </div>
 </template>
 
 <!-- Begin scripting section -->
@@ -151,11 +152,10 @@ export default {
       axios
         .post("http://localhost:3001/api/createschedule", this.return_data())
         .then((res) => {
-          console.log(res);
           //maybe wait for a response from server here before loading the next page
           navigateTo("/app/loading");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     },
   },
 };
