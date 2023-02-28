@@ -18,7 +18,7 @@ const professorList = db.collection('professor_profile');
  */
 async function getAverageGPA(prof_name, class_name) {
     let instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + prof_name + '%27)')
-    instructorID = await instructorID.json();
+    //instructorID = await instructorID.json();
 
     var averageGPA = 0.0;
     try {
@@ -38,17 +38,21 @@ async function getAverageGPA(prof_name, class_name) {
  * Finally we wrote all that information to the data base   
  */
 async function writeProfessors() {
-  let instructors = await fetch('https://boilergrades.com/api/indexes')
-  instructors = await instructors.json();
+  //let instructors = await fetch('https://boilergrades.com/api/indexes')
+  let instructors = await require('../../professors_and_courses_bg.json')
+  ///instructors = await instructors.json();
   // 6696 professors in boilergrades/api/indexes
   // index 0 is null
-  for (let i = 0; i < 6696; i++) {
+  for (let i = 1; i < 6697; i++) {
     let name = instructors[i].split(',');
+
     instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + name[1].trim() + ' ' + name[0] + '%27)')
     instructorID = await instructorID.json();
+    //console.log("this is hte map " + courseMap);
     try {
       professorList.doc(instructorID.value[0].Id).set({Name: instructors[i]})
     } catch (err) {
+      console.log(err);
       continue;
     }
     let courseMap = new Map();
@@ -58,16 +62,21 @@ async function writeProfessors() {
     }
     for (let [key, value] of courseMap) {
       if (key.indexOf('Honors') != -1) {
-        console.log('honors class here ' + key);
-        console.log('this is the value ' + value);
+        //console.log('honors class here ' + key + " " + value);
         professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2] + '-Honors').set({average_gpa: parseFloat(value[0])});
+
       }
       else {
-        console.log('non honors class here this is the value ' + value);
+        //console.log('non honors class here this is the value ' + value);
+        //console.log('setting' + value[3] + value[2] + ' to gpa ' + parseFloat(value[0]))
         professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: parseFloat(value[0])});
+        let doc = await professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).get()
+        doc = await doc.data();
+        //console.log(doc.average_gpa + ' this doc is in db');
+
       }
     }
-    console.log('instructors done ' + i + '/' + '6696 and current professor = ' + instructors[i]); 
+    //console.log('instructors done ' + i + '/' + '6696 and current professor = ' + instructors[i]); 
   }
 }
 
@@ -83,15 +92,19 @@ async function writeClasses(instructor, index) {
   let classes = '';
   classes = await fetch('https://boilergrades.com/api/grades/?instructor=' + instructor); 
   classes = await classes.json();
+  // for only fixing honors classes
+  /*
   for (let i = 0; i < Object.keys(classes).length; i++) {
     if (classes[i].title.indexOf('Honors') !== -1) {
       console.log('This professor has an honors course ' + instructor + " and this is i " + index);
       break;
     }
     else if (i === Object.keys(classes).length - 1) {
-      return undefined;
+      //return undefined;
+      break;
     }
   }
+  */
 
   for (let j = 0; j < Object.keys(classes).length; j++) {
     if (classes[j] === undefined) {

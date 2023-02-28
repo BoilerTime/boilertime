@@ -366,6 +366,8 @@ app.post('/api/gpa', async (req, res) => {
     res.send({averageGPA: averageGPA});
   }
 
+  /* To write profs and courses into db, already done
   //boilergrades.writeProfessors();
+  */
 })  
 
