@@ -16,6 +16,7 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
+const classRatings = require('./components/ratings/classrooms')
 
 
 //Data scraper imports
@@ -327,7 +328,11 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
-
+app.post('/api/ratings/classrooms', (req, res) => {
+  const user_id = req.body.user_id;
+  classRatings.getUserRatings(user_id);
+  res.json({response: "sucess"});
+})
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
