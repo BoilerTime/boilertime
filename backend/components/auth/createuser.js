@@ -5,7 +5,7 @@ const uuid = require('./uuid.js');
 //Firebase Imports Only
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
-const { collection, query, where, getDocs } = require('firebase/firestore'); 
+const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
 const sendEmail = require('../email/sendEmail');
 const crypto = require('crypto');
@@ -61,6 +61,12 @@ const createuser = async function (profile) {
   }).catch((err) => {
     throw new Error().error = 500;
   })
+
+  await sendVerificationEmail(userProfile).then(() => {
+    //Do smth
+  }).catch((err) => {
+    throw new Error().error = 500;
+  })
   return userProfile;
 }
 
@@ -69,37 +75,23 @@ const findExistingUsers = async function (email) {
   //If there are existing users with the same email, return false
   console.log(existingUsers.size);
   return existingUsers.size > 0;
-
-    await profiles.add(userProfile).then((res) => {
-    	//It worked, great! Don't need to do anything, though
-    }).catch((err) => {
-	throw new Error().error = 500;
-    })
-    
-    await sendVerificationEmail(userProfile).then(() => {
-	//Do smth
-    }).catch((err) => {
-	throw new Error().error = 500;
-    })
-    return userProfile;
-
 }
 
-const sendVerificationEmail = async function(profile) {
-  
+const sendVerificationEmail = async function (profile) {
+
   const mailOptions = {
-      from: 'Onyx Stellwag',
-      to: `${profile.email}`,
-      subject: 'Verify BoilerTime Account',
-      html: `
+    from: 'BoilerTime',
+    to: `${profile.email}`,
+    subject: 'Verify BoilerTime Account',
+    html: `
 	  <h1 style="font-size: 14px; font-weight: normal;">Hi, ${profile.firstname}!</h1>
 	  <p> Welcome to BoilerTime! We're excited to help create your perfect class schedule! Please <a href="http://localhost:3000/verifyaccount?id=${profile.user_id}">Click Here</a> to verify your account!</p>`
-   }
-   try {
-       await sendEmail.sendEmail({ mailOptions });
-   } catch(e) {
-       throw new Error().error = 500;
-   }
+  }
+  try {
+    await sendEmail.sendEmail({ mailOptions });
+  } catch (e) {
+    throw new Error().error = 500;
+  }
 
 }
 
