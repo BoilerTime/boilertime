@@ -178,10 +178,10 @@ app.get('/api/optimizedschedule', (req, res) => {
                  "startTime":"2023-02-21T20:30:00Z",
                  "duration":"PT1H50M",
                  "daysOfWeek":["Thursday"],
-                 "type":"Laboratory",
-                 "buildingCode":"HAAS",
-                 "buildingName":"Felix Haas Hall",
-                 "roomNumber":"G056"
+                 "type":"Lecture",
+                 "buildingCode":"WALC",
+                 "buildingName":"Wilmeth Active Learning Center",
+                 "roomNumber":"HILER THTR"
            },
            {
                 "instructorName": "Srinivasa Arun Yeragudipati",
