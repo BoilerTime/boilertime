@@ -22,7 +22,6 @@ async function getUID({ email }) {
     return (user_id = doc.data().user_id);
   });
 }
-
 /** 
   * Utilility for finding if any users exist by email
   * @param {string} email - The email that needs to be found in the server

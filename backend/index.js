@@ -54,6 +54,7 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+<<<<<<< HEAD
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
@@ -64,6 +65,8 @@ app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   console.log('this is the student class ', studentClass);
   //console.log(user_id + classification_year + firstname + lastname);
   utils.updateProfile(user_id, studentClass, firstname, lastname);
+=======
+>>>>>>> 6f4471cdcc36469e31c0d83ee30a7953698246c0
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
