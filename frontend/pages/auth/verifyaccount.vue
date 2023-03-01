@@ -25,10 +25,12 @@ onBeforeMount(() => {
         userID: user_id
     })
         .then(function () {
+            alert("Verification has been successful.")
             navigateTo("/auth/login")
         })
         .catch(function (error) {
             console.error(error)
+            alert("Cannot verify account.")
         })
 })
 </script>

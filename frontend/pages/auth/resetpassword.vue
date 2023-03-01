@@ -62,6 +62,7 @@ async function resetpassword() {
       })
       .catch(function (error) {
         console.error(error)
+        alert("Email does not exist. Please re-enter.")
       });
   } else {
     alert("Passwords do not match")
