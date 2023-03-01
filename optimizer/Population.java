@@ -6,7 +6,7 @@ public class Population {
     private CourseStruct[] registeredCourses;
     private HashMap<String, Integer> binCourseTimes; 
     private HashMap<String, Integer> binCourseDurations;
-    private ArrayList<Individual[]> genePool = new ArrayList<Individual[]>();
+    private ArrayList<Generation> genePool = new ArrayList<Generation>();
     private int individualSize; 
     private final int generationSize = 10; 
     Random pop;
@@ -73,7 +73,7 @@ public class Population {
             }
             startGenes[i] = new Individual(temp);
         }
-        genePool.add(startGenes);
+        genePool.add(new Generation(startGenes));
     }
 
 
@@ -81,14 +81,47 @@ public class Population {
     public Individual getFittestIndividual() {
         seedPopulation();
         evolve();
-        return this.genePool.get(0)[0];
+        return this.genePool.get(0).getFittestIndividual();
     }
 
     private int calculateIndividualSize() {
-        return registeredCourses.length + binCourseTimes.size() + binCourseDurations.size(); 
+        return registeredCourses.length + (int) Math.ceil(Math.log(binCourseTimes.size())) + (int) Math.ceil(Math.log(binCourseDurations.size())) ; 
     }
 
     private void evolve() {
+
+    }
+
+    private int[] calculateFitnessScores(Individual[] indivs) {
+        //Trying to find the schedule with the fewest schedule conflicts 
+        int[] compositeScores = new int[indivs.length];
+        for(int i = 0; i < indivs.length; i++) {
+            int indivScore = 0;
+            //Get each chromosome (course) out of each individual to check for matches
+            String[] chromosomes = Utils.splitString(indivs[i].getIndividual(), individualSize/registeredCourses.length);
+            indivScore += 10*calculateCourseNameConflicts(chromosomes);
+            compositeScores[i] = indivScore;
+        }
+        return compositeScores;
+    }
+
+    private int calculateCourseNameConflicts(String[] chromsomes) {
+        HashMap<String, Integer> cCount = new HashMap<String, Integer>();
+        //Push each of the IDs and its count into a hashamp 
+        for(int i = 0; i < chromsomes.length; i++) {
+            String temp = chromsomes[i].substring(0, (int) Math.ceil(Math.log(registeredCourses.length)));
+            if(cCount.get(temp) == null) {
+                cCount.put(temp, Integer.valueOf(1));
+            } else {
+                cCount.put(temp, Integer.valueOf(cCount.get(temp).intValue() +1));   
+            }
+        }
+        //Go back through the hashmap and find the number of keys whose value > 1
+        int conflicts = 0; 
+        for (Map.Entry<String, Integer> entry : cCount.entrySet()) {
+            conflicts += entry.getValue().intValue()-1; //If the count is more than one, then there is a conflict
+        }
+        return conflicts;
 
     }
 }
