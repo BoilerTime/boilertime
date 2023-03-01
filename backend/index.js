@@ -143,10 +143,10 @@ app.get('/api/search', (req, res) => {
 
 app.post('/api/createuser', (req, res) => {
   createuser.createuser(req.body).then((user) => {
-    console.log(`Created user: ${email}`)
+    console.log(`Created user: ${req.body.email}`)
     res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
   }).catch(err => {
-    //console.log(JSON.stringify(err))
+    console.log(err)
     res.sendStatus(err.error || 500);
   });
 })
