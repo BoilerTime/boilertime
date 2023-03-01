@@ -40,7 +40,9 @@ async function sendemail() {
   await axios.post('http://localhost:3001/api/forgotpassword', {
     email: email.value
   })
-    .then(alert("Email has been sent"))
+    .then(function() {
+      alert("Email has been sent")
+    })
     .catch(function (error) {
       console.error(error);
       alert("User does not exist.")
