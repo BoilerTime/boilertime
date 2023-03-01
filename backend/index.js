@@ -322,7 +322,7 @@ app.post('/api/verifyaccount', (req, res) => {
   verifyaccount.verifyaccount(req.body.userID).then((user) => {
     res.json(user);
   }).catch(err => {
-    //console.log(err.error);
+    console.error(err);
     res.sendStatus(err || 500);
   })
 })
