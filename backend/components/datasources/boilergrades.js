@@ -18,7 +18,7 @@ const professorList = db.collection('professor_profile');
  */
 async function getAverageGPA(prof_name, class_name) {
     let instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + prof_name + '%27)')
-    //instructorID = await instructorID.json();
+    instructorID = await instructorID.json();
 
     var averageGPA = 0.0;
     try {
