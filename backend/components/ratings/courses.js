@@ -17,7 +17,11 @@ const utils = require('../utils/utils.js');
 const db = getFirestore()
 const classRatings = db.collection('ratings').doc('courses').collection('course_ratings');
 
-async function addUserRating(user_id, course, rating) {
+async function addUserRating(user_id, course, prequisiteStrictness, pace, depth) {
+  var rating = [];
+  rating[0] = prequisiteStrictness;
+  rating[1] = pace;
+  rating[2] = depth;
   classRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
 }
 

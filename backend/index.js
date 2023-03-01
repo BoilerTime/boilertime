@@ -335,11 +335,13 @@ app.post('/api/get/course_ratings/courses', async (req, res) => {
 })
 
 app.post('/api/add/ratings/courses', (req, res) => {
-  const rating = req.body.rating;
   const course = req.body.course;
   const user_id = req.body.user_id;
+  const prequisiteStrictness = req.body.prequisite_strictness;
+  const pace = req.body.pace;
+  const depth = req.body.depth;
   try {
-    courseRatings.addUserRating(user_id, course, rating);
+    courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
     res.sendStatus(200);
   } catch (err) {
     res.sendStatus(400);
