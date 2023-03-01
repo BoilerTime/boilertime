@@ -25,7 +25,10 @@ async function getUserRatings(user_id) {
 
   userRatings.forEach(async doc => {
     doc = await doc.data();
-    jsonObj[doc.course] = doc.rating;
+    jsonObj[doc.course] = {
+      "rating": doc.rating,
+      "timestamp": doc.timestamp
+    }
   })
   return jsonObj;
 }

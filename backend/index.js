@@ -53,7 +53,7 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
@@ -67,6 +67,16 @@ app.get('/api/profile', jwt.authenticateToken, (req, res) => {
   res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
 });
 
+app.post('/api/get/profile', async (req, res) => {
+  const user_id = req.body.user_id;
+  try {
+    resObj = await utils.getUserProfile(user_id);
+    res.json(resObj);
+  } catch {
+    res.send(401);
+  }
+
+});
 /*
  * This function lets a user login and generates a jwt token for them
  * @param {string} email - Email of user
@@ -338,14 +348,14 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
-app.post('/api/get/user_ratings/classrooms', (req, res) => {
+app.post('/api/get/user_ratings/courses', (req, res) => {
   const user_id = req.body.user_id;
   classRatings.getUserRatings(user_id).then((jsonObj) => {
     res.json(jsonObj);
   });
 })
 
-app.post('/api/add/ratings/classrooms', (req, res) => {
+app.post('/api/add/ratings/courses', (req, res) => {
   const rating = req.body.rating;
   const course = req.body.course;
   const user_id = req.body.user_id;

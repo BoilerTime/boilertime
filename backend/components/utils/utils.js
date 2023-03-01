@@ -7,6 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 
+
 /**
  * Get the user_id given the email
  * @param {string} email - The email that the user wants to find the user_id for
@@ -177,4 +178,11 @@ async function getBookmarks(user_id) {
   }
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept };
+async function getUserProfile(user_id) {
+  const profile = await users.doc(user_id).get();
+  doc = await profile.data();
+  return {firstname: doc.firstname, lastname: doc.lastname, grad_month: doc.grad_month, grad_year: doc.grad_year, is_grad_student: doc.is_grad_student}
+
+}
+
+module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile};
