@@ -42,7 +42,7 @@ async function writeProfessors() {
   let instructors = await require('../../professors_and_courses_bg.json')
   ///instructors = await instructors.json();
   // 6696 professors in boilergrades/api/indexes
-  // index 0 is null
+  // index 0 is null so start at 1
   for (let i = 1; i < 6697; i++) {
     let name = instructors[i].split(',');
 
@@ -50,19 +50,27 @@ async function writeProfessors() {
     instructorID = await instructorID.json();
     //console.log("this is hte map " + courseMap);
     try {
-      professorList.doc(instructorID.value[0].Id).set({Name: instructors[i]})
+      //professorList.doc(instructorID.value[0].Id).set({Name: instructors[i]})
     } catch (err) {
       console.log(err);
       continue;
     }
     let courseMap = new Map();
     courseMap = await writeClasses(instructors[i], i);
+    //console.log('this is the course map with overall gpa = ' + courseMap.get('overall_gpa') + " and this is the professor " + instructors[i]);
     if (courseMap === undefined) {
       continue;
     }
+    // for adding overall gpa
+    try {
+      professorList.doc(instructorID.value[0].Id).collection('classes').doc('overall_gpa').set({average_gpa: parseFloat(courseMap.get('overall_gpa')[0])});
+    } catch (err) {
+      continue;
+    }
+    console.log(i + "/6696 done");
     for (let [key, value] of courseMap) {
       if (key.indexOf('Honors') != -1) {
-        //console.log('honors class here ' + key + " " + value);
+        console.log('honors class here ' + key + " " + value);
         professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2] + '-Honors').set({average_gpa: parseFloat(value[0])});
 
       }
@@ -70,8 +78,8 @@ async function writeProfessors() {
         //console.log('non honors class here this is the value ' + value);
         //console.log('setting' + value[3] + value[2] + ' to gpa ' + parseFloat(value[0]))
         professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).set({average_gpa: parseFloat(value[0])});
-        let doc = await professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).get()
-        doc = await doc.data();
+        //let doc = await professorList.doc(instructorID.value[0].Id).collection('classes').doc(value[3] + value[2]).get()
+        //doc = await doc.data();
         //console.log(doc.average_gpa + ' this doc is in db');
 
       }
@@ -140,11 +148,20 @@ async function writeClasses(instructor, index) {
     avgGPA = Number((avgGPA).toFixed(2));
     if (courseMap.has(classes[j].title)) {
 
-      //console.log('multiplying prev avg gpa = ' + courseMap.get(classes[j].title)[0] + " with old counter " + courseMap.get(classes[j].title)[1] + " and adding this gpa " + avgGPA + " and divide it by new counter " + (courseMap.get(classes[j].title)[1] + 1)  + " and this all equals = " + (courseMap.get(classes[j].title)[0]*courseMap.get(classes[j].title)[1] + avgGPA) / (courseMap.get(classes[j].title)[1] + 1));
       courseMap.set(classes[j].title, [Number(((courseMap.get(classes[j].title)[0]*courseMap.get(classes[j].title)[1]) + avgGPA) / (courseMap.get(classes[j].title)[1] + 1)).toFixed(2),  (courseMap.get(classes[j].title)[1] + 1), classes[j].course_num, classes[j].subject]);
     }
     else {
       courseMap.set(classes[j].title, [Number(avgGPA).toFixed(2), 1, classes[j].course_num, classes[j].subject]);
+    }
+
+    if (classes[j].title.indexOf('Honors') < 0 && !isNaN(avgGPA)) {
+      if (courseMap.has('overall_gpa')) {
+        courseMap.set('overall_gpa', [(Number(courseMap.get('overall_gpa')[0] * courseMap.get('overall_gpa')[1] + avgGPA) / (courseMap.get('overall_gpa')[1] + 1)).toFixed(2), courseMap.get('overall_gpa')[1] + 1]);
+      }
+      else {
+        courseMap.set('overall_gpa', [Number(avgGPA).toFixed(2), 1]);
+        //console.log('multiplying prev avg gpa = ' + courseMap.get('overall_gpa') + " with old counter " + courseMap.get('overall_gpa')[1] + " and adding this gpa " + avgGPA + " and divide it by new counter " + (courseMap.get('overall_gpa')[1] + 1)  + " and this all equals = " + (courseMap.get('overall_gpa')[0]*courseMap.get('overall_gpa')[1] + avgGPA) / (courseMap.get('overall_gpa')[1] + 1));
+      }
     }
     //console.log(courseMap.get(classes[j].title) + " current map for " + classes[j].course_num + " " + classes[j].title);
   }

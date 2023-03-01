@@ -369,5 +369,6 @@ app.post('/api/gpa', async (req, res) => {
   /* This call is to write professor4s to db, already done.
     boilergrades.writeProfessors();
   */
+   
 })  
 
