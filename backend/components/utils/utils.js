@@ -42,9 +42,32 @@ const findExistingUsers = async function (email) {
  */
 async function getProfessorRating(professor) {
   const purdueid = 'U2Nob29sLTc4Mw=='
-  const teachers = await ratings.searchTeacher(professor, purdueid)
-  const teacher = await ratings.getTeacher(teachers[0].id)
-  return teacher;
+  let split = professor.replace("-", " ").split(" ");
+  while (split.length > 0) {
+    const teachers = await ratings.searchTeacher(await concat(split), purdueid)
+    if (teachers.length == 0) {
+      split.splice(split.length - 2, 1);
+    } else {
+      const teacher = await ratings.getTeacher(teachers[0].id)
+      return teacher
+    }
+  }
+  throw new Error("Professor Not Found in RMP")
+}
+
+/**
+ * Concatenate Array of String with spaces in between
+ * @param {array} split - String to Join together with spaces
+ * @param {string} out - Output string
+ */
+async function concat(split) {
+  let count = 1
+  let out = split[0]
+  while (count < split.length) {
+    out += " " + split[count]
+    count += 1
+  }
+  return out
 }
 
 /**

@@ -126,10 +126,12 @@ app.post('/api/resetpassword', (req, res) => {
 })
 
 /**
- * Simple Query for RateMyProfessor
+ * Query for Professor for RMP
  */
 app.get('/api/ratemyprofessor', (req, res) => {
-  utils.getProfessorRating("Turkstra").then( teacher => {
+  const professor = req.body.prof_name
+  utils.getProfessorRating(professor).then( teacher => {
+    console.log("Found Teacher in RMP")
     res.json(teacher)
   }).catch(err => {
     console.log(err)
@@ -176,10 +178,10 @@ app.get('/api/optimizedschedule', (req, res) => {
                  "startTime":"2023-02-21T20:30:00Z",
                  "duration":"PT1H50M",
                  "daysOfWeek":["Thursday"],
-                 "type":"Laboratory",
-                 "buildingCode":"HAAS",
-                 "buildingName":"Felix Haas Hall",
-                 "roomNumber":"G056"
+                 "type":"Lecture",
+                 "buildingCode":"WALC",
+                 "buildingName":"Wilmeth Active Learning Center",
+                 "roomNumber":"HILER THTR"
            },
            {
                 "instructorName": "Srinivasa Arun Yeragudipati",
@@ -274,8 +276,6 @@ app.get('/api/getoptimizedschedule', async (req, res) => {
   res.send(schedule);
 })
 
-
-
 /**
  * Add bookmark given bookmark and user_id
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
@@ -366,8 +366,8 @@ app.post('/api/gpa', async (req, res) => {
     res.send({averageGPA: averageGPA});
   }
 
-  /* To write profs and courses into db, already done
-  //boilergrades.writeProfessors();
+  /* This call is to write professor4s to db, already done.
+    boilergrades.writeProfessors();
   */
 })  
 
