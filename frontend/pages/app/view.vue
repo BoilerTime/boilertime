@@ -1,7 +1,13 @@
 <template>
-  <div v-if="isDataLoaded">
-    <ClassDetails v-for="course in scheduleData" :key="course.name" :data="course" />
-  </div>
+  <NavBar />
+  <main class="p-3 bg-gray-200 h-full flex">
+    <div class="p-12" v-if="isDataLoaded">
+      <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
+    </div>
+    <div class="p-12 h-screen bg-gray-200" v-else>
+      <h1>Loading...</h1>
+    </div>
+  </main>
 </template>
 
 <script setup>
@@ -15,7 +21,11 @@ onMounted(async () => {
   try {
     const response = await axios.get('http://localhost:3001/api/optimizedschedule');
     scheduleData.value = response.data.schedule;
-    isDataLoaded.value = true;
+    nextTick(() => {
+      setTimeout(() => {
+        isDataLoaded.value = true;
+      }, 1000);
+    });
   } catch (error) {
     console.error(error);
   }

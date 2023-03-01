@@ -128,7 +128,7 @@ app.post('/api/resetpassword', (req, res) => {
 /**
  * Query for Professor for RMP
  */
-app.get('/api/ratemyprofessor', (req, res) => {
+app.post('/api/ratemyprofessor', (req, res) => {
   const professor = req.body.prof_name
   utils.getProfessorRating(professor).then( teacher => {
     console.log("Found Teacher in RMP")
@@ -168,26 +168,26 @@ app.get('/api/optimizedschedule', (req, res) => {
       [
         {
           "subject":"CS",
-          "number":"18000",
+          "number":"25200",
           "creditHours":4,
           "description":"Evening exams",
-          "name":"Problem Solving And Object-Oriented Programming",
+          "name":"Systems Programming",
           "meetings":[
             {
-                "instructorName":"Srinivasa Arun Yeragudipati",
+                "instructorName":"Gustavo Rodriguez-Rivera",
                  "startTime":"2023-02-21T20:30:00Z",
                  "duration":"PT1H50M",
-                 "daysOfWeek":["Thursday"],
+                 "daysOfWeek":["Monday, Wednesday, Friday"],
                  "type":"Lecture",
                  "buildingCode":"WALC",
                  "buildingName":"Wilmeth Active Learning Center",
                  "roomNumber":"HILER THTR"
            },
            {
-                "instructorName": "Srinivasa Arun Yeragudipati",
+                "instructorName": "Jeffrey A. Turkstra",
                 "startTime":"2023-02-21T20:30:00Z",
                 "duration":"PT1H50M",
-                "daysOfWeek":["Thursday"],
+                "daysOfWeek":["Tuesday"],
                 "type":"Laboratory",
                 "buildingCode":"HAAS",
                 "buildingName":"Felix Haas Hall",
@@ -196,14 +196,14 @@ app.get('/api/optimizedschedule', (req, res) => {
           ]
         },
         {
-          "subject":"POL",
-          "number":"30000",
+          "subject":"CS",
+          "number":"30700",
           "creditHours":3,
           "description":"Evening exams",
-          "name":"Introduction to Data Analytics",
+          "name":"Software Engineering I",
           "meetings":[
             {
-                "instructorName":"Eric Waltenburg",
+                "instructorName":"Jeffrey A. Turkstra",
                 "startTime":"2023-02-21T10:30:00Z",
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
@@ -213,7 +213,75 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "roomNumber":"B288"
               }
           ]
-        }
+        },
+        {
+          "subject":"ENGL",
+          "number":"10600",
+          "creditHours":4,
+          "description":"Async online",
+          "name":"First-Year Composition",
+          "meetings":[
+            {
+                "instructorName":"Samuel J. Dunn",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS",
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+            }
+          ]
+        },
+        {
+          "subject":"MA",
+          "number":"16100",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Calculus I",
+          "meetings":[
+            {
+                "instructorName":"Frankie Chan",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS",
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              }
+          ]
+        },
+        {
+          "subject":"EAPS",
+          "number":"12000",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Earth Through Time",
+          "meetings":[
+            {
+                "instructorName":"Nathaniel A. Lifton",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"HIKS",
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              },
+              {
+                "instructorName":"Jonathan M. Harbor",
+                "startTime":"2023-02-21T10:30:00Z",
+
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Laboratory",
+                "buildingCode":"HIKS",
+                "buildingName":"Hicks Undergraduate Library",
+                "roomNumber":"B288"
+              }
+            ]
+          } 
     ]
   })
 })
@@ -357,6 +425,7 @@ app.listen(port, () => {
 app.post('/api/gpa', async (req, res) => {
   const prof_name = req.body.prof_name;
   const class_name = req.body.class_name;
+  console.log('Retrieving for ' + prof_name + ' ' + class_name)
   const averageGPA = await boilergrades.getAverageGPA(prof_name, class_name);
   if (averageGPA === undefined) {
     // status 404 could not find class
