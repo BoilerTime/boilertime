@@ -17,6 +17,7 @@ const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses')
+const classroomRatings = require('./components/ratings/classrooms')
 
 
 //Data scraper imports
@@ -344,6 +345,14 @@ app.post('/api/add/ratings/courses', (req, res) => {
   } catch (err) {
     res.sendStatus(400);
   }
+})
+
+app.post('/api/add/ratings/classrooms', async (req, res) => {
+  const classroom = req.body.classroom;
+  const user_id = req.body.user_id;
+  const rating = req.body.rating;
+  await classroomRatings.addClassroomRating(rating, user_id, classroom);
+  res.sendStatus(200);
 })
 
 function authenticateToken(req, res, next) {
