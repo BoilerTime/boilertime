@@ -328,13 +328,13 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
-app.post('/api/get/ratings/classrooms', (req, res) => {
+app.post('/api/get/course_ratings/courses', (req, res) => {
   const user_id = req.body.user_id;
   classRatings.getUserRatings(user_id);
   res.json({response: "sucess"});
 })
 
-app.post('/api/add/ratings/classrooms', (req, res) => {
+app.post('/api/add/ratings/courses', (req, res) => {
   const rating = req.body.rating;
   const course = req.body.course;
   const user_id = req.body.user_id;

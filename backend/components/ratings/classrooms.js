@@ -13,7 +13,7 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
 
 const db = getFirestore()
-const classRatings = db.collection('ratings').doc('classrooms').collection('classes_ratings');
+const classRatings = db.collection('ratings').doc('courses').collection('course_ratings');
 
 async function addUserRating(user_id, course, rating) {
   classRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
