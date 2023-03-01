@@ -53,7 +53,8 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
+//app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/update/profile', (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
