@@ -21,9 +21,11 @@ async function addUserRating(user_id, course, rating) {
 
 async function getUserRatings(user_id) {
   const userRatings = await classRatings.where('user_id', '==', user_id).get();
+  var jsonObj = {} 
 
   userRatings.forEach(async doc => {
     doc = await doc.data();
-    console.log(doc.course + ' has the following comment ' + doc.rating);
+    jsonObj[doc.course] = doc.rating;
   })
+  return jsonObj;
 }
