@@ -6,6 +6,9 @@ const uuid = require('./uuid.js');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore');
+const utils = require('../utils/utils.js');
+const sendEmail = require('../email/sendEmail');
+const crypto = require('crypto');
 
 const db = getFirestore()
 const profiles = db.collection('user_profile');
@@ -27,7 +30,8 @@ const createuser = async function (profile) {
   }
 
   //If the user has not provided a valid email address, this is an illegal request to the server
-  if (!(emailvalidator.validate(profile.email) && profile.email.toLowerCase().endsWith('@purdue.edu'))) {
+  profile.email = profile.email.toLowerCase()
+  if (!(emailvalidator.validate(profile.email) && profile.email.endsWith('@purdue.edu'))) {
     let response = new Error();
     response.error = 403;
     throw response;
@@ -50,11 +54,18 @@ const createuser = async function (profile) {
     "user_id": userID,
     "grad_year": profile.gradyear,
     "grad_month": profile.gradmonth,
-    "is_grad_student": profile.isGraduateStudent
+    "is_grad_student": profile.isGraduateStudent,
+    "bookmarks": []
   }
 
   await profiles.doc(userID).set(userProfile).then((res) => {
     //It worked, great! Don't need to do anything, though
+  }).catch((err) => {
+    throw new Error().error = 500;
+  })
+
+  await sendVerificationEmail(userProfile).then(() => {
+    //Do smth
   }).catch((err) => {
     throw new Error().error = 500;
   })
@@ -66,9 +77,24 @@ const findExistingUsers = async function (email) {
   //If there are existing users with the same email, return false
   console.log(existingUsers.size);
   return existingUsers.size > 0;
-
 }
 
+const sendVerificationEmail = async function (profile) {
 
+  const mailOptions = {
+    from: 'BoilerTime',
+    to: `${profile.email}`,
+    subject: 'Verify BoilerTime Account',
+    html: `
+	  <h1 style="font-size: 14px; font-weight: normal;">Hi, ${profile.firstname}!</h1>
+	  <p> Welcome to BoilerTime! We're excited to help create your perfect class schedule! Please <a href="http://localhost:3000/auth/verifyaccount?id=${profile.user_id}">Click Here</a> to verify your account!</p>`
+  }
+  try {
+    await sendEmail.sendEmail({ mailOptions });
+  } catch (e) {
+    throw new Error().error = 500;
+  }
+
+}
 
 module.exports = { createuser };
