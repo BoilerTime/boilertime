@@ -69,5 +69,46 @@ public class Utils {
 		return r.nextInt((max - min) + 1) + min;
 	}
 
+    /**
+     * A utility to find the index in an integer array associated with the maximum value of said array. O(n)
+     * @param data The array to be searched
+     * @return The array index that corresponds with the max entry in the array 
+     */
+    public static int getIndexForMax(int[] data) {
+        int maxIndex = -1;
+        int maxValue = Integer.MIN_VALUE;
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] > maxValue) {
+                maxIndex = i;
+                maxValue = data[i];
+            }
+        }
+        return maxIndex;
+    }
 
+    /**
+     * A utility to split a string into serveral substrings each of a specified length
+     * @param s The string to be split
+     * @param splitLen The size of each substring. Must be <= the size of the string to avoid undefined behavior. 
+     * @return An array of the substrings, each of length splitlen unless s.length() % splitLen != 0, in which case the last element will be shortened 
+     */
+    public static String[] splitString(String s, int splitLen) {
+        String[] results;
+
+        if(s.length() % splitLen != 0) {
+            results = new String[(s.length()/splitLen) + 1];
+        } else {
+            results = new String[s.length()/splitLen];
+        }
+
+        for(int i = 0; i <results.length; i++) {
+            if(s.length() % splitLen == 0 || (s.length() % splitLen != 0 && i != results.length-1)) {
+                results[i] = s.substring(i*splitLen, (i*splitLen) + splitLen);
+            } else {
+                System.out.println((i*splitLen));
+                results[i] = s.substring(i*splitLen, s.length());
+            }
+        }
+        return results;
+    }
 }
