@@ -1,5 +1,5 @@
 package optimizer;
-import java.util.Random;
+import java.util.*;
 
 public class Utils {
 
@@ -110,5 +110,34 @@ public class Utils {
             }
         }
         return results;
+    }
+
+    /**
+     * Parses a hash map whose keys are unique IDs, and whose vallues are the number of entries that for each unique ID. 
+     * @param data The hashmap to be parsed
+     * @return How many total conflicts exist within the hashmap. 
+     */
+    public static int findMaxConflicts(HashMap<String, Integer> data) {
+        //Go back through the hashmap and find the number of keys whose value > 1
+        int conflicts = 0; 
+        for (Map.Entry<String, Integer> entry : data.entrySet()) {
+            conflicts += entry.getValue().intValue()-1; //If the count is more than one, then there is a conflict
+        }
+        return conflicts;
+    }
+
+    /**
+     * A helper method to convert a binary string to an integer value using unsigned integer notation
+     * @param s The string to be examined. Must only have binary digits. 
+     * @return An integer that represents the reslts of the conversion, encoded as an integer. 
+     * @post The string that is returned will be represnted as a 2's complement integer, even if the one passed was in another integer representation scheme. 
+     */
+    public static int binStringToNum(String s) {
+        int result = 0; 
+        for(int i = 0; i < s.length(); i++) {
+            int temp = Integer.valueOf(s.substring(i, i+1)).intValue();
+            result += (temp << (s.length() - i - 1));
+        }
+        return result;
     }
 }
