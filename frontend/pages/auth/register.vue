@@ -163,7 +163,7 @@ async function signup() {
       isGraduateStudent: isGraduateStudent.value
     })
       .then(function() {
-        navigateTo("/auth/verifyaccount");
+        alert("Please check your email to verify your account.")
       })
       .catch(function (error) {
         console.error();
