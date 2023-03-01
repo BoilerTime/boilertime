@@ -16,7 +16,7 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
-const classRatings = require('./components/ratings/classrooms')
+const courseRatings = require('./components/ratings/courses')
 
 
 //Data scraper imports
@@ -351,7 +351,7 @@ app.post('/api/verifyaccount', (req, res) => {
 
 app.post('/api/get/user_ratings/courses', (req, res) => {
   const user_id = req.body.user_id;
-  classRatings.getUserRatings(user_id).then((jsonObj) => {
+  courseRatings.getUserRatings(user_id).then((jsonObj) => {
     res.json(jsonObj);
   });
 })
@@ -361,7 +361,7 @@ app.post('/api/add/ratings/courses', (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   try {
-    classRatings.addUserRating(user_id, course, rating);
+    courseRatings.addUserRating(user_id, course, rating);
     res.sendStatus(200);
   } catch (err) {
     res.sendStatus(400);
