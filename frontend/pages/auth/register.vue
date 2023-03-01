@@ -6,7 +6,7 @@
     <div class="mx-auto w-5/12 p-3 bg-white border rounded-lg shadow sm:p-7 md:p-8 dark:bg-white">
       <!--Welcome text-->
       <h1 class="pb-2 text-center text-2x1 font-bold">Welcome to BoilerTime</h1>
-      <!--Welcome text-->
+      <!--Instructions text-->
       <h2 class="text-center text-2x1 font-light">Insert the information below to create an account.</h2>
 
       <form @submit.prevent="() => signup()">
