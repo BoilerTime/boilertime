@@ -30,7 +30,8 @@ const createuser = async function (profile) {
   }
 
   //If the user has not provided a valid email address, this is an illegal request to the server
-  if (!(emailvalidator.validate(profile.email) && profile.email.toLowerCase().endsWith('@purdue.edu'))) {
+  profile.email = profile.email.toLowerCase()
+  if (!(emailvalidator.validate(profile.email) && profile.email.endsWith('@purdue.edu'))) {
     let response = new Error();
     response.error = 403;
     throw response;
