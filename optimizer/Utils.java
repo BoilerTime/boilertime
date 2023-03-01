@@ -1,4 +1,5 @@
 package optimizer;
+import java.util.Random;
 
 public class Utils {
 
@@ -11,7 +12,8 @@ public class Utils {
     public static int[] numToBin(int number, int len) {
         //System.out.println("Hi" + number + " " + Math.log((double) number));
         int[] result = new int[len];//new int[(int) Math.ceil(Math.log((double) number))]; //Make an integer array that takes on the required length
-        for(int i = 0; i < result.length; i++) {
+        for(int i = (len-1); i >= 0; i--) {
+            //result[i] = number >> len & 1;
             result[i] = number%2;
             number /= 2; 
         }
@@ -27,7 +29,7 @@ public class Utils {
         if(number <= 0) {
             return numToBin(number, 1);
         }
-        return numToBin(number, (int) Math.ceil(Math.log(number)));
+        return numToBin(number, (int) Math.ceil(Math.log(number)+1));
     }
 
     /**
@@ -57,4 +59,15 @@ public class Utils {
         //return [hours, minutes];
     }
     
+    /**
+     * A method to get a random number that lies within a range [max, min]
+     * @param min {int} The min value to find a random value for 
+     * @param max {int} The max value to find a random value for 
+     * @return {int} A psuedo-random value that lies within the range [min, max]
+     */
+    public static int randInRange(Random r, int min, int max) {
+		return r.nextInt((max - min) + 1) + min;
+	}
+
+
 }

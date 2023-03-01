@@ -1,22 +1,35 @@
 package optimizer;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Optimizer {
+public class RunSimulation {
     public static void main(String[] args) {
-        System.out.println(args[0]);
-        Chromosome c1 = new Chromosome("100000011011010100101");
-        Chromosome c2 = new Chromosome("011101101010011111110");
-        Chromosome[] population = new Chromosome[5];
+        /*//System.out.println(args[0]);
+        Individual c1 = new Individual("100000011011010100101");
+        Individual c2 = new Individual("011101101010011111110");
+        Individual[] population = new Individual[5];
         population = c1.crossOver(c2);
         System.out.println(Arrays.toString(population));
-        System.out.println(population[0].getChromosome());
+        System.out.println(population[0].getIndividual());
         population[1] = c1.mutate();
-        System.out.println(population[1].getChromosome());
+        System.out.println(population[1].getIndividual());
         int[] times = {1200, 1400, 1600};
         int[] durations = {50, 50, 50};
-        Individual i1 = new Individual("CS180", "100000011011010100101", times, durations);
-        System.out.println(i1);
+        CourseStruct i1 = new CourseStruct("CS180", "100000011011010100101", times, durations);
+        System.out.println(i1);*/
+        CourseOverview[] courses = new CourseOverview[3];
+        int[] times1 = {1200, 1400, 1600};
+        int[] durations1 = {50, 50, 50};
+        courses[0] = new CourseOverview("CS180", times1, durations1);
+        int[] times2 = {1300, 1900, 2100};
+        int[] durations2 = {70, 50, 30};
+        courses[1] = new CourseOverview("CS182", times2, durations2);
+
+        courses[2] = new CourseOverview("MA261", times1, durations2);
+
+        Population testPopulation = new Population(courses);
+        testPopulation.getFittestIndividual();
+        System.out.println(testPopulation);
+        System.out.println(testPopulation.getFittestIndividual().getIndividual());
     }
 
     /**
