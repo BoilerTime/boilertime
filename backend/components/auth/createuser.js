@@ -86,7 +86,7 @@ const sendVerificationEmail = async function (profile) {
     subject: 'Verify BoilerTime Account',
     html: `
 	  <h1 style="font-size: 14px; font-weight: normal;">Hi, ${profile.firstname}!</h1>
-	  <p> Welcome to BoilerTime! We're excited to help create your perfect class schedule! Please <a href="http://localhost:3000/verifyaccount?id=${profile.user_id}">Click Here</a> to verify your account!</p>`
+	  <p> Welcome to BoilerTime! We're excited to help create your perfect class schedule! Please <a href="http://localhost:3000/auth/verifyaccount?id=${profile.user_id}">Click Here</a> to verify your account!</p>`
   }
   try {
     await sendEmail.sendEmail({ mailOptions });

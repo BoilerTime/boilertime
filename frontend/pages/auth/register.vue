@@ -167,6 +167,7 @@ async function signup() {
       })
       .catch(function (error) {
         console.error();
+        alert(error);
       });
   } else {
     alert("Passwords do not match")
