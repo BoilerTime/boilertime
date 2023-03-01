@@ -1,6 +1,6 @@
 require('../../firebase')
 const crypto = require('crypto');
-const config = require('../../../config.json');
+require('dotenv').config({ path: '../.env' });
 
 //Firebase Imports Only
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -19,7 +19,7 @@ const uuid = async function () {
     throw new Error(500);
   }
   var cachedCount = currentCount.data().count
-  var newUUID = crypto.createHash("sha256").update(String(cachedCount + config.uuid_secret)).digest("hex");
+  var newUUID = crypto.createHash("sha256").update(String(cachedCount + process.env.UUID_SECRET)).digest("hex");
   cachedCount++;
   await count.doc('count').set({
     count: cachedCount
