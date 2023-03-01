@@ -422,7 +422,7 @@ app.listen(port, () => {
  * @param {string} prof_name - Name of the professor of the class 
  * @param{string} class_name - Name of the class averageGPA is wanted for
  */
-app.post('/api/gpa', async (req, res) => {
+app.post('/api/getgpa', async (req, res) => {
   const prof_name = req.body.prof_name;
   const class_name = req.body.class_name;
   console.log('Retrieving for ' + prof_name + ' ' + class_name)
@@ -433,6 +433,28 @@ app.post('/api/gpa', async (req, res) => {
   }
   else {
     res.send({averageGPA: averageGPA});
+  }
+
+  /* This call is to write professor4s to db, already done.
+    boilergrades.writeProfessors();
+  */
+   
+})  
+
+/*
+ * Call for getting an overall gpa from professor 
+ * @param {string} prof_name - Name of the professor of the class 
+ */
+app.post('/api/getoverall_gpa', async (req, res) => {
+  const prof_name = req.body.prof_name;
+  console.log('Retrieving for ' + prof_name)
+  const overallGPA = await boilergrades.getOverallGPA(prof_name);
+  if (overallGPA === undefined) {
+    // status 404 could not find class
+    res.sendStatus(404);
+  }
+  else {
+    res.send({overall_gpa: overallGPA});
   }
 
   /* This call is to write professor4s to db, already done.

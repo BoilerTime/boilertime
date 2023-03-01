@@ -32,6 +32,21 @@ async function getAverageGPA(prof_name, class_name) {
     }
   
 }
+
+async function getOverallGPA(prof_name) {
+    let instructorID = await fetch ('https://api.purdue.io/odata/Instructors?$filter=contains(Name,%27' + prof_name + '%27)')
+    instructorID = await instructorID.json();
+
+    try {
+      let doc = await professorList.doc(instructorID.value[0].Id).collection('classes').doc('overall_gpa').get();
+      doc = await doc.data();
+      return doc.average_gpa;
+    } catch (err) {
+      console.log(err)
+      console.log('prof+class not found in db');
+      return undefined;
+    }
+}
 /*
  * This function gets all professors from boilergrades api
  * Then it goes through each professors classes they have taught, and calculates the averaage gpa for each section
@@ -204,5 +219,5 @@ function findGPA(gpa) {
   }
 }
 
-module.exports = {writeProfessors, writeClasses, getAverageGPA}
+module.exports = {writeProfessors, writeClasses, getAverageGPA, getOverallGPA}
 
