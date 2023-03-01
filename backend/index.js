@@ -16,7 +16,7 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
-const classRatings = require('./components/ratings/classrooms')
+const courseRatings = require('./components/ratings/courses')
 
 
 //Data scraper imports
@@ -328,10 +328,10 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
-app.post('/api/get/course_ratings/courses', (req, res) => {
-  const user_id = req.body.user_id;
-  classRatings.getUserRatings(user_id);
-  res.json({response: "sucess"});
+app.post('/api/get/course_ratings/courses', async (req, res) => {
+  const course_name = req.body.course_name;
+  resObj = await courseRatings.getCourseRatings(course_name);
+  res.json(resObj);
 })
 
 app.post('/api/add/ratings/courses', (req, res) => {
@@ -339,7 +339,7 @@ app.post('/api/add/ratings/courses', (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   try {
-    classRatings.addUserRating(user_id, course, rating);
+    courseRatings.addUserRating(user_id, course, rating);
     res.sendStatus(200);
   } catch (err) {
     res.sendStatus(400);
