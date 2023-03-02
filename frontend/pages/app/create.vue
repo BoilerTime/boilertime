@@ -60,15 +60,22 @@
       <br />
 
       <!--User interaction group-->
+      <!--Do work here for US 7-->
       <div class="grid gap-4 grid-cols-2">
         <input
-          class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 rounded-lg text-sm focus:outline-blue-500"
+          class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 mt-5 rounded-lg text-sm focus:outline-blue-500"
           type="text"
           v-model="class_input"
           placeholder="Enter class..."
         />
 
-        <div class="flex gap-4 justify-self-center">
+        <div class="flex gap-4 mt-5 justify-self-center">
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            @click="addBookmark"
+          >
+            Bookmark
+          </button>
           <button
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -90,7 +97,7 @@
       <br />
       <!--Submit Button-->
       <button
-        class="w-1/8 justify-self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
         type="button"
         @click="submit"
       >
@@ -102,61 +109,51 @@
 
 <!-- Begin scripting section -->
 
-<script>
+<script setup>
 import axios from "axios";
+import { useUserStore } from "~~/store/user";
+import { ref } from "vue"
 
-export default {
-  class_input: "",
+var userStore = useUserStore();
+var class_input = ref("");
+var required_classes = ref([]);
+var optional_classes = ref([]);
 
-  data() {
-    return {
-      user_id: "",
-      optional_classes: [],
-      personal_preferences: [],
-      required_classes: [],
-    };
-  },
+//function to add a class to the required classes array
+function add_class_required() {
+  if (class_input !== "") {
+    required_classes.value.push(class_input.value);
+    class_input.value = "";
+  }
+}
 
-  methods: {
-    //function to pass the current user data
-    return_data() {
-      return {
-        user_id: "xyz",
-        optional_classes: this.optional_classes,
-        personal_preferences: [],
-        required_classes: this.required_classes,
-      };
-    },
-    //function to add a class to the required classes array
-    add_class_required() {
-      if (this.class_input !== "") {
-        this.required_classes.push(this.class_input);
-        this.class_input = "";
-      }
-    },
-    //function to add a class to the optional classes array
-    add_class_optional() {
-      if (this.class_input !== "") {
-        this.optional_classes.push(this.class_input);
-        this.class_input = "";
-      }
-    },
-    //function to edit the schedule
-    edit() {
-      //todo edit the schedule
-      if (this.required_classes !== "" || this.optional_classes !== "") {
-      }
-    },
-    //function to submit the schedule to backend
-    submit() {
-      axios
-        .post("http://localhost:3001/api/createschedule", this.return_data())
-        .then((res) => {
-          //maybe wait for a response from server here before loading the next page
-          navigateTo("/app/loading");
-        })
-        .catch((err) => console.error(err));
-    },
-  },
-};
+//function to add a class to the optional classes array
+function add_class_optional() {
+  if (class_input !== "") {
+    optional_classes.value.push(class_input.value);
+    class_input.value = "";
+  }
+}
+
+function addBookmark() {
+  axios.post("http://localhost:3001/api/addBookmark", {
+    user_id: userStore.user_id,
+    class_name: class_input.value,
+  });
+}
+
+//function to submit the schedule to backend
+async function submit() {
+  axios
+    .post("http://localhost:3001/api/createschedule", {
+      user_id: userStore.user_id,
+      required_classes: required_classes.value,
+      optional_classes: optional_classes.value,
+    })
+    .then((res) => {
+      navigateTo("/app/loading");
+    })
+    .catch((err) => console.error(err));
+}
+
 </script>
