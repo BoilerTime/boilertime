@@ -340,11 +340,13 @@ app.post('/api/add/ratings/courses', (req, res) => {
   const prequisiteStrictness = req.body.prequisite_strictness;
   const pace = req.body.pace;
   const depth = req.body.depth;
-  try {
-    courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+  if (!courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth)) {
+    console.log('here sending bad status');
+    res.sendStatus(409);
+  }
+  else {
+    console.log('here sending good status');
     res.sendStatus(200);
-  } catch (err) {
-    res.sendStatus(400);
   }
 })
 
