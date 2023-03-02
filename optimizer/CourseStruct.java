@@ -49,6 +49,10 @@ public class CourseStruct {
     }
 
     public int getCourseDuration(int time) {
-        return timeDuration.get(Integer.valueOf(time));
+        Integer temp = timeDuration.get(time);
+        if(temp == null) {
+            return -1;
+        }
+        return temp.intValue();
     }
 }

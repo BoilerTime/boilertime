@@ -150,4 +150,12 @@ public class Utils {
     public static double LogB(int num, int b) {
         return Math.log(num) / Math.log(2);
     }
+
+    public static String arrToString(int[] arr) {
+        String result = "";
+        for(int i = 0; i < arr.length; i++) {
+            result += arr[i];
+        }
+        return result; 
+    }
 }
