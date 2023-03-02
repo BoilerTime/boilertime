@@ -17,6 +17,9 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
+const courseRatings = require('./components/ratings/courses');
+const classroomRatings = require('./components/ratings/classrooms');
+const taRatings = require('./components/ratings/tas');
 
 
 //Data scraper imports
@@ -53,17 +56,30 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+
+//app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/update/profile', (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
-  const grad_student = req.body.grad_student;
-  const classification_year = req.body.classification_year;
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
+  const isGradStudent = req.body.is_grad_student;
+  const studentClass = utils.getStudentClass(grad_year, grad_month);
   //console.log(user_id + classification_year + firstname + lastname);
-  utils.updateProfile(user_id, classification_year, firstname, lastname);
-  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
+  const classification_year = utils.getStudentClass(grad_year, grad_month);
+  utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+  res.json({user_id: user_id});
+});
+
+app.post('/api/get/profile', async (req, res) => {
+  const user_id = req.body.user_id;
+  try {
+    resObj = await utils.getUserProfile(user_id);
+    res.json(resObj);
+  } catch {
+    res.send(401);
+  }
 });
 
 
@@ -85,6 +101,7 @@ app.post('/api/login', (req, res) => {
     res.sendStatus(401);
   });
 });
+
 
 /**
  * Sends an email to reset the password
@@ -403,6 +420,97 @@ app.post('/api/verifyaccount', (req, res) => {
 })
 
 
+app.post('/api/get/user_ratings/courses', (req, res) => {
+  const user_id = req.body.user_id;
+  courseRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+})
+
+app.post('/api/get/course_ratings/courses', async (req, res) => {
+  const course_name = req.body.course_name;
+  resObj = await courseRatings.getCourseRatings(course_name);
+  res.json(resObj);
+})
+
+
+app.post('/api/add/ratings/courses', async (req, res) => {
+  const course = req.body.course;
+  const user_id = req.body.user_id;
+  const prequisiteStrictness = req.body.prequisite_strictness;
+  const pace = req.body.pace;
+  const depth = req.body.depth;
+  //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+  if (!result) {
+    //console.log('here sending bad status');
+    res.sendStatus(409);
+  }
+  else {
+    //console.log('here sending good status');
+    res.sendStatus(200);
+  }
+});
+
+app.post('/api/get/user_ratings/classrooms', (req, res) => {
+  const user_id = req.body.user_id;
+  classroomRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/add/ratings/classrooms', async (req, res) => {
+  const user_id = req.body.user_id;
+  const classroom = req.body.classroom;
+  const access_conv = req.body.access_conv;
+  const seating_quality = req.body.seating_quality;
+  const technology_avail = req.body.technology_avail;
+  result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
+  if (result) {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(409);
+  }
+});
+
+app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
+  const classroomName = req.body.classroom;
+  classroomRatings.getClassroomRatings(classroomName).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/get/user_ratings/tas', (req, res) => {
+  const user_id = req.body.user_id;
+  taRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/add/ratings/tas', async (req, res) => {
+  const user_id = req.body.user_id;
+  const ta = req.body.ta;
+  const gradingFairness = req.body.grading_fairness;
+  const helpfullness = req.body.helpfullness;
+  const questionAnswering = req.body.question_answering;
+  const responsiveness = req.body.responsiveness;
+  result = await taRatings.addUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness);
+  if (result) {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(409);
+  }
+});
+
+app.post('/api/get/ta_ratings/tas', (req, res) => {
+  const ta = req.body.ta;
+  taRatings.getTARatings(ta).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
@@ -438,7 +546,7 @@ app.post('/api/getgpa', async (req, res) => {
     boilergrades.writeProfessors();
   */
    
-})  
+});  
 
 /*
  * Call for getting an overall gpa from professor 
@@ -460,5 +568,19 @@ app.post('/api/getoverall_gpa', async (req, res) => {
     boilergrades.writeProfessors();
   */
    
-})  
+}); 
 
+app.post('/api/add/flag', async (req, res) => {
+  const type = req.body.type;
+  const user_id = req.body.user_id;
+  const name = req.body.name
+  jsonObj = await utils.addRatingFlag(type, user_id, name)
+
+  if (jsonObj === undefined) {
+    // bad request
+    res.sendStatus(400);
+  }
+  else {
+    res.json(jsonObj);
+  }
+});
