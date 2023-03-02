@@ -54,13 +54,28 @@ public class Population {
     private void seedPopulation() {
         Individual[] startGenes = new Individual[this.generationSize];
         //We're just going to seed this randomly. Not well informed but it's how evolution works
+        int numCourseNameBits =  (int) Math.ceil(Utils.LogB(registeredCourses.length, 2));// + (int) Math.ceil(Math.log(binCourseDurations.size())) ; }
+        int numTimeBits = (int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2));
         for(int i = 0; i < this.generationSize; i++) {
+            String temp = "";
+            //Seed intelligently to place make sure each class name is used.  
+            for(int j = 0; j < registeredCourses.length; j++) {
+                temp += Utils.arrToString(Utils.numToBin(j, numCourseNameBits));
+                for(int k = 0; k < numTimeBits; k++) {
+                    temp += Utils.randInRange(pop, 0, 1);
+                    //System.out.println(temp);
+                }
+            }
+            startGenes[i] = new Individual(temp);
+        }  
+        /*for(int i = 0; i < this.generationSize; i++) {
             String temp = "";
             for(int j = 0; j < this.individualSize; j++){
                 temp += Utils.randInRange(pop, 0, 1);
             }
+            System.out.println(temp);
             startGenes[i] = new Individual(temp);
-        }        
+        }  */     
         genePool.add(new Generation(startGenes, calculateFitnessScores(startGenes)));
     }
 
@@ -83,9 +98,9 @@ public class Population {
         int count = 2;
         int bestFitScore = Integer.MAX_VALUE;
         int k = 0;
-        //while(k < 10) {
+       //while(k < 1) {
             //System.out.println(k);
-        while(bestFitScore != 0 && count <= (int)Math.pow((double)2, (double)individualSize)) {
+       while(bestFitScore != 0 && count <= (int)Math.pow((double)2, (double)individualSize)) {
             Generation b1 = genePool.get(count - 1);
             Generation b2 = genePool.get(count - 2);
             Individual[] b1i = b1.getIndividuals();
@@ -96,6 +111,10 @@ public class Population {
             results[0] = b2.getFittestIndividual().crossOver(b1.getFittestIndividual());
             for(int i = 1; i < results.length; i++) {
                 results[i] = b1i[Utils.randInRange(pop, 0, b1i.length-1)].crossOver(b2i[Utils.randInRange(pop, 0, b2i.length-1)]);
+                if(Utils.randInRange(pop, 0, i) % 2 == 0) {
+                    results[i] = results[i].mutate();
+                }
+                //System.out.println(results[i].getIndividual());
             }
             System.out.println(Arrays.toString(calculateFitnessScores(results)));
             //Next, randomly mix together the two gene pools 
@@ -104,11 +123,12 @@ public class Population {
             if(newMinScore < bestFitScore) {
                 bestFitScore = newMinScore;
             }
-            //k++; 
+            k++; 
             genePool.add(nGen);
-            
+            System.out.println("K = " + k);
             count++;
         }
+        System.out.println("Done!");
     }
 
     private int[] calculateFitnessScores(Individual[] indivs) {
@@ -130,7 +150,8 @@ public class Population {
         HashMap<String, Integer> cCount = new HashMap<String, Integer>();
         //Push each of the IDs and its count into a hashamp 
         for(int i = 0; i < chromosomes.length; i++) {
-            String temp = chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))-1);
+            String temp = chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))));
+            //System.out.println("Course name = " + temp);
             if(cCount.get(temp) == null) {
                 cCount.put(temp, Integer.valueOf(1));
             } else {
@@ -138,7 +159,7 @@ public class Population {
             }
         }
 
-        return Utils.findMaxConflicts(cCount)-1;
+        return Utils.findMaxConflicts(cCount);
     }
 
     private int calculateCourseTimeConflicts(String[] chromosomes) {
@@ -150,7 +171,6 @@ public class Population {
             //System.out.println(chromosomes[i]);
 
             String temp = chromosomes[i].substring(((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))));
-
             if(!binCourseTimes.containsKey(temp)) {
                 return Integer.MAX_VALUE;
             }
