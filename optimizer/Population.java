@@ -74,7 +74,7 @@ public class Population {
             //binCourseTimes.put(Utils.arrToString(Utils.numToBin(i, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
             if(!binCourseTimes.containsValue(Integer.valueOf(courseTimes[i]))) {
                 //System.out.println("Inserting:  " + Integer.valueOf(courseTimes[i]) + " As " + Utils.arrToString(Utils.numToBin(tCount, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))));
-                binCourseTimes.put(Utils.arrToString(Utils.numToBin(tCount, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
+                binCourseTimes.put(Utils.arrToString(Utils.numToBin(tCount, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)-1))), Integer.valueOf(courseTimes[i]));
                 tCount++;
             } 
             //System.out.println("Y " + i + " " + binCourseTimes.size());
