@@ -480,6 +480,47 @@ app.post('/api/add/ratings/courses', async (req, res) => {
   }
 });
 
+
+/*
+ * Call for editing a course rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} course - Name of the course they are rating
+ * @param {number} prequisite_strictness - Rating of how strict the prequisites are out of 5 at rating[0]
+ * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
+ * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
+ */
+app.post('/api/edit/ratings/courses', async (req, res) => {
+  const course = req.body.course;
+  const user_id = req.body.user_id;
+  const prequisiteStrictness = req.body.prequisite_strictness;
+  const pace = req.body.pace;
+  const depth = req.body.depth;
+  //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
+});
+
+/*
+ * Call for editing a course rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} course - Name of the course they are rating
+ */
+app.post('/api/delete/ratings/courses', async (req, res) => {
+  const course = req.body.course;
+  const user_id = req.body.user_id;
+  //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  await courseRatings.deleteUserRating(user_id, course).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
+});
+
 /*
  * Call for getting all ratings user has made for classrooms
  * @param {string} user_id - ID of user
@@ -512,6 +553,44 @@ app.post('/api/add/ratings/classrooms', async (req, res) => {
   else {
     res.sendStatus(409);
   }
+});
+
+/*
+ * Call for editing a classroom rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} classroom - Name of the clasroom they are rating
+ * @param {number} access_conv - Rating of how convenient the access is out of 5 at rating[0]
+ * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
+ * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
+ */
+app.post('/api/edit/ratings/classrooms', async (req, res) => {
+  const user_id = req.body.user_id;
+  const classroom = req.body.classroom;
+  const access_conv = req.body.access_conv;
+  const seating_quality = req.body.seating_quality;
+  const technology_avail = req.body.technology_avail;
+  await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
+});
+
+/*
+ * Call for deleting a classroom rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} classroom - Name of the clasroom they are rating
+ */
+app.post('/api/delete/ratings/classrooms', async (req, res) => {
+  const user_id = req.body.user_id;
+  const classroom = req.body.classroom;
+  await classroomRatings.deleteClassroomRating(user_id, classroom).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
 });
 
 /*
@@ -559,6 +638,46 @@ app.post('/api/add/ratings/tas', async (req, res) => {
   else {
     res.sendStatus(409);
   }
+});
+
+/*
+ * Call for editing a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ * @param {number} gradingFairness - Rating of grading fairness out of 5 at rating[0]
+ * @param {number} helpfullness- Rating of helpfullness out of 5 at rating[1]
+ * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
+ * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
+ */
+app.post('/api/edit/ratings/tas', async (req, res) => {
+  const user_id = req.body.user_id;
+  const ta = req.body.ta;
+  const gradingFairness = req.body.grading_fairness;
+  const helpfullness = req.body.helpfullness;
+  const questionAnswering = req.body.question_answering;
+  const responsiveness = req.body.responsiveness;
+  await taRatings.editUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
+});
+
+/*
+ * Call for deleting a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ */
+app.post('/api/delete/ratings/tas', async (req, res) => {
+  const user_id = req.body.user_id;
+  const ta = req.body.ta;
+  await taRatings.deleteUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness).then(() => {
+    res.sendStatus(200);
+  }).catch((err)=> {
+    console.log(err)
+    res.sendStatus(500)
+  })
 });
 
 /*

@@ -6,7 +6,9 @@ const dayjs = require('dayjs')
 module.exports = {
   getUserRatings,
   addUserRating,
-  getTARatings
+  getTARatings,
+  editUserRating,
+  deleteUserRating
 }
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -42,6 +44,39 @@ async function addUserRating(user_id, ta, gradingFairness, helpfullness, questio
     await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
   }
   return true;
+}
+
+/**
+ * Function for editing a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ * @param {number} gradingFairness - Rating of grading fairness out of 5 at rating[0]
+ * @param {number} helpfullness- Rating of helpfullness out of 5 at rating[1]
+ * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
+ * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
+ */
+async function editUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsivness) {
+  const ratings = await taRatings.where('user_id', '==', user_id).where('ta', '==', ta).get();
+  var rating = [];
+  rating[0] = gradingFairness;
+  rating[1] = helpfullness;
+  rating[2] = questionAnswering;
+  rating[3] = responsivness;
+  ratings.forEach(async doc => {
+    await doc.ref.set({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+  })
+}
+
+/**
+ * Function for deleting a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ */
+async function deleteUserRating(user_id, ta) {
+  const ratings = await taRatings.where('user_id', '==', user_id).where('ta', '==', ta).get();
+  ratings.forEach(async doc => {
+    await doc.ref.delete()
+  })
 }
 
 /*
