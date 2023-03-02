@@ -12,6 +12,7 @@ const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
+const boilergrades = require('./components/datasources/boilergrades.js');
 const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
@@ -53,6 +54,7 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
+
 //app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
 app.post('/api/update/profile', (req, res) => {
   const user_id = req.body.user_id;
@@ -76,7 +78,7 @@ app.post('/api/get/profile', async (req, res) => {
   } catch {
     res.send(401);
   }
-});
+
 
 /*
  * This function lets a user login and generates a jwt token for them
@@ -88,10 +90,9 @@ app.post('/api/login', (req, res) => {
   const password = req.body.password;
 
   jwt.authenticateUser({ email, password }).then(user => {
-    //console.log(user);
-    //console.log(accessToken);
-    console.log(`Login sucessful ${email}`)
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id});
+    console.log(user);
+    console.log(accessToken);
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id });
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
@@ -141,7 +142,7 @@ app.post('/api/resetpassword', (req, res) => {
 /**
  * Query for Professor for RMP
  */
-app.get('/api/ratemyprofessor', (req, res) => {
+app.post('/api/ratemyprofessor', (req, res) => {
   const professor = req.body.prof_name
   utils.getProfessorRating(professor).then( teacher => {
     console.log("Found Teacher in RMP")
@@ -181,26 +182,26 @@ app.get('/api/optimizedschedule', (req, res) => {
       [
         {
           "subject":"CS",
-          "number":"18000",
+          "number":"25200",
           "creditHours":4,
           "description":"Evening exams",
-          "name":"Problem Solving And Object-Oriented Programming",
+          "name":"Systems Programming",
           "meetings":[
             {
-                "instructorName":"Srinivasa Arun Yeragudipati",
+                "instructorName":"Gustavo Rodriguez-Rivera",
                  "startTime":"2023-02-21T20:30:00Z",
                  "duration":"PT1H50M",
-                 "daysOfWeek":["Thursday"],
-                 "type":"Laboratory",
-                 "buildingCode":"HAAS",
-                 "buildingName":"Felix Haas Hall",
-                 "roomNumber":"G056"
+                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                 "type":"Lecture",
+                 "buildingCode":"WALC",
+                 "buildingName":"Wilmeth Active Learning Center",
+                 "roomNumber":"HILER THTR"
            },
            {
-                "instructorName": "Srinivasa Arun Yeragudipati",
+                "instructorName": "Jeffrey A. Turkstra",
                 "startTime":"2023-02-21T20:30:00Z",
                 "duration":"PT1H50M",
-                "daysOfWeek":["Thursday"],
+                "daysOfWeek":["Tuesday"],
                 "type":"Laboratory",
                 "buildingCode":"HAAS",
                 "buildingName":"Felix Haas Hall",
@@ -209,24 +210,92 @@ app.get('/api/optimizedschedule', (req, res) => {
           ]
         },
         {
-          "subject":"POL",
-          "number":"30000",
+          "subject":"CS",
+          "number":"30700",
           "creditHours":3,
           "description":"Evening exams",
-          "name":"Introduction to Data Analytics",
+          "name":"Software Engineering I",
           "meetings":[
             {
-                "instructorName":"Eric Waltenburg",
-                "startTme":"2023-02-21T10:30:00Z",
+                "instructorName":"Jeffrey A. Turkstra",
+                "startTime":"2023-02-21T10:30:00Z",
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"LWSN",
+                "buildingName":"Lawson Computer Science Building",
                 "roomNumber":"B288"
               }
           ]
-        }
+        },
+        {
+          "subject":"ENGL",
+          "number":"10600",
+          "creditHours":4,
+          "description":"Async online",
+          "name":"First-Year Composition",
+          "meetings":[
+            {
+                "instructorName":"Samuel J. Dunn",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"BRNG",
+                "buildingName":"Beering (Steven C.) Hall of Liberal Arts and Education",
+                "roomNumber":"B288"
+            }
+          ]
+        },
+        {
+          "subject":"MA",
+          "number":"16100",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Calculus I",
+          "meetings":[
+            {
+                "instructorName":"Frankie Chan",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"MATH",
+                "buildingName":"Mathematical Sciences Building",
+                "roomNumber":"B288"
+              }
+          ]
+        },
+        {
+          "subject":"EAPS",
+          "number":"12000",
+          "creditHours":4,
+          "description":"Evening exams",
+          "name":"Earth Through Time",
+          "meetings":[
+            {
+                "instructorName":"Nathaniel A. Lifton",
+                "startTime":"2023-02-21T10:30:00Z",
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Lecture",
+                "buildingCode":"PHYS",
+                "buildingName":"Purdue Physics Building",
+                "roomNumber":"B288"
+              },
+              {
+                "instructorName":"Jonathan M. Harbor",
+                "startTime":"2023-02-21T10:30:00Z",
+
+                "duration":"PT1H50M",
+                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "type":"Laboratory",
+                "buildingCode":"CL50",
+                "buildingName":"Class of 1950 Lecture Hall",
+                "roomNumber":"B288"
+              }
+            ]
+          } 
     ]
   })
 })
@@ -283,14 +352,11 @@ app.post('/api/createschedule', (req, res) => {
     res.sendStatus(500);
   });
 })
-
 app.get('/api/getoptimizedschedule', async (req, res) => {
   let schedule = await getSchedule.getSchedule(req.body.user_id);
   console.log(schedule)
   res.send(schedule);
 })
-
-
 
 /**
  * Add bookmark given bookmark and user_id
@@ -387,3 +453,50 @@ function authenticateToken(req, res, next) {
 app.listen(port, () => {
   console.log(`BoilerTime API listening on port ${port}!`)
 })
+
+/*
+ * Call for getting an average gpa from professor 
+ * @param {string} prof_name - Name of the professor of the class 
+ * @param{string} class_name - Name of the class averageGPA is wanted for
+ */
+app.post('/api/getgpa', async (req, res) => {
+  const prof_name = req.body.prof_name;
+  const class_name = req.body.class_name;
+  console.log('Retrieving for ' + prof_name + ' ' + class_name)
+  const averageGPA = await boilergrades.getAverageGPA(prof_name, class_name);
+  if (averageGPA === undefined) {
+    // status 404 could not find class
+    res.sendStatus(404);
+  }
+  else {
+    res.send({averageGPA: averageGPA});
+  }
+
+  /* This call is to write professor4s to db, already done.
+    boilergrades.writeProfessors();
+  */
+   
+})  
+
+/*
+ * Call for getting an overall gpa from professor 
+ * @param {string} prof_name - Name of the professor of the class 
+ */
+app.post('/api/getoverall_gpa', async (req, res) => {
+  const prof_name = req.body.prof_name;
+  console.log('Retrieving for ' + prof_name)
+  const overallGPA = await boilergrades.getOverallGPA(prof_name);
+  if (overallGPA === undefined) {
+    // status 404 could not find class
+    res.sendStatus(404);
+  }
+  else {
+    res.send({overall_gpa: overallGPA});
+  }
+
+  /* This call is to write professor4s to db, already done.
+    boilergrades.writeProfessors();
+  */
+   
+})  
+

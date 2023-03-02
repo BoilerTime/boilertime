@@ -42,7 +42,7 @@ const findExistingUsers = async function (email) {
  */
 async function getProfessorRating(professor) {
   const purdueid = 'U2Nob29sLTc4Mw=='
-  let split = professor.split(" ");
+  let split = professor.replace("-", " ").split(" ");
   while (split.length > 0) {
     const teachers = await ratings.searchTeacher(await concat(split), purdueid)
     if (teachers.length == 0) {
