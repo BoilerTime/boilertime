@@ -144,11 +144,11 @@
       </div>
       <!--Flex grouping for user ratings-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">User Ratings</h1>
+        <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">Bookmarked Classes</h1>
+        <h1 class="font-bold text-2xl mb-5">Bookmarked Classes ❗️</h1>
         <div
           class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4"
         >

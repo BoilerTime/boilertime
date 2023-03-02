@@ -71,12 +71,12 @@
 
         <div class="flex gap-4 mt-5 justify-self-center">
           <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  @click="addBookmark"
-                >
-                  Bookmark
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            @click="addBookmark"
+          >
+            Bookmark
           </button>
-          
+
           <button
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -96,14 +96,22 @@
       </div>
 
       <br />
-      <!--Submit Button-->
-      <button
-        class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-        type="button"
-        @click="submit"
-      >
-        Done
-      </button>
+      <div class="flex justify-self-end gap-4 mt-5">
+        <!--Submit and Cancel Button-->
+        <button
+          class="w-1/8 justify-self-end bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+        >
+          <a href="/app/home"> Cancel </a>
+        </button>
+        <button
+          class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+          @click="submit"
+        >
+          Done
+        </button>
+      </div>
     </div>
   </div>
 </template>
