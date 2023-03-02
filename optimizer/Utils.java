@@ -1,5 +1,4 @@
 package optimizer;
-import java.time.chrono.MinguoDate;
 import java.util.*;
 
 public class Utils {
@@ -8,7 +7,7 @@ public class Utils {
      * An overloaded utility that creates a binary string to match a specifically request length 
      * @param number The number to be converted 
      * @param len The length of thee desired array 
-     * @return An int[] array taht represents the results of the conversion
+     * @return An int[] array that represents the results of the conversion
      */
     public static int[] numToBin(int number, int len) {
         //System.out.println("Hi" + number + " " + Math.log((double) number));
@@ -123,7 +122,7 @@ public class Utils {
             if(s.length() % splitLen == 0 || (s.length() % splitLen != 0 && i != results.length-1)) {
                 results[i] = s.substring(i*splitLen, (i*splitLen) + splitLen);
             } else {
-                System.out.println((i*splitLen));
+                //System.out.println((i*splitLen));
                 results[i] = s.substring(i*splitLen, s.length());
             }
         }
@@ -172,6 +171,11 @@ public class Utils {
         return Math.log(num) / Math.log(2);
     }
 
+    /**
+     * Utility to convert an array of integers to a string that represents each of the entries with no gaps between them (concatenated together)
+     * @param arr The array to be converted
+     * @return The concatenated string. 
+     */
     public static String arrToString(int[] arr) {
         String result = "";
         for(int i = 0; i < arr.length; i++) {
@@ -193,5 +197,20 @@ public class Utils {
             }
         }
         return minValue;
+    }
+
+    /**
+     * Method to determine if a potentially unsorted array contains a certain value. O(n). More than one user does not matter
+     * @param array The array to be checked
+     * @param key The key that is to be searched for 
+     * @return True if the array does contain the value, false if not. 
+     */
+    public static boolean unsortedContains(int[] array, int key) {
+        for(int i = 0; i < array.length; i++) {
+            if(array[i] == key) {
+                return true; 
+            }
+        }
+        return false;
     }
 }
