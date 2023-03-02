@@ -417,6 +417,7 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
+
 app.post('/api/get/user_ratings/courses', (req, res) => {
   const user_id = req.body.user_id;
   courseRatings.getUserRatings(user_id).then((jsonObj) => {
@@ -430,15 +431,22 @@ app.post('/api/get/course_ratings/courses', async (req, res) => {
   res.json(resObj);
 })
 
-app.post('/api/add/ratings/courses', (req, res) => {
-  const rating = req.body.rating;
+
+app.post('/api/add/ratings/courses', async (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
-  try {
-    courseRatings.addUserRating(user_id, course, rating);
+  const prequisiteStrictness = req.body.prequisite_strictness;
+  const pace = req.body.pace;
+  const depth = req.body.depth;
+  //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+  if (!result) {
+    //console.log('here sending bad status');
+    res.sendStatus(409);
+  }
+  else {
+    //console.log('here sending good status');
     res.sendStatus(200);
-  } catch (err) {
-    res.sendStatus(400);
   }
 })
 
