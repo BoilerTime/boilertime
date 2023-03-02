@@ -17,6 +17,14 @@ const utils = require('../utils/utils.js');
 const db = getFirestore()
 const courseRatings = db.collection('ratings').doc('courses').collection('course_ratings');
 
+/*
+ * Function for adding a course rating it also checks for duplcates
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} course - Name of the course they are rating
+ * @param {number} prequisite_strictness - Rating of how strict the prequisites are out of 5 at rating[0]
+ * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
+ * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
+ */
 async function addUserRating(user_id, course, prequisiteStrictness, pace, depth) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   if (await userAlreadyRated(user_id, course)) {
@@ -29,14 +37,17 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     rating[0] = prequisiteStrictness;
     rating[1] = pace;
     rating[2] = depth;
-    await courseRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
+    await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
   }
   return true;
 }
 
-
+/*
+ * Function for getting all ratings user has made for courses 
+ * @param {string} user_id - ID of user
+ */
 async function getUserRatings(user_id) {
-  const userRatings = await classRatings.where('user_id', '==', user_id).get();
+  const userRatings = await courseRatings.where('user_id', '==', user_id).get();
   var jsonObj = {} 
 
   userRatings.forEach(async doc => {
@@ -44,12 +55,18 @@ async function getUserRatings(user_id) {
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     jsonObj[doc.course] = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
   })
   return jsonObj;
 }
 
+/*
+ * This function checks for duplicates - meaning if the user has already given a rating to this course
+ * @param {string} user_id - The ID that is rating a course
+ * @param {string} course - The course that is getting rated
+ */
 async function userAlreadyRated(user_id, course) {
   const ratings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
   if (ratings.empty) {
@@ -58,31 +75,12 @@ async function userAlreadyRated(user_id, course) {
   }
   //console.log('NOT EMPTY');
   return true;
-  /*
-  try {
-  ratings.forEach(async (doc) => {
-    doc = await doc.data();
-    if (doc.course === course) {
-      console.log('found a doc equal ' + doc.course + ' ' + course);
-      throw EarlyExit;
-    }
-  })
-  } catch (exception) {
-    if (exception == EarlyExit) {
-      return false;
-    }
-    else {
-      return true;
-    }
-  }
-    /*
-    then((res) => {
-    return res;
-  }) 
-  */
-  //return false;
 }
 
+/*
+ * Function for getting ratings for certain courses
+ * @param {string} courseName - Name of the course (ex. CS30700) 
+ */
 async function getCourseRatings(courseName) {
   const courseRatings = await courseRatings.where('course', '==', courseName).get(); 
 
@@ -96,7 +94,8 @@ async function getCourseRatings(courseName) {
     json = {}
     json = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
     jArray[count] = (json);
     /*

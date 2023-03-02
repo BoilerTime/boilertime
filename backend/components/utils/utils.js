@@ -6,6 +6,7 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
+const ratingsCollection = db.collection('ratings');
 
 
 /**
@@ -164,7 +165,7 @@ async function reomveBookmark(user_id, class_name) {
 }
 
 /**
- * Remove bookmark
+ * Get bookmark
  * @param {string} user_id - The user_id of the user having their bookmark updated
  * @param {string} class_name - The class_name to add
  */
@@ -177,6 +178,10 @@ async function getBookmarks(user_id) {
   }
 }
 
+/*
+ * This function gets a user profile from db
+ * @param {string} user_id - The ID of user we want to get
+ */
 async function getUserProfile(user_id) {
   const profile = await users.doc(user_id).get();
   doc = await profile.data();
@@ -184,4 +189,24 @@ async function getUserProfile(user_id) {
 
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass};
+/*
+ * This function adds a flag to a rating
+ * @param {string} user_id - ID of the user that rated this rating
+ * @param {string} type - Type of rating (ex. course, classroom, or ta)
+ * @param {string} name - Name of the thing/person getting rated (ex. course: CS30700, classroom: SMTH108, or a ta: Chirayu Garg)
+ */
+async function addRatingFlag(type, user_id, name) {
+  ratingToFlag = await ratingsCollection.doc(type + 's').collection(type + '_ratings').where('user_id', '==', user_id).where(type, '==', name).get();
+  if (ratingToFlag.empty) {
+    return undefined;
+  }
+  var flag_count = 0;
+  ratingToFlag.forEach(async doc => {
+    doc.ref.update({flag_count: doc.data().flag_count + 1});
+    flag_count = doc.data().flag_count;
+  });
+  return {flag_count: flag_count + 1};
+
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag};
