@@ -165,7 +165,7 @@ async function reomveBookmark(user_id, class_name) {
 }
 
 /**
- * Remove bookmark
+ * Get bookmark
  * @param {string} user_id - The user_id of the user having their bookmark updated
  * @param {string} class_name - The class_name to add
  */
