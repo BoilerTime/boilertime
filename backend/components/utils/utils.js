@@ -89,11 +89,10 @@ async function getClassesFromDept(department) {
   return output
 }
 
-async function updateProfile(user_id, new_classification_year, new_firstname, new_lastname) {
-  //console.log(new_user_id + new_classification_year + new_firstname + new_lastname);
+async function updateProfile(user_id, grad_month, grad_year, new_classification_year, new_firstname, new_lastname, isGradStudent) {
 
   const profile = await users.doc(user_id).get();
-  profile.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
+  profile.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname, grad_year: grad_year, grad_month: grad_month, is_grad_student: isGradStudent});
   /*
   profile.forEach(doc => {
     doc.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
@@ -103,8 +102,8 @@ async function updateProfile(user_id, new_classification_year, new_firstname, ne
 
 function getStudentClass(grad_year, grad_month) {
   let current_year = new Date().getFullYear();
-  console.log('this is the current year ' + current_year);
-  if (grad_year - current_year == 4) {
+  //console.log('this is the current year ' + current_year);
+  if (grad_year - current_year >= 4) {
     return 'freshman';
   }
   else if (grad_year - current_year == 3) {
@@ -113,7 +112,7 @@ function getStudentClass(grad_year, grad_month) {
   else if (grad_year - current_year == 2) {
     return 'junior';
   }
-  else if (grad_year - current_year == 1) {
+  else if (grad_year - current_year <= 1) {
     return 'senior';
   }
 }
@@ -185,4 +184,4 @@ async function getUserProfile(user_id) {
 
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile};
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass};
