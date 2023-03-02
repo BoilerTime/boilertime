@@ -32,6 +32,7 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     await courseRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
   }
   return true;
+}
 
 
 async function getUserRatings(user_id) {
