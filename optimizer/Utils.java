@@ -138,8 +138,11 @@ public class Utils {
     public static int findMaxConflicts(HashMap<String, Integer> data) {
         //Go back through the hashmap and find the number of keys whose value > 1
         int conflicts = 0; 
+        //System.out.println("Called");
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             conflicts += entry.getValue().intValue()-1; //If the count is more than one, then there is a conflict
+            //System.out.println(entry.getKey() + " " + entry.getValue().intValue());
+            //System.out.println("Conflicts = " + conflicts);
         }
         return conflicts;
     }
