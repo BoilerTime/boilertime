@@ -1,11 +1,13 @@
 <template>
-  <NavBar />
-  <main class="p-3 bg-gray-200 h-full flex">
-    <div class="p-12" v-if="isDataLoaded">
-      <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
-    </div>
-    <div class="p-12 h-screen bg-gray-200" v-else>
-      <h1>Loading...</h1>
+  <main>
+    <NavBar />
+    <div class="p-3 bg-gray-200 h-full flex">
+      <div class="p-12" v-if="isDataLoaded">
+        <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
+      </div>
+      <div class="p-12 h-screen bg-gray-200" v-else>
+        <h1>Loading...</h1>
+      </div>
     </div>
   </main>
 </template>

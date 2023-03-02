@@ -79,7 +79,7 @@ app.post('/api/login', (req, res) => {
   jwt.authenticateUser({ email, password }).then(user => {
     console.log(user);
     console.log(accessToken);
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, firstname: firstname });
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id });
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
@@ -208,8 +208,8 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"LWSN",
+                "buildingName":"Lawson Computer Science Building",
                 "roomNumber":"B288"
               }
           ]
@@ -227,8 +227,8 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"BRNG",
+                "buildingName":"Beering (Steven C.) Hall of Liberal Arts and Education",
                 "roomNumber":"B288"
             }
           ]
@@ -246,8 +246,8 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"MATH",
+                "buildingName":"Mathematical Sciences Building",
                 "roomNumber":"B288"
               }
           ]
@@ -265,8 +265,8 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"PHYS",
+                "buildingName":"Purdue Physics Building",
                 "roomNumber":"B288"
               },
               {
@@ -276,8 +276,8 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "duration":"PT1H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Laboratory",
-                "buildingCode":"HIKS",
-                "buildingName":"Hicks Undergraduate Library",
+                "buildingCode":"CL50",
+                "buildingName":"Class of 1950 Lecture Hall",
                 "roomNumber":"B288"
               }
             ]
