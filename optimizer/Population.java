@@ -176,8 +176,13 @@ public class Population {
             count++;
         }
         System.out.println("Done After: " + count);
-        this.bestIndividual = fittestIndividual;
-        return fittestIndividual;
+        if(bestFitScore == 0) {
+            this.bestIndividual = fittestIndividual;
+        } else {
+            this.bestIndividual = null;
+        }
+        
+        return this.bestIndividual;
     }
 
     private int[] calculateFitnessScores(Individual[] indivs) {
