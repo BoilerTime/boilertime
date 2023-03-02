@@ -7,6 +7,8 @@
         </a>
       </div>
       <div v-if="isLoggedIn" class="flex items-center justify-end">
+        <a href="/app/profile_page" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Profile</a>
+        <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
       </div>
       <div v-else class="flex items-center justify-end">
@@ -19,8 +21,11 @@
 
 <script setup>
 import { useUserStore } from "../store/user"
+import { ref } from "vue"
 
 let isLoggedIn = false;
+var firstname = ref("")
+var lastname = ref("")
 
 const userStore = useUserStore()
 
@@ -30,5 +35,23 @@ try {
 }
 
 isLoggedIn = userStore.isLoggedIn
+
+async function getUserInfo() {
+  axios
+    .post("http://localhost:3001/api/get/profile/", {
+      user_id: userStore.user_id,
+    })
+    .then((response) => {
+      firstname.value = response.data.firstname;
+      lastname.value = response.data.lastname;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+onMounted(() => {
+  getUserInfo();
+});
 
 </script>
