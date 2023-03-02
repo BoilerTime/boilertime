@@ -399,7 +399,7 @@ app.post('/api/removebookmark', (req, res) => {
  * Add bookmark given bookmark and user_id
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
  */
-app.get('/api/getbookmarks', (req, res) => {
+app.post('/api/getbookmarks', (req, res) => {
   const user_id = req.body.user_id;
   utils.getBookmarks(user_id).then(user => {
     console.log("Retried Bookmarks from Databse")
