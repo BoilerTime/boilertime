@@ -18,7 +18,11 @@
 
       <h1 class="font-light text-left">
         To do so, search for your class in the bar below and mark it as required
-        or optional.
+        or optional and click done once you are finished.
+      </h1>
+      <h1 class="font-light text-left">
+        If you want to come back to a certain class later, you can bookmark it
+        as well and it will be saved for you in your profile page.
       </h1>
       <br />
 
@@ -58,7 +62,6 @@
       </div>
 
       <br />
-
       <!--User interaction group-->
       <!--Do work here for US 7-->
       <div class="grid gap-4 grid-cols-2">
@@ -71,12 +74,12 @@
 
         <div class="flex gap-4 mt-5 justify-self-center">
           <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  @click="addBookmark"
-                >
-                  Bookmark
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            @click="bookmark"
+          >
+            Bookmark
           </button>
-          
+
           <button
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -96,14 +99,22 @@
       </div>
 
       <br />
-      <!--Submit Button-->
-      <button
-        class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-        type="button"
-        @click="submit"
-      >
-        Done
-      </button>
+      <div class="flex justify-self-end gap-4 mt-5">
+        <!--Submit and Cancel Button-->
+        <button
+          class="w-1/8 justify-self-end bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+        >
+          <a href="/app/home"> Cancel </a>
+        </button>
+        <button
+          class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+          @click="submit"
+        >
+          Done
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -112,13 +123,16 @@
 
 <script setup>
 import axios from "axios";
-import { useUserStore } from "~~/store/user";
+import { useUserStore } from "../../store/user";
 import { ref } from "vue";
+import { TransitionRoot } from "@headlessui/vue";
 
 var userStore = useUserStore();
 var class_input = ref("");
 var required_classes = ref([]);
 var optional_classes = ref([]);
+var bookmarked_classes = ref([]);
+var removedBookmark = ref(false);
 
 //function to add a class to the required classes array
 function add_class_required() {
@@ -136,13 +150,31 @@ function add_class_optional() {
   }
 }
 
-function addBookmark() {
-  axios.post("http://localhost:3001/api/addBookmark", {
-    user_id: userStore.user_id,
-    class_name: class_input.value,
-  });
+function bookmark() {
+  axios
+    .post("http://localhost:3001/api/getbookmarks", {
+      user_id: userStore.user_id,
+    })
+    .then((res) => {
+      bookmarked_classes.value = res.data.bookmarks;
+      console.log(bookmarked_classes.value);
+      if (bookmarked_classes.value.includes(class_input.value)) {
+        axios.post("http://localhost:3001/api/removebookmark", {
+          user_id: userStore.user_id,
+          class_name: class_input.value,
+        });
+      }
+      //}
 
-  class_input.value = "";
+      if (!bookmarked_classes.value.includes(class_input.value)) {
+        axios.post("http://localhost:3001/api/addbookmark", {
+          user_id: userStore.user_id,
+          class_name: class_input.value,
+        });
+      }
+      class_input.value = "";
+    })
+    .catch((err) => console.error(err));
 }
 
 //function to submit the schedule to backend

@@ -1,15 +1,15 @@
 <template>
   <div class="h-screen p-16 bg-gray-200">
-
     <!--Transition Container-->
-    <TransitionRoot 
-    :show="isModalVisible"
-    enter="transition duration-100"
-    enter-from="opacity-0"
-    enter-to="opacity-100 z-index-50"
-    leave="transition duration-100"
-    leave-from="opacity-100"
-    leave-to="opacity-0">
+    <TransitionRoot
+      :show="isModalVisible"
+      enter="transition duration-100"
+      enter-from="opacity-0"
+      enter-to="opacity-100 z-index-50"
+      leave="transition duration-100"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
       <!--Edit Profile Modal-->
       <Modal @closed="closeModal">
         <template #header>
@@ -41,7 +41,9 @@
             </div>
             <div class="flex flex-row gap-4 place-content-center">
               <div class="flex flex-col gap-4">
-                <label for="gradMonth" class="font-bold">Graduation Month</label>
+                <label for="gradMonth" class="font-bold"
+                  >Graduation Month</label
+                >
                 <select
                   id="gradMonth"
                   v-model="gradMonth"
@@ -91,14 +93,16 @@
                 </select>
               </div>
               <div class="flex flex-col gap-4">
-                <label for="isGradStudent" class="font-bold justify-end">Graduate Student</label>
+                <label for="isGradStudent" class="font-bold justify-end"
+                  >Graduate Student</label
+                >
                 <button
                   id="isGradStudent"
                   @click="isGradStudent = !isGradStudent"
                   class="border rounded-lg p-2 bg-blue-500 hover:bg-blue-700 text-white"
                 >
                   {{ isGradStudent ? "Yes" : "No" }}
-               </button>
+                </button>
               </div>
             </div>
           </div>
@@ -140,13 +144,23 @@
       </div>
       <!--Flex grouping for user ratings-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">User Ratings</h1>
+        <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">Bookmarked Classes</h1>
-        <div class="bg-gray-300 rounded-lg flex flex-row max-w-full mb-5 mt-5 p-4">
-          
+        <h1 class="font-bold text-2xl mb-5">Bookmarked Classes ❗️</h1>
+        <div
+          class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4"
+        >
+          <ul class="list-inside list-item">
+            <li
+              class="mb-2 font-bold"
+              v-for="(item, index) in bookmarkedClasses"
+              :key="index"
+            >
+              {{ item }}
+            </li>
+          </ul>
         </div>
       </div>
       <!--Edit Profile Button-->
@@ -178,12 +192,12 @@ import { TransitionRoot } from "@headlessui/vue";
 
 var userStore = useUserStore();
 var isModalVisible = ref(false);
-//var userID = ref("");
 var firstname = ref("");
 var lastname = ref("");
 var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
+var bookmarkedClasses = ref([]);
 
 function showModal() {
   isModalVisible.value = true;
@@ -191,6 +205,20 @@ function showModal() {
 
 function closeModal() {
   isModalVisible.value = false;
+}
+
+async function getBookmarks() {
+  axios
+    .post("http://localhost:3001/api/getbookmarks", {
+      user_id: userStore.user_id,
+    })
+    .then((response) => {
+      console.log(response.data.bookmarks);
+      bookmarkedClasses.value = response.data.bookmarks;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 async function getUserInfo() {
@@ -231,6 +259,10 @@ async function submit() {
 
 onMounted(() => {
   getUserInfo();
+});
+
+onMounted(() => {
+  getBookmarks();
 });
 
 </script>
