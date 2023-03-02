@@ -78,6 +78,7 @@ app.post('/api/get/profile', async (req, res) => {
   } catch {
     res.send(401);
   }
+});
 
 
 /*
@@ -499,4 +500,3 @@ app.post('/api/getoverall_gpa', async (req, res) => {
   */
    
 })  
-
