@@ -33,7 +33,7 @@ public class RunSimulation {
         Population testPopulation = new Population(courses);
         testPopulation.getFittestIndividual();
         System.out.println(testPopulation);
-        System.out.println(testPopulation.getFittestIndividual().getIndividual());
+        System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, testPopulation.getFittestIndividual()));
     }
 
     /**

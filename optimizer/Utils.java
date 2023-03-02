@@ -7,7 +7,7 @@ public class Utils {
      * An overloaded utility that creates a binary string to match a specifically request length 
      * @param number The number to be converted 
      * @param len The length of thee desired array 
-     * @return An int[] array taht represents the results of the conversion
+     * @return An int[] array that represents the results of the conversion
      */
     public static int[] numToBin(int number, int len) {
         //System.out.println("Hi" + number + " " + Math.log((double) number));

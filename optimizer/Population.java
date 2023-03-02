@@ -249,7 +249,19 @@ public class Population {
         return numStartConflicts+numDurationConflicts;
     }
 
+    private int calculateCourseMismatches(String[] chromosome) {
+
+    }
+
     public Individual getBestIndividual() {
         return bestIndividual;
+    }
+
+    public CourseStruct[] getRegisteredCourses() {
+        return this.registeredCourses;
+    }
+
+    public HashMap<String, Integer> getBinCourseTimes() {
+        return this.binCourseTimes;
     }
 }

@@ -44,6 +44,7 @@ public class CourseStruct {
 
     private void pushToHashMap() {
         for(int i = 0; i < courseTimes.length; i++) {
+            System.out.println(courseTimes[i] + " " +courseDurations[i] + " " + courseName);
             timeDuration.put(Integer.valueOf(courseTimes[i]), Integer.valueOf(courseDurations[i]));
         }
     }
