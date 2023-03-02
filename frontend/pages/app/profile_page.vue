@@ -173,14 +173,14 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 
-const userStore = useUserStore();
-const isModalVisible = ref(false);
-const userID = ref("xyz");
-const firstname = ref("John");
-const lastname = ref("Doe");
-const gradMonth = ref("May");
-const gradYear = ref(2023);
-const isGradStudent = ref(false);
+var userStore = useUserStore();
+var isModalVisible = ref(false);
+//var userID = ref("");
+var firstname = ref("");
+var lastname = ref("");
+var gradMonth = ref("");
+var gradYear = ref();
+var isGradStudent = ref();
 
 function showModal() {
   isModalVisible.value = true;
@@ -190,23 +190,11 @@ function closeModal() {
   isModalVisible.value = false;
 }
 
-function return_data() {
-
-  return {
-
-    firstname: this.firstname,
-    lastname: this.lastname,
-    gradMonth: this.gradMonth,
-    gradYear: this.gradYear,
-    isGradStudent: this.isGradStudent,
-
-  };
-
-}
-
 async function getUserInfo() {
   axios
-    .post("http://localhost:3001/api/get/profile/", userStore.user_id())
+    .post("http://localhost:3001/api/get/profile/", {
+      user_id: userStore.user_id,
+    })
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
@@ -221,7 +209,15 @@ async function getUserInfo() {
 
 async function submit() {
   axios
-    .post("http://localhost:3001/api/update/profile", userStore.user_id(), return_data())
+    .post("http://localhost:3001/api/update/profile", {
+      user_id: userStore.user_id,
+      firstname: firstname.value,
+      lastname: lastname.value,
+      classification_year: "Freshman",
+      grad_month: gradMonth.value,
+      grad_year: gradYear.value,
+      is_grad_student: isGradStudent.value,
+    })
     .then((response) => {
       isModalVisible.value = false;
     })
@@ -229,4 +225,9 @@ async function submit() {
       console.error(error);
     });
 }
+
+onMounted(() => {
+  getUserInfo();
+});
+
 </script>
