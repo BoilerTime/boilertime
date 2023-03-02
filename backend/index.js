@@ -17,8 +17,9 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
-const courseRatings = require('./components/ratings/courses')
-const classroomRatings = require('./components/ratings/classrooms')
+const courseRatings = require('./components/ratings/courses');
+const classroomRatings = require('./components/ratings/classrooms');
+const taRatings = require('./components/ratings/tas');
 
 
 //Data scraper imports
@@ -476,6 +477,36 @@ app.post('/api/add/ratings/classrooms', async (req, res) => {
 app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
   const classroomName = req.body.classroom;
   classroomRatings.getClassroomRatings(classroomName).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/get/user_ratings/tas', (req, res) => {
+  const user_id = req.body.user_id;
+  taRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/add/ratings/tas', async (req, res) => {
+  const user_id = req.body.user_id;
+  const ta = req.body.ta;
+  const gradingFairness = req.body.grading_fairness;
+  const helpfullness = req.body.helpfullness;
+  const questionAnswering = req.body.question_answering;
+  const responsiveness = req.body.responsiveness;
+  result = await taRatings.addUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness);
+  if (result) {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(409);
+  }
+});
+
+app.post('/api/get/ta_ratings/tas', (req, res) => {
+  const ta = req.body.ta;
+  taRatings.getTARatings(ta).then((jsonObj) => {
     res.json(jsonObj);
   });
 });
