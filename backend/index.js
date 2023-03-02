@@ -17,7 +17,7 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
-const courseRatings = require('./components/ratings/courses')
+const courseRatings = require('./components/ratings/courses');
 
 
 //Data scraper imports
@@ -448,7 +448,7 @@ app.post('/api/add/ratings/courses', async (req, res) => {
     //console.log('here sending good status');
     res.sendStatus(200);
   }
-})
+});
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
