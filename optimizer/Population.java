@@ -18,7 +18,8 @@ public class Population {
         addCourses(course);
         pop = new Random();
         individualSize = calculateIndividualSize();
-
+        System.out.println("Size " + individualSize);
+        System.out.println("Done COnfiguring");
     }
 
     private void addCourses(CourseOverview[] course) {
@@ -26,7 +27,7 @@ public class Population {
         int totalDurations = 0;
         for(int i = 0; i<course.length; i++) {
             System.out.println(Arrays.toString(Utils.numToBin(i)));
-            registeredCourses[i] = new CourseStruct(course[i], Arrays.toString(Utils.numToBin(i, (int) Math.ceil(Math.log(course.length)+1))));
+            registeredCourses[i] = new CourseStruct(course[i], Arrays.toString(Utils.numToBin(i, (int) Math.ceil(Utils.LogB(course.length, 2)+1))));
             System.out.println(registeredCourses[i].getBinaryID());
             totalTimes += course[i].getCourseTimes().length;
             totalDurations += course[i].getCourseDurations().length;
@@ -44,23 +45,9 @@ public class Population {
         }
         Arrays.sort(courseTimes);
         for(int i = 0; i < courseTimes.length; i++) {
-            binCourseTimes.put(Arrays.toString(Utils.numToBin(i)), Integer.valueOf(courseTimes[i]));
+            binCourseTimes.put(Arrays.toString(Utils.numToBin(i, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
+            //System.out.println("Y " + i + " " + binCourseTimes.size());
         }
-
-        /*
-         * Get all the course durations, and then put them into a binary hashmap 
-         *
-        int[] courseDurations = new int[totalDurations];
-        totalCount = 0;
-        for(int i = 0; i < course.length; i++){
-            for(int j = 0; j < course[i].getCourseDurations().length; j++) {
-                courseDurations[totalCount++] = course[i].getCourseDurations()[j];
-            }
-        }
-        Arrays.sort(courseDurations);
-        for(int i = 0; i < courseDurations.length; i++) {
-            binCourseDurations.put(Arrays.toString(Utils.numToBin(i)), Integer.valueOf(courseDurations[i]));
-        }*/
     }
 
     private void seedPopulation() {
@@ -72,20 +59,22 @@ public class Population {
                 temp += Utils.randInRange(pop, 0, 1);
             }
             startGenes[i] = new Individual(temp);
-        }
-        genePool.add(new Generation(startGenes));
+        }        
+        genePool.add(new Generation(startGenes, calculateFitnessScores(startGenes)));
     }
 
 
 
     public Individual getFittestIndividual() {
         seedPopulation();
-        evolve();
+        //evolve();
         return this.genePool.get(0).getFittestIndividual();
     }
 
     private int calculateIndividualSize() {
-        return registeredCourses.length + (int) Math.ceil(Math.log(binCourseTimes.size()));// + (int) Math.ceil(Math.log(binCourseDurations.size())) ; 
+        System.out.println(registeredCourses.length + " " + (int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2)));
+        System.out.print(Utils.LogB(binCourseTimes.size(), 2));
+        return registeredCourses.length + (int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2));// + (int) Math.ceil(Math.log(binCourseDurations.size())) ; 
     }
 
     private void evolve() {
@@ -99,6 +88,7 @@ public class Population {
             int indivScore = 0;
             //Get each chromosome (course) out of each individual to check for matches
             String[] chromosomes = Utils.splitString(indivs[i].getIndividual(), individualSize/registeredCourses.length);
+            System.out.println(individualSize);
             indivScore += 10*calculateCourseNameConflicts(chromosomes);
             compositeScores[i] = indivScore;
             indivScore += 100*calculateCourseTimeConflicts(chromosomes);
@@ -110,7 +100,7 @@ public class Population {
         HashMap<String, Integer> cCount = new HashMap<String, Integer>();
         //Push each of the IDs and its count into a hashamp 
         for(int i = 0; i < chromosomes.length; i++) {
-            String temp = chromosomes[i].substring(0, ((int) Math.ceil(Math.log(registeredCourses.length)))-1);
+            String temp = chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))-1);
             if(cCount.get(temp) == null) {
                 cCount.put(temp, Integer.valueOf(1));
             } else {
@@ -127,11 +117,12 @@ public class Population {
         int[][] courseTimes = new int[chromosomes.length][2];
         int[] courseIDs = new int[chromosomes.length];
         for(int i = 0; i < chromosomes.length; i++) {
-            String temp = chromosomes[i].substring(((int) Math.ceil(Math.log(registeredCourses.length))), (((int) Math.ceil(Math.log(registeredCourses.length))) + ((int) Math.ceil(Math.log(binCourseTimes.size()))) -1));
+            System.out.println(i);
+            String temp = chromosomes[i].substring(((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))), (((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))) + ((int) Math.ceil(Math.log(binCourseTimes.size()))) -1));
             //Commit the course times to an array
             courseTimes[i][0] = binCourseTimes.get(temp);//Utils.binStringToNum(temp);
             //Commit the course names to an array 
-            courseIDs[i] = Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Math.log(registeredCourses.length)))-1));
+            courseIDs[i] = Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))-1));
             if(sTimeCounts.get(temp) == null) {
                 sTimeCounts.put(temp, Integer.valueOf(1));
             } else {

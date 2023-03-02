@@ -140,4 +140,14 @@ public class Utils {
         }
         return result;
     }
+
+    /**
+     * Returns the log_n of a given number 
+     * @param num The number for the logarithm
+     * @param b The base of the logarithm
+     * @return The result of the logarithm 
+     */
+    public static double LogB(int num, int b) {
+        return Math.log(num) / Math.log(2);
+    }
 }
