@@ -36,7 +36,7 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
 
 
 async function getUserRatings(user_id) {
-  const userRatings = await classRatings.where('user_id', '==', user_id).get();
+  const userRatings = await courseRatings.where('user_id', '==', user_id).get();
   var jsonObj = {} 
 
   userRatings.forEach(async doc => {
