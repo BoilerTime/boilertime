@@ -79,6 +79,7 @@
     } catch (error) {
       // temp alert
       alert("Incorrect username or password")
+      password.value = null
     }
   }
 </script>

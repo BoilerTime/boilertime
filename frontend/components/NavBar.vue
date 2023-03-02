@@ -7,6 +7,7 @@
         </a>
       </div>
       <div v-if="isLoggedIn" class="flex items-center justify-end">
+        <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
       </div>
       <div v-else class="flex items-center justify-end">
