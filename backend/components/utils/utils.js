@@ -7,6 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 
+
 /**
  * Get the user_id given the email
  * @param {string} email - The email that the user wants to find the user_id for
@@ -22,7 +23,6 @@ async function getUID({ email }) {
     return (user_id = doc.data().user_id);
   });
 }
-
 /** 
   * Utilility for finding if any users exist by email
   * @param {string} email - The email that needs to be found in the server
@@ -89,6 +89,34 @@ async function getClassesFromDept(department) {
   return output
 }
 
+async function updateProfile(user_id, grad_month, grad_year, new_classification_year, new_firstname, new_lastname, isGradStudent) {
+
+  const profile = await users.doc(user_id).get();
+  profile.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname, grad_year: grad_year, grad_month: grad_month, is_grad_student: isGradStudent});
+  /*
+  profile.forEach(doc => {
+    doc.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});
+  });
+  */
+}
+
+function getStudentClass(grad_year, grad_month) {
+  let current_year = new Date().getFullYear();
+  //console.log('this is the current year ' + current_year);
+  if (grad_year - current_year >= 4) {
+    return 'freshman';
+  }
+  else if (grad_year - current_year == 3) {
+    return 'sophomore';
+  }
+  else if (grad_year - current_year == 2) {
+    return 'junior';
+  }
+  else if (grad_year - current_year <= 1) {
+    return 'senior';
+  }
+}
+
 /*
  * Update the password 
  * @param {string} user_id - The user_id of the user having their password updated
@@ -149,4 +177,11 @@ async function getBookmarks(user_id) {
   }
 }
 
-module.exports = { getUID, findExistingUsers, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept };
+async function getUserProfile(user_id) {
+  const profile = await users.doc(user_id).get();
+  doc = await profile.data();
+  return {firstname: doc.firstname, lastname: doc.lastname, grad_month: doc.grad_month, grad_year: doc.grad_year, is_grad_student: doc.is_grad_student}
+
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass};

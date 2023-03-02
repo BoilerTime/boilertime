@@ -17,6 +17,7 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
+const courseRatings = require('./components/ratings/courses')
 
 
 //Data scraper imports
@@ -53,18 +54,30 @@ app.get('/api', (req, res) => {
  * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
  * @param {string} email - print the email of user to test correct user
  */
-app.get('/api/profile', jwt.authenticateToken, (req, res) => {
+
+//app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/update/profile', (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
-  const grad_student = req.body.grad_student;
-  const classification_year = req.body.classification_year;
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
+  const isGradStudent = req.body.is_grad_student;
+  const studentClass = utils.getStudentClass(grad_year, grad_month);
   //console.log(user_id + classification_year + firstname + lastname);
-  utils.updateProfile(user_id, classification_year, firstname, lastname);
-  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
+  const classification_year = utils.getStudentClass(grad_year, grad_month);
+  utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+  res.json({user_id: user_id});
 });
+
+app.post('/api/get/profile', async (req, res) => {
+  const user_id = req.body.user_id;
+  try {
+    resObj = await utils.getUserProfile(user_id);
+    res.json(resObj);
+  } catch {
+    res.send(401);
+  }
 
 
 /*
@@ -85,6 +98,7 @@ app.post('/api/login', (req, res) => {
     res.sendStatus(401);
   });
 });
+
 
 /**
  * Sends an email to reset the password
@@ -402,7 +416,30 @@ app.post('/api/verifyaccount', (req, res) => {
   })
 })
 
+app.post('/api/get/user_ratings/courses', (req, res) => {
+  const user_id = req.body.user_id;
+  courseRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+})
 
+app.post('/api/get/course_ratings/courses', async (req, res) => {
+  const course_name = req.body.course_name;
+  resObj = await courseRatings.getCourseRatings(course_name);
+  res.json(resObj);
+})
+
+app.post('/api/add/ratings/courses', (req, res) => {
+  const rating = req.body.rating;
+  const course = req.body.course;
+  const user_id = req.body.user_id;
+  try {
+    courseRatings.addUserRating(user_id, course, rating);
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(400);
+  }
+})
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
