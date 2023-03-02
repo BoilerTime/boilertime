@@ -169,7 +169,7 @@ async function signup() {
       })
       .catch(function (error) {
         console.error();
-        alert(error);
+        alert("Email Invalid or Already Exists");
       });
   } else {
     alert("Passwords do not match")
