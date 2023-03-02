@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class RunSimulation {
     public static void main(String[] args) {
         //System.out.println(args[0]);
-        Individual c1 = new Individual("100000011011010100101");
+        /*Individual c1 = new Individual("100000011011010100101");
         Individual c2 = new Individual("011101101010011111110");
         Individual[] population = new Individual[5];
         population = c1.crossOver(c2);
@@ -15,8 +15,10 @@ public class RunSimulation {
         int[] times = {1200, 1400, 1600};
         int[] durations = {50, 50, 50};
         CourseStruct i1 = new CourseStruct("CS180", "100000011011010100101", times, durations);
-        System.out.println(i1);
-        /*CourseOverview[] courses = new CourseOverview[3];
+        System.out.println(i1);*/
+
+
+        CourseOverview[] courses = new CourseOverview[3];
         int[] times1 = {1200, 1400, 1600};
         int[] durations1 = {50, 50, 50};
         courses[0] = new CourseOverview("CS180", times1, durations1);
@@ -29,7 +31,7 @@ public class RunSimulation {
         Population testPopulation = new Population(courses);
         testPopulation.getFittestIndividual();
         System.out.println(testPopulation);
-        System.out.println(testPopulation.getFittestIndividual().getIndividual());*/
+        System.out.println(testPopulation.getFittestIndividual().getIndividual());
     }
 
     /**

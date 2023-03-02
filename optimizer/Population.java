@@ -67,28 +67,32 @@ public class Population {
 
 
     public Individual getFittestIndividual() {
+        //We need two initial generations to breed together in the future
+        seedPopulation();
         seedPopulation();
         evolve();
-        for(int i = 0; i < 10; i++) {
-            seedPopulation();
-            System.out.println(Arrays.toString(this.genePool.get(i).getFittnessScores()));
-        }
-
         return this.genePool.get(0).getFittestIndividual();
     }
 
     private int calculateIndividualSize() {
-        /*System.out.println("OwO " + Math.ceil(Utils.LogB(registeredCourses.length, 2)));
-        System.out.println((int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2)));
-        System.out.println(registeredCourses.length * ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)) + ((int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2)))));*/
         return registeredCourses.length * ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)) + ((int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2))));// + (int) Math.ceil(Math.log(binCourseDurations.size())) ; 
     }
 
     private void evolve() {
-        int count = 0;
+        int count = 2;
         int bestFitScore = Integer.MAX_VALUE;
+         
         while(bestFitScore == 0 || count == (int)Math.pow((double)2, (double)individualSize)) {
-            
+            Generation b1 = genePool.get(count - 1);
+            Generation b2 = genePool.get(count - 2);
+            //Make a larger than necessary gene pool that can then be quelled 
+            Individual[] results = new Individual[2 * generationSize];
+            //First, do a high-high crossing
+            results[0] = b2.getFittestIndividual().crossOver(b1.getFittestIndividual());
+            for(int i = 1; i < results.length; i++) {
+
+            }
+            //Next, randomly mix together the two gene pools 
         }
     }
 

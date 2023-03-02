@@ -17,24 +17,27 @@ public class Individual {
      * @param c2 The second Individual that is to be crossed over
      * @return A new Individual that represents the results of the cross 
      */
-    public Individual[] crossOver(Individual c2) {
+    public Individual crossOver(Individual c2) {
         String cr2 = c2.getIndividual();
         int crossLength = Math.min(IndividualMakeUp.length(), cr2.length()); //We can only crossover based on the length of the shortest Individual. Any extraneous portion will go un-evolved
         int startPosition = Utils.randInRange(r, 0, crossLength-1); //Only start from the position one before the end of the Individual
         int endPosition = Utils.randInRange(r, startPosition, crossLength); //We need a positive range to cut that starts and start position and ends at or prior to the length of the Individual
         //String c1Segment = IndividualMakeUp.substring(startPosition, endPosition);
-        Individual[] results = new Individual[2];
         char crh1[] = getCharIndividual(IndividualMakeUp);
         char crh2[] = getCharIndividual(cr2);
-        for(int i = startPosition; i < endPosition; i++) {
-            
-            char temp = crh1[i];
-            crh1[i] = crh2[i];
-            crh2[i] = temp;
+        char[] results = new char[cr2.length()];
+        for(int i = 0; i < results.length; i++) {
+            if(i < startPosition) {
+                results[i] = crh1[i];
+            } else {
+                if((Utils.randInRange(r, 0, i) + endPosition) % 2 == 0) {
+                    results[i] = crh2[i];
+                } else {
+                    results[i] = crh1[i];
+                }
+            }
         }
-        results[0] = new Individual(new String(crh1));
-        results[1] = new Individual(new String(crh2));
-        return results;
+        return new Individual(new String(results));
     }
 
     /**
