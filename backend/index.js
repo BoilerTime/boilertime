@@ -451,13 +451,25 @@ app.post('/api/add/ratings/courses', async (req, res) => {
   }
 });
 
+app.post('/api/get/user_ratings/classrooms', (req, res) => {
+  const user_id = req.body.user_id;
+  classroomRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
 app.post('/api/add/ratings/classrooms', async (req, res) => {
   const classroom = req.body.classroom;
   const user_id = req.body.user_id;
   const rating = req.body.rating;
-  await classroomRatings.addClassroomRating(rating, user_id, classroom);
-  res.sendStatus(200);
-})
+  result = await classroomRatings.addClassroomRating(rating, user_id, classroom);
+  if (result) {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(409);
+  }
+});
 
 function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];

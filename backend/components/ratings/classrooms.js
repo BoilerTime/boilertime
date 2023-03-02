@@ -18,21 +18,34 @@ const classroomRatings = db.collection('ratings').doc('classrooms').collection('
 async function addClassroomRating(rating, user_id, classroom) {
   if (!(await userAlreadyRated(user_id))) {
     await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
+    return true;
   }
   else {
-    return undefined;
+    return false;
   }
 }
 
-async function userAlreadyRated(user_id, classroom) {
-  const ratings = await classroomRatings.where('user_id', '==', user_id).get();
+async function getUserRatings(user_id) {
+  const userRatings = await classroomRatings.where('user_id', '==', user_id).get();
+  var jsonObj = {}
 
-  ratings.forEach(async doc => {
+  userRatings.forEach(async doc => {
     doc = await doc.data();
-    if (doc.classroom == classroom) {
-      return true;
+    newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
+    jsonObj[doc.course] = {
+      "rating": doc.rating,
+      "timestamp": newDate.toDateString()
     }
   })
-  return false;
+  return jsonObj;
+}
+
+async function userAlreadyRated(user_id, classroom) {
+  const ratings = await classroomRatings.where('user_id', '==', user_id).where('classroom', '==', classroom).get();
+
+  if (ratings.empty) {
+    return false;
+  }
+  return true;
 }
   
