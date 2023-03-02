@@ -24,7 +24,7 @@ const taRatings = require('./components/ratings/tas');
 
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
-//purdueio.purdueios();
+//purdueio.buildingsAndRooms();
 
 app.use(express.json());
 
