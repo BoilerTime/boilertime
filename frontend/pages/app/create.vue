@@ -71,11 +71,12 @@
 
         <div class="flex gap-4 mt-5 justify-self-center">
           <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            @click="addBookmark"
-          >
-            Bookmark
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  @click="addBookmark"
+                >
+                  Bookmark
           </button>
+          
           <button
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -112,7 +113,7 @@
 <script setup>
 import axios from "axios";
 import { useUserStore } from "~~/store/user";
-import { ref } from "vue"
+import { ref } from "vue";
 
 var userStore = useUserStore();
 var class_input = ref("");
@@ -140,6 +141,8 @@ function addBookmark() {
     user_id: userStore.user_id,
     class_name: class_input.value,
   });
+
+  class_input.value = "";
 }
 
 //function to submit the schedule to backend
@@ -155,5 +158,4 @@ async function submit() {
     })
     .catch((err) => console.error(err));
 }
-
 </script>
