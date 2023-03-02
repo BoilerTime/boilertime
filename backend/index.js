@@ -177,7 +177,7 @@ app.get('/api/optimizedschedule', (req, res) => {
                 "instructorName":"Gustavo Rodriguez-Rivera",
                  "startTime":"2023-02-21T20:30:00Z",
                  "duration":"PT1H50M",
-                 "daysOfWeek":["Monday, Wednesday, Friday"],
+                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                  "type":"Lecture",
                  "buildingCode":"WALC",
                  "buildingName":"Wilmeth Active Learning Center",

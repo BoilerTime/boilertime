@@ -37,7 +37,6 @@
   })
 
   async function getgpa(prof_name, class_name) {
-    console.log("THE FUNCTION IS RECEIVING: " + prof_name + " " + class_name)
     const response = await axios.post('http://localhost:3001/api/getgpa', {
       "prof_name": prof_name,
       "class_name": class_name
