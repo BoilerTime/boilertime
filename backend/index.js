@@ -459,16 +459,25 @@ app.post('/api/get/user_ratings/classrooms', (req, res) => {
 });
 
 app.post('/api/add/ratings/classrooms', async (req, res) => {
-  const classroom = req.body.classroom;
   const user_id = req.body.user_id;
-  const rating = req.body.rating;
-  result = await classroomRatings.addClassroomRating(rating, user_id, classroom);
+  const classroom = req.body.classroom;
+  const access_conv = req.body.access_conv;
+  const seating_quality = req.body.seating_quality;
+  const technology_avail = req.body.technology_avail;
+  result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
   if (result) {
     res.sendStatus(200);
   }
   else {
     res.sendStatus(409);
   }
+});
+
+app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
+  const classroomName = req.body.classroom;
+  classroomRatings.getClassroomRatings(classroomName).then((jsonObj) => {
+    res.json(jsonObj);
+  });
 });
 
 function authenticateToken(req, res, next) {

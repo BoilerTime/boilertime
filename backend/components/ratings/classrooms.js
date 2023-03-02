@@ -4,7 +4,9 @@ const dayjs = require('dayjs')
 //Firebase Imports Only
 //
 module.exports = {
-  addClassroomRating
+  addClassroomRating,
+  getUserRatings,
+  getClassroomRatings
 }
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -15,8 +17,12 @@ const utils = require('../utils/utils.js');
 const db = getFirestore()
 const classroomRatings = db.collection('ratings').doc('classrooms').collection('classroom_ratings');
 
-async function addClassroomRating(rating, user_id, classroom) {
-  if (!(await userAlreadyRated(user_id))) {
+async function addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+  if (!(await userAlreadyRated(user_id, classroom))) {
+    var rating = [];
+    rating[0] = access_conv;
+    rating[1] = seating_quality;
+    rating[2] = technology_avail;
     await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
     return true;
   }
@@ -32,12 +38,40 @@ async function getUserRatings(user_id) {
   userRatings.forEach(async doc => {
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
-    jsonObj[doc.course] = {
+    jsonObj[doc.classroom] = {
       "rating": doc.rating,
       "timestamp": newDate.toDateString()
     }
   })
   return jsonObj;
+}
+
+async function getClassroomRatings(classroom) {
+  const ratings = await classroomRatings.where('classroom', '==', classroom).get();
+
+  var jsonObj = {};
+
+  let count = 0
+  jArray = [];
+  ratings.forEach(async doc => {
+    doc = await doc.data();
+    newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
+    json = {}
+    json = {
+      "rating": doc.rating,
+      "timestamp": newDate.toDateString()
+    }
+    jArray[count] = (json);
+    /*
+    jsonObj['rating ' + count] = {
+      "rating": doc.rating,
+      "timestamp": newDate.toDateString()
+    }
+    */
+    count+=1;
+  })
+  return jArray;
+  
 }
 
 async function userAlreadyRated(user_id, classroom) {
