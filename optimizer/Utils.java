@@ -123,7 +123,7 @@ public class Utils {
             if(s.length() % splitLen == 0 || (s.length() % splitLen != 0 && i != results.length-1)) {
                 results[i] = s.substring(i*splitLen, (i*splitLen) + splitLen);
             } else {
-                System.out.println((i*splitLen));
+                //System.out.println((i*splitLen));
                 results[i] = s.substring(i*splitLen, s.length());
             }
         }
@@ -141,8 +141,8 @@ public class Utils {
         //System.out.println("Called");
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             conflicts += entry.getValue().intValue()-1; //If the count is more than one, then there is a conflict
-            System.out.println("UwU" + entry.getKey() + " " + entry.getValue().intValue());
-            System.out.println("Conflicts = " + conflicts);
+            //System.out.println(entry.getKey() + " " + entry.getValue().intValue());
+            //System.out.println("Conflicts = " + conflicts);
         }
         return conflicts;
     }
