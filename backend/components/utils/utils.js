@@ -178,6 +178,10 @@ async function getBookmarks(user_id) {
   }
 }
 
+/*
+ * This function gets a user profile from db
+ * @param {string} user_id - The ID of user we want to get
+ */
 async function getUserProfile(user_id) {
   const profile = await users.doc(user_id).get();
   doc = await profile.data();
@@ -185,7 +189,12 @@ async function getUserProfile(user_id) {
 
 }
 
-
+/*
+ * This function adds a flag to a rating
+ * @param {string} user_id - ID of the user that rated this rating
+ * @param {string} type - Type of rating (ex. course, classroom, or ta)
+ * @param {string} name - Name of the thing/person getting rated (ex. course: CS30700, classroom: SMTH108, or a ta: Chirayu Garg)
+ */
 async function addRatingFlag(type, user_id, name) {
   ratingToFlag = await ratingsCollection.doc(type + 's').collection(type + '_ratings').where('user_id', '==', user_id).where(type, '==', name).get();
   if (ratingToFlag.empty) {
