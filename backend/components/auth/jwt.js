@@ -23,17 +23,23 @@ module.exports = {
  */
 async function authenticateUser({ email, password }) {
   const profile = await users.where('email', '==', email).where('password', '==', password).get();
+  if (profile.empty) {
+    throw new Error("User Does Not Exist")
+  }
   //const access_token = jwt.sign(process.env.ACCESS_TOKEN, {expiresIn: '1d'});
   //const refresh_token = jwt.sign(email, process.env.REFRESH_TOKEN, {expiresIn: '1d'});
 
   profile.forEach(doc => {
-    var user = {user_id: doc.data().user_id};
-    // for testing changed this to 1d
-    const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: '1d'});
-    const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
-    user = { user_id: doc.data().user_id, accessToken: access_token };
-    doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
-    return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
+    if (doc.data().isVerified) {
+      var user = { user_id: doc.data().user_id };
+      const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
+      const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
+      user = { user_id: doc.data().user_id, accessToken: access_token };
+      doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
+      return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
+    } else {
+      throw new Error("User Is Not Verified")
+    }
     //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
   });
 }

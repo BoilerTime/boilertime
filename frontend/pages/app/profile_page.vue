@@ -25,6 +25,7 @@
                   id="firstname"
                   v-model="firstname"
                   class="border rounded-lg p-2"
+                  placeholder="First Name"
                 />
               </div>
               <div class="flex flex-col gap-2">
@@ -34,32 +35,63 @@
                   id="lastname"
                   v-model="lastname"
                   class="border rounded-lg p-2"
+                  placeholder="Last Name"
                 />
               </div>
             </div>
-            <div class="flex flex-row gap-4">
-              <div class="flex flex-col gap-2">
+            <div class="flex flex-row gap-4 place-content-center">
+              <div class="flex flex-col gap-4">
                 <label for="gradMonth" class="font-bold">Graduation Month</label>
-                <input
-                  type="text"
+                <select
                   id="gradMonth"
                   v-model="gradMonth"
                   class="border rounded-lg p-2"
-                />
+                  placeholder="Month"
+                >
+                  <option value="January">January</option>
+                  <option value="February">February</option>
+                  <option value="March">March</option>
+                  <option value="April">April</option>
+                  <option value="May">May</option>
+                  <option value="June">June</option>
+                  <option value="July">July</option>
+                  <option value="August">August</option>
+                  <option value="September">September</option>
+                  <option value="October">October</option>
+                  <option value="November">November</option>
+                  <option value="December">December</option>
+                </select>
               </div>
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-4">
                 <label for="gradYear" class="font-bold">Graduation Year</label>
-                <input
-                  type="text"
+                <select
                   id="gradYear"
                   v-model="gradYear"
                   class="border rounded-lg p-2"
-                />
+                  placeholder="Year"
+                >
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                  <option value="2031">2031</option>
+                  <option value="2032">2032</option>
+                  <option value="2033">2033</option>
+                  <option value="2034">2034</option>
+                  <option value="2035">2035</option>
+                  <option value="2036">2036</option>
+                  <option value="2037">2037</option>
+                  <option value="2038">2038</option>
+                  <option value="2039">2039</option>
+                  <option value="2040">2040</option>
+                </select>
               </div>
-            </div>
-            <div class="flex flex-row gap-4 justify-center">
-              <div class="flex flex-col gap-2">
-                <label for="isGradStudent" class="font-bold">Graduate Student</label>
+              <div class="flex flex-col gap-4">
+                <label for="isGradStudent" class="font-bold justify-end">Graduate Student</label>
                 <button
                   id="isGradStudent"
                   @click="isGradStudent = !isGradStudent"
@@ -147,7 +179,7 @@ const userID = ref("xyz");
 const firstname = ref("John");
 const lastname = ref("Doe");
 const gradMonth = ref("May");
-const gradYear = ref("2022");
+const gradYear = ref(2023);
 const isGradStudent = ref(false);
 
 function showModal() {
@@ -162,7 +194,6 @@ function return_data() {
 
   return {
 
-    user_id: this.userID,
     firstname: this.firstname,
     lastname: this.lastname,
     gradMonth: this.gradMonth,
@@ -175,27 +206,27 @@ function return_data() {
 
 async function getUserInfo() {
   axios
-    .get("http://localhost:3000/api/user/" + userStore.user.id)
+    .post("http://localhost:3001/api/get/profile/", userStore.user_id())
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
-      gradMonth.value = response.data.gradMonth;
-      gradYear.value = response.data.gradYear;
-      isGradStudent.value = response.data.isGradStudent;
+      gradMonth.value = response.data.grad_month;
+      gradYear.value = response.data.grad_year;
+      isGradStudent.value = response.data.is_grad_student;
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
 }
 
 async function submit() {
   axios
-    .put("http://localhost:3000/api/user/" + userStore.user.id, return_data())
+    .post("http://localhost:3001/api/update/profile", userStore.user_id(), return_data())
     .then((response) => {
-      console.log(response);
+      isModalVisible.value = false;
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
 }
 </script>

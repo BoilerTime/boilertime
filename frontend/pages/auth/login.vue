@@ -1,27 +1,25 @@
 <template>
-  <section class="bg-white">
-    <div class="lg:grid lg:min-h-screen lg:grid-cols-12">
-      <div class="relative block h-16 lg:order-last lg:col-span-5 lg:h-full xl:col-span-6">
-        <img src="https://stories.purdue.edu/app/uploads/2022/07/TopBuildings-ContentHub-Hero.jpg"
-          class="absolute inset-0 h-full w-full object-cover opacity-30">
-      </div>
-      <div class="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:py-12 lg:px-16 xl:col-span-6">
-        <div class="max-w-xl lg:max-w-3xl">
-          <img src="/logo.png" class="h-16" />
-          <h1 class="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
-            Welcome back
-          </h1>
+  <section class="bg-white h-screen overflow-hidden">
+    <div class="lg:grid lg:grid-cols-12">
+      <div class="flex items-center justify-center p-8 sm:px-12 lg:col-span-8 lg:p-14 xl:col-span-12">
+        <div class="max-w-xl bg-white p-8 z-50 rounded-lg">
+          <a href="/">
+            <img src="/logo.png" class="h-16 mb-6" />
+          </a>
+          <h1 class="text-2xl font-bold text-black sm:text-3xl md:text-4xl">
+            Welcome to
+          </h1>          
           <h1 class="text-2xl font-bold text-yellow-500 sm:text-3xl md:text-4xl">
             to BoilerTime
           </h1>
-          <p class="mt-4 leading-relaxed text-gray-500">
+          <p class="mt-4 text-gray-400">
             Don't have an account?
             <a href="/auth/signup" class="text-yellow-500">Sign up here →</a>
           </p>
-          <p class="mt-2 leading-relaxed text-black-500">
+          <p class="mt-1 text-black">
             Use your <b>@purdue.edu</b> email address to sign in.
           </p>
-          <form @submit.prevent="() => login()">
+          <form @submit.prevent="() => login()" class="mt-3">
             <!--Email text & input box-->
             <label for="email" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
             <input type="email" id="email" aria-describedby="helper-text-explanation"
@@ -38,45 +36,50 @@
                 class="inline-block shrink-0 bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 mt-5 rounded">
                 Log in
               </button>
-              <p class="mt-5 text-sm text-gray-500">
-                <a href="#" class="text-gray-700">Forgot password?</a>
+              <p class="mt-5 lg:ml-2">
+                <a href="/auth/forgotpassword" class="text-md text-gray-400">Forgot password?</a>
               </p>
             </div>
           </form>
         </div>
+      </div>
+      <div class="block h-screen lg:col-span-5 lg:h-full">
+        <img src="https://stories.purdue.edu/app/uploads/2022/07/TopBuildings-ContentHub-Hero.jpg"
+          class="absolute inset-0 h-full w-full object-cover opacity-50">
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useUserStore } from "../../store/user"
-
-const email = ref('')
-const password = ref('')
-
-const userStore = useUserStore()
-
-/**
-* A function to call the signIn function in the user store helper
-*/
-async function login() {
-  try {
-    await userStore.signIn(email.value, password.value)
-    if (!userStore.isLoggedIn) {
-      navigateTo("/auth/login")
-    } else {
-      // start temp fix, this is janky
-      const el = document.getElementById("__nuxt")
-      el.innerHTML = ""
-      // end temp fix
-      navigateTo("/app/home")
+  import { ref } from 'vue'
+  import { useUserStore } from "../../store/user"
+  import sha256 from 'js-sha256'
+  
+  const email = ref('')
+  const password = ref('')
+  
+  const userStore = useUserStore()
+  
+  /**
+  * A function to call the signIn function in the user store helper
+  */
+  async function login() {
+    try {
+      await userStore.signIn(email.value, sha256(password.value))
+      if (!userStore.isLoggedIn) {
+        navigateTo("/auth/login")
+      } else {
+        // start temp fix, this is janky
+        const el = document.getElementById("__nuxt")
+        el.innerHTML = ""
+        // end temp fix
+        navigateTo("/app/home")
+      }
+    } catch (error) {
+      // temp alert
+      alert("Incorrect username or password")
+      password.value = null
     }
-  } catch (error) {
-    // temp alert
-    console.log(error)
-    alert("Incorrect username or password")
   }
-}
 </script>
