@@ -30,7 +30,7 @@ async function addUserRating(user_id, ta, gradingFairness, helpfullness, questio
     rating[1] = helpfullness;
     rating[2] = questionAnswering;
     rating[3] = responsivness;
-    await taRatings.add({user_id: user_id, ta: ta, rating: rating, timestamp: Timestamp.now()})
+    await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
   }
   return true;
 }
@@ -44,7 +44,8 @@ async function getUserRatings(user_id) {
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     jsonObj[doc.ta] = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
   })
   return jsonObj;
@@ -63,7 +64,8 @@ async function getTARatings(ta) {
     json = {}
     json = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
     jArray[count] = (json);
     /*

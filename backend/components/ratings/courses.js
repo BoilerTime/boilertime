@@ -29,7 +29,7 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     rating[0] = prequisiteStrictness;
     rating[1] = pace;
     rating[2] = depth;
-    await courseRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
+    await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
   }
   return true;
 }
@@ -44,7 +44,8 @@ async function getUserRatings(user_id) {
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     jsonObj[doc.course] = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
   })
   return jsonObj;
@@ -96,7 +97,8 @@ async function getCourseRatings(courseName) {
     json = {}
     json = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
     jArray[count] = (json);
     /*

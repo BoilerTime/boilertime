@@ -6,6 +6,7 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
+const ratingsCollection = db.collection('ratings');
 
 
 /**
@@ -184,4 +185,19 @@ async function getUserProfile(user_id) {
 
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass};
+
+async function addRatingFlag(type, user_id, name) {
+  ratingToFlag = await ratingsCollection.doc(type + 's').collection(type + '_ratings').where('user_id', '==', user_id).where(type, '==', name).get();
+  if (ratingToFlag.empty) {
+    return undefined;
+  }
+  var flag_count = 0;
+  ratingToFlag.forEach(async doc => {
+    doc.ref.update({flag_count: doc.data().flag_count + 1});
+    flag_count = doc.data().flag_count;
+  });
+  return {flag_count: flag_count + 1};
+
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag};

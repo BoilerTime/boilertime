@@ -546,7 +546,7 @@ app.post('/api/getgpa', async (req, res) => {
     boilergrades.writeProfessors();
   */
    
-})  
+});  
 
 /*
  * Call for getting an overall gpa from professor 
@@ -568,4 +568,19 @@ app.post('/api/getoverall_gpa', async (req, res) => {
     boilergrades.writeProfessors();
   */
    
-})  
+}); 
+
+app.post('/api/add/flag', async (req, res) => {
+  const type = req.body.type;
+  const user_id = req.body.user_id;
+  const name = req.body.name
+  jsonObj = await utils.addRatingFlag(type, user_id, name)
+
+  if (jsonObj === undefined) {
+    // bad request
+    res.sendStatus(400);
+  }
+  else {
+    res.json(jsonObj);
+  }
+});
