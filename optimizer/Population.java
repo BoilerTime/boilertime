@@ -1,5 +1,6 @@
 package optimizer;
 
+import java.io.FilterInputStream;
 import java.util.*;
 
 public class Population {
@@ -36,7 +37,8 @@ public class Population {
             }
         }
 
-        if(singleEntries.size() > 2) {
+        if(singleEntries.size() > 1) {
+            System.out.println("Possible conflict");
             for(int i = 0; i < singleEntries.size(); i++) {
                 for(int j = 0; j < singleEntries.size(); j++) {
                     if(i != j && singleEntries.get(i).equals(singleEntries.get(j))) {
@@ -140,11 +142,20 @@ public class Population {
             //Make a larger than necessary gene pool that can then be reduced 
             Individual[] results = new Individual[2 * generationSize];
             //First, do a high-high crossing
-            results[0] = b2.getFittestIndividual().crossOver(b1.getFittestIndividual());
-            for(int i = 1; i < results.length; i++) {
-                results[i] = b1i[Utils.randInRange(pop, 0, b1i.length-1)].crossOver(b2i[Utils.randInRange(pop, 0, b2i.length-1)]);
-                if(Utils.randInRange(pop, 0, i) % 2 == 0) {
-                    results[i] = results[i].mutate();
+            int rand = Utils.randInRange(pop, 0, results.length-1);
+            if(rand %2 == 0) {
+                results[rand] = fittestIndividual.crossOver(b1.getFittestIndividual());
+            } else {
+                results[rand] = fittestIndividual.crossOver(b2.getFittestIndividual());
+            }
+            //results[0] = fittestIndividual.crossOver(fittestIndividual)//b2.getFittestIndividual().crossOver(b1.getFittestIndividual());
+            for(int i = 0; i < results.length; i++) {
+                if(i != rand) {
+                    results[i] = b1i[Utils.randInRange(pop, 0, b1i.length-1)].crossOver(b2i[Utils.randInRange(pop, 0, b2i.length-1)]);
+                    if(Utils.randInRange(pop, 0, i) % 2 == 0) {
+                        //System.out.println("Mutatting!");
+                        results[i] = results[i].mutate();
+                    }
                 }
                 //System.out.println(results[i].getIndividual());
             }
@@ -152,17 +163,20 @@ public class Population {
             //Next, randomly mix together the two gene pools 
             Generation nGen = new Generation(results, calculateFitnessScores(results));
             int newMinScore = Utils.getMinValue(nGen.getFittnessScores());
-            if(newMinScore < bestFitScore) {
+            if(newMinScore <= bestFitScore) {
                 bestFitScore = newMinScore;
                 fittestIndividual = nGen.getFittestIndividual();
             }
+            //System.out.println(fittestIndividual.getIndividual() + " has score " + bestFitScore);
+            //System.out.println(Arrays.toString(nGen.getFittnessScores()));
             k++; 
             genePool.add(nGen);
             //System.out.println("K = " + k);
             //System.out.pritnln(Arrays.toString(nGen.getFittnessScores()));
             count++;
         }
-        //System.out.println("Done!");
+        System.out.println("Done After: " + count);
+        this.bestIndividual = fittestIndividual;
         return fittestIndividual;
     }
 
@@ -174,8 +188,10 @@ public class Population {
             //Get each chromosome (course) out of each individual to check for matches
             String[] chromosomes = Utils.splitString(indivs[i].getIndividual(), individualSize/registeredCourses.length);
             //System.out.println(individualSize);
+            //System.out.println(calculateCourseMismatches(chromosomes));
             indivScore += 10*calculateCourseNameConflicts(chromosomes);
             indivScore += 100*calculateCourseTimeConflicts(chromosomes);
+            indivScore += 1000*calculateCourseMismatches(chromosomes);
             compositeScores[i] = indivScore;
         }
         return compositeScores;
@@ -202,6 +218,7 @@ public class Population {
         HashMap<String, Integer> sTimeCounts = new HashMap<String, Integer>();
         int[][] courseTimes = new int[chromosomes.length][2];
         int[] courseIDs = new int[chromosomes.length];
+        int numStartConflicts = 0;
         for(int i = 0; i < chromosomes.length; i++) {
             //System.out.println(chromosomes[i]);
 
@@ -214,15 +231,23 @@ public class Population {
             courseTimes[i][0] = binCourseTimes.get(temp);//Utils.binStringToNum(temp);
             //System.out.println("Pretty time = \n" + courseTimes[i][0]);
             //Commit the course names to an array 
-            courseIDs[i] = Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))-1));
-            if(sTimeCounts.get(temp) == null) {
-                sTimeCounts.put(temp, Integer.valueOf(1));
+            int tInt = Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))));
+            if(tInt <  chromosomes.length) {
+                courseIDs[i] = tInt;
+                if(sTimeCounts.get(temp) == null) {
+                    sTimeCounts.put(temp, Integer.valueOf(1));
+                } else {
+                    sTimeCounts.put(temp, Integer.valueOf(sTimeCounts.get(temp).intValue() +1));
+                }
             } else {
-                sTimeCounts.put(temp, Integer.valueOf(sTimeCounts.get(temp).intValue() +1));
+                //System.out.println("Wrong " + tInt);
+                numStartConflicts+=10;
             }
+
         }
 
-        int numStartConflicts = Utils.findMaxConflicts(sTimeCounts);
+        numStartConflicts += Utils.findMaxConflicts(sTimeCounts);
+
         //System.out.println("Start conflicts = " + numStartConflicts);
         //Next, find the number of overlap conflicts.
         //If the end time of one class is after the start time of another class, then there is a conflict
@@ -249,8 +274,26 @@ public class Population {
         return numStartConflicts+numDurationConflicts;
     }
 
-    private int calculateCourseMismatches(String[] chromosome) {
-
+    private int calculateCourseMismatches(String[] chromosomes) {
+        int totalErrors = 0; 
+        for(int i = 0; i < chromosomes.length; i++) {
+            if(Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))))) < chromosomes.length) {
+                CourseStruct course = registeredCourses[Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))))];
+                String binCourseTime = chromosomes[i].substring((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)));
+                Integer numTime = binCourseTimes.get(binCourseTime);
+                //System.out.println(Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))))));
+                if(numTime != null) {
+                    if(!Utils.unsortedContains(course.getCourseTimes(), numTime.intValue())) {
+                        totalErrors++;
+                    }
+                }
+            } else {
+                totalErrors+=2;
+            }
+            //if(!Utils.unsortedContains(course.getCourseTimes(), binCourses))
+        }
+        //System.out.println("Mis errors = " + totalErrors);
+        return totalErrors;
     }
 
     public Individual getBestIndividual() {

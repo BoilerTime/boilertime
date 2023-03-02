@@ -17,13 +17,15 @@ public class OptimizerDecoder {
         CourseStruct[] registeredCourses = p.getRegisteredCourses();
 
         for(int i = 0; i < numCourses; i++) {
+            //System.out.println("Working on: " + i);
             String courseDetails = schedule.substring(i*courseSize, i*courseSize+courseSize);
+            //System.out.println("Working with " + courseDetails.substring(0, courseIDUpperBound));
             CourseStruct course = registeredCourses[Utils.binStringToNum(courseDetails.substring(0, courseIDUpperBound))];
             String courseName = course.getCourseName();
             String courseBinTime = courseDetails.substring(courseIDUpperBound);
             Integer courseTime = courseTimes.get(courseBinTime);
             String courseTimeS = courseTime.toString();
-            System.out.println(courseTime.intValue() + "  " + course.getCourseDuration(courseTime.intValue()));
+            //System.out.println(courseTime.intValue() + "  " + course.getCourseDuration(courseTime.intValue()));
             String courseDuration = Integer.toString(course.getCourseDuration(courseTime.intValue()));
             String finalCourseDetails = courseFormatString;
             finalCourseDetails = finalCourseDetails.replace("course_id", courseName);

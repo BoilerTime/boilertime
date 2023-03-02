@@ -18,21 +18,21 @@ public class RunSimulation {
         System.out.println(i1);*/
 
 
-        CourseOverview[] courses = new CourseOverview[3];
+        CourseOverview[] courses = new CourseOverview[4];
         int[] times1 = {1200, 1400, 1600};
         int[] durations1 = {50, 50, 50};
         courses[0] = new CourseOverview("CS180", times1, durations1);
         int[] times2 = {1300, 1900, 2100};
         int[] durations2 = {70, 50, 30};
-        int[] times3 = {1200};
+        int[] times3 = {1200, 1400};
         courses[1] = new CourseOverview("CS182", times3, durations2);
 
         courses[2] = new CourseOverview("MA261", times2, durations2);
-        //courses[3] = new CourseOverview("CS101", times3, durations2);
+        courses[3] = new CourseOverview("CS101", times3, durations2);
 
         Population testPopulation = new Population(courses);
         testPopulation.getFittestIndividual();
-        System.out.println(testPopulation);
+        //System.out.println("UwU" + testPopulation);
         System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, testPopulation.getFittestIndividual()));
     }
 

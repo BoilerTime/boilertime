@@ -198,4 +198,19 @@ public class Utils {
         }
         return minValue;
     }
+
+    /**
+     * Method to determine if a potentially unsorted array contains a certain value. O(n). More than one user does not matter
+     * @param array The array to be checked
+     * @param key The key that is to be searched for 
+     * @return True if the array does contain the value, false if not. 
+     */
+    public static boolean unsortedContains(int[] array, int key) {
+        for(int i = 0; i < array.length; i++) {
+            if(array[i] == key) {
+                return true; 
+            }
+        }
+        return false;
+    }
 }
