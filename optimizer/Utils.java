@@ -141,8 +141,8 @@ public class Utils {
         //System.out.println("Called");
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             conflicts += entry.getValue().intValue()-1; //If the count is more than one, then there is a conflict
-            //System.out.println(entry.getKey() + " " + entry.getValue().intValue());
-            //System.out.println("Conflicts = " + conflicts);
+            System.out.println("UwU" + entry.getKey() + " " + entry.getValue().intValue());
+            System.out.println("Conflicts = " + conflicts);
         }
         return conflicts;
     }
@@ -172,6 +172,11 @@ public class Utils {
         return Math.log(num) / Math.log(2);
     }
 
+    /**
+     * Utility to convert an array of integers to a string that represents each of the entries with no gaps between them (concatenated together)
+     * @param arr The array to be converted
+     * @return The concatenated string. 
+     */
     public static String arrToString(int[] arr) {
         String result = "";
         for(int i = 0; i < arr.length; i++) {

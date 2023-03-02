@@ -9,6 +9,7 @@ public class Population {
     private ArrayList<Generation> genePool = new ArrayList<Generation>();
     private int individualSize; 
     private final int generationSize = 10; 
+    private boolean isSatisfiable; 
     Random pop;
     
     public Population(CourseOverview[] course) {
@@ -19,6 +20,8 @@ public class Population {
         pop = new Random();
         individualSize = calculateIndividualSize();
         System.out.println("Size " + individualSize);
+        System.out.println("Course size :" + (int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2)));
+        System.out.println("Name size: " + (int) Math.ceil(Utils.LogB(registeredCourses.length, 2)));
         //System.out.println(binCourseTimes.get());
         System.out.println("Done COnfiguring");
     }
@@ -26,9 +29,30 @@ public class Population {
     private void addCourses(CourseOverview[] course) {
         int totalTimes = 0;
         int totalDurations = 0;
+
+        ArrayList<Integer> singleEntries = new ArrayList<Integer>();
+        for(int i = 0; i < course.length; i++) {
+            if(course[i].getCourseTimes().length == 1) {
+                singleEntries.add(course[i].getCourseTimes()[0]);
+            }
+        }
+
+        if(singleEntries.size() > 2) {
+            for(int i = 0; i < singleEntries.size(); i++) {
+                for(int j = 0; j < singleEntries.size(); j++) {
+                    if(i != j && singleEntries.get(i).equals(singleEntries.get(j))) {
+                        this.isSatisfiable = false;
+                        return;
+                    }
+                }
+            }
+        }
+        this.isSatisfiable = true;
+        
         for(int i = 0; i<course.length; i++) {
             //System.out.println(Arrays.toString(Utils.numToBin(i)));
             registeredCourses[i] = new CourseStruct(course[i], Utils.arrToString(Utils.numToBin(i, (int) Math.ceil(Utils.LogB(course.length, 2)))));
+            System.out.println("Inserting " + course[i].getCourseName() + " As " + Utils.arrToString(Utils.numToBin(i, (int) Math.ceil(Utils.LogB(course.length, 2)))));
             //System.out.println(registeredCourses[i].getBinaryID());
             totalTimes += course[i].getCourseTimes().length;
             totalDurations += course[i].getCourseDurations().length;
@@ -45,8 +69,14 @@ public class Population {
             }
         }
         Arrays.sort(courseTimes);
+        int tCount = 0;
         for(int i = 0; i < courseTimes.length; i++) {
-            binCourseTimes.put(Utils.arrToString(Utils.numToBin(i, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
+            //binCourseTimes.put(Utils.arrToString(Utils.numToBin(i, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
+            if(!binCourseTimes.containsValue(Integer.valueOf(courseTimes[i]))) {
+                System.out.println("Inserting:  " + Integer.valueOf(courseTimes[i]) + " As " + Utils.arrToString(Utils.numToBin(tCount, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))));
+                binCourseTimes.put(Utils.arrToString(Utils.numToBin(tCount, (int)Math.ceil(Utils.LogB(courseTimes.length, 2)))), Integer.valueOf(courseTimes[i]));
+                tCount++;
+            } 
             //System.out.println("Y " + i + " " + binCourseTimes.size());
         }
     }
@@ -82,6 +112,9 @@ public class Population {
 
 
     public Individual getFittestIndividual() {
+        if(!isSatisfiable) {
+            return null; 
+        }
         //We need two initial generations to breed together in the future
         seedPopulation();
         seedPopulation();
@@ -96,8 +129,10 @@ public class Population {
     private void evolve() {
         System.out.println("Called!");
         int count = 2;
-        int bestFitScore = Integer.MAX_VALUE;
+        int bestFitScore = Math.min(Utils.getMinValue(genePool.get(0).getFittnessScores()), Utils.getMinValue(genePool.get(1).getFittnessScores()));
         int k = 0;
+        System.out.println(Arrays.toString(genePool.get(0).getFittnessScores()));
+        System.out.println(Arrays.toString(genePool.get(1).getFittnessScores()));
        //while(k < 1) {
             //System.out.println(k);
        while(bestFitScore != 0 && count <= (int)Math.pow((double)2, (double)individualSize)) {
@@ -126,6 +161,7 @@ public class Population {
             k++; 
             genePool.add(nGen);
             System.out.println("K = " + k);
+            //System.out.pritnln(Arrays.toString(nGen.getFittnessScores()));
             count++;
         }
         System.out.println("Done!");
@@ -140,8 +176,8 @@ public class Population {
             String[] chromosomes = Utils.splitString(indivs[i].getIndividual(), individualSize/registeredCourses.length);
             //System.out.println(individualSize);
             indivScore += 10*calculateCourseNameConflicts(chromosomes);
-            compositeScores[i] = indivScore;
             indivScore += 100*calculateCourseTimeConflicts(chromosomes);
+            compositeScores[i] = indivScore;
         }
         return compositeScores;
     }
@@ -171,10 +207,13 @@ public class Population {
             //System.out.println(chromosomes[i]);
 
             String temp = chromosomes[i].substring(((int) Math.ceil(Utils.LogB(registeredCourses.length, 2))));
+            System.out.println("Time = " + temp + "\nCR len = " + chromosomes.length);
             if(!binCourseTimes.containsKey(temp)) {
-                return Integer.MAX_VALUE;
+                System.out.println("Doesn't have!");
+                return 1000;
             }
             courseTimes[i][0] = binCourseTimes.get(temp);//Utils.binStringToNum(temp);
+            System.out.println("Pretty time = \n" + courseTimes[i][0]);
             //Commit the course names to an array 
             courseIDs[i] = Utils.binStringToNum(chromosomes[i].substring(0, ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)))-1));
             if(sTimeCounts.get(temp) == null) {
@@ -185,7 +224,7 @@ public class Population {
         }
 
         int numStartConflicts = Utils.findMaxConflicts(sTimeCounts);
-        
+        System.out.println("Start conflicts = " + numStartConflicts);
         //Next, find the number of overlap conflicts.
         //If the end time of one class is after the start time of another class, then there is a conflict
         int[][] courseDurations = new int[chromosomes.length][2];
