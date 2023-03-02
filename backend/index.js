@@ -17,7 +17,8 @@ const verifyaccount = require('./components/auth/verifyaccount');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
-const courseRatings = require('./components/ratings/courses');
+const courseRatings = require('./components/ratings/courses')
+const classroomRatings = require('./components/ratings/classrooms')
 
 
 //Data scraper imports
@@ -448,6 +449,35 @@ app.post('/api/add/ratings/courses', async (req, res) => {
     //console.log('here sending good status');
     res.sendStatus(200);
   }
+});
+
+app.post('/api/get/user_ratings/classrooms', (req, res) => {
+  const user_id = req.body.user_id;
+  classroomRatings.getUserRatings(user_id).then((jsonObj) => {
+    res.json(jsonObj);
+  });
+});
+
+app.post('/api/add/ratings/classrooms', async (req, res) => {
+  const user_id = req.body.user_id;
+  const classroom = req.body.classroom;
+  const access_conv = req.body.access_conv;
+  const seating_quality = req.body.seating_quality;
+  const technology_avail = req.body.technology_avail;
+  result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
+  if (result) {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(409);
+  }
+});
+
+app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
+  const classroomName = req.body.classroom;
+  classroomRatings.getClassroomRatings(classroomName).then((jsonObj) => {
+    res.json(jsonObj);
+  });
 });
 
 function authenticateToken(req, res, next) {
