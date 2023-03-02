@@ -18,13 +18,13 @@ const db = getFirestore()
 const courseRatings = db.collection('ratings').doc('courses').collection('course_ratings');
 
 async function addUserRating(user_id, course, prequisiteStrictness, pace, depth) {
-  console.log(await userAlreadyRated(user_id, course) + " << this is the value");
+  //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   if (await userAlreadyRated(user_id, course)) {
-    console.log('here SENDING FALSE');
+    //console.log('here SENDING FALSE');
     return false;
   }
-  if (await !userAlreadyRated(user_id, course)) {
-    console.log('here in not');
+  else {
+    //console.log('here in not');
     var rating = [];
     rating[0] = prequisiteStrictness;
     rating[1] = pace;
@@ -35,8 +35,8 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
 }
 
 async function getUserRatings(user_id) {
-  const userRatings = await courseRatings.where('user_id', '==', user_id).get();
-  var jsonObj = {} 
+  const userRatings = await classRatings.where('user_id', '==', user_id).get();
+  var jsonObj = {}
 
   userRatings.forEach(async doc => {
     doc = await doc.data();
@@ -50,17 +50,13 @@ async function getUserRatings(user_id) {
 }
 
 async function userAlreadyRated(user_id, course) {
-  const ratings = await courseRatings.where('user_id', '==', user_id).get();
-  let res = false;
-  for (var i in ratings.docs) {
-    let doc = ratings.docs[i];
-    doc = await doc.data();
-    if (doc.course === course) {
-      console.log('found a doc equal ' + doc.course + ' ' + course);
-      return true;
-    }
+  const ratings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  if (ratings.empty) {
+    //console.log('EMPTY');
+    return false;
   }
-  return false;
+  //console.log('NOT EMPTY');
+  return true;
   /*
   try {
   ratings.forEach(async (doc) => {
@@ -84,7 +80,6 @@ async function userAlreadyRated(user_id, course) {
   }) 
   */
   //return false;
-  
 }
 
 async function getCourseRatings(courseName) {

@@ -340,13 +340,14 @@ app.post('/api/add/ratings/courses', async (req, res) => {
   const prequisiteStrictness = req.body.prequisite_strictness;
   const pace = req.body.pace;
   const depth = req.body.depth;
-  console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-  if (await !courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth)) {
-    console.log('here sending bad status');
+  //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+  if (!result) {
+    //console.log('here sending bad status');
     res.sendStatus(409);
   }
   else {
-    console.log('here sending good status');
+    //console.log('here sending good status');
     res.sendStatus(200);
   }
 })
