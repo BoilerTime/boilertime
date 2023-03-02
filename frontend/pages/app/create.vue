@@ -112,7 +112,7 @@
 
 <script setup>
 import axios from "axios";
-import { useUserStore } from "~~/store/user";
+import { useUserStore } from "../../store/user";
 import { ref } from "vue";
 
 var userStore = useUserStore();
