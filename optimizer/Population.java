@@ -5,11 +5,11 @@ import java.util.*;
 public class Population {
     private CourseStruct[] registeredCourses;
     private HashMap<String, Integer> binCourseTimes; 
-    //private HashMap<String, Integer> binCourseDurations;
     private ArrayList<Generation> genePool = new ArrayList<Generation>();
     private int individualSize; 
     private final int generationSize = 10; 
     private boolean isSatisfiable; 
+    private Individual bestIndividual;
     Random pop;
     
     public Population(CourseOverview[] course) {
@@ -28,7 +28,6 @@ public class Population {
 
     private void addCourses(CourseOverview[] course) {
         int totalTimes = 0;
-        int totalDurations = 0;
 
         ArrayList<Integer> singleEntries = new ArrayList<Integer>();
         for(int i = 0; i < course.length; i++) {
@@ -55,7 +54,6 @@ public class Population {
             //System.out.println("Inserting " + course[i].getCourseName() + " As " + Utils.arrToString(Utils.numToBin(i, (int) Math.ceil(Utils.LogB(course.length, 2)))));
             //System.out.println(registeredCourses[i].getBinaryID());
             totalTimes += course[i].getCourseTimes().length;
-            totalDurations += course[i].getCourseDurations().length;
         }
 
         /*
@@ -98,14 +96,7 @@ public class Population {
             }
             startGenes[i] = new Individual(temp);
         }  
-        /*for(int i = 0; i < this.generationSize; i++) {
-            String temp = "";
-            for(int j = 0; j < this.individualSize; j++){
-                temp += Utils.randInRange(pop, 0, 1);
-            }
-            System.out.println(temp);
-            startGenes[i] = new Individual(temp);
-        }  */     
+
         genePool.add(new Generation(startGenes, calculateFitnessScores(startGenes)));
     }
 
@@ -118,18 +109,28 @@ public class Population {
         //We need two initial generations to breed together in the future
         seedPopulation();
         seedPopulation();
-        evolve();
-        return this.genePool.get(0).getFittestIndividual();
+        //Now, we evolve until reaching a good endpoint 
+        bestIndividual = evolve();
+        return bestIndividual;
     }
 
     private int calculateIndividualSize() {
         return registeredCourses.length * ((int) Math.ceil(Utils.LogB(registeredCourses.length, 2)) + ((int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2))));// + (int) Math.ceil(Math.log(binCourseDurations.size())) ; 
     }
 
-    private void evolve() {
+    private Individual evolve() {
         //System.out.println("Called!");
         int count = 2;
-        int bestFitScore = Math.min(Utils.getMinValue(genePool.get(0).getFittnessScores()), Utils.getMinValue(genePool.get(1).getFittnessScores()));
+        int bestFitScore;
+        Individual fittestIndividual;
+        if(Utils.getMinValue(genePool.get(0).getFittnessScores()) > Utils.getMinValue(genePool.get(1).getFittnessScores())) {
+            bestFitScore = Utils.getMinValue(genePool.get(1).getFittnessScores());
+            fittestIndividual = genePool.get(1).getFittestIndividual();
+        } else {
+            bestFitScore = Utils.getMinValue(genePool.get(0).getFittnessScores());
+            fittestIndividual = genePool.get(0).getFittestIndividual();
+        }
+        //int bestFitScore = Math.min(Utils.getMinValue(genePool.get(0).getFittnessScores()), Utils.getMinValue(genePool.get(1).getFittnessScores()));
         int k = 0;
         while(bestFitScore != 0 && count <= (int)Math.pow((double)2, (double)individualSize)) {
             Generation b1 = genePool.get(count - 1);
@@ -153,6 +154,7 @@ public class Population {
             int newMinScore = Utils.getMinValue(nGen.getFittnessScores());
             if(newMinScore < bestFitScore) {
                 bestFitScore = newMinScore;
+                fittestIndividual = nGen.getFittestIndividual();
             }
             k++; 
             genePool.add(nGen);
@@ -161,6 +163,7 @@ public class Population {
             count++;
         }
         //System.out.println("Done!");
+        return fittestIndividual;
     }
 
     private int[] calculateFitnessScores(Individual[] indivs) {
@@ -244,5 +247,9 @@ public class Population {
             }
         }
         return numStartConflicts+numDurationConflicts;
+    }
+
+    public Individual getBestIndividual() {
+        return bestIndividual;
     }
 }
