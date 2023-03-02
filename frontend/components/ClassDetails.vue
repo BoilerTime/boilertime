@@ -42,7 +42,7 @@
                   </iframe>
                   <div class="relative px-6 pt-4 pb-6">
                       <div>
-                        <h1 class="text-lg font-bold">Avg GPA</h1>
+                        <h1 class="text-lg font-bold">Professor's Avg GPA</h1>
                         <h1 v-if="stats[index] != undefined" class="text-lg mb-4">{{ stats[index] }}</h1>
                         <h1 v-else class="text-lg mb-4">No data</h1>
                       </div>
@@ -95,12 +95,11 @@ let rmp_rating = []
 let rmp_difficulty = []
 let rmp_again = []
 
-async function getgpa(prof_name, class_name) {
-  const response = await axios.post('http://localhost:3001/api/getgpa', {
-    "prof_name": prof_name,
-    "class_name": class_name
+async function getgpa(prof_name) {
+  const response = await axios.post('http://localhost:3001/api/getoverall_gpa', {
+    "prof_name": prof_name
   })
-  stats.push(response.data.averageGPA)
+  stats.push(response.data.overall_gpa)
 }
 
 async function getrmp(prof_name) {
@@ -115,13 +114,12 @@ async function getrmp(prof_name) {
 onMounted(() => {
   // props.data is accessible here
   for (let i = 0; i < props.data.meetings.length; i++) {
-    getgpa(props.data.meetings[i].instructorName, props.data.subject+props.data.number)
+    getgpa(props.data.meetings[i].instructorName)
     getrmp(props.data.meetings[i].instructorName)
   }
   nextTick(() => {
   //  document.getElementById('gpa').click()
   })
-  
 })
 
 </script>
