@@ -1,4 +1,5 @@
 package optimizer;
+import java.time.chrono.MinguoDate;
 import java.util.*;
 
 public class Utils {
@@ -87,6 +88,23 @@ public class Utils {
     }
 
     /**
+     * A utility to find the index in an integer array associated with the minimum value of said array. O(n)
+     * @param data The array to be searched
+     * @return The array index that corresponds with the max entry in the array 
+     */
+    public static int getIndexForMin(int[] data) {
+        int minIndex = -1;
+        int minValue = Integer.MAX_VALUE;
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] < minValue) {
+                minIndex = i;
+                minValue = data[i];
+            }
+        }
+        return minIndex;
+    }
+
+    /**
      * A utility to split a string into serveral substrings each of a specified length
      * @param s The string to be split
      * @param splitLen The size of each substring. Must be <= the size of the string to avoid undefined behavior. 
@@ -157,5 +175,20 @@ public class Utils {
             result += arr[i];
         }
         return result; 
+    }
+
+    /**
+     * Gets the minimum value in an array of integers provided
+     * @param array The array of values to check
+     * @return The minimum value in the array 
+     */
+    public static int getMinValue(int[] array) {
+        int minValue = Integer.MAX_VALUE;
+        for(int i = 0; i < array.length; i++) {
+            if(array[i] < minValue) {
+                minValue = array[i];
+            }
+        }
+        return minValue;
     }
 }

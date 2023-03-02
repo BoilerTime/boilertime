@@ -79,20 +79,35 @@ public class Population {
     }
 
     private void evolve() {
+        System.out.println("Called!");
         int count = 2;
         int bestFitScore = Integer.MAX_VALUE;
-         
-        while(bestFitScore == 0 || count == (int)Math.pow((double)2, (double)individualSize)) {
+        int k = 0;
+        //while(k < 10) {
+            //System.out.println(k);
+        while(bestFitScore != 0 && count <= (int)Math.pow((double)2, (double)individualSize)) {
             Generation b1 = genePool.get(count - 1);
             Generation b2 = genePool.get(count - 2);
-            //Make a larger than necessary gene pool that can then be quelled 
+            Individual[] b1i = b1.getIndividuals();
+            Individual[] b2i = b2.getIndividuals();
+            //Make a larger than necessary gene pool that can then be reduced 
             Individual[] results = new Individual[2 * generationSize];
             //First, do a high-high crossing
             results[0] = b2.getFittestIndividual().crossOver(b1.getFittestIndividual());
             for(int i = 1; i < results.length; i++) {
-
+                results[i] = b1i[Utils.randInRange(pop, 0, b1i.length-1)].crossOver(b2i[Utils.randInRange(pop, 0, b2i.length-1)]);
             }
+            System.out.println(Arrays.toString(calculateFitnessScores(results)));
             //Next, randomly mix together the two gene pools 
+            Generation nGen = new Generation(results, calculateFitnessScores(results));
+            int newMinScore = Utils.getMinValue(nGen.getFittnessScores());
+            if(newMinScore < bestFitScore) {
+                bestFitScore = newMinScore;
+            }
+            //k++; 
+            genePool.add(nGen);
+            
+            count++;
         }
     }
 
@@ -123,7 +138,7 @@ public class Population {
             }
         }
 
-        return Utils.findMaxConflicts(cCount);
+        return Utils.findMaxConflicts(cCount)-1;
     }
 
     private int calculateCourseTimeConflicts(String[] chromosomes) {

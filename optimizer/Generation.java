@@ -18,7 +18,7 @@ public class Generation {
     }
     
     public Individual getFittestIndividual() {
-        return individuals[Utils.getIndexForMax(fitnessScores)];
+        return individuals[Utils.getIndexForMin(fitnessScores)];
     }
 
     public void saveFitnessScores(int[] scores) {
@@ -30,5 +30,9 @@ public class Generation {
 
     public int[] getFittnessScores() {
         return this.fitnessScores; 
+    }
+
+    public Individual[] getIndividuals() {
+        return this.individuals;
     }
 }
