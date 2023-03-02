@@ -58,14 +58,14 @@ app.post('/api/update/profile', (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
-  const classification_year = req.body.classification_year;
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
+  const isGradStudent = req.body.is_grad_student;
   const studentClass = utils.getStudentClass(grad_year, grad_month);
-  console.log('this is the student class ', studentClass);
   //console.log(user_id + classification_year + firstname + lastname);
-  utils.updateProfile(user_id, studentClass, firstname, lastname);
-  res.json({authenticationToken: req.user.accessToken, user_id: req.user.user_id});
+  const classification_year = utils.getStudentClass(grad_year, grad_month);
+  utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+  res.json({user_id: user_id});
 });
 
 app.post('/api/get/profile', async (req, res) => {
@@ -76,8 +76,8 @@ app.post('/api/get/profile', async (req, res) => {
   } catch {
     res.send(401);
   }
-
 });
+
 /*
  * This function lets a user login and generates a jwt token for them
  * @param {string} email - Email of user
@@ -97,6 +97,7 @@ app.post('/api/login', (req, res) => {
     res.sendStatus(401);
   });
 });
+
 
 /**
  * Sends an email to reset the password
