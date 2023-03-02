@@ -334,13 +334,14 @@ app.post('/api/get/course_ratings/courses', async (req, res) => {
   res.json(resObj);
 })
 
-app.post('/api/add/ratings/courses', (req, res) => {
+app.post('/api/add/ratings/courses', async (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   const prequisiteStrictness = req.body.prequisite_strictness;
   const pace = req.body.pace;
   const depth = req.body.depth;
-  if (!courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth)) {
+  console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
+  if (await !courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth)) {
     console.log('here sending bad status');
     res.sendStatus(409);
   }

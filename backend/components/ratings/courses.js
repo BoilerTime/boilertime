@@ -19,6 +19,10 @@ const courseRatings = db.collection('ratings').doc('courses').collection('course
 
 async function addUserRating(user_id, course, prequisiteStrictness, pace, depth) {
   console.log(await userAlreadyRated(user_id, course) + " << this is the value");
+  if (await userAlreadyRated(user_id, course)) {
+    console.log('here SENDING FALSE');
+    return false;
+  }
   if (await !userAlreadyRated(user_id, course)) {
     console.log('here in not');
     var rating = [];
@@ -26,9 +30,8 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     rating[1] = pace;
     rating[2] = depth;
     await courseRatings.add({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
-    return true;
   }
-  return false;
+  return true;
 }
 
 async function getUserRatings(user_id) {
@@ -49,14 +52,15 @@ async function getUserRatings(user_id) {
 async function userAlreadyRated(user_id, course) {
   const ratings = await courseRatings.where('user_id', '==', user_id).get();
   let res = false;
-  for (const doc in ratings) {
-    let data = doc.data();
-    if (data.course === course) {
-      console.log('found a doc equal ' + data.course + ' ' + course);
-      res = true;
-      return res;
+  for (var i in ratings.docs) {
+    let doc = ratings.docs[i];
+    doc = await doc.data();
+    if (doc.course === course) {
+      console.log('found a doc equal ' + doc.course + ' ' + course);
+      return true;
     }
   }
+  return false;
   /*
   try {
   ratings.forEach(async (doc) => {
