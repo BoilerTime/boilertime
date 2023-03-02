@@ -22,6 +22,7 @@
     "sha.js": "^2.4.11",
     "sha256": "^0.2.0",
     "@headlessui/vue": "^1.7.11",
-    "@heroicons/vue": "^2.0.16"
+    "@heroicons/vue": "^2.0.16",
+    "vue": "^3.2.47"
   }
 }
