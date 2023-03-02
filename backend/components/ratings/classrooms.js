@@ -23,7 +23,7 @@ async function addClassroomRating(user_id, classroom, access_conv, seating_quali
     rating[0] = access_conv;
     rating[1] = seating_quality;
     rating[2] = technology_avail;
-    await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
+    await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
     return true;
   }
   else {
@@ -40,7 +40,8 @@ async function getUserRatings(user_id) {
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     jsonObj[doc.classroom] = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
   })
   return jsonObj;
@@ -59,7 +60,8 @@ async function getClassroomRatings(classroom) {
     json = {}
     json = {
       "rating": doc.rating,
-      "timestamp": newDate.toDateString()
+      "timestamp": newDate.toDateString(),
+      "flag_count": doc.flag_count
     }
     jArray[count] = (json);
     /*
