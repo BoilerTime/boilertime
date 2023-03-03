@@ -60,7 +60,7 @@ async function editUserRating(user_id, course, prequisiteStrictness, pace, depth
   rating[1] = pace;
   rating[2] = depth;
   userRatings.forEach(async doc => {
-    await doc.ref.set({user_id: user_id, course: course, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+    await doc.ref.set({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
   })
 }
 
