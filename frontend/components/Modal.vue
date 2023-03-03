@@ -3,19 +3,16 @@
     <div class="modal bg-white rounded p-8 border shadow-lg">
       <header class="modal-header grid grid-flow-col p-5">
         <slot name="header">
-          This is the default title!
         </slot>
       </header>
 
       <section class="modal-body p-5">
         <slot name="body">
-          This is the default body!
         </slot>
        </section>
 
       <footer class="modal-footer p-5 grid grid-flow-col gap-6">
         <slot name="footer">
-          This is the default footer!
         </slot>
         <button
           type="button"

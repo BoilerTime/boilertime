@@ -206,7 +206,47 @@ async function addRatingFlag(type, user_id, name) {
     flag_count = doc.data().flag_count;
   });
   return {flag_count: flag_count + 1};
-
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag};
+/*
+ * This function gets the user email from user_id
+ * @param {string} uesr_id - the user_id  of user
+ */
+async function getUserEmail(user_id) {
+  const profile = await users.doc(user_id).get();
+  if (profile.empty) {
+    throw new Error(500);
+  }
+  return (email = await profile.data().email);
+}
+
+/**
+ * Finds the first key that corresponds with a given value in an array. O(n)
+ * @param {*} arr The array to be searched
+ * @param {*} key The value to be serached for 
+ * @returns The index 
+ */
+function findKeyForUnsorted(arr, key) {
+  for(let i = 0; i < arr.length; i++) {
+    if(arr[i] == key) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Helper function to pad a time with the prefix 0H
+ * @param {*} time The time to be padded if missing 0H
+ * @returns the result of the padding
+ */
+function padTime(time) {
+  if(!time.includes("H")) {
+    time = "PT0H" + time.substring(2); 
+  }
+  return time;
+}
+
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime};
+

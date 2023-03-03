@@ -52,12 +52,12 @@ export const useUserStore = defineStore("user", {
       const data = {
         user_id: user_id
       }
-      await axios.post('http://localhost:3001/api/profile', data, config)
+      await axios.post('http://localhost:3001/api/auth/user', data, config)
       .then(response => {
         if (response.data["authenticationToken"] != undefined) {
           this.user = {
             accessToken: response.data["authenticationToken"],
-            refreshToken: '',
+            refreshToken: response.data["refreshToken"],
             user_id: user_id
           }
         }

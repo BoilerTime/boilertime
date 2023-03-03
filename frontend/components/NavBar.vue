@@ -1,13 +1,14 @@
+
 <template>
   <header class="bg-white">
     <nav class="mx-auto flex items-center justify-between py-8 px-12">
       <div class="flex">
-        <a href="#" class="-m-1.5 p-1.5">
+        <a href="/" class="-m-1.5 p-1.5">
           <img class="h-10 w-auto" src="/logo.png" />
         </a>
       </div>
       <div v-if="isLoggedIn" class="flex items-center justify-end">
-        <a href="/app/profile_page" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Profile</a>
+        <a href="/app/profile_page" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
         <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
       </div>
@@ -20,6 +21,8 @@
 </template>
 
 <script setup>
+import { defineStore } from "pinia";
+import axios from "axios";
 import { useUserStore } from "../store/user"
 import { ref } from "vue"
 
@@ -35,6 +38,12 @@ try {
 }
 
 isLoggedIn = userStore.isLoggedIn
+
+async function verifyToken() {
+  await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
+      //console.log(res.accessToken);
+  });
+}
 
 async function getUserInfo() {
   axios
@@ -52,6 +61,7 @@ async function getUserInfo() {
 
 onMounted(() => {
   getUserInfo();
+  verifyToken();
 });
 
 </script>
