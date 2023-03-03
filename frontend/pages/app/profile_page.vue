@@ -149,10 +149,20 @@
       <div
           class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
           <ul class="list-inside list-item">
-            <li
-              class="mb-2 font-bold"
-              v-for="(item, index) in userRatings"
-              :key="index">
+            <li class="mb-2 font-bold" v-for="(item, index) in courseRatings.entries" :key="index">
+              {{ item }}
+              <li class="mb-2 font-bold" v-for="(item, index) in courseRatings" :key="index">
+                {{ item }}
+              </li>
+            </li>
+          </ul>
+          <ul class="list-inside list-item">
+            <li class="mb-2 font-bold" v-for="(item, index) in classroomRatings" :key="index">
+              {{ item }}
+            </li>
+          </ul>
+          <ul class="list-inside list-item">
+            <li class="mb-2 font-bold" v-for="(item, index) in taRatings" :key="index">
               {{ item }}
             </li>
           </ul>
@@ -209,7 +219,9 @@ var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
-var userRatings = ref([]);
+var courseRatings = ref([]);
+var classroomRatings = ref([]);
+var taRatings = ref([]);
 
 function showModal() {
   isModalVisible.value = true;
@@ -219,33 +231,42 @@ function closeModal() {
   isModalVisible.value = false;
 }
 
-async function getRatings() {
+async function getCourseRatings() {
   axios.post("http://localhost:3001/api/get/user_ratings/courses", {
     user_id: userStore.user_id
   })
   .then((response) => {
-    console.log(respone.data.courseRatings);
-    userRatings.value = response.data.courseRatings;
+    console.log(response.data.rating);
+    //console.log(response.data.ratings.value);
+    courseRatings.value = response.data.rating;
+    console.log(courseRatings);
+    //console.log(courseRatings.value);
   })
   .catch((error) => {
     console.error(error)
   });
+}
+
+async function getClassroomRatings() {
   axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
     user_id: userStore.user_id
   })
   .then((response) => {
-    console.log(respone.data.classroomRatings);
-    userRatings.value = response.data.classroomRatings;
+    //console.log(response.data.rating)
+    classroomRatings.value = response.data.rating;
   })
   .catch((error) => {
     console.error(error)
   });
+}
+
+async function getTaRatings() {
   axios.post("http://localhost:3001/api/get/user_ratings/tas", {
     user_id: userStore.user_id
   })
   .then((response) => {
-    console.log(respone.data.taRatings);
-    userRatings.value = response.data.taRatings;
+    //console.log(response.data.rating)
+    taRatings.value = response.data.rating;
   })
   .catch((error) => {
     console.error(error)
@@ -305,6 +326,18 @@ async function submit() {
 onMounted(() => {
   getUserInfo();
 });
+
+onMounted(() => {
+  getCourseRatings();
+})
+
+onMounted(() => {
+  getClassroomRatings();
+})
+
+onMounted(() => {
+  getTaRatings();
+})
 
 onMounted(() => {
   getBookmarks();

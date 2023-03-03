@@ -194,6 +194,7 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
+                    navigateTo("/app/profile_age")
                 })
                 .catch(function (error) {
                     console.error();
@@ -209,6 +210,7 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
+                    navigateTo("/app/profile_page")
                 })
                 .catch(function (error) {
                     console.error();
@@ -224,6 +226,7 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
+                    navigateTo("/app/profile_page")
                 })
                 .catch(function (error) {
                     console.error();
