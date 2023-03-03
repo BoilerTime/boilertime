@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot :show="open">
+  <TransitionRoot :show="open" style="z-index: 9999;">
     <Dialog class="z-50" @close="$emit('update:open', false)">
       <TransitionChild 
         enter="duration-500"
@@ -8,9 +8,9 @@
         leave-from="opacity-100"
         enter-to="opacity-100"
         leave-to="opacity-0"
-        class="bg-black fixed inset-0 bg-opacity-75"
+        class="bg-black fixed inset-0 bg-opacity-75 z-40"
       />
-      <div class="fixed absolute inset-0 right-0 max-w-full">
+      <div class="fixed absolute inset-0 right-0 max-w-full z-50">
           <div class="fixed right-0 max-w-full">
             <TransitionChild 
               enter="duration-500"
@@ -130,30 +130,19 @@ async function getrmp(prof_name) {
   rmp_again.push(response.data.wouldTakeAgainPercent)
 }
 
-function converttime(startTime, duration) {
-  startTime = new Date(startTime);
-  const endTime = new Date(startTime.getTime() + parseDuration(duration));
+async function converttime(startTime, duration) {
 
-  function parseDuration(duration) {
-    const regex = /P(?:([\d.]+)Y)?(?:([\d.]+)M)?(?:([\d.]+)D)?(?:T(?:([\d.]+)H)?(?:([\d.]+)M)?(?:([\d.]+)S)?)?/;
-    const matches = regex.exec(duration);
-    let milliseconds = 0;
-    if (matches[1]) milliseconds += parseFloat(matches[1]) * 365 * 24 * 60 * 60 * 1000;
-    if (matches[2]) milliseconds += parseFloat(matches[2]) * 30 * 24 * 60 * 60 * 1000;
-    if (matches[3]) milliseconds += parseFloat(matches[3]) * 24 * 60 * 60 * 1000;
-    if (matches[4]) milliseconds += parseFloat(matches[4]) * 60 * 60 * 1000;
-    if (matches[5]) milliseconds += parseFloat(matches[5]) * 60 * 1000;
-    if (matches[6]) milliseconds += parseFloat(matches[6]) * 1000;
-    return milliseconds;
-  }
+  const startDateTime = new Date(startTime);
+  const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: true });
 
-  // Convert the start and end times to ISO strings in Eastern Time
-  const options = { timeZone: "America/New_York", hour12: true };
-  const startET = startTime.toLocaleTimeString("en-US", options);
-  const endET = endTime.toLocaleTimeString("en-US", options);
+  duration = duration.slice(2).toLowerCase();
+  const durationParts = duration.split(/h|m/).map(part => parseInt(part));
 
-  begin_times.push(startET);
-  fin_times.push(endET);
+  const easternEndTimeDateTime = new Date(startDateTime.getTime() + (durationParts[0] * 60 + durationParts[1]) * 60 * 1000);
+  const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: true });
+
+  begin_times.push(easternStartTime)
+  fin_times.push(easternEndTime)
 }
 
 onMounted(() => {
