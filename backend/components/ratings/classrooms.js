@@ -56,7 +56,7 @@ async function editClassroomRating(user_id, classroom, access_conv, seating_qual
   rating[1] = seating_quality;
   rating[2] = technology_avail;
   userRatings.forEach(async doc => {
-    doc.ref.set({user_id: user_id, classroom: classroom, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+    doc.ref.set({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
   })
 }
 

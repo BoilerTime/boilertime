@@ -627,10 +627,9 @@ app.post('/api/add/ratings/tas', async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
   const gradingFairness = req.body.grading_fairness;
-  const helpfullness = req.body.helpfullness;
   const questionAnswering = req.body.question_answering;
   const responsiveness = req.body.responsiveness;
-  result = await taRatings.addUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness);
+  result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness);
   if (result) {
     res.sendStatus(200);
   }
