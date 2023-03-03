@@ -25,7 +25,6 @@ const taRatings = require('./components/ratings/tas');
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
-const {json} = require('express');
 //purdueio.purdueios();
 
 app.use(express.json());
