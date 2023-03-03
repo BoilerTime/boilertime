@@ -194,7 +194,7 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
-                    navigateTo("/app/profile_age")
+                    navigateTo("/app/profile")
                 })
                 .catch(function (error) {
                     console.error();
