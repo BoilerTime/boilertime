@@ -4,40 +4,73 @@
     <div class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
         <br />
         <div class="mx-auto my-10 max-w-sm p-3 bg-white border rounded-lg shadow sm:p-8 md:p-8 dark:bg-white">
-            <form @submit.prevent="() => createreview()"></form>
+            <h1 class="pb-2 text-center text-2x1 font-bold">Leave a Review</h1>
+            <form @submit.prevent="() => createreview()">
             <div class="gap-8 columns-2">
                 <!--Review type text-->
-                <label for="reviewtype" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What would you like to review?</label>
+                <label for="reviewtype" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What would
+                    you like to review?</label>
                 <!--Review Type dropdown-->
                 <select id="reviewtype"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full
-                        p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        v-model="reviewtype" required>
+                            p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    v-model="reviewtype" required>
                     <option value="course">Course</option>
                     <option value="classroom">Classroom</option>
                     <option value="ta">TA</option>
                 </select>
-
-                
-
-                <!--Review options Course text-->
-                <label for="reviewselection" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What course would you like to review?</label>
-                <!--Review options Course selection-->
-
-
-                <!--Review options Classroom text-->
-                <label for="reviewselection" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What classroom would you like to review?</label>
-                <!--Review options Classroom selection-->
-
-
-                <!--Review options TA text-->
-                <label for="reviewselection" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What TA would you like to review?</label>
-                <!--Review options TA selection-->
-                <input type="ta" id="ta" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                    focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:text-black dark:focus:ring-blue-500"
-                    v-model="reviewselection" required>
-
+                <!--Review Selection text-->
+                <label for="reviewselection" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What
+                    course would you like to review?</label>
+                <!--Review Selection input box-->
+                <input type="reviewselection" id="reviewselection" aria-describedby="helper-text-explanation"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:text-black dark:focus:ring-blue-500" v-model="reviewselection" required>
             </div>
+            <!--Adds the inputs for reviewing a course-->
+            <div v-if="reviewtype === 'course' && reviewselection !== 'null'">
+                <!--Prerequisite Requirement Rating aka 'rating1'-->
+                <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How strict are the prerequisite requirements?</label>
+                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Pace of Materials Rating aka 'rating2'-->
+                <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How is the pace of materials covered?</label>
+                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Depth of Material Rating aka 'rating3'-->
+                <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How in-depth is the material?</label>
+                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+            </div>
+            <!--Adds the inputs for reviewing a classroom-->
+            <div v-else-if="reviewtype === 'classroom'">
+                <!--Convenience of Access Rating aka 'rating1'-->
+                <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How convenient is it to access this classroom?</label>
+                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Quality of Seating Rating aka 'rating2'-->
+                <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What is the quality of seating?</label>
+                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Availability of Technology Rating aka 'rating3'-->
+                <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What is the availability of technology?</label>
+                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+            </div>
+            <!--Adds the inputs for reviewing a TA-->
+            <div v-else-if="reviewtype === 'ta'">
+                <!--Helpfulness of Answering Questions Rating aka 'rating1'-->
+                <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How helpful are they when answering questions?</label>
+                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Responsiveness Rating aka 'rating2'-->
+                <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How responsive are they?</label>
+                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <!--Fairness of Grading Rating aka 'rating3'-->
+                <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How fair is their grading?</label>
+                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+            </div>
+
+            <!--Attempts to send review-->
+            <div class="container pt-5 px-5 min-w-full flex flex-col items-center">
+                <button type="createreview" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
+                    Send Review
+                </button>
+            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -45,16 +78,15 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { useUserStore } from "../../store/user";
 
-const route = useRoute()
-const user_id = route.query.user_id
-
+var userstore = useUserStore();
 const reviewtype = ref('')
 const reviewselection = ref('')
 
-const course = ref('')
-const classroom = ref('')
-const ta = ref('')
+const rating1 = ref('')
+const rating2 = ref('')
+const rating3 = ref('')
 
 /**
  * This function will take the review type and review selection and send the inserted
@@ -62,19 +94,49 @@ const ta = ref('')
  */
 async function createreview() {
     if (reviewtype === course) {
-        await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
-            user_id: user_id,
-            course: course.value,
+        await axios.post('http://localhost:3001/api/add/ratings/courses', {
+            user_id: userstore.user_id,
+            course: reviewselection.value,
+            prequisite_strictness: rating1.value,
+            pace: rating2.value,
+            depth: rating3.value
+        })
+        .then(function() {
+            alert("Thank you for submitting your review!")
+        })
+        .catch(function(error) {
+            console.error();
+            alert(error);
         })
     } else if (reviewtype === classroom) {
-        await axios.post('http://localhost:3001/api/add/ratings/courses', {
-            user_id: user_id,
-            classroom: classroom.value,
+        await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
+            user_id: userstore.user_id,
+            classroom: reviewselection.value,
+            access_conv: rating1.value,
+            seating_quality: rating2.value,
+            technology_avail: rating3.value
+        })
+        .then(function() {
+            alert("Thank you for submitting your review!")
+        })
+        .catch(function(error) {
+            console.error();
+            alert(error);
         })
     } else if (reviewtype === ta) {
         await axios.post('http://localhost:3001/api/add/ratings/tas', {
-            user_id: user_id,
-            ta: ta.value,
+            user_id: userstore.user_id,
+            ta: reviewselection.value,
+            question_answering: rating1.value,
+            grading_fairness: rating3.value,
+            responsiveness: rating2.value
+        })
+        .then(function() {
+            alert("Thank you for submitting your review!")
+        })
+        .catch(function(error) {
+            console.error();
+            alert(error);
         })
     }
 }
