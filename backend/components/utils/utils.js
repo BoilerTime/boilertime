@@ -206,7 +206,18 @@ async function addRatingFlag(type, user_id, name) {
     flag_count = doc.data().flag_count;
   });
   return {flag_count: flag_count + 1};
-
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag};
+/*
+ * This function gets the user email from user_id
+ * @param {string} uesr_id - the user_id  of user
+ */
+async function getUserEmail(user_id) {
+  const profile = await users.doc(user_id).get();
+  if (profile.empty) {
+    throw new Error(500);
+  }
+  return (email = await profile.data().email);
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, getUserEmail};

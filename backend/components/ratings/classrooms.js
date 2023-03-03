@@ -6,7 +6,9 @@ const dayjs = require('dayjs')
 module.exports = {
   addClassroomRating,
   getUserRatings,
-  getClassroomRatings
+  getClassroomRatings,
+  editClassroomRating,
+  deleteClassroomRating
 }
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -37,6 +39,40 @@ async function addClassroomRating(user_id, classroom, access_conv, seating_quali
   else {
     return false;
   }
+}
+
+/**
+ * Function for editing a classroom rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} classroom - Name of the clasroom they are rating
+ * @param {number} access_conv - Rating of how convenient the access is out of 5 at rating[0]
+ * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
+ * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
+ */
+async function editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+  const userRatings = await classroomRatings.where('user_id', '==', user_id).where('classroom', '==', classroom).get();
+  var rating = [];
+  rating[0] = access_conv;
+  rating[1] = seating_quality;
+  rating[2] = technology_avail;
+  userRatings.forEach(async doc => {
+    doc.ref.set({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
+  })
+}
+
+/**
+ * Function for editing a classroom rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} classroom - Name of the clasroom they are rating
+ * @param {number} access_conv - Rating of how convenient the access is out of 5 at rating[0]
+ * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
+ * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
+ */
+async function deleteClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+  const userRatings = await classroomRatings.where('user_id', '==', user_id).where('classroom', '==', classroom).get();
+  userRatings.forEach(async doc => {
+    doc.ref.delete()
+  })
 }
 
 /*

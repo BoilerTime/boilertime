@@ -6,7 +6,9 @@ const dayjs = require('dayjs')
 module.exports = {
   getUserRatings,
   addUserRating,
-  getCourseRatings
+  getCourseRatings,
+  editUserRating,
+  deleteUserRating
 }
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -40,6 +42,38 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
   }
   return true;
+}
+
+/**
+ * Function for editing a course rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} course - Name of the course they are rating
+ * @param {number} prequisite_strictness - Rating of how strict the prequisites are out of 5 at rating[0]
+ * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
+ * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
+ */
+async function editUserRating(user_id, course, prequisiteStrictness, pace, depth) {
+  //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
+  const userRatings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  var rating = [];
+  rating[0] = prequisiteStrictness;
+  rating[1] = pace;
+  rating[2] = depth;
+  userRatings.forEach(async doc => {
+    await doc.ref.set({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
+  })
+}
+
+/**
+ * Function for deleting a course rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} course - Name of the course they are rating
+ */
+async function deleteUserRating(user_id, course) {
+  const userRatings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  userRatings.forEach(async doc => {
+    await doc.ref.delete()
+  })
 }
 
 /*
@@ -108,3 +142,5 @@ async function getCourseRatings(courseName) {
   })
   return jArray;
 }
+
+
