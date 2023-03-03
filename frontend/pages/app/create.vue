@@ -5,6 +5,7 @@
 
 <template>
   <!--Begin entire page-->
+    <NavBar />
 
   <div class="h-screen p-8 bg-gray-200">
     <!--Begin window-->

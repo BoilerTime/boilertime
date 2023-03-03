@@ -57,7 +57,9 @@ app.get('/api', (req, res) => {
  * @param {string} email - print the email of user to test correct user
  */
 
-//app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
+app.post('/api/auth/user', jwt.authenticateToken, (req, res) => {
+  res.json({authenticationToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id});
+});
 /*
  * This function updates a user profile
  * @param {string} user_id - user_id of user we want to update
