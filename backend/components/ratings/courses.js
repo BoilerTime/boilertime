@@ -142,3 +142,5 @@ async function getCourseRatings(courseName) {
   })
   return jArray;
 }
+
+
