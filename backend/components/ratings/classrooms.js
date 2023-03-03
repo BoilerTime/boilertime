@@ -81,18 +81,23 @@ async function deleteClassroomRating(user_id, classroom, access_conv, seating_qu
  */
 async function getUserRatings(user_id) {
   const userRatings = await classroomRatings.where('user_id', '==', user_id).get();
-  var jsonObj = {}
 
+  jArray = [];
+  var count = 0;
   userRatings.forEach(async doc => {
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
-    jsonObj[doc.classroom] = {
+    var jsonObj = {}
+    jsonObj = {
+      "classroom": doc.classroom,
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count
     }
+    jArray[count] = jsonObj;
+    count++;
   })
-  return jsonObj;
+  return jArray;
 }
 
 /*

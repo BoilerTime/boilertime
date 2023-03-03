@@ -82,18 +82,23 @@ async function deleteUserRating(user_id, ta) {
  */
 async function getUserRatings(user_id) {
   const ratings = await taRatings.where('user_id', '==', user_id).get();
-  var jsonObj = {} 
 
+  jArray = [];
+  var count = 0;
   ratings.forEach(async doc => {
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
-    jsonObj[doc.ta] = {
+    var jsonObj = {} 
+    jsonObj = {
+      "ta": doc.ta,
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count
     }
+    jArray[count] = jsonObj;
+    count++;
   })
-  return jsonObj;
+  return jArray;
 }
 
 /*
