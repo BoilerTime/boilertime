@@ -31,7 +31,7 @@
         <div>
           <h1 class="font-extrabold text-left text-2xl">Required Classes</h1>
           <div class="mx-auto my-auto w-auto bg-gray-200 rounded-lg p-4">
-            <ol class="list-decimal list-inside bg-white ">
+            <ol class="list-decimal list-inside">
               <!-- Loop through the array and display each item as a list item -->
               <li
                 class="mb-2 font-bold"
@@ -69,7 +69,7 @@
           <input type="text" v-model="search" @input="fetch" placeholder="Enter class..."
           class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 mt-5 rounded-lg text-sm focus:outline-blue-500"
           >
-          <ul>
+          <ul class="bg-gray-200 mt-5 rounded-lg max-h-40 overflow-scroll py-5 px-5">
             <li v-for="result in results" :key="result" @click="select(result)">
               {{ result }}
             </li>
@@ -144,6 +144,7 @@ function add_class_required() {
   if (class_input !== "") {
     required_classes.value.push(class_input.value);
     class_input.value = "";
+    search.value = "";
   }
 }
 
@@ -152,6 +153,7 @@ function add_class_optional() {
   if (class_input !== "") {
     optional_classes.value.push(class_input.value);
     class_input.value = "";
+    search.value = "";
   }
 }
 
@@ -205,6 +207,7 @@ function bookmark() {
         });
       }
       class_input.value = "";
+      search.value = "";
     })
     .catch((err) => console.error(err));
 }
