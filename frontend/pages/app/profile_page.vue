@@ -146,6 +146,17 @@
       <div class="mt-5">
         <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
       </div>
+      <div
+          class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+          <ul class="list-inside list-item">
+            <li
+              class="mb-2 font-bold"
+              v-for="(item, index) in userRatings"
+              :key="index">
+              {{ item }}
+            </li>
+          </ul>
+        </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
         <h1 class="font-bold text-2xl mb-5">Bookmarked Classes ❗️</h1>
@@ -198,6 +209,7 @@ var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
+var userRatings = ref([]);
 
 function showModal() {
   isModalVisible.value = true;
@@ -205,6 +217,39 @@ function showModal() {
 
 function closeModal() {
   isModalVisible.value = false;
+}
+
+async function getRatings() {
+  axios.post("http://localhost:3001/api/get/user_ratings/courses", {
+    user_id: userStore.user_id
+  })
+  .then((response) => {
+    console.log(respone.data.courseRatings);
+    userRatings.value = response.data.courseRatings;
+  })
+  .catch((error) => {
+    console.error(error)
+  });
+  axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
+    user_id: userStore.user_id
+  })
+  .then((response) => {
+    console.log(respone.data.classroomRatings);
+    userRatings.value = response.data.classroomRatings;
+  })
+  .catch((error) => {
+    console.error(error)
+  });
+  axios.post("http://localhost:3001/api/get/user_ratings/tas", {
+    user_id: userStore.user_id
+  })
+  .then((response) => {
+    console.log(respone.data.taRatings);
+    userRatings.value = response.data.taRatings;
+  })
+  .catch((error) => {
+    console.error(error)
+  });
 }
 
 async function getBookmarks() {
