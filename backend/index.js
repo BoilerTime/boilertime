@@ -178,7 +178,7 @@ app.post('/api/ratemyprofessor', (req, res) => {
 /**
  * Search Query
  */
-app.get('/api/search', (req, res) => {
+app.post('/api/search', (req, res) => {
   utils.getClassesFromDept(req.body.dept).then( array => {
     res.json({classes: array})
   }).catch(err => {
