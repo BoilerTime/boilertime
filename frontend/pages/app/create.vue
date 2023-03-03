@@ -6,7 +6,7 @@
 <template>
   <!--Begin entire page-->
 
-  <div class="h-screen p-8 bg-gray-200">
+  <div class="h-screen p-8 overflow-scroll bg-gray-200">
     <!--Begin window-->
     <div
       class="grid grid-flow-row mx-auto my-64 w-4/5 bg-white rounded-lg shadow-lg p-8"
@@ -31,7 +31,7 @@
         <div>
           <h1 class="font-extrabold text-left text-2xl">Required Classes</h1>
           <div class="mx-auto my-auto w-auto bg-gray-200 rounded-lg p-4">
-            <ol class="list-decimal list-inside">
+            <ol class="list-decimal list-inside bg-white ">
               <!-- Loop through the array and display each item as a list item -->
               <li
                 class="mb-2 font-bold"
@@ -78,14 +78,14 @@
 
         <div class="flex gap-4 mt-5 justify-self-center">
           <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded max-h-10"
             @click="bookmark"
           >
             Bookmark
           </button>
 
           <button
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded max-h-10"
             type="button"
             @click="add_class_required"
           >
@@ -93,7 +93,7 @@
           </button>
 
           <button
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded max-h-10"
             type="button"
             @click="add_class_optional"
           >
