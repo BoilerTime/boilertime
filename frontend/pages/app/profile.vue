@@ -146,14 +146,41 @@
       <div class="mt-5">
         <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
       </div>
-      <div
-          class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
-          <ul class="list-inside list-item">
-            <li class="mb-2 font-bold" v-for="(item, index) in courseRatings.entries" :key="index">
-              {{ item }}
-            </li>
-          </ul>
-        </div>
+      <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+        <h1 class="font-bold text-2xl mt-3 mb-3">Courses</h1>
+        <ul class="list-inside list-item mb-6" v-for="course in courses" v-if="isDataLoaded">
+          <li class="font-bold text-lg">{{ course.course }}</li>
+          <li class="font-light text-sm mb-2">Submitted at: {{ course.timestamp }}</li>
+          <li class="font-light text-sm mb-2 text-red-500" v-if="course.flag_count >= 3">This review has been flagged for review by the content moderators</li>
+          <li>How strict are the prerequisite requirements: {{ course.rating[0] }}</li>
+          <li>How is the pace of the materials covered: {{ course.rating[1] }}</li>
+          <li>How in-depth is the material: {{ course.rating[2] }}</li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deletecourses(course.course)">Delete</a></li>
+        </ul>
+        <h1 class="font-bold text-2xl mt-3 mb-3">Classrooms</h1>
+        <ul class="list-inside list-item mb-6" v-for="classroom in classrooms" v-if="isDataLoaded">
+          <li class="font-bold text-lg">{{ classroom["classroom"] }}</li>
+          <li class="font-light text-sm mb-2">Submitted at: {{ classroom.timestamp }}</li>
+          <li class="font-light text-sm mb-2 text-red-500" v-if="classroom.flag_count >= 3">This review has been flagged for review by the content moderators</li>
+          <li>How strict are the prerequisite requirements: {{ classroom.rating[0] }}</li>
+          <li>How is the pace of the materials covered: {{ classroom.rating[1] }}</li>
+          <li>How in-depth is the material: {{ classroom.rating[2] }}</li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteclassrooms(classroom.classroom)">Delete</a></li>
+        </ul>
+        <h1 class="font-bold text-2xl mt-3 mb-3">TAs</h1>
+        <ul class="list-inside list-item mb-6" v-for="ta in tas" v-if="isDataLoaded">
+          <li class="font-bold text-lg">{{ ta["ta"] }}</li>
+          <li class="font-light text-sm mb-2">Submitted at: {{ ta.timestamp }}</li>
+          <li class="font-light text-sm mb-2 text-red-500" v-if="ta.flag_count >= 3">This review has been flagged for review by the content moderators</li>
+          <li>How strict are the prerequisite requirements: {{ ta.rating[0] }}</li>
+          <li>How is the pace of the materials covered: {{ ta.rating[1] }}</li>
+          <li>How in-depth is the material: {{ ta.rating[2] }}</li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteta(ta.ta)">Delete</a></li>
+        </ul>
+        <ul class="list-inside list-item" v-else>
+          <li>No ratings yet!</li>
+        </ul>
+      </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
         <h1 class="font-bold text-2xl mb-5">Bookmarked Classes ❗️</h1>
@@ -207,6 +234,8 @@ var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
 
+var isDataLoaded = ref(false);
+
 function showModal() {
   isModalVisible.value = true;
 }
@@ -223,6 +252,51 @@ async function getBookmarks() {
     .then((response) => {
       console.log(response.data.bookmarks);
       bookmarkedClasses.value = response.data.bookmarks;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function deletecourses(course) {
+  axios
+    .post("http://localhost:3001/api/delete/ratings/courses", {
+      user_id: userStore.user_id,
+      course: course,
+    })
+    .then((response) => {
+      console.log(response.data);
+      alert("We're processing your delete request")
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function deleteclassrooms(classroom) {
+  axios
+    .post("http://localhost:3001/api/delete/ratings/classrooms", {
+      user_id: userStore.user_id,
+      classroom: classroom,
+    })
+    .then((response) => {
+      console.log(response.data);
+      alert("We're processing your delete request")
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function deleteta(ta) {
+  axios
+    .post("http://localhost:3001/api/delete/ratings/tas", {
+      user_id: userStore.user_id,
+      ta: ta,
+    })
+    .then((response) => {
+      console.log(response.data);
+      alert("We're processing your delete request")
     })
     .catch((error) => {
       console.error(error);
@@ -246,6 +320,34 @@ async function getUserInfo() {
     });
 }
 
+let courses = []
+let classrooms = []
+let tas = []
+
+async function getratings() {
+  await axios.post("http://localhost:3001/api/get/user_ratings/courses", {
+    user_id: userStore.user_id
+  }).then((response) => {
+    courses = response.data
+  }).catch((error) => {
+    console.error(error)
+  })
+  await axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
+    user_id: userStore.user_id
+  }).then((response) => {
+    classrooms = response.data
+  }).catch((error) => {
+    console.error(error)
+  })
+  await axios.post("http://localhost:3001/api/get/user_ratings/tas", {
+    user_id: userStore.user_id
+  }).then((response) => {
+    tas = response.data
+  }).catch((error) => {
+    console.error(error)
+  })
+}
+
 async function submit() {
   axios
     .post("http://localhost:3001/api/update/profile", {
@@ -265,12 +367,16 @@ async function submit() {
     });
 }
 
-onMounted(() => {
+onMounted(async () => {
   getUserInfo();
-});
-
-onMounted(() => {
   getBookmarks();
+  await getratings();
+  setTimeout(() => {
+    console.log(courses)
+    console.log(classrooms)
+    console.log(tas)
+    isDataLoaded.value = true;
+  }, 1000)
 });
 
 </script>

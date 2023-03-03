@@ -670,7 +670,7 @@ app.post('/api/edit/ratings/tas', async (req, res) => {
 app.post('/api/delete/ratings/tas', async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
-  await taRatings.deleteUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness).then(() => {
+  await taRatings.deleteUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness).then(() => {
     res.sendStatus(200);
   }).catch((err)=> {
     console.log(err)
