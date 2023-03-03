@@ -3,7 +3,7 @@ import java.util.*;
 
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Population p, Individual optIndividual) {
-        String result = "{[";
+        String result = "{\"response\": [";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration:\": \"course_duration\"},";
         
         //Pull the string that represents the best individual 
@@ -41,5 +41,59 @@ public class OptimizerDecoder {
         result = result.substring(0, result.length()-1);
         result += "]}";
         return result;
+    }
+
+    public static CourseOverview[] parseIncomingData(String[] args) {
+        CourseOverview[] results = new CourseOverview[args.length];
+        for(int i = 0; i < results.length; i++) {
+            String courseName = "";
+            boolean parsedName = false;
+            boolean parsedCourseTimes = false;
+            boolean parsedCourseDurations = false;
+            ArrayList<Integer> times = new ArrayList<Integer>();
+            ArrayList<Integer> durations = new ArrayList<Integer>();
+            String temp = args[i];
+            String tempTime = "";
+            for(int j = 0; j <temp.length(); j++) {
+                String currentChar = temp.substring(j, j+1);
+                if(!parsedName) {
+                    if(currentChar.equals(" ")) {
+                        parsedName = true;
+                    } else {
+                        courseName += currentChar;
+                    }
+                } else if(!parsedCourseTimes) {
+                    if(currentChar.equals("[")) {
+                        //Nothing to see here
+                    } else if(currentChar.equals(",")) {
+                        times.add(Integer.parseInt(tempTime));
+                        tempTime = "";
+                    } else if(currentChar.equals("]")) {
+                        times.add(Integer.parseInt(tempTime));
+                        tempTime = "";
+                        parsedCourseTimes = true;
+                        j++;
+                    } else {
+                        tempTime += currentChar;
+                    }
+                } else if(!parsedCourseDurations) {
+
+                    if(currentChar.equals("[")) {
+                        //Nothing to see here
+                    } else if(currentChar.equals(",")) {
+                        durations.add(Integer.parseInt(tempTime));
+                        tempTime = "";
+                    } else if(currentChar.equals("]")) {
+                        durations.add(Integer.parseInt(tempTime));
+                        tempTime = "";
+                        parsedCourseTimes = true;
+                    } else {
+                        tempTime += currentChar;
+                    }
+                }
+            }
+            results[i] = new CourseOverview(courseName, Utils.parseArrayList(times), Utils.parseArrayList(durations));
+        }
+        return results;
     }
 }

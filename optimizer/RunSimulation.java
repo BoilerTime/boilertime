@@ -1,12 +1,9 @@
 package optimizer;
 import java.util.Arrays;
-
+import java.net.http.*;
 public class RunSimulation {
     public static void main(String[] args) {
-        String data = args[0];
-        System.out.println("\nArguments: "+ data + "\n");
-        String pattern = "\\s*[\"\"]\\s*";
-        System.out.println(data.split(pattern)[0]);
+        
         /*Individual c1 = new Individual("100000011011010100101");
         Individual c2 = new Individual("011101101010011111110");
         Individual[] population = new Individual[5];
@@ -20,9 +17,15 @@ public class RunSimulation {
         CourseStruct i1 = new CourseStruct("CS180", "100000011011010100101", times, durations);
         System.out.println(i1);*/
 
-
-        CourseOverview[] courses = new CourseOverview[4];
-        int[] times1 = {1200, 1400, 1600};
+        // the response:
+  
+        CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
+        /*System.out.println(courses.length);
+        for(int i = 0; i < courses.length; i++) {
+            System.out.println(courses[i].getCourseName() + " " + Arrays.toString(courses[i].getCourseTimes()) + " " + Arrays.toString(courses[i].getCourseDurations()));
+            System.out.println(courses[i].getCourseTimes().length + " " + courses[i].getCourseDurations().length);
+        }*/
+        /*int[] times1 = {1200, 1400, 1600};
         int[] durations1 = {50, 50, 50};
         courses[0] = new CourseOverview("CS180", times1, durations1);
         int[] times2 = {1300, 1900, 2100};
@@ -31,10 +34,14 @@ public class RunSimulation {
         courses[1] = new CourseOverview("CS182", times3, durations2);
 
         courses[2] = new CourseOverview("MA261", times2, durations2);
-        courses[3] = new CourseOverview("CS101", times3, durations2);
+        courses[3] = new CourseOverview("CS101", times3, durations2);*/
 
         Population testPopulation = new Population(courses);
         Individual fittestIndividual = testPopulation.getFittestIndividual();
+        if(fittestIndividual == null) {
+            System.err.println("No solution exists");
+            return;
+        }
         System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, fittestIndividual));
         //System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, testPopulation.getFittestIndividual()));
     }

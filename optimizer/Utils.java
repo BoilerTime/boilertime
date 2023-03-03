@@ -213,4 +213,17 @@ public class Utils {
         }
         return false;
     }
+
+    /**
+     * Helper method to convert arraylist to int array of fixed length
+     * @param target The array to be converted
+     * @return The results of the conversion
+     */
+    public static int[] parseArrayList(ArrayList<Integer> target) {
+        int[] results = new int[target.size()];
+        for(int i = 0; i < results.length; i++) {
+            results[i] = target.get(i).intValue();
+        }
+        return results;
+    }
 }

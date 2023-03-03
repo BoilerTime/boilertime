@@ -175,7 +175,7 @@ public class Population {
             //System.out.pritnln(Arrays.toString(nGen.getFittnessScores()));
             count++;
         }
-        System.out.println("Done After: " + count);
+        ///System.out.println("Done After: " + count);
         if(bestFitScore == 0) {
             this.bestIndividual = fittestIndividual;
         } else {
