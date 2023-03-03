@@ -14,7 +14,7 @@
                 <select id="reviewtype"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full
                             p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    v-model="reviewtype" required>
+                            v-model="reviewtype" required>
                     <option value="course">Course</option>
                     <option value="classroom">Classroom</option>
                     <option value="ta">TA</option>
@@ -88,12 +88,13 @@ const rating1 = ref('')
 const rating2 = ref('')
 const rating3 = ref('')
 
+
 /**
  * This function will take the review type and review selection and send the inserted
  * information to the database.
  */
 async function createreview() {
-    if (reviewtype === course) {
+    if (reviewtype.value === "course") {
         await axios.post('http://localhost:3001/api/add/ratings/courses', {
             user_id: userstore.user_id,
             course: reviewselection.value,
@@ -102,13 +103,18 @@ async function createreview() {
             depth: rating3.value
         })
         .then(function() {
+            console.log(reviewtype.value)
+            console.log(reviewselection.value)
+            console.log(rating1.value)
+            console.log(rating2.value)
+            console.log(rating3.value)
             alert("Thank you for submitting your review!")
         })
         .catch(function(error) {
             console.error();
             alert(error);
         })
-    } else if (reviewtype === classroom) {
+    } else if (reviewtype.value === "classroom") {
         await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
             user_id: userstore.user_id,
             classroom: reviewselection.value,
@@ -117,13 +123,18 @@ async function createreview() {
             technology_avail: rating3.value
         })
         .then(function() {
+            console.log(reviewtype.value)
+            console.log(reviewselection.value)
+            console.log(rating1.value)
+            console.log(rating2.value)
+            console.log(rating3.value)
             alert("Thank you for submitting your review!")
         })
         .catch(function(error) {
             console.error();
             alert(error);
         })
-    } else if (reviewtype === ta) {
+    } else if (reviewtype.value === "ta") {
         await axios.post('http://localhost:3001/api/add/ratings/tas', {
             user_id: userstore.user_id,
             ta: reviewselection.value,
@@ -132,6 +143,11 @@ async function createreview() {
             responsiveness: rating2.value
         })
         .then(function() {
+            console.log(reviewtype.value)
+            console.log(reviewselection.value)
+            console.log(rating1.value)
+            console.log(rating2.value)
+            console.log(rating3.value)
             alert("Thank you for submitting your review!")
         })
         .catch(function(error) {
