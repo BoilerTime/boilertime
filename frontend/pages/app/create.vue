@@ -222,6 +222,11 @@ function submit() {
     .then((res) => {
       navigateTo("/app/view");
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+
+      alert("Error generating schedule. Please try again.")
+      location.reload();
+
+    });
 }
 </script>
