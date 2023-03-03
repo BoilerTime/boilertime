@@ -3,7 +3,10 @@ import java.util.Arrays;
 
 public class RunSimulation {
     public static void main(String[] args) {
-        System.out.println(args[0]);
+        String data = args[0];
+        System.out.println("\nArguments: "+ data + "\n");
+        String pattern = "\\s*[\"\"]\\s*";
+        System.out.println(data.split(pattern)[0]);
         /*Individual c1 = new Individual("100000011011010100101");
         Individual c2 = new Individual("011101101010011111110");
         Individual[] population = new Individual[5];
