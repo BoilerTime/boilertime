@@ -192,8 +192,8 @@ app.get('/api/optimizedschedule', (req, res) => {
           "meetings":[
             {
                 "instructorName":"Gustavo Rodriguez-Rivera",
-                 "startTime":"2023-02-21T20:30:00Z",
-                 "duration":"PT1H50M",
+                 "startTime":"2023-02-21T21:30:00Z",
+                 "duration":"PT0H50M",
                  "daysOfWeek":["Monday", "Wednesday", "Friday"],
                  "type":"Lecture",
                  "buildingCode":"WALC",
@@ -202,9 +202,9 @@ app.get('/api/optimizedschedule', (req, res) => {
            },
            {
                 "instructorName": "Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T20:30:00Z",
+                "startTime":"2023-02-21T22:30:00Z",
                 "duration":"PT1H50M",
-                "daysOfWeek":["Tuesday"],
+                "daysOfWeek":["Wednesday"],
                 "type":"Laboratory",
                 "buildingCode":"HAAS",
                 "buildingName":"Felix Haas Hall",
@@ -221,12 +221,12 @@ app.get('/api/optimizedschedule', (req, res) => {
           "meetings":[
             {
                 "instructorName":"Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T10:30:00Z",
-                "duration":"PT1H50M",
+                "startTime":"2023-02-21T18:30:00Z",
+                "duration":"PT0H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
-                "buildingCode":"LWSN",
-                "buildingName":"Lawson Computer Science Building",
+                "buildingCode":"SMTH",
+                "buildingName":"Smith Hall",
                 "roomNumber":"B288"
               }
           ]
@@ -240,8 +240,8 @@ app.get('/api/optimizedschedule', (req, res) => {
           "meetings":[
             {
                 "instructorName":"Samuel J. Dunn",
-                "startTime":"2023-02-21T10:30:00Z",
-                "duration":"PT1H50M",
+                "startTime":"2023-02-21T15:30:00Z",
+                "duration":"PT0H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
                 "buildingCode":"BRNG",
@@ -259,9 +259,9 @@ app.get('/api/optimizedschedule', (req, res) => {
           "meetings":[
             {
                 "instructorName":"Frankie Chan",
-                "startTime":"2023-02-21T10:30:00Z",
+                "startTime":"2023-02-21T20:30:00Z",
                 "duration":"PT1H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "daysOfWeek":["Tuesday", "Thursday"],
                 "type":"Lecture",
                 "buildingCode":"MATH",
                 "buildingName":"Mathematical Sciences Building",
@@ -278,8 +278,8 @@ app.get('/api/optimizedschedule', (req, res) => {
           "meetings":[
             {
                 "instructorName":"Nathaniel A. Lifton",
-                "startTime":"2023-02-21T10:30:00Z",
-                "duration":"PT1H50M",
+                "startTime":"2023-02-21T17:30:00Z",
+                "duration":"PT0H50M",
                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
                 "type":"Lecture",
                 "buildingCode":"PHYS",
@@ -288,10 +288,10 @@ app.get('/api/optimizedschedule', (req, res) => {
               },
               {
                 "instructorName":"Jonathan M. Harbor",
-                "startTime":"2023-02-21T10:30:00Z",
+                "startTime":"2023-02-21T22:30:00Z",
 
                 "duration":"PT1H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
+                "daysOfWeek":["Thursday"],
                 "type":"Laboratory",
                 "buildingCode":"CL50",
                 "buildingName":"Class of 1950 Lecture Hall",

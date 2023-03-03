@@ -46,13 +46,40 @@ async function convertSchedule(schedule) {
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
 
+      async function getgpa(prof_name, class_name) {
+        const response = await axios.post('http://localhost:3001/api/getgpa', {
+          "prof_name": prof_name,
+          "class_name": class_name
+        })
+        return response.data.averageGPA
+      }
+
+      async function getrmp(prof_name) {
+        const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+          "prof_name": prof_name
+        })
+        return response.data.avgRating
+      }
+
       result.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
         title: course.subject+" "+course.number,
         id: id,
+        expandRows: true,
         daysOfWeek: daysOfWeek,
       });
+    }
+  }
+}
+
+async function addTitle(schedule) {
+  for (const course of schedule) {
+    for (const meeting of course.meetings) {
+      const id = `${course.subject}${course.number}`;
+      const title = `${course.subject} ${course.number} ${meeting.type} ${meeting.section} ${meeting.instructor}`;
+      const gpa = await getgpa(meeting.instructor, course.subject + course.number);
+      const rmp = await getrmp(meeting.instructor);
     }
   }
 }
