@@ -20,8 +20,10 @@ const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
-
-
+const { JavaCaller } = require("java-caller");
+const java = new JavaCaller({
+  jar: "../btime.jar"
+});
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
 //purdueio.purdueios();
@@ -179,128 +181,15 @@ app.post('/api/createuser', (req, res) => {
 })
 
 /* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
-app.get('/api/optimizedschedule', (req, res) => {
-  res.json({
-    "schedule":
-      [
-        {
-          "subject":"CS",
-          "number":"25200",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Systems Programming",
-          "meetings":[
-            {
-                "instructorName":"Gustavo Rodriguez-Rivera",
-                 "startTime":"2023-02-21T21:30:00Z",
-                 "duration":"PT0H50M",
-                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                 "type":"Lecture",
-                 "buildingCode":"WALC",
-                 "buildingName":"Wilmeth Active Learning Center",
-                 "roomNumber":"HILER THTR"
-           },
-           {
-                "instructorName": "Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T22:30:00Z",
-                "duration":"PT1H50M",
-                "daysOfWeek":["Wednesday"],
-                "type":"Laboratory",
-                "buildingCode":"HAAS",
-                "buildingName":"Felix Haas Hall",
-                "roomNumber":"G056"
-            }
-          ]
-        },
-        {
-          "subject":"CS",
-          "number":"30700",
-          "creditHours":3,
-          "description":"Evening exams",
-          "name":"Software Engineering I",
-          "meetings":[
-            {
-                "instructorName":"Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T18:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"SMTH",
-                "buildingName":"Smith Hall",
-                "roomNumber":"B288"
-              }
-          ]
-        },
-        {
-          "subject":"ENGL",
-          "number":"10600",
-          "creditHours":4,
-          "description":"Async online",
-          "name":"First-Year Composition",
-          "meetings":[
-            {
-                "instructorName":"Samuel J. Dunn",
-                "startTime":"2023-02-21T15:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"BRNG",
-                "buildingName":"Beering (Steven C.) Hall of Liberal Arts and Education",
-                "roomNumber":"B288"
-            }
-          ]
-        },
-        {
-          "subject":"MA",
-          "number":"16100",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Calculus I",
-          "meetings":[
-            {
-                "instructorName":"Frankie Chan",
-                "startTime":"2023-02-21T20:30:00Z",
-                "duration":"PT1H50M",
-                "daysOfWeek":["Tuesday", "Thursday"],
-                "type":"Lecture",
-                "buildingCode":"MATH",
-                "buildingName":"Mathematical Sciences Building",
-                "roomNumber":"B288"
-              }
-          ]
-        },
-        {
-          "subject":"EAPS",
-          "number":"12000",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Earth Through Time",
-          "meetings":[
-            {
-                "instructorName":"Nathaniel A. Lifton",
-                "startTime":"2023-02-21T17:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"PHYS",
-                "buildingName":"Purdue Physics Building",
-                "roomNumber":"B288"
-              },
-              {
-                "instructorName":"Jonathan M. Harbor",
-                "startTime":"2023-02-21T22:30:00Z",
-
-                "duration":"PT1H50M",
-                "daysOfWeek":["Thursday"],
-                "type":"Laboratory",
-                "buildingCode":"CL50",
-                "buildingName":"Class of 1950 Lecture Hall",
-                "roomNumber":"B288"
-              }
-            ]
-          } 
-    ]
-  })
+app.get('/api/optimizedschedule', async (req, res) => {
+  const results = await java.run(['CS180 [1500] [50,50,50]', 'CS182 [1500,1600] [50,50,50]']);
+  console.log(`The status code returned by java command is ${results.status}`);
+  if (results.stdout) {
+      console.log('stdout of the java command is :\n' + JSON.parse(results.stdout).response[0].courseID);
+  }
+  if (results.stderr) {
+      console.log('stderr of the java command is :\n' + results.stderr);
+  }
 })
 
 app.post('/api/createschedule', (req, res) => {
