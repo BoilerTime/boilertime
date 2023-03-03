@@ -1,16 +1,15 @@
 <template>
   <main>
-    <div class="mb-6 bg-gray-400 p-6 rounded-lg" v-if="isDataLoaded" @click="open = true">
-      <h1 class="text-2xl font-bold"><span>{{ data.subject }}&nbsp;</span>{{ data.number }}</h1>
+    <div class="mb-6 bg-amber-100 p-6 rounded-lg" :id="data.subject+data.number" v-if="isDataLoaded" @click="open = true">
+      <h1 class="text-xl font-bold"><span>{{ data.subject }}&nbsp;</span>{{ data.number }}</h1>
       <h1 class="font-bold">{{ data.name }}</h1>
       <ul class="mt-3 mb-3">
-        <li class="mb-3">{{ data.meetings[0].instructorName }}</li>
         <li class="font-bold">Avg Class GPA</li>
         <li v-if="stats[0] != undefined">{{ stats[0] }}</li>
         <li v-else>No data</li>
         <li class="font-bold mt-2">Professor's Rating</li>
         <li v-if="rmp[0] != undefined">{{ rmp[0] }} out of 5</li>
-        <li v-else>a</li>
+        <li v-else>No data</li>
       </ul>
       <a class="mt-6 font-bold"><button @click="open = true">View class details →</button></a>
       <ClassDetails :open="open" :header="[data.subject, data.number].join('')" :data="data" @update:open="open = $event" />
@@ -28,7 +27,7 @@
   let stats = []
   let rmp = []
   const isDataLoaded = ref(false);
-  
+
   const props = defineProps({
     data: {
       type: Object,
@@ -52,9 +51,6 @@
   }
   
   const open = ref(false)
-  const handleSlideoverClose = () => {
-    open.value = false
-  }
 
   onMounted(() => {
     // props.data is accessible here

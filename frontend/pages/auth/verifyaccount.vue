@@ -16,21 +16,37 @@ import axios from 'axios'
 
 const route = useRoute()
 const user_id = route.query.id
+console.log(user_id + 'this is the user id');
 
 /**
  * A function that will make sure the user's userid matches with the emailed one.
  */
-onBeforeMount(() => {
-    axios.post('http://localhost:3001/api/verifyaccount', {
+onBeforeMount(async () => {
+    await axios.post('http://localhost:3001/api/verifyaccount', {
         userID: user_id
     })
-        .then(function () {
+      .then((res) => {
             alert("Verification has been successful.")
             navigateTo("/auth/login")
         })
-        .catch(function (error) {
-            console.error(error)
-            alert("Cannot verify account.")
+        .catch((error) => {
+            console.log(error + "HERE");
+            console.log(error.response.status);
+            if (error.response.status == 400) {
+            console.log('HERHEHEHRHE')
+              alert("You have not provided an account to verify");
+              navigateTo('/auth/register');
+            }
+            else if (error.response.status == 409) {
+              console.error(error)
+              alert("Account is already verified");
+              navigateTo('/auth/login');
+            }
+            else {
+              //alert("Account does not exist");
+              alert("Unknown error")
+              navigateTo('/auth/register');
+            }
         })
 })
 </script>
