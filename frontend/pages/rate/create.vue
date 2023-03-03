@@ -109,7 +109,7 @@
                         <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How
                             helpful are they when answering questions?</label>
                         <span class="text-sm items-center">2.5</span>
-                        <input id="rating1" type="range" value="2.5" min="0" max="5" step="0.5"
+                        <input id="rating1" type="range" min="0" max="5" step="0.5"
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                             oninput="this.previousElementSibling.innerText=this.value" v-model="rating1">
                         <div class="-mt-2 flex w-fill justify-between">
@@ -120,7 +120,7 @@
                         <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How
                             responsive are they?</label>
                         <span class="text-sm items-center">2.5</span>
-                        <input id="rating2" type="range" value="2.5" min="0" max="5" step="0.5"
+                        <input id="rating2" type="range" min="0" max="5" step="0.5"
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                             oninput="this.previousElementSibling.innerText=this.value" v-model="rating2">
                         <div class="-mt-2 flex w-fill justify-between">
@@ -131,7 +131,7 @@
                         <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How
                             fair is their grading?</label>
                         <span class="text-sm items-center">2.5</span>
-                        <input id="rating3" type="range" value="2.5" min="0" max="5" step="0.5"
+                        <input id="rating3" type="range" min="0" max="5" step="0.5"
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                             oninput="this.previousElementSibling.innerText=this.value" v-model="rating3">
                         <div class="-mt-2 flex w-fill justify-between">
@@ -173,9 +173,9 @@ var userstore = useUserStore();
 const reviewtype = ref('')
 const reviewselection = ref('')
 
-const rating1 = ref('')
-const rating2 = ref('')
-const rating3 = ref('')
+const rating1 = ref('2.5')
+const rating2 = ref('2.5')
+const rating3 = ref('2.5')
 
 
 /**
