@@ -31,6 +31,7 @@
         </template>
       </Modal>
     </TransitionRoot>
+
   <div class="h-screen p-8 bg-gray-200">
     <!--Begin window-->
     <div
@@ -43,7 +44,11 @@
 
       <h1 class="font-light text-left">
         To do so, search for your class in the bar below and mark it as required
-        or optional.
+        or optional and click done once you are finished.
+      </h1>
+      <h1 class="font-light text-left">
+        If you want to come back to a certain class later, you can bookmark it
+        as well and it will be saved for you in your profile page.
       </h1>
       <br />
 
@@ -83,7 +88,6 @@
       </div>
 
       <br />
-
       <!--User interaction group-->
       <div class="grid gap-4 grid-cols-2">
         <input
@@ -120,14 +124,22 @@
       </div>
 
       <br />
-      <!--Submit Button-->
-      <button
-        class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-        type="button"
-        @click="submit"
-      >
-        Done
-      </button>
+      <div class="flex justify-self-end gap-4 mt-5">
+        <!--Submit and Cancel Button-->
+        <button
+          class="w-1/8 justify-self-end bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+        >
+          <a href="/app/home"> Cancel </a>
+        </button>
+        <button
+          class="w-1/8 justify-self-end bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+          type="button"
+          @click="submit"
+        >
+          Done
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -136,7 +148,7 @@
 
 <script setup>
 import axios from "axios";
-import { useUserStore } from "~~/store/user";
+import { useUserStore } from "../../store/user";
 import { ref } from "vue";
 import { TransitionRoot } from "@headlessui/vue";
 
@@ -146,6 +158,8 @@ var required_classes = ref([]);
 var optional_classes = ref([]);
 var bookmarked_classes = ref([]);
 var isModalVisible = ref(false);
+var removedBookmark = ref(false);
+
 
 //function to add a class to the required classes array
 function add_class_required() {

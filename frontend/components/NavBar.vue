@@ -1,3 +1,4 @@
+
 <template>
   <header class="bg-white">
     <nav class="mx-auto flex items-center justify-between py-8 px-12">
@@ -20,6 +21,8 @@
 </template>
 
 <script setup>
+import { defineStore } from "pinia";
+import axios from "axios";
 import { useUserStore } from "../store/user"
 import { ref } from "vue"
 import axios from "axios";
@@ -37,6 +40,12 @@ try {
 
 isLoggedIn = userStore.isLoggedIn
 
+async function verifyToken() {
+  await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
+      //console.log(res.accessToken);
+  });
+}
+
 async function getUserInfo() {
   axios
     .post("http://localhost:3001/api/get/profile/", {
@@ -53,6 +62,7 @@ async function getUserInfo() {
 
 onMounted(() => {
   getUserInfo();
+  verifyToken();
 });
 
 </script>

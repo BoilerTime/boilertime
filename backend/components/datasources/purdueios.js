@@ -8,9 +8,39 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
+const { resourceLimits } = require('worker_threads');
 
 const db = getFirestore()
 const classLists = db.collection('classes');
+
+const buildingsAndRooms = async function() {
+  var buildings = await fetch('https://api.purdue.io/odata/Buildings');
+  var rooms = await fetch('https://api.purdue.io/odata/Rooms');
+  buildings = await buildings.json();
+  rooms = await rooms.json();
+  var count = 0
+  await buildings.value.forEach((res) => {
+    console.log(count++)
+    console.log(res)
+    db.collection('classrooms').doc(res.Id).set({
+      CampusID: res.CampusId,
+      Name: res.Name,
+      ShortCode: res.ShortCode
+    })
+  })
+  await rooms.value.forEach((res) => {
+    console.log(count++)
+    console.log(res)
+    res.Number = res.Number.replace('/', '-')
+    if (res.Number != '') {
+      db.collection('classrooms').doc(res.BuildingId).collection('rooms').doc(res.Number).set({
+          Id: res.Id
+      }).catch((err) => {
+        console.log(res)
+      })
+    }
+  })
+}
 
 const purdueios = async function() {
 	console.log("Called");
@@ -127,4 +157,4 @@ const saveCourses = async function() {
 
 
 
-module.exports = {purdueios, saveCourses};
+module.exports = {purdueios, saveCourses, buildingsAndRooms};

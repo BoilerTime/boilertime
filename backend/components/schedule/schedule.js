@@ -30,5 +30,4 @@ async function addClasses(user) {
     console.error(err);
     throw new Error(500);
   })
-
 }
