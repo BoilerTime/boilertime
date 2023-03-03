@@ -21,7 +21,7 @@
                 </select>
                 <!--Review Selection text-->
                 <label for="reviewselection" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What
-                    course would you like to review?</label>
+                    one would you like to review?</label>
                 <!--Review Selection input box-->
                 <input type="reviewselection" id="reviewselection" aria-describedby="helper-text-explanation"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
@@ -31,37 +31,82 @@
             <div v-if="reviewtype === 'course' && reviewselection !== 'null'">
                 <!--Prerequisite Requirement Rating aka 'rating1'-->
                 <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How strict are the prerequisite requirements?</label>
-                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating1" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating1">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Pace of Materials Rating aka 'rating2'-->
                 <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How is the pace of materials covered?</label>
-                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating2" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating2">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Depth of Material Rating aka 'rating3'-->
                 <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How in-depth is the material?</label>
-                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating3" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating3">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
             </div>
             <!--Adds the inputs for reviewing a classroom-->
             <div v-else-if="reviewtype === 'classroom'">
                 <!--Convenience of Access Rating aka 'rating1'-->
                 <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How convenient is it to access this classroom?</label>
-                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating1" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating1">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Quality of Seating Rating aka 'rating2'-->
                 <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What is the quality of seating?</label>
-                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating2" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating2">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Availability of Technology Rating aka 'rating3'-->
                 <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">What is the availability of technology?</label>
-                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating3" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating3">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
             </div>
             <!--Adds the inputs for reviewing a TA-->
             <div v-else-if="reviewtype === 'ta'">
                 <!--Helpfulness of Answering Questions Rating aka 'rating1'-->
                 <label for="rating1" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How helpful are they when answering questions?</label>
-                <input id="rating1" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating1" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating1">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Responsiveness Rating aka 'rating2'-->
                 <label for="rating2" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How responsive are they?</label>
-                <input id="rating2" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating2" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating2">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
                 <!--Fairness of Grading Rating aka 'rating3'-->
                 <label for="rating3" class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black">How fair is their grading?</label>
-                <input id="rating3" type="range" min="0" max="5" value="2.5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <center><span class="text-sm">2.5</span></center>
+                <input id="rating3" type="range" min="0" max="5" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" oninput="this.previousElementSibling.innerText=this.value" v-model="rating3">
+                <div class="-mt-2 flex w-fill justify-between">
+                    <span class="text-sm text-black">0</span>
+                    <span class="text-sm text-black">5</span>
+                </div>
             </div>
 
             <!--Attempts to send review-->
