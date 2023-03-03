@@ -72,7 +72,10 @@ const saveCourses = async function() {
 	let currentId;
 	//for(let i = 0; i < 2; i++) {
 	let courseCount = 0;
-	for(let i = 114; i < courseList.length; i++) {
+	for(let i = 0; i<courseList.length; i++) {
+		console.log(courseList[i].subject + " " + i);
+	}
+	for(let i = 8; i < 9; i++) {
 		await classLists.doc('spring_2023').collection(courseList[i].subject).add({hasCourses: true}).then((res) => {
     	//It worked, great! Don't need to do anything, though
 			//let currentId = res.id;
@@ -98,16 +101,24 @@ const saveCourses = async function() {
 					console.log({type: sectionsList[l]?.Meetings[0]?.Type || "none",
 					 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
 					 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+					 durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
 					 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
 					 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-					 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"})
+					 roomNumber: sectionsList[l]?.Meetings[0]?.Room || "none",
+					 startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
+					 endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
+					})
 					await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].Number).collection(courseList[i].courses[j].Sections[k].Id).doc(courseList[i].courses[j].Sections[k].Sections[l].Id).set(
 						{type: sectionsList[l]?.Meetings[0]?.Type || "none",
-						 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
-						 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
-						 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
-						 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-						 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"});
+							starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
+							daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+							durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
+							instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
+							building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
+							roomNumber: sectionsList[l]?.Meetings[0]?.Room || "none",
+							startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
+							endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
+						});
 				}
 			}
 		}

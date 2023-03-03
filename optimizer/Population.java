@@ -38,7 +38,7 @@ public class Population {
         }
 
         if(singleEntries.size() > 1) {
-            System.out.println("Possible conflict");
+            //System.out.println("Possible conflict");
             for(int i = 0; i < singleEntries.size(); i++) {
                 for(int j = 0; j < singleEntries.size(); j++) {
                     if(i != j && singleEntries.get(i).equals(singleEntries.get(j))) {
