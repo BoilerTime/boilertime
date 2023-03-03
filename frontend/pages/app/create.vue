@@ -66,7 +66,7 @@
       <!--Do work here for US 7-->
       <div class="grid gap-4 grid-cols-2">
         <div>
-          <input type="text" v-model="search" @keyup="fetch" placeholder="Enter class..."
+          <input type="text" v-model="search" @input="fetch" placeholder="Enter class..."
           class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 mt-5 rounded-lg text-sm focus:outline-blue-500"
           >
           <ul>
@@ -137,6 +137,7 @@ var required_classes = ref([]);
 var optional_classes = ref([]);
 var bookmarked_classes = ref([]);
 var removedBookmark = ref(false);
+var department = ref("")
 
 //function to add a class to the required classes array
 function add_class_required() {
@@ -160,8 +161,15 @@ let results = [];
 const fetch = async () => {
   try {
     search.value = (search.value).toUpperCase()
-    const response = await axios.post('http://localhost:3001/api/search', { dept: search.value });
-    results = response.data.classes;
+    await axios.post('http://localhost:3001/api/search', { dept: search.value }).then((res) => {
+      department = search.value
+      results = res.data.classes;
+    }).catch(async () => {
+      console.log("Dept : " + department)
+      const response = await axios.post('http://localhost:3001/api/search', { dept: department })
+      results = response.data.classes;
+    })
+    results = results.filter(word => word.substring(0, search.value.length) === search.value)
   } catch (error) {
     console.log(error);
   }
