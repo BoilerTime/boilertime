@@ -3,6 +3,7 @@ const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestor
 const { collection, query, where, getDocs } = require('firebase/firestore');
 const iso = require('iso8601-duration');
 const utils = require('../utils/utils')
+const save = require('../schedule/saveschedule');
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
@@ -20,19 +21,18 @@ const optimizeSchedule = async function(java, schedule) {
             optimizecourses.push(schedule.required_classes[i]);
         }
     }
-    console.log(optimizecourses);
+    
     const format = "name [times] [durations]"
     var output = [];
 
     let resultFormat = {"name": "", "startTimes": [], "durations": [], "isMWF": false, "sectionIDs": [], "collectionIDs": []};
     
     for(let i = 0; i < optimizecourses.length; i++) {
-        console.log(optimizecourses[i].split(" ")[0] + " + " + optimizecourses[i].split(" ")[1]);
+        //console.log(optimizecourses[i].split(" ")[0] + " + " + optimizecourses[i].split(" ")[1]);
         let results = [];
         let collectionResults = [];
         await courses.collection(optimizecourses[i].split(" ")[0]).doc(optimizecourses[i].split(" ")[1]).listCollections().then((querySnapshot) => {
             querySnapshot.forEach((collection) => {
-                console.log("CD" + collection.id)
                 results.push(collection.where("type", "==", "Lecture").get());
                 collectionResults.push(collection.id);
                 //console.log(await collection.where("type", "==", "Lecture").get());
@@ -45,7 +45,6 @@ const optimizeSchedule = async function(java, schedule) {
             results[j] = await results[j];
             
             results[j].forEach(async doc => {
-                console.log(doc.id);
                 let rawDur = doc.data().durations
                 let date = new Date(doc.data().starttime);
                 output[i].startTimes.push(date.getUTCHours()+ "" + date.getUTCMinutes());
@@ -57,7 +56,6 @@ const optimizeSchedule = async function(java, schedule) {
                 }
               })
         }
-        console.log(output)
 
     }
     var mwfOptions = [];
@@ -90,8 +88,6 @@ const optimizeSchedule = async function(java, schedule) {
         
     }
 
-    console.log(mwfOptions)
-    console.log(tfOptions);
     //Run the MWF routine
     var mwfResults;
     var tfResults;
@@ -104,7 +100,7 @@ const optimizeSchedule = async function(java, schedule) {
         } else {
             throw new Error(500);
         }
-        console.log(mwfResults)
+
     }   
 
     if(tfOptions.length > 0) {
@@ -157,10 +153,8 @@ const optimizeSchedule = async function(java, schedule) {
             }
         }
         dbOut.schedule.push(tempOut);
-        
     }
-    console.log(dbOut)
-
+    await save.saveSchedule(schedule.user_id, dbOut);
 }
 
 module.exports = {optimizeSchedule};
