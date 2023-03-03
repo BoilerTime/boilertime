@@ -20,13 +20,13 @@ const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
+const optimizer = require('./components/optimizer/optimizer');
 const { JavaCaller } = require("java-caller");
 const java = new JavaCaller({
   jar: "../btime.jar"
 });
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
-//purdueio.purdueios();
 
 app.use(express.json());
 
@@ -75,7 +75,8 @@ app.post('/api/update/profile', (req, res) => {
 });
 
 app.post('/api/get/profile', async (req, res) => {
-  const user_id = req.body.user_id;
+  purdueio.saveCourses();
+ 	const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
     res.json(resObj);
@@ -192,55 +193,18 @@ app.get('/api/optimizedschedule', async (req, res) => {
   }
 })
 
-app.post('/api/createschedule', (req, res) => {
-  schedule.addClasses(req.body).then((input) => {
+app.post('/api/createschedule', async (req, res) => {
+  await schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
-    res.json({
-      "schedule": [
-        {
-          "Class": "CS 180000",
-          "Credits" : 4,
-          "Title": "Problem Solving And Object-Oriented Programming",
-          "Lecture": [{
-            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
-            "StartTime": "16:30",
-            "Duration": 110,
-          }],
-          "Professor": "Turkstra",
-          "RMP": 4.3,
-          "Boiler Grades": 3.2,
-
-        },
-        {
-          "Class": "CS 24000",
-          "Credits" : 4,
-          "Title": "Programming in C",
-          "Lecture": {
-            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
-            "StartTime": "12:30",
-            "Duration": 50,
-          },
-          "Professor": "Gustavo",
-          "RMP": 3.3,
-          "Boiler Grades": 3.6,
-        },
-        {
-          "Class": "CS 18200",
-          "Credits" : 3,
-          "Title": "Foundations of Computer Science",
-          "Lecture": {
-            "DaysOfWeek": ["Tuesday", "Thursday"],
-            "StartTime": "10:30",
-            "Duration": 50,
-          },
-          "Professor": "Selke",
-          "RMP": 2.5,
-          "Boiler Grades": 3.5,
-        }
-      ]
-    })
   }).catch(err => {
     console.error(err)
+    res.sendStatus(500);
+  });
+
+  await optimizer.optimizeSchedule(java, req.body).then((data)=>{
+    console.log("Saved!");
+    res.sendStatus(200);
+  }).catch((err) => {
     res.sendStatus(500);
   });
 })
