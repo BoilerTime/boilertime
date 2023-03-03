@@ -20,11 +20,16 @@ const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
-
-
+const optimizer = require('./components/optimizer/optimizer');
+const { JavaCaller } = require("java-caller");
+const java = new JavaCaller({
+  jar: "../btime.jar"
+});
 //Data scraper imports
+
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+
 
 app.use(express.json());
 
@@ -43,7 +48,7 @@ app.use(function(req, res, next) {
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 
-//Route for /api. Add new event listeners as needed for new routes. 
+//Route for /api. Add new event listeners as needed for new routes.
 /*
  * This function gets a path for /api
  */
@@ -53,7 +58,7 @@ app.get('/api', (req, res) => {
 
 /*
  * Test function for confirming user token with the authentiacateToken method in jwt.js
- * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
+ * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json
  * @param {string} email - print the email of user to test correct user
  */
 
@@ -87,12 +92,12 @@ app.post('/api/update/profile', (req, res) => {
  * @param {string} user_id - user_id of user we want to get 
  */
 app.post('/api/get/profile', async (req, res) => {
-  const user_id = req.body.user_id;
+ const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
     res.json(resObj);
   } catch {
-    res.send(401);
+    res.sendStatus(401);
   }
 });
 
@@ -100,7 +105,7 @@ app.post('/api/get/profile', async (req, res) => {
 /*
  * This function lets a user login and generates a jwt token for them
  * @param {string} email - Email of user
- * @param {string} password - Hashed password of user 
+ * @param {string} password - Hashed password of user
  */
 app.post('/api/login', (req, res) => {
   const email = req.body.email;
@@ -192,188 +197,33 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
-/* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
-app.get('/api/optimizedschedule', (req, res) => {
-  res.json({
-    "schedule":
-      [
-        {
-          "subject":"CS",
-          "number":"25200",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Systems Programming",
-          "meetings":[
-            {
-                "instructorName":"Gustavo Rodriguez-Rivera",
-                 "startTime":"2023-02-21T21:30:00Z",
-                 "duration":"PT0H50M",
-                 "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                 "type":"Lecture",
-                 "buildingCode":"WALC",
-                 "buildingName":"Wilmeth Active Learning Center",
-                 "roomNumber":"HILER THTR"
-           },
-           {
-                "instructorName": "Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T22:30:00Z",
-                "duration":"PT1H50M",
-                "daysOfWeek":["Wednesday"],
-                "type":"Laboratory",
-                "buildingCode":"HAAS",
-                "buildingName":"Felix Haas Hall",
-                "roomNumber":"G056"
-            }
-          ]
-        },
-        {
-          "subject":"CS",
-          "number":"30700",
-          "creditHours":3,
-          "description":"Evening exams",
-          "name":"Software Engineering I",
-          "meetings":[
-            {
-                "instructorName":"Jeffrey A. Turkstra",
-                "startTime":"2023-02-21T18:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"SMTH",
-                "buildingName":"Smith Hall",
-                "roomNumber":"B288"
-              }
-          ]
-        },
-        {
-          "subject":"ENGL",
-          "number":"10600",
-          "creditHours":4,
-          "description":"Async online",
-          "name":"First-Year Composition",
-          "meetings":[
-            {
-                "instructorName":"Samuel J. Dunn",
-                "startTime":"2023-02-21T15:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"BRNG",
-                "buildingName":"Beering (Steven C.) Hall of Liberal Arts and Education",
-                "roomNumber":"B288"
-            }
-          ]
-        },
-        {
-          "subject":"MA",
-          "number":"16100",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Calculus I",
-          "meetings":[
-            {
-                "instructorName":"Frankie Chan",
-                "startTime":"2023-02-21T20:30:00Z",
-                "duration":"PT1H50M",
-                "daysOfWeek":["Tuesday", "Thursday"],
-                "type":"Lecture",
-                "buildingCode":"MATH",
-                "buildingName":"Mathematical Sciences Building",
-                "roomNumber":"B288"
-              }
-          ]
-        },
-        {
-          "subject":"EAPS",
-          "number":"12000",
-          "creditHours":4,
-          "description":"Evening exams",
-          "name":"Earth Through Time",
-          "meetings":[
-            {
-                "instructorName":"Nathaniel A. Lifton",
-                "startTime":"2023-02-21T17:30:00Z",
-                "duration":"PT0H50M",
-                "daysOfWeek":["Monday", "Wednesday", "Friday"],
-                "type":"Lecture",
-                "buildingCode":"PHYS",
-                "buildingName":"Purdue Physics Building",
-                "roomNumber":"B288"
-              },
-              {
-                "instructorName":"Jonathan M. Harbor",
-                "startTime":"2023-02-21T22:30:00Z",
-
-                "duration":"PT1H50M",
-                "daysOfWeek":["Thursday"],
-                "type":"Laboratory",
-                "buildingCode":"CL50",
-                "buildingName":"Class of 1950 Lecture Hall",
-                "roomNumber":"B288"
-              }
-            ]
-          } 
-    ]
-  })
+app.post('/api/optimizedschedule', async (req, res) => {
+ await getSchedule.getSchedule(req.body.user_id).then((schedule) => {
+    res.send(schedule);
+ }).catch(err => {
+    console.log(err)
+    res.sendStatus(err.error || 500);
+ });
+  
 })
 
-app.post('/api/createschedule', (req, res) => {
-  schedule.addClasses(req.body).then((input) => {
+app.post('/api/createschedule', async (req, res) => {
+  console.log(req.body);
+  await schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
-    res.json({
-      "schedule": [
-        {
-          "Class": "CS 180000",
-          "Credits" : 4,
-          "Title": "Problem Solving And Object-Oriented Programming",
-          "Lecture": [{
-            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
-            "StartTime": "16:30",
-            "Duration": 110,
-          }],
-          "Professor": "Turkstra",
-          "RMP": 4.3,
-          "Boiler Grades": 3.2,
-
-        },
-        {
-          "Class": "CS 24000",
-          "Credits" : 4,
-          "Title": "Programming in C",
-          "Lecture": {
-            "DaysOfWeek": ["Monday", "Wednesday", "Friday"],
-            "StartTime": "12:30",
-            "Duration": 50,
-          },
-          "Professor": "Gustavo",
-          "RMP": 3.3,
-          "Boiler Grades": 3.6,
-        },
-        {
-          "Class": "CS 18200",
-          "Credits" : 3,
-          "Title": "Foundations of Computer Science",
-          "Lecture": {
-            "DaysOfWeek": ["Tuesday", "Thursday"],
-            "StartTime": "10:30",
-            "Duration": 50,
-          },
-          "Professor": "Selke",
-          "RMP": 2.5,
-          "Boiler Grades": 3.5,
-        }
-      ]
-    })
   }).catch(err => {
     console.error(err)
     res.sendStatus(500);
   });
-})
-app.get('/api/getoptimizedschedule', async (req, res) => {
-  let schedule = await getSchedule.getSchedule(req.body.user_id);
-  console.log(schedule)
-  res.send(schedule);
-})
+
+  await optimizer.optimizeSchedule(java, req.body).then((data)=>{
+    console.log("Saved!");
+    res.sendStatus(200);
+  }).catch((err) => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+});
 
 /**
  * Add bookmark given bookmark and user_id
@@ -705,8 +555,8 @@ app.listen(port, () => {
 })
 
 /*
- * Call for getting an average gpa from professor 
- * @param {string} prof_name - Name of the professor of the class 
+ * Call for getting an average gpa from professor
+ * @param {string} prof_name - Name of the professor of the class
  * @param{string} class_name - Name of the class averageGPA is wanted for
  */
 app.post('/api/getgpa', async (req, res) => {
@@ -725,12 +575,12 @@ app.post('/api/getgpa', async (req, res) => {
   /* This call is to write professor4s to db, already done.
     boilergrades.writeProfessors();
   */
-   
-});  
+
+});
 
 /*
- * Call for getting an overall gpa from professor 
- * @param {string} prof_name - Name of the professor of the class 
+ * Call for getting an overall gpa from professor
+ * @param {string} prof_name - Name of the professor of the class
  */
 app.post('/api/getoverall_gpa', async (req, res) => {
   const prof_name = req.body.prof_name;
@@ -747,8 +597,8 @@ app.post('/api/getoverall_gpa', async (req, res) => {
   /* This call is to write professor4s to db, already done.
     boilergrades.writeProfessors();
   */
-   
-}); 
+
+});
 
 /*
  * Call for adding a flag to a rating

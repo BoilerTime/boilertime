@@ -5,7 +5,32 @@
 
 <template>
   <!--Begin entire page-->
-    <NavBar />
+  <TransitionRoot
+      :show="isModalVisible"
+      enter="transition duration-100"
+      enter-from="opacity-0"
+      enter-to="opacity-100 z-index-50"
+      leave="transition duration-100"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <Modal @closed="closeModal">
+        <template #header>
+          <h1 class="font-extrabold text-3xl text-center">
+                Generating schedule...
+              </h1>
+        </template>
+        <template #body>
+          <div class="h-auto">
+            <div class="grid">
+              <div
+                class="place-self-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600"
+              ></div>
+            </div>
+          </div>
+        </template>
+      </Modal>
+    </TransitionRoot>
 
   <div class="h-screen p-8 bg-gray-200">
     <!--Begin window-->
@@ -64,7 +89,6 @@
 
       <br />
       <!--User interaction group-->
-      <!--Do work here for US 7-->
       <div class="grid gap-4 grid-cols-2">
         <input
           class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 mt-5 rounded-lg text-sm focus:outline-blue-500"
@@ -133,7 +157,9 @@ var class_input = ref("");
 var required_classes = ref([]);
 var optional_classes = ref([]);
 var bookmarked_classes = ref([]);
+var isModalVisible = ref(false);
 var removedBookmark = ref(false);
+
 
 //function to add a class to the required classes array
 function add_class_required() {
@@ -178,8 +204,15 @@ function bookmark() {
     .catch((err) => console.error(err));
 }
 
+function closeModal() {
+  isModalVisible.value = false;
+}
+
 //function to submit the schedule to backend
-async function submit() {
+function submit() {
+  
+ isModalVisible.value = true;
+
   axios
     .post("http://localhost:3001/api/createschedule", {
       user_id: userStore.user_id,
@@ -187,7 +220,7 @@ async function submit() {
       optional_classes: optional_classes.value,
     })
     .then((res) => {
-      navigateTo("/app/loading");
+      navigateTo("/app/view");
     })
     .catch((err) => console.error(err));
 }

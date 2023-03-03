@@ -3,8 +3,8 @@ import java.util.*;
 
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Population p, Individual optIndividual) {
-        String result = "{\"response\": [";
-        String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration:\": \"course_duration\"},";
+        String result = "{\"data\": [";
+        String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\"},";
         
         //Pull the string that represents the best individual 
         String schedule = optIndividual.getIndividual();

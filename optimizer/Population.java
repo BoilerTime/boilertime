@@ -38,10 +38,11 @@ public class Population {
         }
 
         if(singleEntries.size() > 1) {
-            System.out.println("Possible conflict");
+            //System.out.println("Possible conflict");
             for(int i = 0; i < singleEntries.size(); i++) {
                 for(int j = 0; j < singleEntries.size(); j++) {
                     if(i != j && singleEntries.get(i).equals(singleEntries.get(j))) {
+                        System.out.println("Couldn't find!");
                         this.isSatisfiable = false;
                         return;
                     }
@@ -179,6 +180,7 @@ public class Population {
         if(bestFitScore == 0) {
             this.bestIndividual = fittestIndividual;
         } else {
+            System.out.println(bestFitScore);
             this.bestIndividual = null;
         }
         
