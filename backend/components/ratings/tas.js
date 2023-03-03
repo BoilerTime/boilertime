@@ -27,8 +27,8 @@ async function addUserRating(user_id, ta, gradingFairness, questionAnswering, re
     //console.log('here in not');
     var rating = [];
     rating[0] = gradingFairness;
-    rating[2] = questionAnswering;
-    rating[1] = responsiveness;
+    rating[1] = questionAnswering;
+    rating[2] = responsiveness;
     await taRatings.add({user_id: user_id, ta: ta, rating: rating, timestamp: Timestamp.now()});
   }
   return true;
