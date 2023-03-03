@@ -150,7 +150,6 @@ const rating3 = ref('')
  * information to the database.
  */
 async function createreview() {
-    console.log(actualval, enterval.value)
     if (actualval == enterval.value) {
         if (reviewtype.value === "course") {
             await axios.post('http://localhost:3001/api/add/ratings/courses', {
