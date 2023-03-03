@@ -198,7 +198,7 @@ async function createreview() {
                 })
                 .catch(function (error) {
                     console.error();
-                    alert(error);
+                    alert("You have already submitted a review for this course.");
                 })
         } else if (reviewtype.value === "classroom") {
             await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
@@ -210,11 +210,11 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
-                    navigateTo("/app/profile_page")
+                    navigateTo("/app/profile")
                 })
                 .catch(function (error) {
                     console.error();
-                    alert(error);
+                    alert("You have already submitted a review for this classroom.");
                 })
         } else if (reviewtype.value === "ta") {
             await axios.post('http://localhost:3001/api/add/ratings/tas', {
@@ -226,11 +226,11 @@ async function createreview() {
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
-                    navigateTo("/app/profile_page")
+                    navigateTo("/app/profile")
                 })
                 .catch(function (error) {
                     console.error();
-                    alert(error);
+                    alert("You have already submitted a review for this TA.");
                 })
         }
     } else {

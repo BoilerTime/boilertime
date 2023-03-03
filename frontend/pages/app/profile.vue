@@ -146,16 +146,17 @@
       <div class="mt-5">
         <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
       </div>
-      <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
         <h1 class="font-bold text-2xl mt-3 mb-3">Courses</h1>
-        <ul class="list-inside list-item mb-6" v-for="course in courses" v-if="isDataLoaded">
+        <ul class="list-inside list-item mb-6" v-for="(course, index) in courses" :key="index" v-if="isDataLoaded">
           <li class="font-bold text-lg">{{ course.course }}</li>
           <li class="font-light text-sm mb-2">Submitted at: {{ course.timestamp }}</li>
           <li class="font-light text-sm mb-2 text-red-500" v-if="course.flag_count >= 3">This review has been flagged for review by the content moderators</li>
           <li>How strict are the prerequisite requirements: {{ course.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ course.rating[1] }}</li>
           <li>How in-depth is the material: {{ course.rating[2] }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deletecourses(course.course)">Delete</a></li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(course.course, course.rating[0], course.rating[1], course.rating[2], 'course', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deletecourses(course.course)">Delete</a>
+            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
         <h1 class="font-bold text-2xl mt-3 mb-3">Classrooms</h1>
         <ul class="list-inside list-item mb-6" v-for="classroom in classrooms" v-if="isDataLoaded">
@@ -165,7 +166,8 @@
           <li>How strict are the prerequisite requirements: {{ classroom.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ classroom.rating[1] }}</li>
           <li>How in-depth is the material: {{ classroom.rating[2] }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteclassrooms(classroom.classroom)">Delete</a></li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(classroom.classroom, classroom.rating[0], classroom.rating[1], classroom.rating[2], 'classroom', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteclassrooms(classroom.classroom)">Delete</a>
+            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
         <h1 class="font-bold text-2xl mt-3 mb-3">TAs</h1>
         <ul class="list-inside list-item mb-6" v-for="ta in tas" v-if="isDataLoaded">
@@ -175,11 +177,13 @@
           <li>How strict are the prerequisite requirements: {{ ta.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ ta.rating[1] }}</li>
           <li>How in-depth is the material: {{ ta.rating[2] }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteta(ta.ta)">Delete</a></li>
+          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], 'ta')">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteta(ta.ta)">Delete</a>
+            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
         </ul>
+        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3" :type="editType" :id="user_id"/>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
@@ -227,6 +231,9 @@ import { TransitionRoot } from "@headlessui/vue";
 
 var userStore = useUserStore();
 var isModalVisible = ref(false);
+var isCourseModalVisible = ref(false);
+var isClassroomModalVisible = ref(false);
+var isTAModalVisible = ref(false);
 var firstname = ref("");
 var lastname = ref("");
 var gradMonth = ref("");
@@ -234,7 +241,19 @@ var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
 
+var user_id = userStore.user_id
+
+/* CAPTCHA variables */
+const randval1 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1))
+const randval2 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1))
+const actualval = randval1 + randval2
+const enterval = ref('')
+
 var isDataLoaded = ref(false);
+
+function flag() {
+  window.prompt("Why are you flagging this?","");
+}
 
 function showModal() {
   isModalVisible.value = true;
@@ -243,6 +262,58 @@ function showModal() {
 function closeModal() {
   isModalVisible.value = false;
 }
+
+function showCourseModal() {
+  isCourseModalVisible.value = true;
+}
+
+function closeCourseModal() {
+  isCourseModalVisible.value = false;
+}
+
+function showClassroomModal() {
+  isClassroomModalVisible.value = true;
+}
+
+function closeClassroomModal() {
+  isClassroomModalVisible.value = false;
+}
+
+function showFlagModal() {
+  isTAModalVisible.value = true;
+}
+
+function closeFlagModal() {
+  isTAModalVisible.value = false;
+}
+
+/** THIS IS FOR EDIT MODAL */
+
+const isOpen = ref(false)
+
+function closeEdit() {
+  isOpen.value = false
+}
+function openModal() {
+  isOpen.value = true
+}
+
+var editTitle = ref("")
+var editQ1 = ref("")
+var editQ2 = ref("")
+var editQ3 = ref("")
+var editType = ref("")
+
+async function edit(title, q1, q2, q3, type) {
+  editTitle.value = title
+  editQ1.value = q1
+  editQ2.value = q2
+  editQ3.value = q3
+  editType.value = type
+  openModal()
+}
+
+/** THE ABOVE IS FOR EDIT MODAL */
 
 async function getBookmarks() {
   axios
@@ -266,7 +337,8 @@ async function deletecourses(course) {
     })
     .then((response) => {
       console.log(response.data);
-      alert("We're processing your delete request")
+      alert("Successfully deleted request")
+      location.reload()
     })
     .catch((error) => {
       console.error(error);
@@ -281,7 +353,8 @@ async function deleteclassrooms(classroom) {
     })
     .then((response) => {
       console.log(response.data);
-      alert("We're processing your delete request")
+      alert("Successfully deleted request")
+      location.reload()
     })
     .catch((error) => {
       console.error(error);
@@ -296,7 +369,8 @@ async function deleteta(ta) {
     })
     .then((response) => {
       console.log(response.data);
-      alert("We're processing your delete request")
+      alert("Successfully deleted request")
+      location.reload()
     })
     .catch((error) => {
       console.error(error);
@@ -346,6 +420,26 @@ async function getratings() {
   }).catch((error) => {
     console.error(error)
   })
+}
+
+async function flagCourse(course) {
+  if (actualval == enterval.value) {
+    await axios.post("http://localhost:3001/api/add/flag", {
+      type: 'course',
+      user_id: userStore.user_id,
+      name: course.name.value
+    })
+    .then(function() {
+      alert("Review report successfully submitted.");
+      isCourseModalVisible.value = false;
+    })
+    .catch(function (error) {
+      console.error();
+      alert(error);
+    });
+  } else {
+    alert("CAPTCHA entered incorrectly. Please try again.");
+  }
 }
 
 async function submit() {

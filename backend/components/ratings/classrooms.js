@@ -68,7 +68,7 @@ async function editClassroomRating(user_id, classroom, access_conv, seating_qual
  * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
  * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
  */
-async function deleteClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+async function deleteClassroomRating(user_id, classroom) {
   const userRatings = await classroomRatings.where('user_id', '==', user_id).where('classroom', '==', classroom).get();
   userRatings.forEach(async doc => {
     doc.ref.delete()
