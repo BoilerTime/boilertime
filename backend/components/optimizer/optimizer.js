@@ -118,7 +118,7 @@ const optimizeSchedule = async function(java, schedule) {
     
     let dbFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
     let dbOut = {"schedule": []};
-    for(let i = 0; i < mwfResults.data.length; i++) {
+    for(let i = 0; i < mwfResults?.data?.length||0; i++) {
         let entry = mwfResults.data[i];
         let tempOut = JSON.parse(JSON.stringify(dbFormat))
         let dept = entry.courseID.split("|")[0];
@@ -136,7 +136,7 @@ const optimizeSchedule = async function(java, schedule) {
         dbOut.schedule.push(tempOut);
     }
 
-    for(let i = 0; i < tfResults.data.length; i++) {
+    for(let i = 0; i < tfResults?.data?.length||0; i++) {
         let entry = tfResults.data[i];
         let tempOut = JSON.parse(JSON.stringify(dbFormat))
         let dept = entry.courseID.split("|")[0];

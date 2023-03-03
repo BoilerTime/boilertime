@@ -49,7 +49,7 @@ const getSchedule = async function(user) {
             let sectionInformation = {
                 "instructorName": classInSection.instructor.Name,
                 "startTime": classInSection.starttime,
-                "duration": classInSection.durations,
+                "duration": utils.padTime(classInSection.durations),
                 "daysOfWeek": classInSection.daysOfWeek.split(', '),
                 "type": classInSection.type,
                 "buildingCode": classInSection.room.Building.ShortCode,

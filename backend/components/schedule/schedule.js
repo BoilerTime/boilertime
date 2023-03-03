@@ -21,7 +21,7 @@ async function addClasses(user) {
   const input = {
     "required_classes": user.required_classes,
     "optional_classes": user.optional_classes,
-    "personal_preferences": user.personal_preferences,
+    "personal_preferences": user?.personal_preferences||"",
     "timestamp": FieldValue.serverTimestamp()
   };
   await db.collection('user_schedules').doc(user.user_id).collection('spring_2023').doc('schedule').set(input).then((res) => {

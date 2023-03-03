@@ -24,9 +24,12 @@ import { ref, onBeforeMount } from 'vue';
 
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
+import { useUserStore } from '../../store/user'
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
+
+const userStore = useUserStore();
 
 let result = [];
 
@@ -103,10 +106,14 @@ const calendarOptions = ref({
 
 onBeforeMount(async () => {
   try {
-    const response = await axios.get('http://localhost:3001/api/optimizedschedule');
+    const response = await axios.post('http://localhost:3001/api/optimizedschedule', {
+      user_id: userStore.user_id
+    })
     scheduleData.value = response.data.schedule;
+    console.log(response.data.schedule)
     convertSchedule(scheduleData.value);
   } catch (error) {
+    console.log(error)
     alert("No schedule data found. Please generate a schedule first");
   }
 });

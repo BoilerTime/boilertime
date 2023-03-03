@@ -75,13 +75,12 @@ app.post('/api/update/profile', (req, res) => {
 });
 
 app.post('/api/get/profile', async (req, res) => {
-  purdueio.saveCourses();
  	const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
     res.json(resObj);
   } catch {
-    res.send(401);
+    res.sendStatus(401);
   }
 });
 
@@ -181,9 +180,8 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
-app.get('/api/optimizedschedule', async (req, res) => {
-  let schedule = await getSchedule.getSchedule(req.body.user_id);
-  console.log(schedule)
+app.post('/api/optimizedschedule', async (req, res) => {
+ let schedule = await getSchedule.getSchedule(req.body.user_id);
   res.send(schedule);
 })
 

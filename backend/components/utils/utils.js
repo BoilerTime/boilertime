@@ -215,4 +215,16 @@ function findKeyForUnsorted(arr, key) {
   return -1;
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted};
+/**
+ * Helper function to pad a time with the prefix 0H
+ * @param {*} time The time to be padded if missing 0H
+ * @returns the result of the padding
+ */
+function padTime(time) {
+  if(!time.includes("H")) {
+    time = "PT0H" + time.substring(2); 
+  }
+  return time;
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime};
