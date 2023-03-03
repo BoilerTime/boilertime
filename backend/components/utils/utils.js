@@ -208,6 +208,10 @@ async function addRatingFlag(type, user_id, name) {
   return {flag_count: flag_count + 1};
 }
 
+/*
+ * This function gets the user email from user_id
+ * @param {string} uesr_id - the user_id  of user
+ */
 async function getUserEmail(user_id) {
   const profile = await users.doc(user_id).get();
   if (profile.empty) {

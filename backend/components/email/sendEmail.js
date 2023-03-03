@@ -38,8 +38,10 @@ async function sendEmail({ mailOptions }) {
 }
 
 /**
- * Send email given mailOptions
- * @param {JSON} mailOptions - Details of the email
+ * Send email when a user flags a rating
+ * @param {string} user_id - The user_id associated with the rating to flag
+ * @param {string} type - The type of rating to flag (course, classroom, or ta)
+ * @param {string} name - THe name of the course, classroom, ta (CS30700, LWSNB160, Chirayu Garg)
  */
 async function sendEmailWhenFlagged(type, name, user_id, flag_count) {
     var maillist = [
