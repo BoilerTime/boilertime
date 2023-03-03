@@ -39,7 +39,7 @@ const optimizeSchedule = async function(java, schedule) {
                 });
             });
         output.push(JSON.parse(JSON.stringify(resultFormat)))
-        output[i].name = optimizecourses[i].split(" ")[0] + "" + optimizecourses[i].split(" ")[1];
+        output[i].name = optimizecourses[i].split(" ")[0] + "|" + optimizecourses[i].split(" ")[1];
         output[i].collectionIDs = collectionResults;
         for(let j = 0; j < results.length; j++) {
             results[j] = await results[j];
@@ -100,7 +100,7 @@ const optimizeSchedule = async function(java, schedule) {
         const mwfR = await java.run(mwfOptions);
         if (mwfR.stdout) {
             //console.log('stdout of the java command is :\n' + stdout);
-            mwfResults = mwfR.stdout;
+            mwfResults = JSON.parse(mwfR.stdout);
         } else {
             throw new Error(500);
         }
@@ -114,14 +114,52 @@ const optimizeSchedule = async function(java, schedule) {
         
         if (trF.stdout) {
             //console.log('stdout of the java command is :\n' + stdout);
-            tfResults = trF.stdout;
+            tfResults = JSON.parse(trF.stdout);
         } else {
             throw new Error(500);
         }
     }
-    console.log(JSON.parse(mwfResults).data[0]);
-    console.log(JSON.parse(tfResults).data);
+    
+    let dbFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+    let dbOut = {"schedule": []};
+    for(let i = 0; i < mwfResults.data.length; i++) {
+        let entry = mwfResults.data[i];
+        let tempOut = JSON.parse(JSON.stringify(dbFormat))
+        let dept = entry.courseID.split("|")[0];
+        let num = entry.courseID.split("|")[1];
+        tempOut.subject = dept;
+        tempOut.number = num;
+        //Now find the right place in the course array
+        var j = 0;
+        for(j = 0; j < output.length; j++) {
+            if(output[j].name == entry.courseID) {
+                tempOut.userSections.meetings.push(output[j].sectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]);
+                tempOut.userSections.sectionID = output[j].collectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]
+            }
+        }
+        dbOut.schedule.push(tempOut);
+    }
 
+    for(let i = 0; i < tfResults.data.length; i++) {
+        let entry = tfResults.data[i];
+        let tempOut = JSON.parse(JSON.stringify(dbFormat))
+        let dept = entry.courseID.split("|")[0];
+        let num = entry.courseID.split("|")[1];
+        tempOut.subject = dept;
+        tempOut.number = num;
+        //Now find the right place in the course array
+        var j = 0;
+        for(j = 0; j < output.length; j++) {
+            if(output[j].name == entry.courseID) {
+
+                tempOut.userSections.meetings.push(output[j].sectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]);
+                tempOut.userSections.sectionID = output[j].collectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]
+            }
+        }
+        dbOut.schedule.push(tempOut);
+        
+    }
+    console.log(dbOut)
 
 }
 
