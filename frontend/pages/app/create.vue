@@ -170,6 +170,7 @@ const fetch = async () => {
       results = response.data.classes;
     })
     results = results.filter(word => word.substring(0, search.value.length) === search.value)
+    results.length = Math.min(5, results.length)
   } catch (error) {
     console.log(error);
   }
