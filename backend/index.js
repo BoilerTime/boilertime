@@ -25,6 +25,7 @@ const taRatings = require('./components/ratings/tas');
 //Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+const {json} = require('express');
 //purdueio.purdueios();
 
 app.use(express.json());
@@ -644,10 +645,12 @@ app.post('/api/add/flag', async (req, res) => {
   jsonObj = await utils.addRatingFlag(type, user_id, name)
 
   if (jsonObj === undefined) {
+    console.log('jsonObject is undefined');
     // bad request
     res.sendStatus(400);
   }
   else {
+    await sendEmail.sendEmailWhenFlagged(type, name, user_id, jsonObj.flag_count);
     res.json(jsonObj);
   }
 });
