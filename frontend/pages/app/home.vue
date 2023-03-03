@@ -1,6 +1,7 @@
 <template>
   <main>
     <NavBar />
+    <Search />
   </main>
 </template>
   

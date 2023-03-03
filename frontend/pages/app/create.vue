@@ -65,12 +65,16 @@
       <!--User interaction group-->
       <!--Do work here for US 7-->
       <div class="grid gap-4 grid-cols-2">
-        <input
+        <div>
+          <input type="text" v-model="search" @keyup="fetch" placeholder="Enter class..."
           class="w-5/6 justify-self-center border-2 border-gray-300 bg-white h-10 px-5 mt-5 rounded-lg text-sm focus:outline-blue-500"
-          type="text"
-          v-model="class_input"
-          placeholder="Enter class..."
-        />
+          >
+          <ul>
+            <li v-for="result in results" :key="result" @click="select(result)">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
 
         <div class="flex gap-4 mt-5 justify-self-center">
           <button
@@ -148,6 +152,25 @@ function add_class_optional() {
     optional_classes.value.push(class_input.value);
     class_input.value = "";
   }
+}
+
+const search = ref('');
+let results = [];
+
+const fetch = async () => {
+  try {
+    search.value = (search.value).toUpperCase()
+    const response = await axios.post('http://localhost:3001/api/search', { dept: search.value });
+    results = response.data.classes;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const select = (result) => {
+  search.value = result;
+  results = [];
+  class_input.value = result;
 }
 
 function bookmark() {
