@@ -106,8 +106,6 @@ const optimizeSchedule = async function(java, schedule) {
     if(tfOptions.length > 0) {
         //Run the TF routine
         const trF = await java.run(tfOptions);
-
-        
         if (trF.stdout) {
             //console.log('stdout of the java command is :\n' + stdout);
             tfResults = JSON.parse(trF.stdout);
@@ -129,10 +127,12 @@ const optimizeSchedule = async function(java, schedule) {
         var j = 0;
         for(j = 0; j < output.length; j++) {
             if(output[j].name == entry.courseID) {
+                //console.log(output[j]);
                 tempOut.userSections.meetings.push(output[j].sectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]);
                 tempOut.userSections.sectionID = output[j].collectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]
             }
         }
+        //console.log(dbOut.userSections);
         dbOut.schedule.push(tempOut);
     }
 
@@ -152,6 +152,7 @@ const optimizeSchedule = async function(java, schedule) {
                 tempOut.userSections.sectionID = output[j].collectionIDs[utils.findKeyForUnsorted(output[j].startTimes, entry.courseStartTime)]
             }
         }
+        //console.log(dbOut);
         dbOut.schedule.push(tempOut);
     }
     await save.saveSchedule(schedule.user_id, dbOut);

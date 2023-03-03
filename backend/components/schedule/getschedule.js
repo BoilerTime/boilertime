@@ -17,12 +17,12 @@ const classes = db.collection('classes')
  */
 const getSchedule = async function(user) {
     //First, get the document that matches the user id. Hardcoding Spring 2023 for now
-    console.log(user)
+    //console.log(user)
     let userProfile = await schedules.doc(user).collection('spring_2023').doc('generated_schedule').get();
 
     
     let userSchedule = await userProfile.data();
-    console.log(userSchedule)
+    //console.log(userSchedule)
     let response = {"schedule": []};
     //let classDetails = {};
     //Now, we must loop through the schedule that is stored and get the information that corresponds with each ID
@@ -43,9 +43,9 @@ const getSchedule = async function(user) {
         
         for(let j = 0; j<userSchedule.schedule[i].userSections.meetings.length; j++) {
             let classInSection = await sections.doc(userSchedule.schedule[i].userSections.meetings[0]).get();
-            console.log(userSchedule.schedule[i].userSections.meetings[0]);
+            //console.log(userSchedule.schedule[i].userSections.meetings[0]);
             classInSection = await classInSection.data();
-            console.log(classInSection)
+            //console.log(classInSection)
             let sectionInformation = {
                 "instructorName": classInSection.instructor.Name,
                 "startTime": classInSection.starttime,

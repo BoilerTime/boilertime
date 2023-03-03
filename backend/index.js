@@ -181,11 +181,17 @@ app.post('/api/createuser', (req, res) => {
 })
 
 app.post('/api/optimizedschedule', async (req, res) => {
- let schedule = await getSchedule.getSchedule(req.body.user_id);
-  res.send(schedule);
+ await getSchedule.getSchedule(req.body.user_id).then((schedule) => {
+    res.send(schedule);
+ }).catch(err => {
+    console.log(err)
+    res.sendStatus(err.error || 500);
+ });
+  
 })
 
 app.post('/api/createschedule', async (req, res) => {
+  console.log(req.body);
   await schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
   }).catch(err => {
