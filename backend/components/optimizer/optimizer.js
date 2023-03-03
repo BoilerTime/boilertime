@@ -2,10 +2,10 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore');
 const iso = require('iso8601-duration');
+const utils = require('../utils/utils')
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
-
 
 const optimizeSchedule = async function(java, schedule) {
     let optimizecourses = [];
@@ -24,40 +24,44 @@ const optimizeSchedule = async function(java, schedule) {
     const format = "name [times] [durations]"
     var output = [];
 
-    let resultFormat = {"name": "", "startTimes": [], "durations": []};
+    let resultFormat = {"name": "", "startTimes": [], "durations": [], "isMWF": false, "sectionIDs": [], "collectionIDs": []};
     
     for(let i = 0; i < optimizecourses.length; i++) {
         console.log(optimizecourses[i].split(" ")[0] + " + " + optimizecourses[i].split(" ")[1]);
         let results = [];
+        let collectionResults = [];
         await courses.collection(optimizecourses[i].split(" ")[0]).doc(optimizecourses[i].split(" ")[1]).listCollections().then((querySnapshot) => {
             querySnapshot.forEach((collection) => {
+                console.log("CD" + collection.id)
                 results.push(collection.where("type", "==", "Lecture").get());
+                collectionResults.push(collection.id);
                 //console.log(await collection.where("type", "==", "Lecture").get());
                 });
             });
         output.push(JSON.parse(JSON.stringify(resultFormat)))
         output[i].name = optimizecourses[i].split(" ")[0] + "" + optimizecourses[i].split(" ")[1];
+        output[i].collectionIDs = collectionResults;
         for(let j = 0; j < results.length; j++) {
             results[j] = await results[j];
             
             results[j].forEach(async doc => {
-                //console.log("Called!")
-                var data = doc.data();
+                console.log(doc.id);
                 let rawDur = doc.data().durations
-                console.log(doc.data().starttime)
-                console.log(moment.duration(rawDur).hours()*60 + moment.duration(rawDur).minutes());
                 let date = new Date(doc.data().starttime);
-                console.log(date.getUTCHours()+ "" + date.getUTCMinutes())
-                //console.log(moment.duration(doc.data().durations).minutes())
-                //await doc.ref.delete()
                 output[i].startTimes.push(date.getUTCHours()+ "" + date.getUTCMinutes());
                 output[i].durations.push(moment.duration(rawDur).hours()*60 + moment.duration(rawDur).minutes());
+                output[i].sectionIDs.push(doc.id);
+                //output[i].collectionIDs.push(collectionResults[i]);
+                if(doc.data().daysOfWeek.split(",")[0] == "Monday") {
+                    output[i].isMWF = true;
+                }
               })
         }
         console.log(output)
 
     }
-    var options = [];
+    var mwfOptions = [];
+    var tfOptions = [];
     for(let i = 0; i < output.length; i++) {
         //Get the time in the proper order
         let timeString = "["
@@ -78,22 +82,47 @@ const optimizeSchedule = async function(java, schedule) {
         result = result.replace("name", output[i].name);
         result = result.replace("[times]", timeString);
         result = result.replace("[durations]", durationString);
-        options.push(result);
+        if(output[i].isMWF) {
+            mwfOptions.push(result);
+        } else {
+            tfOptions.push(result);
+        }
         
     }
-    console.log(options);
-    //const { status, stdout, stderr } = await java.run(['CS180 [1500] [50,50,50]', 'CS182 [1500,1600] [50,50,50]']);
-    const { status, stdout, stderr } = await java.run(options);
 
-    console.log(`The status code returned by java command is ${status}`);
-    if (stdout) {
-        console.log('stdout of the java command is :\n' + stdout);
-    }
-    if (stderr) {
-        throw new Error(500);
-    }
+    console.log(mwfOptions)
+    console.log(tfOptions);
+    //Run the MWF routine
+    var mwfResults;
+    var tfResults;
 
-    console.log("Now we can get back on the rest of our custom module code :)")
+    if(mwfOptions.length > 0) {
+        const mwfR = await java.run(mwfOptions);
+        if (mwfR.stdout) {
+            //console.log('stdout of the java command is :\n' + stdout);
+            mwfResults = mwfR.stdout;
+        } else {
+            throw new Error(500);
+        }
+        console.log(mwfResults)
+    }   
+
+    if(tfOptions.length > 0) {
+        //Run the TF routine
+        const trF = await java.run(tfOptions);
+
+        
+        if (trF.stdout) {
+            //console.log('stdout of the java command is :\n' + stdout);
+            tfResults = trF.stdout;
+        } else {
+            throw new Error(500);
+        }
+    }
+    console.log(JSON.parse(mwfResults).data[0]);
+    console.log(JSON.parse(tfResults).data);
+
+
 }
 
 module.exports = {optimizeSchedule};

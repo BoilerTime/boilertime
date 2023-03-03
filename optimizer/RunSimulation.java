@@ -1,6 +1,4 @@
 package optimizer;
-import java.util.Arrays;
-import java.net.http.*;
 public class RunSimulation {
     public static void main(String[] args) {
         
@@ -21,7 +19,7 @@ public class RunSimulation {
   
         CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
         if(courses.length == 1) {
-            System.out.println("{[{\"courseID\": " + courses[0].getCourseName() + ", \"courseStartTime:\" " + courses[0].getCourseTimes()[0] + ", \"courseDuration:\" " + courses[0].getCourseDurations()[0] + "}]}"); 
+            System.out.println("{\"data\": [{\"courseID\": \"" + courses[0].getCourseName() + "\", \"courseStartTime\": \"" + courses[0].getCourseTimes()[0] + "\", \"courseDuration\": \"" + courses[0].getCourseDurations()[0] + "\"}]}"); 
             return;
         }
         /*System.out.println(courses.length);

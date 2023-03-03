@@ -200,4 +200,19 @@ async function addRatingFlag(type, user_id, name) {
 
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag};
+/**
+ * Finds the first key that corresponds with a given value in an array. O(n)
+ * @param {*} arr The array to be searched
+ * @param {*} key The value to be serached for 
+ * @returns The index 
+ */
+function findKeyForUnsorted(arr, key) {
+  for(let i = 0; i < arr.length; i++) {
+    if(arr[i] == key) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted};
