@@ -151,19 +151,6 @@
           <ul class="list-inside list-item">
             <li class="mb-2 font-bold" v-for="(item, index) in courseRatings.entries" :key="index">
               {{ item }}
-              <li class="mb-2 font-bold" v-for="(item, index) in courseRatings" :key="index">
-                {{ item }}
-              </li>
-            </li>
-          </ul>
-          <ul class="list-inside list-item">
-            <li class="mb-2 font-bold" v-for="(item, index) in classroomRatings" :key="index">
-              {{ item }}
-            </li>
-          </ul>
-          <ul class="list-inside list-item">
-            <li class="mb-2 font-bold" v-for="(item, index) in taRatings" :key="index">
-              {{ item }}
             </li>
           </ul>
         </div>
@@ -219,9 +206,6 @@ var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
-var courseRatings = ref([]);
-var classroomRatings = ref([]);
-var taRatings = ref([]);
 
 function showModal() {
   isModalVisible.value = true;
@@ -229,48 +213,6 @@ function showModal() {
 
 function closeModal() {
   isModalVisible.value = false;
-}
-
-async function getCourseRatings() {
-  axios.post("http://localhost:3001/api/get/user_ratings/courses", {
-    user_id: userStore.user_id
-  })
-  .then((response) => {
-    console.log(response.data.rating);
-    //console.log(response.data.ratings.value);
-    courseRatings.value = response.data.rating;
-    console.log(courseRatings);
-    //console.log(courseRatings.value);
-  })
-  .catch((error) => {
-    console.error(error)
-  });
-}
-
-async function getClassroomRatings() {
-  axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
-    user_id: userStore.user_id
-  })
-  .then((response) => {
-    //console.log(response.data.rating)
-    classroomRatings.value = response.data.rating;
-  })
-  .catch((error) => {
-    console.error(error)
-  });
-}
-
-async function getTaRatings() {
-  axios.post("http://localhost:3001/api/get/user_ratings/tas", {
-    user_id: userStore.user_id
-  })
-  .then((response) => {
-    //console.log(response.data.rating)
-    taRatings.value = response.data.rating;
-  })
-  .catch((error) => {
-    console.error(error)
-  });
 }
 
 async function getBookmarks() {
@@ -326,18 +268,6 @@ async function submit() {
 onMounted(() => {
   getUserInfo();
 });
-
-onMounted(() => {
-  getCourseRatings();
-})
-
-onMounted(() => {
-  getClassroomRatings();
-})
-
-onMounted(() => {
-  getTaRatings();
-})
 
 onMounted(() => {
   getBookmarks();
