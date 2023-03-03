@@ -26,7 +26,7 @@ const java = new JavaCaller({
   jar: "../btime.jar"
 });
 //Data scraper imports
-const purdueio = require('./components/datasources/purdueios.js');
+//const purdueio = require('./components/datasources/purdueios.js');
 
 app.use(express.json());
 
@@ -45,7 +45,7 @@ app.use(function(req, res, next) {
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 
-//Route for /api. Add new event listeners as needed for new routes. 
+//Route for /api. Add new event listeners as needed for new routes.
 /*
  * This function gets a path for /api
  */
@@ -55,7 +55,7 @@ app.get('/api', (req, res) => {
 
 /*
  * Test function for confirming user token with the authentiacateToken method in jwt.js
- * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json 
+ * @param {function} jwt.authenticateToken() - authenticates the token passed into it by json
  * @param {string} email - print the email of user to test correct user
  */
 
@@ -75,7 +75,7 @@ app.post('/api/update/profile', (req, res) => {
 });
 
 app.post('/api/get/profile', async (req, res) => {
- 	const user_id = req.body.user_id;
+ const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
     res.json(resObj);
@@ -88,7 +88,7 @@ app.post('/api/get/profile', async (req, res) => {
 /*
  * This function lets a user login and generates a jwt token for them
  * @param {string} email - Email of user
- * @param {string} password - Hashed password of user 
+ * @param {string} password - Hashed password of user
  */
 app.post('/api/login', (req, res) => {
   const email = req.body.email;
@@ -366,8 +366,8 @@ app.listen(port, () => {
 })
 
 /*
- * Call for getting an average gpa from professor 
- * @param {string} prof_name - Name of the professor of the class 
+ * Call for getting an average gpa from professor
+ * @param {string} prof_name - Name of the professor of the class
  * @param{string} class_name - Name of the class averageGPA is wanted for
  */
 app.post('/api/getgpa', async (req, res) => {
@@ -386,12 +386,12 @@ app.post('/api/getgpa', async (req, res) => {
   /* This call is to write professor4s to db, already done.
     boilergrades.writeProfessors();
   */
-   
-});  
+
+});
 
 /*
- * Call for getting an overall gpa from professor 
- * @param {string} prof_name - Name of the professor of the class 
+ * Call for getting an overall gpa from professor
+ * @param {string} prof_name - Name of the professor of the class
  */
 app.post('/api/getoverall_gpa', async (req, res) => {
   const prof_name = req.body.prof_name;
@@ -408,8 +408,8 @@ app.post('/api/getoverall_gpa', async (req, res) => {
   /* This call is to write professor4s to db, already done.
     boilergrades.writeProfessors();
   */
-   
-}); 
+
+});
 
 app.post('/api/add/flag', async (req, res) => {
   const type = req.body.type;
