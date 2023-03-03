@@ -22,6 +22,7 @@
 <script setup>
 import { useUserStore } from "../store/user"
 import { ref } from "vue"
+import axios from "axios";
 
 let isLoggedIn = false;
 var firstname = ref("")
