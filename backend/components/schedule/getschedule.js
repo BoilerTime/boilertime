@@ -39,11 +39,13 @@ const getSchedule = async function(user) {
             "name": currentClass.name,
             "meetings": []
         }
-        let sections = await classes.doc("spring_2023").collection(userSchedule.schedule[i].subject).doc(userSchedule.schedule[i].number).collection(userSchedule.schedule[i].userSection.sectionID);
+        let sections = await classes.doc("spring_2023").collection(userSchedule.schedule[i].subject).doc(userSchedule.schedule[i].number).collection(userSchedule.schedule[i].userSections.sectionID);
         
-        for(let j = 0; j<userSchedule.schedule[i].userSection.meetings.length; j++) {
-            let classInSection = await sections.doc(userSchedule.schedule[i].userSection.meetings[0]).get();
+        for(let j = 0; j<userSchedule.schedule[i].userSections.meetings.length; j++) {
+            let classInSection = await sections.doc(userSchedule.schedule[i].userSections.meetings[0]).get();
+            console.log(userSchedule.schedule[i].userSections.meetings[0]);
             classInSection = await classInSection.data();
+            console.log(classInSection)
             let sectionInformation = {
                 "instructorName": classInSection.instructor.Name,
                 "startTime": classInSection.starttime,

@@ -181,16 +181,10 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
-/* TEST ENDPOINT TO RETURN OPTIMIZED SCHEDULE STRUCTURE */
 app.get('/api/optimizedschedule', async (req, res) => {
-  const results = await java.run(['CS180 [1500] [50,50,50]', 'CS182 [1500,1600] [50,50,50]']);
-  console.log(`The status code returned by java command is ${results.status}`);
-  if (results.stdout) {
-      console.log('stdout of the java command is :\n' + JSON.parse(results.stdout).response[0].courseID);
-  }
-  if (results.stderr) {
-      console.log('stderr of the java command is :\n' + results.stderr);
-  }
+  let schedule = await getSchedule.getSchedule(req.body.user_id);
+  console.log(schedule)
+  res.send(schedule);
 })
 
 app.post('/api/createschedule', async (req, res) => {
@@ -205,14 +199,10 @@ app.post('/api/createschedule', async (req, res) => {
     console.log("Saved!");
     res.sendStatus(200);
   }).catch((err) => {
+    console.log(err)
     res.sendStatus(500);
   });
-})
-app.get('/api/getoptimizedschedule', async (req, res) => {
-  let schedule = await getSchedule.getSchedule(req.body.user_id);
-  console.log(schedule)
-  res.send(schedule);
-})
+});
 
 /**
  * Add bookmark given bookmark and user_id

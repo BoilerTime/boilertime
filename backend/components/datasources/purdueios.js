@@ -104,7 +104,7 @@ const saveCourses = async function() {
 					 durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
 					 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
 					 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-					 roomNumber: sectionsList[l]?.Meetings[0]?.Room || "none",
+					 room: sectionsList[l]?.Meetings[0]?.Room || "none",
 					 startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
 					 endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
 					})
@@ -115,7 +115,7 @@ const saveCourses = async function() {
 							durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
 							instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
 							building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-							roomNumber: sectionsList[l]?.Meetings[0]?.Room || "none",
+							room: sectionsList[l]?.Meetings[0]?.Room || "none",
 							startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
 							endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
 						});
