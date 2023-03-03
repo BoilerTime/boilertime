@@ -26,7 +26,7 @@ const java = new JavaCaller({
   jar: "../btime.jar"
 });
 //Data scraper imports
-const purdueio = require('./components/datasources/purdueios.js');
+//const purdueio = require('./components/datasources/purdueios.js');
 
 app.use(express.json());
 
@@ -75,8 +75,7 @@ app.post('/api/update/profile', (req, res) => {
 });
 
 app.post('/api/get/profile', async (req, res) => {
-  purdueio.saveCourses();
- 	const user_id = req.body.user_id;
+ const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
     res.json(resObj);
