@@ -8,9 +8,39 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
+const { resourceLimits } = require('worker_threads');
 
 const db = getFirestore()
 const classLists = db.collection('classes');
+
+const buildingsAndRooms = async function() {
+  var buildings = await fetch('https://api.purdue.io/odata/Buildings');
+  var rooms = await fetch('https://api.purdue.io/odata/Rooms');
+  buildings = await buildings.json();
+  rooms = await rooms.json();
+  var count = 0
+  await buildings.value.forEach((res) => {
+    console.log(count++)
+    console.log(res)
+    db.collection('classrooms').doc(res.Id).set({
+      CampusID: res.CampusId,
+      Name: res.Name,
+      ShortCode: res.ShortCode
+    })
+  })
+  await rooms.value.forEach((res) => {
+    console.log(count++)
+    console.log(res)
+    res.Number = res.Number.replace('/', '-')
+    if (res.Number != '') {
+      db.collection('classrooms').doc(res.BuildingId).collection('rooms').doc(res.Number).set({
+          Id: res.Id
+      }).catch((err) => {
+        console.log(res)
+      })
+    }
+  })
+}
 
 const purdueios = async function() {
 	console.log("Called");
@@ -72,7 +102,10 @@ const saveCourses = async function() {
 	let currentId;
 	//for(let i = 0; i < 2; i++) {
 	let courseCount = 0;
-	for(let i = 114; i < courseList.length; i++) {
+	for(let i = 0; i<courseList.length; i++) {
+		console.log(courseList[i].subject + " " + i);
+	}
+	for(let i = 8; i < 9; i++) {
 		await classLists.doc('spring_2023').collection(courseList[i].subject).add({hasCourses: true}).then((res) => {
     	//It worked, great! Don't need to do anything, though
 			//let currentId = res.id;
@@ -98,16 +131,24 @@ const saveCourses = async function() {
 					console.log({type: sectionsList[l]?.Meetings[0]?.Type || "none",
 					 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
 					 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+					 durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
 					 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
 					 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-					 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"})
+					 room: sectionsList[l]?.Meetings[0]?.Room || "none",
+					 startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
+					 endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
+					})
 					await classLists.doc('spring_2023').collection(courseList[i].subject).doc(courseList[i].courses[j].Number).collection(courseList[i].courses[j].Sections[k].Id).doc(courseList[i].courses[j].Sections[k].Sections[l].Id).set(
 						{type: sectionsList[l]?.Meetings[0]?.Type || "none",
-						 starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
-						 daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
-						 instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
-						 building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
-						 roomNumber: sectionsList[l]?.Meetings[0]?.Room?.Number || "none"});
+							starttime: sectionsList[l]?.Meetings[0]?.StartTime || "none",
+							daysOfWeek: sectionsList[l]?.Meetings[0]?.DaysOfWeek || "none",
+							durations: sectionsList[l]?.Meetings[0]?.Duration || "none",
+							instructor: sectionsList[l]?.Meetings[0]?.Instructors[0] || "none",
+							building: sectionsList[l]?.Meetings[0]?.Room?.Building?.ShortCode || "none",
+							room: sectionsList[l]?.Meetings[0]?.Room || "none",
+							startDate: sectionsList[l]?.Meetings[0]?.StartDate || "none",
+							endDate: sectionsList[l]?.Meetings[0]?.StartDate || "none"
+						});
 				}
 			}
 		}
@@ -116,4 +157,4 @@ const saveCourses = async function() {
 
 
 
-module.exports = {purdueios, saveCourses};
+module.exports = {purdueios, saveCourses, buildingsAndRooms};

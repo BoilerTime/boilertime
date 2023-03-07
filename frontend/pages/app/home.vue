@@ -15,20 +15,19 @@ if (!userStore.isLoggedIn) {
   navigateTo("/auth/login");
 }
 
-/*
 async function verifyToken() {
   await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
+      //console.log(res.accessToken);
   });
 }
 
 let interval;
 onMounted(() => {
-  interval = setInterval(verifyToken, 100);
+  verifyToken();
 });
 
 onUnmounted(() => {
   clearInterval(interval);
 });
-*/
 
 </script>

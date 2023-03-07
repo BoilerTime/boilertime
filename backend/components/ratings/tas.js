@@ -6,7 +6,9 @@ const dayjs = require('dayjs')
 module.exports = {
   getUserRatings,
   addUserRating,
-  getTARatings
+  getTARatings,
+  editUserRating,
+  deleteUserRating
 }
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -26,7 +28,7 @@ const taRatings = db.collection('ratings').doc('tas').collection('ta_ratings');
  * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
  * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
  */
-async function addUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsivness) {
+async function addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness) {
   //console.log(await userAlreadyRated(user_id, ta) + " << this is the value");
   if (await userAlreadyRated(user_id, ta)) {
     //console.log('here SENDING FALSE');
@@ -36,12 +38,42 @@ async function addUserRating(user_id, ta, gradingFairness, helpfullness, questio
     //console.log('here in not');
     var rating = [];
     rating[0] = gradingFairness;
-    rating[1] = helpfullness;
-    rating[2] = questionAnswering;
-    rating[3] = responsivness;
-    await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+    rating[1] = questionAnswering;
+    rating[2] = responsiveness;
+    await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()});
   }
   return true;
+}
+
+/**
+ * Function for editing a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ * @param {number} gradingFairness - Rating of grading fairness out of 5 at rating[0]
+ * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
+ * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
+ */
+async function editUserRating(user_id, ta, gradingFairness, questionAnswering, responsivness) {
+  const ratings = await taRatings.where('user_id', '==', user_id).where('ta', '==', ta).get();
+  var rating = [];
+  rating[0] = gradingFairness;
+  rating[1] = questionAnswering;
+  rating[2] = responsivness;
+  ratings.forEach(async doc => {
+    await doc.ref.set({user_id: user_id, ta: ta, rating: rating, timestamp: Timestamp.now()})
+  })
+}
+
+/**
+ * Function for deleting a TA rating
+ * @param {string} user_id - ID of the user who is rating
+ * @param {string} ta - Name of the TA they are rating
+ */
+async function deleteUserRating(user_id, ta) {
+  const ratings = await taRatings.where('user_id', '==', user_id).where('ta', '==', ta).get();
+  ratings.forEach(async doc => {
+    await doc.ref.delete()
+  })
 }
 
 /*
