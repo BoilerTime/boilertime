@@ -1,5 +1,6 @@
-package optimizer;
+package optimizer.algorithm;
 import java.util.*;
+import optimizer.Utils;
 
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Population p, Individual optIndividual) {

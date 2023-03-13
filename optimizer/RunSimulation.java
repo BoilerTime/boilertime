@@ -1,4 +1,13 @@
 package optimizer;
+import optimizer.algorithm.*;
+import optimizer.network.*;
+//Networking Import
+import java.io.IOException;
+
+import optimizer.algorithm.CourseOverview;
+import optimizer.algorithm.OptimizerDecoder;
+import optimizer.network.Server;
+
 public class RunSimulation {
     public static void main(String[] args) {
         
@@ -16,6 +25,11 @@ public class RunSimulation {
         System.out.println(i1);*/
 
         // the response:
+        try {
+            new Server(3002).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
   
         CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
         if(courses.length == 1) {

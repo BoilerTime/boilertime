@@ -1,7 +1,9 @@
-package optimizer;
+package optimizer.algorithm;
 
 import java.io.FilterInputStream;
 import java.util.*;
+
+import optimizer.Utils;
 
 public class Population {
     private CourseStruct[] registeredCourses;

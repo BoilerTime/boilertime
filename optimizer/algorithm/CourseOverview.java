@@ -1,4 +1,4 @@
-package optimizer;
+package optimizer.algorithm;
 
 public class CourseOverview {
     private String courseName; 

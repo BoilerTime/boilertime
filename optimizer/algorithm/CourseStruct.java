@@ -1,4 +1,4 @@
-package optimizer;
+package optimizer.algorithm;
 import java.util.HashMap;
 
 public class CourseStruct {
