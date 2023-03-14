@@ -3,6 +3,8 @@ package optimizer.network;
 //Java threading and networking libraries
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
+
 import optimizer.algorithm.*;
 
 public class ScheduleClient implements Runnable  {
@@ -40,8 +42,13 @@ public class ScheduleClient implements Runnable  {
                 if(courses[i] == null) {
                     terminate();
                 }
+                System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()));
             }
             //System.out.println("Result: " + numOfCourses);
+            Population resultPop = new Population(courses);
+            Individual resultsIndividual = resultPop.getFittestIndividual();
+            writeBestToOutput(resultPop, resultsIndividual);
+            //System.out.println(resultsIndividual);
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;
@@ -108,5 +115,12 @@ public class ScheduleClient implements Runnable  {
             System.err.println("Issue: " + e);
         }
         return null;
+    }
+
+    private void writeBestToOutput(Population p, Individual best) {
+        if(best == null) {
+            output.println("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
+        }
+        output.println(OptimizerDecoder.decodeOptimizedSchedule(p, best));
     }
 }

@@ -10,7 +10,6 @@ def algoTester(s):
     print("\n\n=======================")
     print("Welcome to the BoilerTime Optimization Algorithm Tester!");
     print("This program will as you for some information to get the schedule configured");
-    print("© 2023 Onyx Mayer");
     print("=======================\n\n")
 
     #Next, get the number of classes that the user would like to use
@@ -90,8 +89,16 @@ def getMessageAsJSON(s):
     #print(getsizeof(str(data, "ascii")));
     return json.loads(str(data, "ascii"));
 
+def close(r):
+    print("\n\n=======================")
+    print("Service has completed its running!")
+    print("Closing the connection to the server!");
+    print("Result is: " + str(r, "ascii"));
+    print("=======================\n")
+
+
 s = socket.create_connection((HOST, PORT));
 s.setblocking(True);
 algoTester(s);
-print("Closing Connection to Server!");
+close(s.recv(1024));
 s.close();

@@ -120,7 +120,7 @@ public class Population {
     }
 
     private Individual evolve() {
-        //System.out.println("Called!");
+        System.out.println("Called @ Evolve!");
         int count = 2;
         int bestFitScore;
         Individual fittestIndividual;
@@ -171,10 +171,10 @@ public class Population {
             k++; 
             genePool.add(nGen);
             //System.out.println("K = " + k);
-            //System.out.pritnln(Arrays.toString(nGen.getFittnessScores()));
+            System.out.println(Arrays.toString(nGen.getFittnessScores()));
             count++;
         }
-        ///System.out.println("Done After: " + count);
+        System.out.println("Done After: " + count + " with fitness score: " + bestFitScore);
         if(bestFitScore == 0) {
             this.bestIndividual = fittestIndividual;
         } else {
