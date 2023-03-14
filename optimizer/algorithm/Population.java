@@ -6,7 +6,14 @@ import java.util.*;
 import optimizer.Utils;
 
 public class Population {
-    private CourseStruct[] registeredCourses;
+
+    private CourseStruct[] registerdCourses;
+    public Population(CourseOverview[] registeredC) {
+        this.registerdCourses = new CourseStruct[registeredC.length];
+    }
+
+
+    /* private CourseStruct[] registeredCourses;
     private HashMap<String, Integer> binCourseTimes; 
     private ArrayList<Generation> genePool = new ArrayList<Generation>();
     private int individualSize; 
@@ -59,7 +66,7 @@ public class Population {
 
         /*
          * Get all of the course times, sort them, and put them into a binary hashmap to match the bitstring with the numerical value
-         */
+         *
         int[] courseTimes = new int[totalTimes];
         int totalCount = 0;
         for(int i = 0; i < course.length; i++){
@@ -312,4 +319,6 @@ public class Population {
     public HashMap<String, Integer> getBinCourseTimes() {
         return this.binCourseTimes;
     }
+ */
+
 }
