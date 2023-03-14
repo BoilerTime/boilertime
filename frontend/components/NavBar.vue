@@ -8,7 +8,7 @@
         </a>
       </div>
       <div v-if="isLoggedIn" class="flex items-center justify-end">
-        <a href="/app/profile_page" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
+        <a href="/app/profile" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
         <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
       </div>
@@ -25,7 +25,6 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { useUserStore } from "../store/user"
 import { ref } from "vue"
-import axios from "axios"
 
 let isLoggedIn = false;
 var firstname = ref("")

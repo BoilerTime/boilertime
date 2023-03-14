@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,8 @@
   "dependencies": {
     "@mtucourses/rate-my-professors": "^2.2.0",
     "axios": "^1.3.4",
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "email-validator": "^2.0.4",
@@ -30,7 +32,9 @@
     "firebase-admin": "^11.5.0",
     "iso8601-duration": "^2.1.1",
     "java-caller": "^2.7.0",
-    "moment": "^2.29.4"
+    "mocha": "^10.2.0",
+    "moment": "^2.29.4",
+    "supertest": "^6.3.3"
   },
   "devDependencies": {
     "firebase-admin": "^11.5.0",

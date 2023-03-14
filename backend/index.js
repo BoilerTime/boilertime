@@ -621,3 +621,5 @@ app.post('/api/add/flag', async (req, res) => {
     res.json(jsonObj);
   }
 });
+
+module.exports = app;
