@@ -20,13 +20,19 @@ public class Course {
         this.isRunnable = false;
     }
 
-    public Section[] instantiate(int minIndex, int overallSize) {
+    /**
+     * This method ensures that all sections of the course are set-up properly. Must be called BEFORE trying to optimize where each section is required. 
+     * @param minIndex The minimum index that may be used for sections in this block.
+     * @param overallSize The total number of bits that are required to represent each section {ceil (log)_2} of total number of sections
+     * @return An array of sections that were just created. 
+     */
+    public Section[] instantiate(int minIndex, int length) {
         if(isRunnable) {
             return sections;
         }
         
         //Get the length of the bistring that will identify each section
-        int length = (int) Utils.LogB(overallSize, 2);
+        //int length = (int) Utils.LogB(overallSize, 2);
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Utils.arrToString(id);
@@ -38,7 +44,7 @@ public class Course {
 
     /**
      * A helper method tells the number of sections that exist for the course in question.
-     * @return
+     * @return The number of sections, if the times and durations arrays are the same, otherwise -1. 
      */
     public int getNumberOfSections() {
         if(template.getCourseTimes().length != template.getCourseDurations().length) {
@@ -47,52 +53,4 @@ public class Course {
             return template.getCourseDurations().length;
         }
     }
-
-/*     public Course(String name, String binID, int[] times, int[] courseDurations) {
-        this.courseName = name; 
-        this.binaryID = binID;
-        this.courseTimes = times; 
-        this.courseDurations = courseDurations; 
-        this.timeDuration = new HashMap<Integer, Integer>();
-        pushToHashMap();
-    }
-
-    public Course(CourseOverview info, String binID) {
-        this.courseName = info.getCourseName(); 
-        this.binaryID = binID;
-        this.courseTimes = info.getCourseTimes(); 
-        this.courseDurations = info.getCourseDurations(); 
-        this.timeDuration = new HashMap<Integer, Integer>();
-        pushToHashMap();
-    }
-
-    public String getCourseName() {
-        return this.courseName;
-    }
-
-    public String getBinaryID() {
-        return this.binaryID;
-    }
-
-    public int[] getCourseTimes() {
-        return this.courseTimes;
-    }
-
-    public int[] getCourseDurations() {
-        return this.courseDurations;
-    }
-
-    private void pushToHashMap() {
-        for(int i = 0; i < courseTimes.length; i++) {
-            timeDuration.put(Integer.valueOf(courseTimes[i]), Integer.valueOf(courseDurations[i]));
-        }
-    }
-
-    public int getCourseDuration(int time) {
-        Integer temp = timeDuration.get(time);
-        if(temp == null) {
-            return -1;
-        }
-        return temp.intValue();
-    } */
 }
