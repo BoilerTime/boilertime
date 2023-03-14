@@ -10,7 +10,7 @@ public class ScheduleClient implements Runnable  {
     //The socket that is currently being run
     private Socket netSocket;
     private BufferedReader input;
-    private DataOutputStream output;
+    private PrintWriter output;
 
     public ScheduleClient(Socket s) {
         this.netSocket = s;
@@ -23,7 +23,7 @@ public class ScheduleClient implements Runnable  {
         CourseOverview courses[];
         try {
             input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
-            output = new DataOutputStream(netSocket.getOutputStream());
+            output = new PrintWriter(netSocket.getOutputStream(), true);
             int numOfCourses = -1; //= getCoursesCount(input);
             while(numOfCourses < 1) {
                 numOfCourses = getCoursesCount(input);
@@ -68,10 +68,10 @@ public class ScheduleClient implements Runnable  {
             numberOfClasses = Integer.parseInt(rawClasses);
             if(numberOfClasses > 0 && numberOfClasses < 11) {
                 //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
-                output.writeBytes("{\"status\":200,\"message\":\"Received\",\"data\":null}" + "\n");
+                output.println("{\"status\":200,\"message\":\"Received\",\"data\":null}");
             } else {
                 //System.err.println("Illegal number of classes sent!");
-                output.writeBytes("{\"status\":400,\"message\":\"Illegal\",\"data\":null}" + "\n");
+                output.println("{\"status\":400,\"message\":\"Illegal\",\"data\":null}");
                 //Make it a negative value to allow us to conintue in a defined state
                 numberOfClasses = -1;
             }
@@ -84,30 +84,28 @@ public class ScheduleClient implements Runnable  {
     }
 
     private CourseOverview getCourseInfo(BufferedReader input) {
+        //System.out.println("Called to get course info!");
         CourseOverviewHelper x = new CourseOverviewHelper();
         try {
+            //ystem.out.println("In try at getCourseInfo!");
             //first, we assign the course a name
             x.addCourseName(input.readLine());
+            //System.out.println("Added a name to the course!");
             //next, we need to determine how many courses are going to be transmitted
             String t = input.readLine();
             int numOfTimes = Integer.parseInt(t);
-            
+            //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
             x.instantiateTimes(numOfTimes);
+            x.instantiateDurations(numOfTimes);
             for(int i = 0; i < numOfTimes; i++) {
+                x.addCourseTime(Integer.parseInt(input.readLine()));
                 x.addDuration(Integer.parseInt(input.readLine()));
+                //System.out.println("Added a section combo: " + i);
             }
-
-            //Next, we add the course durations for each time
-            int numOfDurations = Integer.parseInt(input.readLine());
-            x.instantiateTimes(numOfDurations);
-            for(int i = 0; i < numOfDurations; i++) {
-                x.addDuration(Integer.parseInt(input.readLine()));
-            }
-
             return x.toCourseOverview();
         } catch (IOException | NumberFormatException e) {
-            System.err.println(e);
+            System.err.println("Issue: " + e);
         }
         return null;
     }

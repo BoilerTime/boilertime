@@ -1,5 +1,6 @@
 import socket
 import json
+from sys import getsizeof
 
 HOST = "localhost";
 PORT = 3002;
@@ -36,18 +37,58 @@ def algoTester(s):
         if status != 200:
             print("Error, the server couldn't processes the number of classes you inputted. Please try again!");
     num = int(num); #cast to an integer to loop over in the future
-
     print()
-    for i in range(num):
-        print(">>Let's set up course #" + str(i+1));
+    i = 0;
+    while i < num:
+        print("Let's set up course #" + str(i+1));
+        print(" What's the name of the class? >>>", end = ' ');
+        name = input();
+        s.send(bytearray((name+'\n').encode("ascii")));
+
+        cnum = None;
+        while cnum is None:
+            print(" How many sections are offered of the class? >>>", end = ' ');
+            c = input();
+            try:
+                cnum = int(c);
+            except:
+                print('\033[91m' + "    Error, you must enter a number of sections, not other characters!" + '\033[0m');
+                continue;
+        #print(bytearray(c+'\n', "ascii"));
+        s.send(bytearray(c+'\n', "ascii"));
+        j = 0;
+        while j < cnum:
+            tnum = None;
+            t = None;
+            while tnum is None:
+                print("     What time is section #" + str(j+1) + " offered at? >>>", end = ' ');
+                t = input();
+                try:
+                    tnum = int(t);
+                except:
+                    print('\033[91m' + "        Error, you must enter time as an integer, not other characters!" + '\033[0m');
+                    continue;
+            s.send(bytearray(t+'\n', "ascii"));
+            dnum = None;
+            d = None;
+            while dnum is None:
+                print("     How long is section #" + str(j+1) + "? >>>", end = ' ');
+                d = input();
+                try:
+                    dnum = int(d);
+                except:
+                    print('\033[91m' + "        Error, you must enter duration as an integer, not other characters!" + '\033[0m');
+                    continue;
+            s.send(bytearray(d+'\n', "ascii"));
+            j+=1;
+            
+        print()
+        i+=1;
 
 def getMessageAsJSON(s):
-    res = '';
     data = s.recv(1024);
-    while data:
-        res += str(data, "ascii");
-        data = s.recv(1024);
-    return json.loads(res);
+    #print(getsizeof(str(data, "ascii")));
+    return json.loads(str(data, "ascii"));
 
 s = socket.create_connection((HOST, PORT));
 s.setblocking(True);

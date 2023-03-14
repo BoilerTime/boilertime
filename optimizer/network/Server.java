@@ -23,8 +23,7 @@ public class Server {
         try {
             while (run) {
                 Socket cs = sSocket.accept();
-                Logger.getLogger(getClass().getName())
-                        .info("New Client Connected! " + cs.getPort());
+                Logger.getLogger(getClass().getName()).info("New Client Connected! " + cs.getPort());
                 new Thread(new ScheduleClient(cs)).start(); // Put to a new thread.
             }
         } catch (IOException e) {

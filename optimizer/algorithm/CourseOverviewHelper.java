@@ -40,7 +40,7 @@ public class CourseOverviewHelper {
      * A method that pushes a new time to the list of times for a specific class
      * @param time The time that is to be added
      */
-    public int addCourse(int time) {
+    public int addCourseTime(int time) {
         if(this.courseTimesPtr < 0) {
             return -1;
         }
