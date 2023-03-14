@@ -10,7 +10,7 @@ import optimizer.network.Server;
 
 public class RunSimulation {
     public static void main(String[] args) {
-        
+        System.out.println(args.length);
         /*Individual c1 = new Individual("100000011011010100101");
         Individual c2 = new Individual("011101101010011111110");
         Individual[] population = new Individual[5];
@@ -25,17 +25,18 @@ public class RunSimulation {
         System.out.println(i1);*/
 
         // the response:
-        try {
+        /*try {
             new Server(3002).start();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
   
         CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
         if(courses.length == 1) {
             System.out.println("{\"data\": [{\"courseID\": \"" + courses[0].getCourseName() + "\", \"courseStartTime\": \"" + courses[0].getCourseTimes()[0] + "\", \"courseDuration\": \"" + courses[0].getCourseDurations()[0] + "\"}]}"); 
             return;
         }
+        System.out.println(courses);
         /*System.out.println(courses.length);
         for(int i = 0; i < courses.length; i++) {
             System.out.println(courses[i].getCourseName() + " " + Arrays.toString(courses[i].getCourseTimes()) + " " + Arrays.toString(courses[i].getCourseDurations()));
@@ -53,12 +54,12 @@ public class RunSimulation {
         courses[3] = new CourseOverview("CS101", times3, durations2);*/
 
         Population testPopulation = new Population(courses);
-        Individual fittestIndividual = testPopulation.getFittestIndividual();
+        /*Individual fittestIndividual = testPopulation.getFittestIndividual();
         if(fittestIndividual == null) {
             System.err.println("No solution exists");
             return;
         }
-        System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, fittestIndividual));
+        System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, fittestIndividual));*/
         //System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, testPopulation.getFittestIndividual()));
     }
 
