@@ -6,7 +6,8 @@ import java.util.Scanner;
 public class User {
     public static void main(String[] args) {
         Socket user;
-        System.out.println("Hello World!");
+        System.out.println("Welcome to the Algorithm Tester!");
+        //System.out.println("Let's get you started with ");
         try {
             user = new Socket("localhost", 3002);
             DataOutputStream outToServer = new DataOutputStream(user.getOutputStream());

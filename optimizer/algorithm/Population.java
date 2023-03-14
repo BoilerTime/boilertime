@@ -22,11 +22,7 @@ public class Population {
         addCourses(course);
         pop = new Random();
         individualSize = calculateIndividualSize();
-        /*System.out.println("Size " + individualSize);
-        System.out.println("Course size :" + (int) Math.ceil(Utils.LogB(binCourseTimes.size(), 2)));
-        System.out.println("Name size: " + (int) Math.ceil(Utils.LogB(registeredCourses.length, 2)));
-        //System.out.println(binCourseTimes.get());
-        System.out.println("Done COnfiguring");*/
+
     }
 
     private void addCourses(CourseOverview[] course) {
