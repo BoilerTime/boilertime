@@ -34,7 +34,8 @@
     "java-caller": "^2.7.0",
     "mocha": "^10.2.0",
     "moment": "^2.29.4",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "firebase-admin": "^11.5.0",
