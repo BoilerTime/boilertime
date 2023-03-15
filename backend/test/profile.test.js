@@ -7,22 +7,24 @@ const app = require('../index.js')
 chai.use(chaiHttp);
 chai.should();
 
-var auth = {}
-beforeEach(function (done) {
-  const userLogin = {
-    email: "mayer56@purdue.edu",
-    password: "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
-  }
-  chai.request(app)
-    .post('/api/login')
-    .send(userLogin)
-    .end((err, res) => {
-      auth = res.body;
-      done();
-    });
-});
 
 describe("POST Test user profile", () => {
+
+  var auth = {}
+  beforeEach(function (done) {
+    const userLogin = {
+      email: "mayer56@purdue.edu",
+      password: "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+    }
+    chai.request(app)
+      .post('/api/login')
+      .send(userLogin)
+      .end((err, res) => {
+        res.should.have.status(200);
+        auth = res.body;
+        done();
+      });
+  });
 
   // Test that the status code is returned as 200
   it("API Call Returns Status 200", (done) => {
@@ -53,7 +55,7 @@ describe("POST Test user profile", () => {
   });
 
 
-  //Test that all fields are correct
+
   it("API Call Fails without Body", (done) => {
     chai.request(app)
       .post('/api/get/profile')
