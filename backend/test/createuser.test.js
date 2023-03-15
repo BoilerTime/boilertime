@@ -41,6 +41,8 @@ describe("POST Test register", () => {
     isGraduateStudent: "false"
   }
 
+  var auth = {};
+
   //Test that all fields are correct
   /*
   it("API Call Returns All Requird Fields", (done) => {
@@ -55,10 +57,15 @@ describe("POST Test register", () => {
         expect(res.body).to.have.ownPropertyDescriptor('email');
         expect(res.body.firstname).to.equal('Test');
         expect(res.body.email).to.equal('jjyang@purdue.edu');
+        auth = res.body;
         done();
       });
   });
   */
+
+  //TODO: Verify Account (valid and invalid)
+  
+  //TODO: Login
 
   it("API Call Fails without Valid email", (done) => {
     chai.request(app)
