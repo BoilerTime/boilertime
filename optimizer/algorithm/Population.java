@@ -118,7 +118,7 @@ public class Population {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
 
         while(bestFitnessScore > 0) {
-            System.out.println("UwU");
+            //System.out.println("UwU");
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             

@@ -46,7 +46,7 @@ public class ScheduleClient implements Runnable  {
             }
             //System.out.println("Result: " + numOfCourses);
             Population resultPop = new Population(courses);
-            Individual resultsIndividual = resultPop.getFittestIndividual();
+            Schedule resultsIndividual = resultPop.getBestSchedule();
             writeBestToOutput(resultPop, resultsIndividual);
             //System.out.println(resultsIndividual);
         } catch (IOException e) {
@@ -117,10 +117,10 @@ public class ScheduleClient implements Runnable  {
         return null;
     }
 
-    private void writeBestToOutput(Population p, Individual best) {
+    private void writeBestToOutput(Population p, Schedule best) {
         if(best == null) {
             output.println("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
         }
-        output.println(OptimizerDecoder.decodeOptimizedSchedule(p, best));
+        output.println(OptimizerDecoder.decodeOptimizedSchedule(best));
     }
 }
