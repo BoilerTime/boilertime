@@ -22,38 +22,16 @@ public class ScheduleClient implements Runnable  {
     @Override
     public void run() {
         System.out.println("Called at new Client!" + netSocket);
-        CourseOverview courses[];
         try {
             input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
             output = new PrintWriter(netSocket.getOutputStream(), true);
-            int numOfCourses = -1; //= getCoursesCount(input);
-            while(numOfCourses < 1) {
-                numOfCourses = getCoursesCount(input);
-                output.flush();
-                System.out.println("Result is: " + numOfCourses);
-            }
-            courses = new CourseOverview[numOfCourses];
-            for(int i = 0; i < courses.length; i++) {
-                courses[i] = getCourseInfo(input);
-                /*
-                 * There was an error, terminate the thread and give up
-                 * To-do: Add a better error handling mechanism. 
-                 */
-                if(courses[i] == null) {
-                    terminate();
-                }
-                System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()));
-            }
-            //System.out.println("Result: " + numOfCourses);
-            Population resultPop = new Population(courses);
-            Schedule resultsIndividual = resultPop.getBestSchedule();
-            writeBestToOutput(resultPop, resultsIndividual);
             //System.out.println(resultsIndividual);
+            communicateAndRun(input, output);
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;
         }
-        terminate();
+        this.terminate();
     }
 
     private void terminate() {
@@ -122,5 +100,32 @@ public class ScheduleClient implements Runnable  {
             output.println("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
         }
         output.println(OptimizerDecoder.decodeOptimizedSchedule(best));
+    }
+
+    private void communicateAndRun(BufferedReader input, PrintWriter output) {
+        CourseOverview courses[];
+        int numOfCourses = -1; //= getCoursesCount(input);
+        while(numOfCourses < 1) {
+            numOfCourses = getCoursesCount(input);
+            output.flush();
+            System.out.println("Result is: " + numOfCourses);
+        }
+        courses = new CourseOverview[numOfCourses];
+        for(int i = 0; i < courses.length; i++) {
+            courses[i] = getCourseInfo(input);
+            /*
+             * There was an error, terminate the thread and give up
+             * To-do: Add a better error handling mechanism. 
+             */
+            if(courses[i] == null) {
+                //terminate();
+                return;
+            }
+            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()));
+        }
+        //System.out.println("Result: " + numOfCourses);
+        Population resultPop = new Population(courses);
+        Schedule resultsIndividual = resultPop.getBestSchedule();
+        writeBestToOutput(resultPop, resultsIndividual);
     }
 }
