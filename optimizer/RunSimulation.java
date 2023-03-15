@@ -43,7 +43,7 @@ public class RunSimulation {
         Population testPopulation = new Population(courses);
         Schedule best = testPopulation.getBestSchedule();
         Schedule best2 = best;
-        System.out.println("The best schedule is: " + best2);
+        System.out.println("The best schedule is: " + OptimizerDecoder.decodeOptimizedSchedule(best2));
         System.out.println("Leaving!");
         //System.out.println(testPopulation.getBestSchedule());
         /*Individual fittestIndividual = testPopulation.getFittestIndividual();
