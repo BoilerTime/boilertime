@@ -164,6 +164,7 @@ public class Population {
             int fitnessScore = 0;
             fitnessScore += x[i].getInvalidCount()*1000;
             fitnessScore += calculateStartConflicts(x[i])*100;
+            fitnessScore+= calculateDurationConflicts(x[i])*10;
         }
     }
 
@@ -186,6 +187,33 @@ public class Population {
             }
         }
         return Utils.findNumConflicts(count);
+    }
+
+    private int calculateDurationConflicts(Schedule x) {
+        Section[] sections = x.getSections();
+        int[][] minStartEnd = new int[sections.length][2];
+        for(int i = 0; i < sections.length; i++) {
+            minStartEnd[i][0] = (60 * (sections[i].getTime()/100) + (sections[i].getTime() % 100));
+            minStartEnd[i][1] = minStartEnd[i][0] + sections[i].getDuration();
+        }
+
+        int total = 0; 
+        for(int i = 0; i < sections.length; i++) {
+            for(int j = 0; j < sections.length; j++) {
+                if(i != j) {
+                    //If minStartEnd[j] ⊂ minStartEnd[i]
+                    if(minStartEnd[i][0] < minStartEnd[j][0] && minStartEnd[i][1] > minStartEnd[j][1]) {
+                        total++;
+                    }
+                    
+                    //If there exists an intersection, but not a proper subset relationship between i and j
+                    if(minStartEnd[i][1] > minStartEnd[j][0] && minStartEnd[i][1] < minStartEnd[j][1]) {
+                        total++;
+                    }
+                }
+            }
+        }
+        return total;
     }
 
 }
