@@ -162,9 +162,12 @@ public class Population {
         for(int i = 0; i < x.length; i++) {
             //x[i].setFitnessScore(x[i].getInvalidCount());
             int fitnessScore = 0;
+            fitnessScore += x[i].getInvalidCount()*10000;
             fitnessScore += x[i].getInvalidCount()*1000;
             fitnessScore += calculateStartConflicts(x[i])*100;
-            fitnessScore+= calculateDurationConflicts(x[i])*10;
+            fitnessScore += calculateDurationConflicts(x[i])*10;
+            fitnessScore += calculateNameConflicts(x[i]);
+            x[i].setFitnessScore(fitnessScore);
         }
     }
 
@@ -193,6 +196,9 @@ public class Population {
         Section[] sections = x.getSections();
         int[][] minStartEnd = new int[sections.length][2];
         for(int i = 0; i < sections.length; i++) {
+            if(sections[i] == null) {
+                continue;
+            }
             minStartEnd[i][0] = (60 * (sections[i].getTime()/100) + (sections[i].getTime() % 100));
             minStartEnd[i][1] = minStartEnd[i][0] + sections[i].getDuration();
         }
@@ -214,6 +220,24 @@ public class Population {
             }
         }
         return total;
+    }
+
+    private int calculateNameConflicts(Schedule x) {
+        HashMap<String, Integer> c = new HashMap<String, Integer>();
+        Section[] s = x.getSections();
+        for(int i = 0; i < s.length; i++) {
+            if(s[i] == null) {
+                continue;
+            }
+            String temp = s[i].getParent().getCourseName();
+            if(c.containsKey(temp)) {
+                Integer count = c.get(temp);
+                c.put(temp, Integer.valueOf(count.intValue() + 1));
+            } else {
+                c.put(temp, Integer.valueOf(1));
+            }
+        }
+        return Utils.findNumSConflicts(c);
     }
 
 }

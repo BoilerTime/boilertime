@@ -339,6 +339,12 @@ public class Utils {
         }
     }
 
+    /**
+     * A helper method that combines arrays in a random way
+     * @param merge The smaller array that is supposed to be combined into a larger one 
+     * @param target A larger array that is to be re-formed with the new merge target
+     * @param r A random number generator to specifcy the way that the randm valeus are to be merged. 
+     */
     public static void mergeInto(Schedule[] merge, Schedule[] target, Random r) {
         Schedule[] temp = new Schedule[merge.length];
 
@@ -354,10 +360,33 @@ public class Utils {
         }
     }
 
+    /**
+     * A helper method that determines the number of conflicts that exist in some hashamp
+     * @param x A hashmap, where the Integer represents the number of conflicts for some key (Object)
+     * @return The total number of conflicts 
+     */
     public static int findNumConflicts(HashMap<Integer, Integer> x) {
         int numConflicts = 0;
         Integer[] vals = x.values().toArray(new Integer[x.size()]);
         for(int i = 0; i < vals.length; i++) {
+            if(vals[i].intValue() > 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
+
+
+    /**
+     * A helper method that determines the number of conflicts that exist in some hashamp
+     * @param x A hashmap, where the Integer represents the number of conflicts for some key (Object)
+     * @return The total number of conflicts 
+     */
+    public static int findNumSConflicts(HashMap<String, Integer> x) {
+        int numConflicts = 0;
+        Integer[] vals = x.values().toArray(new Integer[x.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            //System.out.println(vals[i].intValue());
             if(vals[i].intValue() > 1) {
                 numConflicts++;
             }

@@ -6,23 +6,10 @@ import java.io.IOException;
 
 import optimizer.algorithm.CourseOverview;
 import optimizer.algorithm.OptimizerDecoder;
-import optimizer.network.Server;
 
 public class RunSimulation {
     public static void main(String[] args) {
         System.out.println(args.length);
-        /*Individual c1 = new Individual("100000011011010100101");
-        Individual c2 = new Individual("011101101010011111110");
-        Individual[] population = new Individual[5];
-        population = c1.crossOver(c2);
-        System.out.println(Arrays.toString(population));
-        System.out.println(population[0].getIndividual());
-        population[1] = c1.mutate();
-        System.out.println(population[1].getIndividual());
-        int[] times = {1200, 1400, 1600};
-        int[] durations = {50, 50, 50};
-        CourseStruct i1 = new CourseStruct("CS180", "100000011011010100101", times, durations);
-        System.out.println(i1);*/
 
         // the response:
         /*try {
@@ -54,7 +41,11 @@ public class RunSimulation {
         courses[3] = new CourseOverview("CS101", times3, durations2);*/
 
         Population testPopulation = new Population(courses);
-        System.out.println(testPopulation.getBestSchedule());
+        Schedule best = testPopulation.getBestSchedule();
+        Schedule best2 = best;
+        System.out.println("The best schedule is: " + best2);
+        System.out.println("Leaving!");
+        //System.out.println(testPopulation.getBestSchedule());
         /*Individual fittestIndividual = testPopulation.getFittestIndividual();
         if(fittestIndividual == null) {
             System.err.println("No solution exists");
