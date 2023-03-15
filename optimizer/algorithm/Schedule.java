@@ -6,14 +6,18 @@ import optimizer.Utils;
 public class Schedule {
     private final Section[] sections;
     private int invalidCount; 
+    private int fitnessScore;
+    private boolean hasFitnessScore;
 
     public Schedule(Section[] s) {
         this.sections = s;
         this.invalidCount = 0;
+        this.hasFitnessScore = false;
     }
 
     public Schedule(HashMap<String, Section> idSection, boolean[][] result) {
         this.sections = this.configure(idSection, result);
+        this.hasFitnessScore = false; 
     } 
 
     public Section[] getSections() {
@@ -39,4 +43,17 @@ public class Schedule {
         return results;
     }
 
+
+    public int getFitnessScore() {
+        if(this.hasFitnessScore) {
+            return this.fitnessScore;
+        }
+        return -1;
+    }
+
+    public int setFitnessScore(int score) {
+        this.fitnessScore = score;
+        this.hasFitnessScore = true;
+        return this.fitnessScore;
+    }
 }

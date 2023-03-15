@@ -1,6 +1,9 @@
 package optimizer.algorithm;
 
 import java.util.*;
+
+import javax.security.auth.x500.X500PrivateCredential;
+
 import optimizer.Utils;
 
 public class Population {
@@ -8,6 +11,7 @@ public class Population {
     private Course[] registerdCourses;
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
+    private final int generationSize = 50;
     Random r;
 
     public Population(CourseOverview[] registeredC) {
@@ -16,10 +20,6 @@ public class Population {
         this.scheduleSize = registeredC.length;
         r = new Random();
         this.generatedCourseStruct(registeredC);
-        Schedule s1 = this.generateSeed();
-        Schedule s2 = this.generateSeed();
-        Schedule res = this.crossOver(s1, s2);
-        System.out.println(s1 + " " + s2 + " " + res);
     }
 
 
@@ -92,6 +92,66 @@ public class Population {
 
         //Now, we must make a new Section
         return new Schedule(idSection, gener);
+    }
+
+    public Schedule getBestSchedule() {
+        //The best fitness score is infinite because we don't know where to begin yet. 
+        int bestFitnessScore = Integer.MAX_VALUE;
+        //Seed the fitness pool with a bunch of random values
+        Schedule[] fitPool = new Schedule[this.generationSize * 2];
+        for(int i = 0; i < fitPool.length; i++) {
+            fitPool[i] = generateSeed();
+        }
+        //Calculate the fitness score of said starting population. 
+        calculateFitnessScores(fitPool);
+        //Sort the array based on the fitness scores
+        Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
+
+        while(bestFitnessScore > 0) {
+            System.out.println("UwU");
+            //Create a new array
+            Schedule[] thisGen = new Schedule[this.generationSize];
+            
+            //First, let's populate the array with crosses of the best individual
+            for(int i = 0; i < thisGen.length / 2; i++) {
+                int secondPtr = Utils.randInRange(r, 0, fitPool.length - 1);
+                while(secondPtr == i) {
+                    secondPtr = Utils.randInRange(r, 0, fitPool.length - 1);
+                }
+                thisGen[i] = crossOver(fitPool[i], fitPool[secondPtr]);
+            }
+
+            //Now, let's do some random crosses to fill up to the rest of the array
+            for(int i = thisGen.length / 2; i < thisGen.length; i++) {
+                //thisGen[i-1] = this.crossOver(fitPool[0], fitPool[i]); 
+                int rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
+                int rand2 = Utils.randInRange(r, 0, this.generationSize - 1);
+                //We can't cross an individual with itself, keep generating a new pairing until we find a pair to cross
+                while(rand1 == rand2) {
+                    rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
+                }
+                thisGen[i] = this.crossOver(fitPool[rand1], fitPool[rand2]);
+            }
+            
+            //Now that we're done forming the generation, it's time to determine its fitness scores
+            this.calculateFitnessScores(thisGen);
+
+            //Now, sort the array to make it easier to select the fittest and second fittest individual 
+            Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
+
+            //Now, perform a roulette-wheel integration into the overall fitness pool
+            Utils.mergeInto(thisGen, fitPool, r);
+
+            bestFitnessScore = fitPool[0].getFitnessScore();
+        }
+
+        return fitPool[0];
+    }
+
+    private void calculateFitnessScores(Schedule[] x) {
+        for(int i = 0; i < x.length; i++) {
+            x[i].setFitnessScore(x[i].getInvalidCount());
+        }
     }
 
 }

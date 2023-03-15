@@ -1,5 +1,6 @@
 package optimizer;
 import java.util.*;
+import optimizer.algorithm.*;
 
 public class Utils {
 
@@ -259,5 +260,97 @@ public class Utils {
             }
         }
         return r;
+    }
+
+    /**
+     * A helper method that merge sorts two schedules by their fitness scores
+     * @param x The array of schedules that is to be sorted
+     * @param l The left point of the sort
+     * @param m The mid point of the sort
+     * @param r The right point of the sort. 
+     */
+    private static void merge(Schedule x[], int l, int m, int r) {
+        // Find sizes of two subarrays to be merged
+        int n1 = m - l + 1;
+        int n2 = r - m;
+  
+        /* Create temp arrays */
+        Schedule L[] = new Schedule[n1];
+        Schedule R[] = new Schedule[n2];
+  
+        /*Copy data to temp arrays*/
+        for (int i = 0; i < n1; ++i)
+            L[i] = x[l + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = x[m + 1 + j];
+  
+        /* Merge the temp arrays */
+  
+        // Initial indexes of first and second subarrays
+        int i = 0, j = 0;
+  
+        // Initial index of merged subarray array
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i].getFitnessScore() <= R[j].getFitnessScore()) {
+                x[k] = L[i];
+                i++;
+            }
+            else {
+                x[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+  
+        /* Copy remaining elements of L[] if any */
+        while (i < n1) {
+            x[k] = L[i];
+            i++;
+            k++;
+        }
+  
+        /* Copy remaining elements of R[] if any */
+        while (j < n2) {
+            x[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+  
+
+    /**
+     * A method that initalizes merge sort on an array of schedules
+     * @param x The array that is to be sorted
+     * @param l The lower bound of interest of the sort
+     * @param r The upper bound of interest of the sort
+     */
+    public static void sortScheduleArray(Schedule x[], int l, int r) {
+        if (l < r) {
+            // Find the middle point
+            int m = l + (r - l) / 2;
+  
+            // Sort first and second halves
+            sortScheduleArray(x, l, m);
+            sortScheduleArray(x, m + 1, r);
+  
+            // Merge the sorted halves
+            merge(x, l, m, r);
+        }
+    }
+
+    public static void mergeInto(Schedule[] merge, Schedule[] target, Random r) {
+        Schedule[] temp = new Schedule[merge.length];
+
+        for(int i = 0; i < merge.length; i++) {
+            temp[i] = target[i];
+            target[i] = merge[i];
+        }
+
+        for(int i = merge.length; i < target.length; i++) {
+            if(Utils.randInRange(r, 0, i) % 2 == 0) {
+                target[i] = temp[i/2];
+            }
+        }
     }
 }

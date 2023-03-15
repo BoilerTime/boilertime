@@ -54,6 +54,7 @@ public class RunSimulation {
         courses[3] = new CourseOverview("CS101", times3, durations2);*/
 
         Population testPopulation = new Population(courses);
+        System.out.println(testPopulation.getBestSchedule());
         /*Individual fittestIndividual = testPopulation.getFittestIndividual();
         if(fittestIndividual == null) {
             System.err.println("No solution exists");

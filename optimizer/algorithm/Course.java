@@ -1,5 +1,4 @@
 package optimizer.algorithm;
-import java.time.chrono.MinguoDate;
 import java.util.HashMap;
 
 import optimizer.Utils;
@@ -52,5 +51,13 @@ public class Course {
         } else {
             return template.getCourseDurations().length;
         }
+    }
+
+    /**
+     * A helper that returns the name of the associated course.
+     * @return The name of the course.
+     */
+    public String getCourseName() {
+        return this.courseName;
     }
 }
