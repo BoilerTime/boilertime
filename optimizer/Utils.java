@@ -353,4 +353,15 @@ public class Utils {
             }
         }
     }
+
+    public static int findNumConflicts(HashMap<Integer, Integer> x) {
+        int numConflicts = 0;
+        Integer[] vals = x.values().toArray(new Integer[x.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            if(vals[i].intValue() > 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
 }

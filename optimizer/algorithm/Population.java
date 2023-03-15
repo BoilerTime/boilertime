@@ -1,9 +1,6 @@
 package optimizer.algorithm;
 
 import java.util.*;
-
-import javax.security.auth.x500.X500PrivateCredential;
-
 import optimizer.Utils;
 
 public class Population {
@@ -12,6 +9,7 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
+    private int sectionLen;
     Random r;
 
     public Population(CourseOverview[] registeredC) {
@@ -36,6 +34,7 @@ public class Population {
         }
         //Find the total number of bits required to represent based on the log of the total number of sections
         int repBits = (int) Math.ceil(Utils.LogB(totalSections, 2));
+        this.sectionLen = repBits;
         int minCount = 0;
         for(int i = 0; i < c.length; i++) {
             Section[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
@@ -62,15 +61,26 @@ public class Population {
 
     private Schedule crossOver(Schedule s1, Schedule s2) {
         //Determine how many characters there are in a section
-        int sectionLength = s1.getSections()[0].getID().length();
-        boolean[][] gene1 = new boolean[s1.getSections().length][sectionLength];
-        boolean[][] gene2 = new boolean[gene1.length][sectionLength];
-        boolean[][] gener = new boolean[gene1.length][sectionLength];
+        //int sectionLength = s1.getSections()[0].getID().length();
+        boolean[][] gene1 = new boolean[s1.getSections().length][this.sectionLen];
+        boolean[][] gene2 = new boolean[gene1.length][this.sectionLen];
+        boolean[][] gener = new boolean[gene1.length][this.sectionLen];
 
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < gene1.length; i++) {
-            gene1[i] = Utils.stringToBoolArray(s1.getSections()[i].getID());
-            gene2[i] = Utils.stringToBoolArray(s1.getSections()[i].getID());
+
+            if(s1.getSections()[i] == null) {
+                gene1[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            } else {
+                gene1[i] = Utils.stringToBoolArray(s1.getSections()[i].getID());
+            } 
+
+            if(s2.getSections()[i] == null) {
+                gene2[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            } else {
+                gene2[i] = Utils.stringToBoolArray(s2.getSections()[i].getID());
+            } 
+
             for(int j = 0; j < gene1[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
                 if(Utils.randInRange(r, 0, i*j) % 2 == 0) {
@@ -150,8 +160,32 @@ public class Population {
 
     private void calculateFitnessScores(Schedule[] x) {
         for(int i = 0; i < x.length; i++) {
-            x[i].setFitnessScore(x[i].getInvalidCount());
+            //x[i].setFitnessScore(x[i].getInvalidCount());
+            int fitnessScore = 0;
+            fitnessScore += x[i].getInvalidCount()*1000;
+            fitnessScore += calculateStartConflicts(x[i])*100;
         }
+    }
+
+    private int calculateStartConflicts(Schedule x) {
+        HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+        Section[] sections = x.getSections();
+        for(int i = 0; i < sections.length; i++) {
+            //If the section contained is a null ptr, then just ignore it. 
+            if(sections[i] == null) {
+                continue;
+            }
+
+            Integer time = Integer.valueOf(sections[i].getTime());
+            if(count.containsKey(time)) {
+                Integer temp = count.get(time);
+                temp = Integer.valueOf(temp.intValue() + 1);
+                count.put(time, temp);
+            } else {
+                count.put(time, Integer.valueOf(1));
+            }
+        }
+        return Utils.findNumConflicts(count);
     }
 
 }
