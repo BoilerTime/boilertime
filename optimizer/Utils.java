@@ -226,4 +226,38 @@ public class Utils {
         }
         return results;
     }
+
+    /**
+     * A helper method to convert a string to an array of booleans that represents each digit, a 0 being false and any other value being true 
+     * @param s The string that is to be converted
+     * @return The boolean array resulting from the conversion
+     */
+    public static boolean[] stringToBoolArray(String s) {
+        boolean[] result = new boolean[s.length()];
+        for(int i = 0; i < result.length; i++) {
+            if(s.charAt(i) == '0') {
+                result[i] = false;
+            } else {
+                result[i] = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * A utility that converts a booelan array to a binary string, where a false is a 0 and a true is a 1
+     * @param x The boolean array to be converted
+     * @return The string that has been formed. 
+     */
+    public static String boolArrayToString(boolean[] x) {
+        String r = "";
+        for(int i = 0; i < x.length; i++) {
+            if(!x[i]) {
+                r+= "0";
+            } else {
+                r+="1";
+            }
+        }
+        return r;
+    }
 }
