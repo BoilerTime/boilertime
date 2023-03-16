@@ -25,7 +25,6 @@ public class ScheduleClient implements Runnable  {
         try {
             input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
             output = new PrintWriter(netSocket.getOutputStream(), true);
-            //System.out.println(resultsIndividual);
             communicateAndRun(input, output);
         } catch (IOException e) {
             System.err.println("Issue: " + e);
@@ -98,6 +97,7 @@ public class ScheduleClient implements Runnable  {
     private void writeBestToOutput(Population p, Schedule best) {
         if(best == null) {
             output.println("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
+            return;
         }
         output.println(OptimizerDecoder.decodeOptimizedSchedule(best));
     }

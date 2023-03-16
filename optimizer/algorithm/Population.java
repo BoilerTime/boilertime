@@ -9,6 +9,8 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
+    private final int maxIterations = 1000;
+    private boolean isSatisfiable = true; 
     private int sectionLen;
     Random r;
 
@@ -17,7 +19,7 @@ public class Population {
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = registeredC.length;
         r = new Random();
-        this.generatedCourseStruct(registeredC);
+        this.generateCourseStruct(registeredC);
     }
 
 
@@ -25,13 +27,33 @@ public class Population {
      * A helper method that populates the sections hashamp by instanating sections for each course
      * @param c An array of course overviews that should ulimately be converted to Courses and their respective Sections. 
      */
-    private void generatedCourseStruct(CourseOverview[] c) {
+    private void generateCourseStruct(CourseOverview[] c) {
         //How long is each course ID suppossed to be?
         int totalSections = 0;
+        //int singleCount = 0;
+        HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
         for(int i = 0; i < c.length; i++) {
             totalSections += c[i].getNumberOfSections();
             registerdCourses[i] = new Course(c[i]);
+            if(c[i].getNumberOfSections() == 1) {
+                //singleCount++;
+                int time = c[i].getCourseDurations()[0];
+                if(singleCount.containsKey(Integer.valueOf(time))) {
+                    int currentCount = singleCount.get(Integer.valueOf(time));
+                    //System.out.println("Count is: " + currentCount);
+                    singleCount.put(Integer.valueOf(time), Integer.valueOf(currentCount+1));
+                    //System.out.println(singleCount.get(Integer.valueOf(time)).intValue());
+                } else {
+                    singleCount.put(Integer.valueOf(time), Integer.valueOf(1));
+                }
+            }
         }
+
+        if(Utils.findNumConflicts(singleCount) > 0) {
+            this.isSatisfiable = false;
+            return;
+        }
+        
         //Find the total number of bits required to represent based on the log of the total number of sections
         int repBits = (int) Math.ceil(Utils.LogB(totalSections, 2));
         this.sectionLen = repBits;
@@ -105,6 +127,9 @@ public class Population {
     }
 
     public Schedule getBestSchedule() {
+        if(!this.isSatisfiable) {
+            return null;
+        }
         //The best fitness score is infinite because we don't know where to begin yet. 
         int bestFitnessScore = Integer.MAX_VALUE;
         //Seed the fitness pool with a bunch of random values
@@ -116,9 +141,8 @@ public class Population {
         calculateFitnessScores(fitPool);
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
-
-        while(bestFitnessScore > 0) {
-            //System.out.println("UwU");
+        int iterationCount = 0;
+        while(bestFitnessScore > 0 && iterationCount < this.maxIterations) {
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             
@@ -153,6 +177,7 @@ public class Population {
             Utils.mergeInto(thisGen, fitPool, r);
 
             bestFitnessScore = fitPool[0].getFitnessScore();
+            iterationCount++;
         }
 
         return fitPool[0];
