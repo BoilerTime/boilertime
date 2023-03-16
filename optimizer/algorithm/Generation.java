@@ -1,4 +1,6 @@
-package optimizer;
+package optimizer.algorithm;
+
+import optimizer.Utils;
 
 public class Generation {
     

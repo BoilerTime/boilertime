@@ -1,5 +1,6 @@
 package optimizer;
 import java.util.*;
+import optimizer.algorithm.*;
 
 public class Utils {
 
@@ -225,5 +226,171 @@ public class Utils {
             results[i] = target.get(i).intValue();
         }
         return results;
+    }
+
+    /**
+     * A helper method to convert a string to an array of booleans that represents each digit, a 0 being false and any other value being true 
+     * @param s The string that is to be converted
+     * @return The boolean array resulting from the conversion
+     */
+    public static boolean[] stringToBoolArray(String s) {
+        boolean[] result = new boolean[s.length()];
+        for(int i = 0; i < result.length; i++) {
+            if(s.charAt(i) == '0') {
+                result[i] = false;
+            } else {
+                result[i] = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * A utility that converts a booelan array to a binary string, where a false is a 0 and a true is a 1
+     * @param x The boolean array to be converted
+     * @return The string that has been formed. 
+     */
+    public static String boolArrayToString(boolean[] x) {
+        String r = "";
+        for(int i = 0; i < x.length; i++) {
+            if(!x[i]) {
+                r+= "0";
+            } else {
+                r+="1";
+            }
+        }
+        return r;
+    }
+
+    /**
+     * A helper method that merge sorts two schedules by their fitness scores
+     * @param x The array of schedules that is to be sorted
+     * @param l The left point of the sort
+     * @param m The mid point of the sort
+     * @param r The right point of the sort. 
+     */
+    private static void merge(Schedule x[], int l, int m, int r) {
+        // Find sizes of two subarrays to be merged
+        int n1 = m - l + 1;
+        int n2 = r - m;
+  
+        /* Create temp arrays */
+        Schedule L[] = new Schedule[n1];
+        Schedule R[] = new Schedule[n2];
+  
+        /*Copy data to temp arrays*/
+        for (int i = 0; i < n1; ++i)
+            L[i] = x[l + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = x[m + 1 + j];
+  
+        /* Merge the temp arrays */
+  
+        // Initial indexes of first and second subarrays
+        int i = 0, j = 0;
+  
+        // Initial index of merged subarray array
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i].getFitnessScore() <= R[j].getFitnessScore()) {
+                x[k] = L[i];
+                i++;
+            }
+            else {
+                x[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+  
+        /* Copy remaining elements of L[] if any */
+        while (i < n1) {
+            x[k] = L[i];
+            i++;
+            k++;
+        }
+  
+        /* Copy remaining elements of R[] if any */
+        while (j < n2) {
+            x[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+  
+
+    /**
+     * A method that initalizes merge sort on an array of schedules
+     * @param x The array that is to be sorted
+     * @param l The lower bound of interest of the sort
+     * @param r The upper bound of interest of the sort
+     */
+    public static void sortScheduleArray(Schedule x[], int l, int r) {
+        if (l < r) {
+            // Find the middle point
+            int m = l + (r - l) / 2;
+  
+            // Sort first and second halves
+            sortScheduleArray(x, l, m);
+            sortScheduleArray(x, m + 1, r);
+  
+            // Merge the sorted halves
+            merge(x, l, m, r);
+        }
+    }
+
+    /**
+     * A helper method that combines arrays in a random way
+     * @param merge The smaller array that is supposed to be combined into a larger one 
+     * @param target A larger array that is to be re-formed with the new merge target
+     * @param r A random number generator to specifcy the way that the randm valeus are to be merged. 
+     */
+    public static void mergeInto(Schedule[] merge, Schedule[] target, Random r) {
+        Schedule[] temp = new Schedule[merge.length];
+
+        for(int i = 0; i < merge.length; i++) {
+            temp[i] = target[i];
+            target[i] = merge[i];
+        }
+
+        for(int i = merge.length; i < target.length; i++) {
+            if(Utils.randInRange(r, 0, i) % 2 == 0) {
+                target[i] = temp[i/2];
+            }
+        }
+    }
+
+    /**
+     * A helper method that determines the number of conflicts that exist in some hashamp
+     * @param x A hashmap, where the Integer represents the number of conflicts for some key (Object)
+     * @return The total number of conflicts 
+     */
+    public static int findNumConflicts(HashMap<Integer, Integer> x) {
+        int numConflicts = 0;
+        Integer[] vals = x.values().toArray(new Integer[x.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            if(vals[i].intValue() > 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
+
+
+    /**
+     * A helper method that determines the number of conflicts that exist in some hashamp
+     * @param x A hashmap, where the Integer represents the number of conflicts for some key (Object)
+     * @return The total number of conflicts 
+     */
+    public static int findNumSConflicts(HashMap<String, Integer> x) {
+        int numConflicts = 0;
+        Integer[] vals = x.values().toArray(new Integer[x.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            //System.out.println(vals[i].intValue());
+            if(vals[i].intValue() > 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
     }
 }

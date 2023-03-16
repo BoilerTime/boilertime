@@ -1,51 +1,31 @@
 package optimizer;
+import optimizer.network.*;
+//Networking Import
+import java.io.IOException;
+
 public class RunSimulation {
     public static void main(String[] args) {
-        
-        /*Individual c1 = new Individual("100000011011010100101");
-        Individual c2 = new Individual("011101101010011111110");
-        Individual[] population = new Individual[5];
-        population = c1.crossOver(c2);
-        System.out.println(Arrays.toString(population));
-        System.out.println(population[0].getIndividual());
-        population[1] = c1.mutate();
-        System.out.println(population[1].getIndividual());
-        int[] times = {1200, 1400, 1600};
-        int[] durations = {50, 50, 50};
-        CourseStruct i1 = new CourseStruct("CS180", "100000011011010100101", times, durations);
-        System.out.println(i1);*/
+        System.out.println(args.length);
 
         // the response:
+        try {
+            new Server(3002).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
   
-        CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
+        /*CourseOverview[] courses = OptimizerDecoder.parseIncomingData(args);//new CourseOverview[4];
         if(courses.length == 1) {
             System.out.println("{\"data\": [{\"courseID\": \"" + courses[0].getCourseName() + "\", \"courseStartTime\": \"" + courses[0].getCourseTimes()[0] + "\", \"courseDuration\": \"" + courses[0].getCourseDurations()[0] + "\"}]}"); 
             return;
         }
-        /*System.out.println(courses.length);
-        for(int i = 0; i < courses.length; i++) {
-            System.out.println(courses[i].getCourseName() + " " + Arrays.toString(courses[i].getCourseTimes()) + " " + Arrays.toString(courses[i].getCourseDurations()));
-            System.out.println(courses[i].getCourseTimes().length + " " + courses[i].getCourseDurations().length);
-        }*/
-        /*int[] times1 = {1200, 1400, 1600};
-        int[] durations1 = {50, 50, 50};
-        courses[0] = new CourseOverview("CS180", times1, durations1);
-        int[] times2 = {1300, 1900, 2100};
-        int[] durations2 = {70, 50, 30};
-        int[] times3 = {1200, 1400, 1800};
-        courses[1] = new CourseOverview("CS182", times3, durations2);
-
-        courses[2] = new CourseOverview("MA261", times2, durations2);
-        courses[3] = new CourseOverview("CS101", times3, durations2);*/
-
+        System.out.println(courses);
         Population testPopulation = new Population(courses);
-        Individual fittestIndividual = testPopulation.getFittestIndividual();
-        if(fittestIndividual == null) {
-            System.err.println("No solution exists");
-            return;
-        }
-        System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, fittestIndividual));
-        //System.out.println(OptimizerDecoder.decodeOptimizedSchedule(testPopulation, testPopulation.getFittestIndividual()));
+        Schedule best = testPopulation.getBestSchedule();
+        Schedule best2 = best;
+        System.out.println("The best schedule is: " + OptimizerDecoder.decodeOptimizedSchedule(best2));
+        System.out.println("Leaving!");*/
+        System.out.println("Exiting Algorithm!");
     }
 
     /**
