@@ -50,7 +50,13 @@ public class ScheduleClient implements Runnable  {
         if(rawClasses == null) {
             return -1;
         }
-        int numberOfClasses = Integer.parseInt(rawClasses);
+        int numberOfClasses;
+        try {
+            numberOfClasses = Integer.parseInt(rawClasses);
+        } catch (NumberFormatException e) {
+            numberOfClasses = -1;
+        }
+        
         if(numberOfClasses > 0 && numberOfClasses < 11) {
             //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
             network.sendMessage("{\"status\":200,\"message\":\"Received\",\"data\":null}");

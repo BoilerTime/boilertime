@@ -66,10 +66,32 @@ public class NetworkHandler {
             byte[] input = new byte[2];
             rawIn.read(input);
             boolean isFin = (input[0] & 0x80) != 0;
-            System.out.println((input[0] & 0x80));
+            //System.out.println((input[0] & 0x80));
             int opcode = (input[0] & 0xf);
             boolean isMasked = (input[1] & 0x80) != 0;
-            int length = (input[1] & 0x7f); 
+            //int length = (input[1] & 0x7f); 
+            int length;
+            if((input[1] & 0x7f) < 126) {
+                length = (int) (input[1] & 0x7f);
+            } else if ((input[1] & 0x7f) == 126) {
+                byte[] extraLen = new byte[2];
+                rawIn.read(extraLen);
+                char fin = (char) (extraLen[0] << 8);
+                fin = (char) (fin | (char) extraLen[1]);
+                length = (int) fin;
+            } else {
+                System.err.println("Warning: The data send exceeds the permissible length. Only the first: " + Integer.MAX_VALUE + " bits will be read.");
+                byte[] extraLen = new byte[8];
+                long fin = (long) extraLen[0] << 56;
+                fin = (long) ( fin | (long) extraLen[1] << 48);
+                fin = (long) ( fin | (long) extraLen[2] << 40);
+                fin = (long) ( fin | (long) extraLen[3] << 32);
+                fin = (long) ( fin | (long) extraLen[4] << 24);
+                fin = (long) ( fin | (long) extraLen[5] << 16);
+                fin = (long) ( fin | (long) extraLen[6] << 8);
+                fin = (long) ( fin | (long) extraLen[7]);
+                length = (int) fin;
+            }
 
             /*System.out.println("isFin = " + isFin);
             System.out.println("opcode = " + opcode);
@@ -114,18 +136,43 @@ public class NetworkHandler {
         try {
             //Fixed opening message as we are always sending a final message as a string
             byte openingMessage = (byte) 129;
-            byte length = (byte) (message.length());
+            byte[] lengthHeader;
+            //int lengthHeader;
+            int messageLength = message.length();
+            if(messageLength < 126) {
+                lengthHeader = new byte[1];
+                lengthHeader[0] = (byte)messageLength;
+            } else if(messageLength < 65535) {
+                lengthHeader = new byte[3];
+                lengthHeader[0] = (byte)126;
+                lengthHeader[1] = (byte) ((messageLength >> 8) & 255);
+                lengthHeader[2] = (byte) (messageLength & 255);
+            } else {
+                lengthHeader = new byte[9];
+                lengthHeader[0] = 127;
+                lengthHeader[1] = (byte) ((messageLength >> 56) & 255);
+                lengthHeader[2] = (byte) ((messageLength >> 48) & 255);
+                lengthHeader[3] = (byte) ((messageLength >> 40) & 255);
+                lengthHeader[4] = (byte) ((messageLength >> 32) & 255);
+                lengthHeader[5] = (byte) ((messageLength >> 24) & 255);
+                lengthHeader[6] = (byte) ((messageLength >> 16) & 255);
+                lengthHeader[7] = (byte) ((messageLength >> 8) & 255);
+                lengthHeader[8] = (byte) ((messageLength) & 255);
+            }
+            //byte length = (byte) (message.length());
 
             //Allocate an array for the response
-            byte[] response = new byte[2 + message.length()]; //2 bytes for header and length, then the length of the message
+            byte[] response = new byte[1 + lengthHeader.length + message.length()]; //2 bytes for header and length, then the length of the message
             byte[] messageData = message.getBytes();
             response[0] = openingMessage;
-            response[1] = length;
-            System.arraycopy(messageData, 0, response, 2, messageData.length);
+            System.arraycopy(lengthHeader, 0, response, 1, lengthHeader.length);
+            //response[1] = length;
+            System.arraycopy(messageData, 0, response, 1+lengthHeader.length, messageData.length);
             rawOut.write(response);
             //output.print(y);
             //netSocket.getOutputStream().write(buffer);
             rawOut.flush();
+            
             return true;
         } catch (IOException e) {
             return false;
