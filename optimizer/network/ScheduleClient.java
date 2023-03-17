@@ -27,8 +27,13 @@ public class ScheduleClient implements Runnable  {
             //input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
             //output = new PrintWriter(netSocket.getOutputStream(), true);
             NetworkHandler helper = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            helper.getIncomingMessage();
-            helper.sendMessage();
+            System.out.println(helper.getIncomingMessage());
+            helper.sendMessage("UwU");
+            //helper.close();
+            //System.out.println(helper.getIncomingMessage());
+            //while(true)
+            helper.close();
+            
             //System.out.println(input.readLine());
             //waitForInit(input);
             //input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
@@ -113,7 +118,10 @@ public class ScheduleClient implements Runnable  {
             System.err.println("Issue: " + e);
             return;
         }
-        this.terminate();
+        while(true) {
+            
+        }
+        //this.terminate();
     }
 
     private void terminate() {
