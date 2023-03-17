@@ -7,10 +7,13 @@ const save = require('../schedule/saveschedule');
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
+const WebSocket = require("ws");
 
+//var client = new ws('ws://localhost:3002', 'echo-protocol');
+//client.send("request open");
 const optimizeSchedule = async function(java, schedule) {
     let optimizecourses = [];
-
+    
     let requiredLength = schedule.required_classes.length;
     let optionalLength = schedule.optional_classes.length;
 
@@ -159,3 +162,4 @@ const optimizeSchedule = async function(java, schedule) {
 }
 
 module.exports = {optimizeSchedule};
+

@@ -3,6 +3,7 @@ package optimizer.network;
 //Java threading and networking libraries
 import java.io.*;
 import java.net.Socket;
+import java.nio.CharBuffer;
 import java.util.Arrays;
 
 import optimizer.algorithm.*;
@@ -23,9 +24,91 @@ public class ScheduleClient implements Runnable  {
     public void run() {
         System.out.println("Called at new Client!" + netSocket);
         try {
-            input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
-            output = new PrintWriter(netSocket.getOutputStream(), true);
-            communicateAndRun(input, output);
+            //input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
+            //output = new PrintWriter(netSocket.getOutputStream(), true);
+            NetworkHandler helper = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
+            helper.getIncomingMessage();
+            helper.sendMessage();
+            //System.out.println(input.readLine());
+            //waitForInit(input);
+            //input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
+            /*char[] incoming = new char[10];
+            input.read(incoming);
+            for(int i = 0; i < incoming.length; i++) {
+                byte lsb = (byte) ~incoming[i];
+                byte msb = (byte) (~incoming[i] >>> 8);
+                System.out.format("0x%x 0x%x \n ", msb, lsb);
+            }*/
+
+
+            //System.out.println(Arrays.toString(input));
+            /*System.out.println(input.read());
+            System.out.println(input.read());
+            System.out.println(input.read());
+            System.out.println(input.read());
+            System.out.println(input.read());*/
+            //char[] x= new char[50];
+            //input.read(x);
+            //System.out.println((int) x[0]);
+            //System.out.println(Arrays.toString(x));
+            //new InputStreamReader(netSocket.getInputStream()).rea
+
+            //output = new PrintWriter(netSocket.getOutputStream(), true);
+            //output.println("UwU");
+            //char[] x = { 'a', 'b', '\n'};
+            //output.println(x);
+            //input = new BufferedReader(new InputStreamReader(netSocket.getInputStream()));
+            /*System.out.println("Verified");
+            char[] x = new char[100];
+            System.out.println(input.read(x));
+            System.out.println(Arrays.toString(x));
+            System.out.println((int) x[0] + " " + (int) x[1]);
+            int ptr = 0;
+            while(x[ptr] == 65533) {
+                ptr++;
+            }
+            System.out.println((int) x[ptr] + " " + ptr); 
+            System.out.println(Integer.toBinaryString(x[ptr]));*/
+            //String incoming = input.readLine();
+            //System.out.println("Encountered end!" + incoming);
+            /*for(int i = 0; i < 100; i++) {
+                int temp = input.read();
+                char x = 
+                input.read(null)
+                System.out.printf("Int Val: %d or Char: %c and as Bin String: %s\n", temp, temp, Integer.toBinaryString(temp));
+                byte[] bytes = {
+                    (byte)(temp >>> 24),
+                    (byte)(temp >>> 16),
+                    (byte)(temp >>> 8),
+                    (byte)temp};
+                for (byte b : bytes) {
+                    System.out.format("0x%x ", b);
+                }
+                System.out.println("");
+            }*/
+            //System.out.println("twt" + input.read());
+            //output.println("UwU");
+            /*char[] y = new char[98];
+            System.arraycopy(x, 2, y, ptr, 90);
+            System.out.println(Arrays.toString(y));
+            //System.arraycopy(x, ptr, x, ptr, ptr);
+            
+            byte[] z = { 127, 11, 0 };
+            System.out.println("Huh!");
+            netSocket.getOutputStream().write(z);
+            netSocket.getOutputStream().flush();
+            //output.write(z);
+            //byte[] b = {0xff, 0xff, 0xff, 0xff};
+            //netSocket.getOutputStream().write(b);
+            //output.println(incoming);
+            //communicateAndRun(input, output);*/
+            //char[] y = {'\n', '\n', 'c'};
+            //output = new PrintWriter(netSocket.getOutputStream(), true);
+            //char[] y = { (int) 129, (int) 3, 'A', 'B', 'C' };
+            //System.out.println("TWT" + y[0]);
+            //char[] x = {'a', 'b', 'c', 'd'};
+            //output.flush();
+            System.out.println("Done");
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;

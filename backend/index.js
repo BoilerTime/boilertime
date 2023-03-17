@@ -622,4 +622,57 @@ app.post('/api/add/flag', async (req, res) => {
   }
 });
 
+/*var W3CWebSocket = require('websocket').w3cwebsocket;
+
+var client = new W3CWebSocket('ws://localhost:3002/', 'echo-protocol');
+
+client.onerror = function() {
+    console.log('Connection Error');
+};
+
+client.onopen = function() {
+    console.log('WebSocket Client Connected');
+    if (client.readyState === client.OPEN) {
+        client.send("UwU \n");
+    }
+};
+
+client.onclose = function() {
+    console.log('echo-protocol Client Closed');
+};
+
+client.onmessage = function(e) {
+    if (typeof e.data === 'string') {
+        console.log("Received: '" + e.data + "'");
+    }
+};*/
+
+const WebSocket = require("ws");
+
+const ws = new WebSocket('ws://localhost:3002', {'permessage-deflate': true});
+
+ws.on('error', console.error);
+
+ws.on('open', function open() {
+  console.log('connected');
+  setTimeout(function timeout() {
+    ws.send("abcdef", {mask: true, fin: true, compress: false});
+  }, 1000);
+  //ws.send("a");
+  //ws.ping();
+  //ws.send("This is a test of a very very very very very very very very very long message\n", {mask: false, fin: true, compress: true});
+  //ws.send("This is a test of a very very very very very very very very very long message\n", {mask: false, fin: true, compress: true});
+  //ws.send("This is a test of a very very very very very very very very very long message\n", {mask: false, fin: true, compress: true});
+  //ws.send("This is a test of a very very very very very very very very very long message\n", {mask: false, fin: true, compress: true});
+  console.log('sent@!');
+});
+
+ws.on('close', function close() {
+  console.log('disconnected');
+});
+
+ws.on('message', function message(data) {
+  console.log(data.toString())
+});
+
 module.exports = app;
