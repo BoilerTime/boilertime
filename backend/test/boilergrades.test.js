@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 
-describe("POST Test a user login", () => {
+describe("POST Test BoilerGrades", () => {
 
   //Data to test against
   const turkstra = {

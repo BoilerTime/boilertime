@@ -23,7 +23,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test user profile", () => {
+describe("POST Test Profile", () => {
   // Test that the status code is returned as 200
   it("API Call Returns Status 200", (done) => {
     chai.request(app)

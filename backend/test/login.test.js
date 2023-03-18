@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 
-describe("POST Test a user login", () => {
+describe("POST Test User Login", () => {
     
     //Data to test against
     const userLogin = {

@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 
-describe("POST Test register", () => {
+describe("POST Test Create User", () => {
 
   //Data to test against
   const newUser = {
