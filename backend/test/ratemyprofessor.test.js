@@ -12,7 +12,7 @@ describe("POST Test a user login", () => {
 
   //Data to test against
   const turkstra = {
-    prof_name: "Jeffery A. Turkstra"
+    prof_name: "Jeffrey A. Turkstra"
   }
 
   const invalid = {
