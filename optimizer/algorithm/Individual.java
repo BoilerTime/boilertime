@@ -1,5 +1,7 @@
-package optimizer;
+package optimizer.algorithm;
 import java.util.Random;
+
+import optimizer.Utils;
 
 public class Individual {
 

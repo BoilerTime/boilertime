@@ -1,0 +1,210 @@
+<template>
+  <TransitionRoot appear :show="isOpen">
+    <Dialog as="div" @close="closeEdit">
+      <TransitionChild
+        enter="duration-500"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-300"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0">
+        <div class="flex min-h-full items-center justify-center text-center">
+          <TransitionChild
+            enter="duration-500"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="duration-300"
+            leave-from="opacity-100"
+            leave-to="opacity-0"
+          >
+            <DialogPanel class="text-left bg-white p-6 rounded-lg">
+              <DialogTitle class="text-lg font-medium leading-6 text-gray-900">
+                Edit rating for {{ title }}
+              </DialogTitle>
+              <div class="mt-2">
+                <form>
+                  <label class="mb-1">First rating: {{ q1 }}</label><br>
+                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q1_edit"><br>
+                  <label class="mt-1 mb-1">Second rating: {{ q2 }}</label><br>
+                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
+                  <label class="mb-1">Third rating: {{ q3 }}</label><br>
+                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
+                </form>
+              </div>
+
+              <div class="mt-4">
+                <button class="inline-flex justify-center rounded-md border border-transparent bg-yellow-500 px-4 py-2 text-sm font-medium text-white" @click="submit">
+                  Submit changes
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+</template>
+
+<script setup>
+
+
+
+import { defineProps } from 'vue'
+import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import axios from 'axios'
+
+var q1_edit = ref('')
+var q2_edit = ref('')
+var q3_edit = ref('')
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true,
+  },
+  closeEdit: {
+    type: Function,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  q1: {
+    type: String,
+    required: true,
+  },
+  q2: {
+    type: String,
+    required: true,
+  },
+  q3: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  id: {
+    type: String,
+    required: true,
+  },
+})
+
+async function submit() {
+
+  if (props.type == "course") {
+    const course = props.title;
+    const user_id = props.id;
+    const prequisiteStrictness = q1_edit.value;
+    const pace = q2_edit.value;
+    const depth = q3_edit.value;
+    const data = {
+      user_id: user_id,
+      course: course,
+      prequisite_strictness: prequisiteStrictness,
+      pace: pace,
+      depth: depth,
+    }
+    if (q1_edit.value == "") {
+      data.prequisite_strictness = props.q1
+    }
+    if (q2_edit.value == "") {
+      data.pace = props.q2
+    }
+    if (q3_edit.value == "") {
+      data.depth = props.q3
+    }
+    setTimeout(async () => {
+      console.log(data)
+      await axios.post("http://localhost:3001/api/edit/ratings/courses", data)
+      .then((res) => {
+        console.log(res.data)
+        alert('Successfully edited rating')
+        location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }, 1000)
+  }
+
+  if (props.type == "classroom") {
+    const user_id = props.id;
+    const classroom = props.title;
+    const access_conv = q1_edit.value;
+    const seating_quality = q2_edit.value;
+    const technology_avail = q3_edit.value;
+    const data = {
+      user_id: user_id,
+      classroom: classroom,
+      access_conv: access_conv,
+      seating_quality: seating_quality,
+      technology_avail: technology_avail,
+    }
+    if (q1_edit.value == "") {
+      data.access_conv = props.q1
+    }
+    if (q2_edit.value == "") {
+      data.seating_quality = props.q2
+    }
+    if (q3_edit.value == "") {
+      data.technology_avail = props.q3
+    }
+    setTimeout(async () => {
+      console.log(data)
+      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data)
+      .then((res) => {
+        console.log(res.data)
+        alert('Successfully edited rating')
+        location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }, 1000)
+    }
+
+  if (props.type == "ta") {
+    const user_id = props.id;
+    const ta = props.title;
+    const grading_fairness = q1_edit.value;
+    const question_answering = q2_edit.value;
+    const responsiveness = q3_edit.value;
+    const data = {
+      user_id: user_id,
+      ta: ta,
+      grading_fairness: grading_fairness,
+      question_answering: question_answering,
+      responsiveness: responsiveness,
+    }
+    if (q1_edit.value == "") {
+      data.grading_fairness = props.q1
+    }
+    if (q2_edit.value == "") {
+      data.question_answering = props.q2
+    }
+    if (q3_edit.value == "") {
+      data.responsiveness = props.q3
+    }
+    setTimeout(async () => {
+      console.log(data)
+      await axios.post("http://localhost:3001/api/edit/ratings/tas", data)
+      .then((res) => {
+        console.log(res.data)
+        alert('Successfully edited rating')
+        location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }, 1000)
+  }
+}
+</script>

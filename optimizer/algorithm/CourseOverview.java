@@ -1,4 +1,4 @@
-package optimizer;
+package optimizer.algorithm;
 
 public class CourseOverview {
     private String courseName; 
@@ -21,5 +21,13 @@ public class CourseOverview {
 
     public int[] getCourseDurations() {
         return this.courseDurations;
+    }
+
+    public int getNumberOfSections() {
+        if(courseTimes.length != courseDurations.length) {
+            return -1;
+        } else {
+            return courseTimes.length;
+        }
     }
 }

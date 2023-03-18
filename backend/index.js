@@ -504,10 +504,9 @@ app.post('/api/edit/ratings/tas', async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
   const gradingFairness = req.body.grading_fairness;
-  const helpfullness = req.body.helpfullness;
   const questionAnswering = req.body.question_answering;
   const responsiveness = req.body.responsiveness;
-  await taRatings.editUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness).then(() => {
+  await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness).then(() => {
     res.sendStatus(200);
   }).catch((err)=> {
     console.log(err)
@@ -523,7 +522,7 @@ app.post('/api/edit/ratings/tas', async (req, res) => {
 app.post('/api/delete/ratings/tas', async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
-  await taRatings.deleteUserRating(user_id, ta, gradingFairness, helpfullness, questionAnswering, responsiveness).then(() => {
+  await taRatings.deleteUserRating(user_id, ta).then(() => {
     res.sendStatus(200);
   }).catch((err)=> {
     console.log(err)
