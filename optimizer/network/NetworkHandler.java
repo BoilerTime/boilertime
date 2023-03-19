@@ -108,7 +108,11 @@ public class NetworkHandler {
                 System.err.println("Warning: This service does not support a multi-page incoming message");
             }
 
-            if(opcode != 1) {
+            if(opcode == 8) {
+                this.isInitialized = false;
+                System.out.println("Socket closed on client request!");
+                return null;
+            } else if (opcode != 1) {
                 System.err.println("Warning: This service does not support messages that aren't a string");
             }
 
