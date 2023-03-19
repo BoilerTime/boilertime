@@ -112,8 +112,9 @@ app.post('/api/login', (req, res) => {
   const password = req.body.password;
 
   jwt.authenticateUser({ email, password }).then(user => {
-    console.log(user);
-    console.log(accessToken);
+    //console.log(user);
+    //console.log(accessToken);
+    console.log("Logged in: " + email)
     res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id });
   }).catch(err => {
     console.error(err)
