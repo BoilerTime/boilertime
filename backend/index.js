@@ -21,6 +21,7 @@ const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
 const optimizer = require('./components/optimizer/optimizer');
+const creategroup = require('./components/groups/creategroup');
 const { JavaCaller } = require("java-caller");
 const java = new JavaCaller({
   jar: "../btime.jar"
@@ -578,7 +579,7 @@ app.post('/api/getgpa', async (req, res) => {
 
 });
 
-/*
+/**
  * Call for getting an overall gpa from professor
  * @param {string} prof_name - Name of the professor of the class
  */
@@ -600,7 +601,7 @@ app.post('/api/getoverall_gpa', async (req, res) => {
 
 });
 
-/*
+/**
  * Call for adding a flag to a rating
  * @param {string} user_id - The user_id associated with the rating to flag
  * @param {string} type - The type of rating to flag (course, classroom, or ta)
@@ -621,6 +622,24 @@ app.post('/api/add/flag', async (req, res) => {
     await sendEmail.sendEmailWhenFlagged(type, name, user_id, jsonObj.flag_count);
     res.json(jsonObj);
   }
+});
+
+/**
+ * Call for creating group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_name - The name of the group\
+ * @returns {string} group_id - The id of the group
+ */
+app.post('/api/creategroup', async (req, res) => {
+  const user_id = req.body.user_id;
+  const group_name = req.body.group_name;
+  await creategroup.createGroup(user_id, group_name).then((group_id) => {
+    console.log(group_name + ' created with id ' + group_id)
+    res.json({group_id: group_id});
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(err.message);
+  });
 });
 
 module.exports = app;
