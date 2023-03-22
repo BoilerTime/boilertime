@@ -629,13 +629,11 @@ app.post('/api/add/flag', async (req, res) => {
  */
 app.post('/api/building', async (req, res) => {
   var room = req.body.room;
-  console.log(room)
   if (room == undefined) {
     res.sendStatus(404);
   } else {
     room = room.split(" ")[0]
     await utils.getBuildingName(room).then((building) => {
-      console.log(building)
       if (building === undefined) {
         console.log('building is undefined')
         res.sendStatus(404);
