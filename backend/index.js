@@ -73,7 +73,7 @@ app.post('/api/auth/user', jwt.authenticateToken, (req, res) => {
  * @param {string} firstname - firstname of the user
  * @param {boolean} isGradStudent - whether user is a graduate student or not
  */
-app.post('/api/update/profile', (req, res) => {
+app.post('/api/update/profile', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   const grad_month = req.body.grad_month;
   const grad_year = req.body.grad_year;
@@ -84,18 +84,18 @@ app.post('/api/update/profile', (req, res) => {
   //console.log(user_id + classification_year + firstname + lastname);
   const classification_year = utils.getStudentClass(grad_year, grad_month);
   utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
-  res.json({user_id: user_id});
+  res.json({ authenticationToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id });
 });
 
 /*
  * This function gets a user profile
  * @param {string} user_id - user_id of user we want to get 
  */
-app.post('/api/get/profile', async (req, res) => {
+app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
  const user_id = req.body.user_id;
   try {
     resObj = await utils.getUserProfile(user_id);
-    res.json(resObj);
+    res.json({ firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, isGradStudent: resObj.isGradStudent, authenticationToken: req.user.accessToken});
   } catch {
     res.sendStatus(401);
   }
@@ -198,17 +198,16 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
-app.post('/api/optimizedschedule', async (req, res) => {
+app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
  await getSchedule.getSchedule(req.body.user_id).then((schedule) => {
     res.send(schedule);
  }).catch(err => {
     console.log(err)
     res.sendStatus(err.error || 500);
  });
-  
 })
 
-app.post('/api/createschedule', async (req, res) => {
+app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   console.log(req.body);
   await schedule.addClasses(req.body).then((input) => {
     console.log("Schedule Added to Database")
@@ -231,7 +230,7 @@ app.post('/api/createschedule', async (req, res) => {
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
  * @param {string} class_name - The class that is being added to bookmark
  */
-app.post('/api/addbookmark', (req, res) => {
+app.post('/api/addbookmark', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   const class_name = req.body.class_name;
   utils.addBookmark(user_id, class_name).then(user => {
@@ -248,7 +247,7 @@ app.post('/api/addbookmark', (req, res) => {
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
  * @param {string} class_name - The class that is being removed from bookmarks
  */
-app.post('/api/removebookmark', (req, res) => {
+app.post('/api/removebookmark', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   const class_name = req.body.class_name;
   utils.reomveBookmark(user_id, class_name).then(user => {
@@ -264,7 +263,7 @@ app.post('/api/removebookmark', (req, res) => {
  * Get the bookmarks given user_id
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
  */
-app.post('/api/getbookmarks', (req, res) => {
+app.post('/api/getbookmarks', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   utils.getBookmarks(user_id).then(user => {
     console.log("Retrieved Bookmarks from Database")
@@ -289,22 +288,22 @@ app.post('/api/verifyaccount', (req, res) => {
  * Call for getting all ratings user has made for courses 
  * @param {string} user_id - ID of user
  */
-app.post('/api/get/user_ratings/courses', (req, res) => {
+app.post('/api/get/user_ratings/courses', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   courseRatings.getUserRatings(user_id).then((jsonObj) => {
     res.json(jsonObj);
   });
-})
+});
 
 /*
  * Call for getting ratings for certain courses
  * @param {string} course - Name of the course (ex. CS30700) 
  */
-app.post('/api/get/course_ratings/courses', async (req, res) => {
+app.post('/api/get/course_ratings/courses', jwt.authenticateToken, async (req, res) => {
   const course_name = req.body.course_name;
   resObj = await courseRatings.getCourseRatings(course_name);
   res.json(resObj);
-})
+});
 
 /*
  * Call for adding a course rating
@@ -314,7 +313,7 @@ app.post('/api/get/course_ratings/courses', async (req, res) => {
  * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
  * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
  */
-app.post('/api/add/ratings/courses', async (req, res) => {
+app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   const prequisiteStrictness = req.body.prequisite_strictness;
@@ -341,7 +340,7 @@ app.post('/api/add/ratings/courses', async (req, res) => {
  * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
  * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
  */
-app.post('/api/edit/ratings/courses', async (req, res) => {
+app.post('/api/edit/ratings/courses', jwt.authenticateToken, async (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   const prequisiteStrictness = req.body.prequisite_strictness;
@@ -361,7 +360,7 @@ app.post('/api/edit/ratings/courses', async (req, res) => {
  * @param {string} user_id - ID of the user who is rating
  * @param {string} course - Name of the course they are rating
  */
-app.post('/api/delete/ratings/courses', async (req, res) => {
+app.post('/api/delete/ratings/courses',jwt.authenticateToken, async (req, res) => {
   const course = req.body.course;
   const user_id = req.body.user_id;
   //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
@@ -377,7 +376,7 @@ app.post('/api/delete/ratings/courses', async (req, res) => {
  * Call for getting all ratings user has made for classrooms
  * @param {string} user_id - ID of user
  */
-app.post('/api/get/user_ratings/classrooms', (req, res) => {
+app.post('/api/get/user_ratings/classrooms', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   classroomRatings.getUserRatings(user_id).then((jsonObj) => {
     res.json(jsonObj);
@@ -392,7 +391,7 @@ app.post('/api/get/user_ratings/classrooms', (req, res) => {
  * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
  * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
  */
-app.post('/api/add/ratings/classrooms', async (req, res) => {
+app.post('/api/add/ratings/classrooms', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const classroom = req.body.classroom;
   const access_conv = req.body.access_conv;
@@ -415,7 +414,7 @@ app.post('/api/add/ratings/classrooms', async (req, res) => {
  * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
  * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
  */
-app.post('/api/edit/ratings/classrooms', async (req, res) => {
+app.post('/api/edit/ratings/classrooms', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const classroom = req.body.classroom;
   const access_conv = req.body.access_conv;
@@ -434,7 +433,7 @@ app.post('/api/edit/ratings/classrooms', async (req, res) => {
  * @param {string} user_id - ID of the user who is rating
  * @param {string} classroom - Name of the clasroom they are rating
  */
-app.post('/api/delete/ratings/classrooms', async (req, res) => {
+app.post('/api/delete/ratings/classrooms', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const classroom = req.body.classroom;
   await classroomRatings.deleteClassroomRating(user_id, classroom).then(() => {
@@ -449,7 +448,7 @@ app.post('/api/delete/ratings/classrooms', async (req, res) => {
  * Call for getting ratings for certain classrooms 
  * @param {string} classroom - Name of the classroom (ex. SMTH108) 
  */
-app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
+app.post('/api/get/classroom_ratings/classrooms', jwt.authenticateToken, (req, res) => {
   const classroomName = req.body.classroom;
   classroomRatings.getClassroomRatings(classroomName).then((jsonObj) => {
     res.json(jsonObj);
@@ -460,7 +459,7 @@ app.post('/api/get/classroom_ratings/classrooms', (req, res) => {
  * Call for getting all ratings user has made for TA's
  * @param {string} user_id - ID of user
  */
-app.post('/api/get/user_ratings/tas', (req, res) => {
+app.post('/api/get/user_ratings/tas', jwt.authenticateToken, (req, res) => {
   const user_id = req.body.user_id;
   taRatings.getUserRatings(user_id).then((jsonObj) => {
     res.json(jsonObj);
@@ -476,7 +475,7 @@ app.post('/api/get/user_ratings/tas', (req, res) => {
  * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
  * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
  */
-app.post('/api/add/ratings/tas', async (req, res) => {
+app.post('/api/add/ratings/tas', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
   const gradingFairness = req.body.grading_fairness;
@@ -500,7 +499,7 @@ app.post('/api/add/ratings/tas', async (req, res) => {
  * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
  * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
  */
-app.post('/api/edit/ratings/tas', async (req, res) => {
+app.post('/api/edit/ratings/tas', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
   const gradingFairness = req.body.grading_fairness;
@@ -519,7 +518,7 @@ app.post('/api/edit/ratings/tas', async (req, res) => {
  * @param {string} user_id - ID of the user who is rating
  * @param {string} ta - Name of the TA they are rating
  */
-app.post('/api/delete/ratings/tas', async (req, res) => {
+app.post('/api/delete/ratings/tas', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   const ta = req.body.ta;
   await taRatings.deleteUserRating(user_id, ta).then(() => {
@@ -534,32 +533,20 @@ app.post('/api/delete/ratings/tas', async (req, res) => {
  * Call for getting ratings for certain TA 
  * @param {string} ta - Name of the TA
  */
-app.post('/api/get/ta_ratings/tas', (req, res) => {
+app.post('/api/get/ta_ratings/tas', jwt.authenticateToken, (req, res) => {
   const ta = req.body.ta;
   taRatings.getTARatings(ta).then((jsonObj) => {
     res.json(jsonObj);
   });
 });
 
-function authenticateToken(req, res, next) {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (token == null) {
-    // we don't have a token
-    res.sendStatus(401);
-  };
-};
-
-app.listen(port, () => {
-  console.log(`BoilerTime API listening on port ${port}!`)
-})
 
 /*
  * Call for getting an average gpa from professor
  * @param {string} prof_name - Name of the professor of the class
  * @param{string} class_name - Name of the class averageGPA is wanted for
  */
-app.post('/api/getgpa', async (req, res) => {
+app.post('/api/getgpa', jwt.authenticateToken, async (req, res) => {
   const prof_name = req.body.prof_name;
   const class_name = req.body.class_name;
   console.log('Retrieving for ' + prof_name + ' ' + class_name)
@@ -582,7 +569,7 @@ app.post('/api/getgpa', async (req, res) => {
  * Call for getting an overall gpa from professor
  * @param {string} prof_name - Name of the professor of the class
  */
-app.post('/api/getoverall_gpa', async (req, res) => {
+app.post('/api/getoverall_gpa', jwt.authenticateToken, async (req, res) => {
   const prof_name = req.body.prof_name;
   console.log('Retrieving for ' + prof_name)
   const overallGPA = await boilergrades.getOverallGPA(prof_name);
@@ -606,7 +593,7 @@ app.post('/api/getoverall_gpa', async (req, res) => {
  * @param {string} type - The type of rating to flag (course, classroom, or ta)
  * @param {string} name - THe name of the course, classroom, ta (CS30700, LWSNB160, Chirayu Garg)
  */
-app.post('/api/add/flag', async (req, res) => {
+app.post('/api/add/flag', jwt.authenticateToken, async (req, res) => {
   const type = req.body.type;
   const user_id = req.body.user_id;
   const name = req.body.name
@@ -635,5 +622,9 @@ app.post('/api/guest', async (req, res) => {
     res.sendStatus(401);
   });
 });
+
+app.listen(port, () => {
+  console.log(`BoilerTime API listening on port ${port}!`)
+})
 
 module.exports = app;
