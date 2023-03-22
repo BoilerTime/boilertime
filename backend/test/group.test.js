@@ -61,6 +61,19 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
       .send({...auth2, ...group_id})
       .end((err, res) => {
         res.should.have.status(200);
+        expect(res.body).to.have.ownPropertyDescriptor('group_name');
+        expect(res.body.group_name).to.equal(newGroup.group_name);
+        done();
+      });
+  });
+
+  it("API Call Get Groups", (done) => {
+    chai.request(app)
+      .post('/api/groups')
+      .send({...auth})
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body).to.have.ownPropertyDescriptor('groups');
         done();
       });
   });

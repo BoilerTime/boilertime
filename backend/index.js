@@ -645,8 +645,8 @@ app.post('/api/creategroup', async (req, res) => {
 /**
  * Call for joining group
  * @param {string} user_id - The user_id associated with the owner of the group
- * @param {string} group_name - The name of the group\
- * @returns {string} group_id - The id of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
  */
 app.post('/api/joingroup', async (req, res) => {
   const user_id = req.body.user_id;
@@ -657,6 +657,21 @@ app.post('/api/joingroup', async (req, res) => {
   }).catch((err) => {
     console.log(err);
     res.sendStatus(err.message);
+  });
+});
+
+/**
+ * Call for getting groups of a user
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/groups', async (req, res) => {
+  const user_id = req.body.user_id;
+  await group.getGroups(user_id).then((groups) => {
+    res.json({groups: groups});
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
   });
 });
 
