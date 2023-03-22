@@ -628,20 +628,27 @@ app.post('/api/add/flag', async (req, res) => {
  * @param {string} room - The user_id associated with the rating to flag
  */
 app.post('/api/building', async (req, res) => {
-  const room = req.body.room.split(" ")[0];
-  await utils.getBuildingName(room).then((building) => {
-    if (building === undefined) {
-      console.log('building is undefined')
-      res.sendStatus(404);
-    } else {
-      res.json(building);
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.sendStatus(500);
-    return;
-  });
-  
+  var room = req.body.room;
+  console.log(room)
+  if (room == undefined) {
+    res.sendStatus(404);
+  } else {
+    room = room.split(" ")[0]
+    await utils.getBuildingName(room).then((building) => {
+      console.log(building)
+      if (building === undefined) {
+        console.log('building is undefined')
+        res.sendStatus(404);
+      } else {
+        console.log('building is ' + building)
+        res.json({ building: building });
+      }
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(500);
+      return;
+    });
+  }
 });
 
 module.exports = app;

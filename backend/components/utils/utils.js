@@ -280,10 +280,16 @@ async function sortClassrooms() {
 
 async function getBuildingName(room) {
   const buildings = await db.collection('classrooms').where("ShortCode", "==", room).get();
-  buildings.forEach(async building => {
-    return { "building": building.data().Name};
-  })
+  if (buildings.empty) {
+    return undefined;
+  } else {
+    var building = undefined;
+    buildings.forEach(async doc => {
+      building = doc.data().Name;
+    });
+    return building;
+  }
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms};
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName};
 
