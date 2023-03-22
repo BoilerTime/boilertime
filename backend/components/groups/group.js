@@ -20,10 +20,12 @@ async function createGroup(user_id, group_name) {
     const group = {
       "owner": user_id,
       "group_name": group_name,
+      "member_ids": [user_id],
+      "member_names": [await utils.getUserEmail(user_id)],
     };
     await groups.doc(group_id).set(group).then(async (res) => {
       await profiles.doc(user_id).update({
-        "groups": FieldValue.arrayUnion(group_id),
+        "groups": FieldValue.arrayUnion(group_id)
       }).catch((err) => {
         throw new Error(500);
       });
@@ -34,4 +36,33 @@ async function createGroup(user_id, group_name) {
   }
 }
 
-module.exports = { createGroup }
+async function duplicateGroups(user_id, group_id) {
+  const profile = await profiles.doc(user_id).get();
+  doc = profile.data();
+  return doc.groups != undefined && doc.groups.includes(group_id);
+}
+
+
+async function joinGroup(user_id, group_id) {
+  if (user_id == undefined || group_id == undefined) {
+    throw new Error(400);
+  } else if (await duplicateGroups(user_id, group_id)) {
+    throw new Error(409);
+  } else {
+    await groups.doc(group_id).update({
+      "member_ids": FieldValue.arrayUnion(user_id),
+      "member_names": FieldValue.arrayUnion(await utils.getUserEmail(user_id)),
+    }).catch((err) => {
+      throw new Error(500);
+    });
+    await profiles.doc(user_id).update({
+      "groups": FieldValue.arrayUnion(group_id)
+    }).catch((err) => {
+      throw new Error(500);
+    });
+    const group = await groups.doc(group_id).get();
+    return group.data().group_name;
+  }
+}
+
+module.exports = { createGroup, joinGroup }
