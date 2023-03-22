@@ -13,6 +13,7 @@ const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
 const utils = require('./components/utils/utils.js');
 const verifyaccount = require('./components/auth/verifyaccount');
+const password = require('./components/auth/password');
 const schedule = require('./components/schedule/schedule');
 const getSchedule = require('./components/schedule/getschedule');
 const saveSchedule = require('./components/schedule/saveschedule');
@@ -153,7 +154,7 @@ app.post('/api/forgotpassword', (req, res) => {
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
-  utils.updatePassword({ user_id, new_password }).then(user => {
+  password.updatePassword({ user_id, new_password }).then( (password) => {
     console.log(`Updated password to ${password}`)
     res.json({ password: password });
   }).catch(err => {

@@ -118,21 +118,6 @@ function getStudentClass(grad_year, grad_month) {
   }
 }
 
-/*
- * Update the password 
- * @param {string} user_id - The user_id of the user having their password updated
- * @param {string} new_password - The user_id
- * @throws {500} if no user_id is found
- */
-async function updatePassword({ user_id, new_password }) {
-  const profile = await users.doc(user_id).get();
-  if (profile.empty) {
-    throw new Error(500);
-  } else {
-    profile.ref.update({ password: new_password })
-    return (password = new_password);
-  }
-}
 
 /**
  * Add bookmark
@@ -248,5 +233,5 @@ function padTime(time) {
 }
 
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime};
+module.exports = { getUID, findExistingUsers, updateProfile, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, getUserEmail};
 
