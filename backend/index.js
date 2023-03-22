@@ -624,16 +624,13 @@ app.post('/api/add/flag', async (req, res) => {
 });
 
 app.post('/api/guest', async (req, res) => {
- // guest = await jwt.authenticateGuest();
-  //console.log(guest);
-  //res.json(guest);
-  jwt.authenticateGuest().then(user => {
+  jwt.createGuest().then(user => {
     //console.log(user);
     //console.log(accessToken);
-    console.log({guest: guest})
     console.log(user);
     res.json(user);
   }).catch(err => {
+    console.log("HERE IN ERROR");
     console.error(err)
     res.sendStatus(401);
   });

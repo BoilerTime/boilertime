@@ -13,7 +13,7 @@ const users = db.collection('user_profile')
 
 module.exports = {
   authenticateUser,
-  authenticateGuest,
+  createGuest,
   authenticateToken
 }
 
@@ -45,16 +45,27 @@ async function authenticateUser({ email, password }) {
   });
 }
 
-async function authenticateGuest() {
-  var guest = {guest: 'guest'};
-  const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '30m' });
-  var guestJSON = undefined;
-  jwt.verify(guestAccess, process.env.GUEST_ACCESS, async (err, user) => {
-    console.log(user);
-    return (guest = 'guest');
-  });
-}
+async function createGuest() {
+  var guest = {};
+  const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '30m' }); 
 
+  await jwt.verify(guestAccess, process.env.GUEST_ACCESS, async (err, user) => {
+    guest = user;
+  }); 
+  return { guest: guest, accessToken: guestAccess};
+} 
+
+async function checkGuest(accessToken) {
+  jwt.verify(accessToken, process.env.GUEST_ACCESS, async (err, user) => {
+    if (err) {
+      return false;
+    }
+    else {
+      return true;
+    }
+    //guest = user;
+  }); 
+} 
 
 /*
  * This function authenicates the user token by the token in the .env file. If they match it will not send a 403 status error
@@ -64,6 +75,12 @@ function authenticateToken(req, res, next) {
   const authenticationHeader = req.headers['authorization'];
   //console.log(authenticationHeader + 'this is the auth header');
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (checkGuest(token)) {
+    console.log('THIS IS A GUEST PROFILE');
+    // teapot status hahah
+    res.sendStatus(418);
+    return undefined;
+  }
   //console.log(token);
   if (token == null) {
     // we don't have a token
