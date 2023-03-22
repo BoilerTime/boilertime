@@ -623,4 +623,25 @@ app.post('/api/add/flag', async (req, res) => {
   }
 });
 
+/**
+ * Call for getting the building name from Short Code
+ * @param {string} room - The user_id associated with the rating to flag
+ */
+app.post('/api/building', async (req, res) => {
+  const room = req.body.room.split(" ")[0];
+  await utils.getBuildingName(room).then((building) => {
+    if (building === undefined) {
+      console.log('building is undefined')
+      res.sendStatus(404);
+    } else {
+      res.json(building);
+    }
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
+    return;
+  });
+  
+});
+
 module.exports = app;

@@ -277,5 +277,13 @@ async function sortClassrooms() {
     console.log('Saved!');
   });
 }
+
+async function getBuildingName(room) {
+  const buildings = await db.collection('classrooms').where("ShortCode", "==", room).get();
+  buildings.forEach(async building => {
+    return { "building": building.data().Name};
+  })
+}
+
 module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms};
 
