@@ -268,6 +268,25 @@ async function generateClassroomList() {
   })
 }
 
+/**
+ * Generate ShortCode to Building Name
+ */
+async function generateBuildings() {
+  const buildings = await db.collection('classrooms').get();
+  const list = [];
+  buildings.forEach(async building => {
+    const ShortCode = await building.data().ShortCode;
+    const Name = await building.data().Name;
+    if (Name != "TBA" && !list.includes(ShortCode)) {
+      list.push(ShortCode)
+      fs.appendFile('buildings.json',  "\"" + ShortCode +"\" : \"" + Name + "\",\n", function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+      });
+    }
+  })
+}
+
 const classrooms = require('../../classrooms.json');
 
 async function sortClassrooms() {
@@ -278,18 +297,11 @@ async function sortClassrooms() {
   });
 }
 
+const buildings = require('../../buildings.json');
+
 async function getBuildingName(room) {
-  const buildings = await db.collection('classrooms').where("ShortCode", "==", room).get();
-  if (buildings.empty) {
-    return undefined;
-  } else {
-    var building = undefined;
-    buildings.forEach(async doc => {
-      building = doc.data().Name;
-    });
-    return building;
-  }
+  return buildings[room];
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName};
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName, generateBuildings };
 

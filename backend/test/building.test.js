@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 
-describe("POST Test Building", () => {
+describe("POST Test Building Sprint 2 User Story 4", () => {
 
   //Data to test against
   const haas = {
