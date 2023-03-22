@@ -13,6 +13,7 @@ const users = db.collection('user_profile')
 
 module.exports = {
   authenticateUser,
+  authenticateGuest,
   authenticateToken
 }
 
@@ -41,6 +42,16 @@ async function authenticateUser({ email, password }) {
       throw new Error("User Is Not Verified")
     }
     //return (firstname = doc.data().firstname, accessToken = jwt.sign({ sub: doc.id }, process.env.ACCESS_TOKEN, { expiresIn: '3d' }));
+  });
+}
+
+async function authenticateGuest() {
+  var guest = {guest: 'guest'};
+  const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '30m' });
+  var guestJSON = undefined;
+  jwt.verify(guestAccess, process.env.GUEST_ACCESS, async (err, user) => {
+    console.log(user);
+    return (guest = 'guest');
   });
 }
 
