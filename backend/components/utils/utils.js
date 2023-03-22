@@ -291,6 +291,7 @@ const classrooms = require('../../classrooms.json');
 
 async function sortClassrooms() {
   classrooms.classrooms.sort();
+  classrooms.classrooms = [...new Set(classrooms.classrooms)]
   fs.writeFile('classrooms.json', JSON.stringify(classrooms), function (err) {
     if (err) throw err;
     console.log('Saved!');
