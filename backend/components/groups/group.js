@@ -52,7 +52,8 @@ async function getGroups(user_id) {
     const myGroups = [];
     for (var i = 0; i < doc.groups.length; i++) {
       const group = await groups.doc(doc.groups[i]).get();
-      myGroups.push(group.data());
+      const data = group.data()
+      myGroups.push({...data, "group_id": group.id});
     }
     return myGroups;
   }

@@ -54,17 +54,6 @@ describe("POST Test Forgot and Reset Password", () => {
       });
   });
 
-  it("API Call To Restore Password", (done) => {
-    chai.request(app)
-      .post('/api/resetpassword')
-      .send({...auth, ...userLogin})
-      .end((err, res) => {
-        res.should.have.status(200);
-        expect(res.body.password).to.equal(userLogin.password);
-        done();
-      });
-  });
-
   it("API Call Forgot Password Empty Return Error", (done) => {
     chai.request(app)
       .post('/api/forgotpassword')
@@ -79,6 +68,17 @@ describe("POST Test Forgot and Reset Password", () => {
       .post('/api/resetpassword')
       .end((err, res) => {
         res.should.have.status(500);
+        done();
+      });
+  });
+
+  it("API Call To Restore Password", (done) => {
+    chai.request(app)
+      .post('/api/resetpassword')
+      .send({...auth, ...userLogin})
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body.password).to.equal(userLogin.password);
         done();
       });
   });
