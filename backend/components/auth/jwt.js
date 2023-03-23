@@ -14,6 +14,7 @@ const users = db.collection('user_profile')
 module.exports = {
   authenticateUser,
   createGuest,
+  checkGuest,
   authenticateToken
 }
 
@@ -77,40 +78,47 @@ async function authenticateToken(req, res, next) {
   //console.log(authenticationHeader + 'this is the auth header');
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   guest = await checkGuest(token);
-  if (await checkGuest(token)) {
+  if (guest) {
     console.log('This is a guest profile');
-    // teapot status hahah
-    res.sendStatus(418);
-    return undefined;
+    //res.sendStatus(418);
+    req.user = {accessToken: token};
+    next();
+    //res.sendStatus(200);
   }
   //console.log(token);
+  console.log('here after checking guest');
   if (token == null) {
+    console.log('NO TOKEn');
     // we don't have a token
     res.sendStatus(401);
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
-    if (err) {
-      // user doesn't have access since token is expired
-      // need to implement refresh acess token to create new access token here if refresh is valid itself
-      console.log('Error verifying token, checking if user still has access...');
-      generateNewAccessToken({ user_id: req.body.user_id }).then((newAccessToken) => {
-        //console.log(newAccessToken1 + ' newAcessToken1');
-        if (newAccessToken1 === undefined) {
-          console.error('No valid refresh token access denied');
-          res.sendStatus(403);
-        } else {
-          const user2 = { user_id: req.body.user_id, accessToken: newAccessToken1 };
-          req.user = user2;
-          console.log('Generated a new access token, refresh token was valid.');
+  else {
+    if (!guest) {
+      jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
+        if (err) {
+          // user doesn't have access since token is expired
+          // need to implement refresh acess token to create new access token here if refresh is valid itself
+          console.log('Error verifying token, checking if user still has access...');
+          generateNewAccessToken({ user_id: req.body.user_id }).then((newAccessToken) => {
+            //console.log(newAccessToken1 + ' newAcessToken1');
+            if (newAccessToken1 === undefined) {
+              console.error('No valid refresh token access denied');
+              res.sendStatus(403);
+            } else {
+              const user2 = { user_id: req.body.user_id, accessToken: newAccessToken1 };
+              req.user = user2;
+              console.log('Generated a new access token, refresh token was valid.');
+              next();
+            }
+          });
+        }
+        else {
+          req.user = user;
           next();
         }
       });
     }
-    else {
-      req.user = user;
-      next();
-    }
-  });
+  }
 }
 
 /*
@@ -133,18 +141,18 @@ async function generateNewAccessToken(user) {
       else {
         /*
         if (doc.data().refresh_token === "") {
-          //console.log('here the refresh is blank used too many times');
+      //console.log('here the refresh is blank used too many times');
           return (newAccessToken1 = undefined);
         }
         */
-        //else {
-          const user1 = { user_id: doc.data().user_id };
-          newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
-          //doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
-          doc.ref.update({ access_token: newAccessToken, refresh_token: null });
-          return (newAccessToken1 = newAccessToken);
-        //}
-      }
+      //else {
+      const user1 = { user_id: doc.data().user_id };
+      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
+      //doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
+      doc.ref.update({ access_token: newAccessToken, refresh_token: null });
+      return (newAccessToken1 = newAccessToken);
+      //}
+    }
     });
   });
 }

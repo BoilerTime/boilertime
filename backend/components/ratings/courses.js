@@ -122,13 +122,13 @@ async function userAlreadyRated(user_id, course) {
  * @param {string} courseName - Name of the course (ex. CS30700) 
  */
 async function getCourseRatings(courseName) {
-  const courseRatings = await courseRatings.where('course', '==', courseName).get(); 
+  const courseRating = await courseRatings.where('course', '==', courseName).get(); 
 
   var jsonObj = {};
 
   let count = 0
   jArray = [];
-  courseRatings.forEach(async doc => {
+  courseRating.forEach(async doc => {
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     json = {}
