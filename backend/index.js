@@ -113,7 +113,7 @@ app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     try {
       resObj = await utils.getUserProfile(user_id);
-      res.json({ firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, isGradStudent: resObj.isGradStudent, authenticationToken: req.user.accessToken});
+      res.json({ firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, authenticationToken: req.user.accessToken});
     } catch {
       res.sendStatus(401);
     }
@@ -316,6 +316,8 @@ app.post('/api/removebookmark', jwt.authenticateToken, async (req, res) => {
  */
 app.post('/api/getbookmarks', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
+  console.log('THIS IS THE HEADER ' + authenticationHeader);
+  console.log('THIS IS THE HEWADER ' + req.headers);
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
     // if guest send 418

@@ -74,8 +74,9 @@ async function checkGuest(accessToken) {
  * @param {string} user - if the tokens match we set the user to req.user so that we can use it in index.js
  */
 async function authenticateToken(req, res, next) {
+  console.log("HEADER " + req.headers['authorization']);
   const authenticationHeader = req.headers['authorization'];
-  //console.log(authenticationHeader + 'this is the auth header');
+  console.log(authenticationHeader + 'this is the auth header');
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   guest = await checkGuest(token);
   if (guest) {
@@ -88,7 +89,7 @@ async function authenticateToken(req, res, next) {
   //console.log(token);
   console.log('here after checking guest');
   if (token == null) {
-    console.log('NO TOKEn');
+    console.log('NO TOKEN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJFN UNDEFJNLDKSJFKLDSJF');
     // we don't have a token
     res.sendStatus(401);
   }
