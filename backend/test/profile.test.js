@@ -71,6 +71,15 @@ describe("POST Test Profile", () => {
         done();
       });
   });
+
+  it("Get Profile API Call Fails without Body", (done) => {
+    chai.request(app)
+      .post('/api/get/profile')
+      .end((err, res) => {
+        res.should.have.status(401);
+        done();
+      });
+  });
   
   it("API Call Verify Profile Updated", (done) => {
     chai.request(app)
@@ -90,15 +99,6 @@ describe("POST Test Profile", () => {
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body.user_id).to.equal(auth.user_id);
-        done();
-      });
-  });
-
-  it("Get Profile API Call Fails without Body", (done) => {
-    chai.request(app)
-      .post('/api/get/profile')
-      .end((err, res) => {
-        res.should.have.status(401);
         done();
       });
   });

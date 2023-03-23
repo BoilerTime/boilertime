@@ -246,7 +246,6 @@ function padTime(time) {
   return time;
 }
 
-
 const fs = require('fs');
 
 /**
@@ -304,5 +303,5 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
-module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName, generateBuildings };
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName, generateBuildings, getUserEmail };
 
