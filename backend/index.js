@@ -124,6 +124,8 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.RESET);
 
 /**
  * Sends an email to reset the password
@@ -137,10 +139,10 @@ app.post('/api/forgotpassword', (req, res) => {
       from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${user_id}">Reset Password</a>`
+      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.json({user_id: user_id, email: email});
+    res.json({user_id: cryptr.encrypt(user_id), email: email});
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);

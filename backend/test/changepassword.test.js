@@ -35,6 +35,7 @@ describe("POST Test Forgot and Reset Password", () => {
         res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('user_id');
         expect(res.body).to.have.ownPropertyDescriptor('email');
+        auth.user_id = res.body.user_id;
         done();
       });
   });
