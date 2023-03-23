@@ -50,11 +50,11 @@ async function getGroups(user_id) {
     return [];
   } else {
     const myGroups = [];
-    for (var i = 0; i < doc.groups.length; i++) {
-      const group = await groups.doc(doc.groups[i]).get();
+    doc.groups.forEach(async function(group_id){
+      const group = await groups.doc(group_id).get();
       const data = group.data()
       myGroups.push({...data, "group_id": group.id});
-    }
+    });
     return myGroups;
   }
 }
