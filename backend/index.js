@@ -673,6 +673,7 @@ app.post('/api/groups', async (req, res) => {
     console.log(err);
     res.sendStatus(500);
   });
+});
 
 /*
  * Call for getting the building name from Short Code
@@ -697,6 +698,7 @@ app.post('/api/building', async (req, res) => {
       res.sendStatus(500);
       return;
     });
+  }
 });
 
 module.exports = app;
