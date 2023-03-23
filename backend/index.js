@@ -22,6 +22,7 @@ const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
 const optimizer = require('./components/optimizer/optimizer');
+const group = require('./components/groups/group');
 const { JavaCaller } = require("java-caller");
 const java = new JavaCaller({
   jar: "../btime.jar"
@@ -579,7 +580,7 @@ app.post('/api/getgpa', async (req, res) => {
 
 });
 
-/*
+/**
  * Call for getting an overall gpa from professor
  * @param {string} prof_name - Name of the professor of the class
  */
@@ -601,7 +602,7 @@ app.post('/api/getoverall_gpa', async (req, res) => {
 
 });
 
-/*
+/**
  * Call for adding a flag to a rating
  * @param {string} user_id - The user_id associated with the rating to flag
  * @param {string} type - The type of rating to flag (course, classroom, or ta)
@@ -621,6 +622,83 @@ app.post('/api/add/flag', async (req, res) => {
   else {
     await sendEmail.sendEmailWhenFlagged(type, name, user_id, jsonObj.flag_count);
     res.json(jsonObj);
+  }
+});
+
+/**
+ * Call for creating group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_name - The name of the group\
+ * @returns {string} group_id - The id of the group
+ */
+app.post('/api/creategroup', async (req, res) => {
+  const user_id = req.body.user_id;
+  const group_name = req.body.group_name;
+  await group.createGroup(user_id, group_name).then((group_id) => {
+    console.log(group_name + ' created with id ' + group_id)
+    res.json({group_id: group_id});
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(err.message);
+  });
+});
+
+/**
+ * Call for joining group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/joingroup', async (req, res) => {
+  const user_id = req.body.user_id;
+  const group_id = req.body.group_id;
+  await group.joinGroup(user_id, group_id).then((group_name) => {
+    console.log(user_id + ' joined ' + group_name );
+    res.json({group_name: group_name});
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(err.message);
+  });
+});
+
+/**
+ * Call for getting groups of a user
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/groups', async (req, res) => {
+  const user_id = req.body.user_id;
+  await group.getGroups(user_id).then((groups) => {
+    res.json({groups: groups});
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
+  });
+});
+
+/*
+ * Call for getting the building name from Short Code
+ * @param {string} room - The user_id associated with the rating to flag
+ */
+app.post('/api/building', async (req, res) => {
+  var room = req.body.room;
+  if (room == undefined) {
+    res.sendStatus(404);
+  } else {
+    room = room.split(" ")[0]
+    await utils.getBuildingName(room).then((building) => {
+      if (building === undefined) {
+        console.log('building is undefined')
+        res.sendStatus(404);
+      } else {
+        console.log('building is ' + building)
+        res.json({ building: building });
+      }
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(500);
+      return;
+    });
   }
 });
 

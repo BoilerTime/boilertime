@@ -8,7 +8,6 @@ const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 const ratingsCollection = db.collection('ratings');
 
-
 /**
  * Get the user_id given the email
  * @param {string} email - The email that the user wants to find the user_id for
@@ -232,6 +231,61 @@ function padTime(time) {
   return time;
 }
 
+const fs = require('fs');
 
-module.exports = { getUID, findExistingUsers, updateProfile, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, getUserEmail};
+/**
+ * Generate List of Classrooms
+ */
+async function generateClassroomList() {
+  const buildings = await db.collection('classrooms').get();
+  buildings.forEach(async building => {
+      const ShortCode = await building.data().ShortCode;
+      const rooms = await building.ref.collection("rooms").get();
+      rooms.forEach(async room => {
+        const number = room.id;
+        console.log(ShortCode + " " + number);
+        fs.appendFile('classrooms.json', "\"" + ShortCode + " " + number + "\",\n", function (err) {
+          if (err) throw err;
+          console.log('Saved!');
+        });
+      })
+  })
+}
 
+/**
+ * Generate ShortCode to Building Name
+ */
+async function generateBuildings() {
+  const buildings = await db.collection('classrooms').get();
+  const list = [];
+  buildings.forEach(async building => {
+    const ShortCode = await building.data().ShortCode;
+    const Name = await building.data().Name;
+    if (Name != "TBA" && !list.includes(ShortCode)) {
+      list.push(ShortCode)
+      fs.appendFile('buildings.json',  "\"" + ShortCode +"\" : \"" + Name + "\",\n", function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+      });
+    }
+  })
+}
+
+const classrooms = require('../../classrooms.json');
+
+async function sortClassrooms() {
+  classrooms.classrooms.sort();
+  classrooms.classrooms = [...new Set(classrooms.classrooms)]
+  fs.writeFile('classrooms.json', JSON.stringify(classrooms), function (err) {
+    if (err) throw err;
+    console.log('Saved!');
+  });
+}
+
+const buildings = require('../../buildings.json');
+
+async function getBuildingName(room) {
+  return buildings[room];
+}
+
+module.exports = { getUID, findExistingUsers, updateProfile, updatePassword, addBookmark, reomveBookmark, getBookmarks, getProfessorRating, getClassesFromDept, getUserProfile, getStudentClass, addRatingFlag, findKeyForUnsorted, padTime, generateClassroomList, sortClassrooms, getBuildingName, generateBuildings, getUserEmail };
