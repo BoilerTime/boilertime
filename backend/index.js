@@ -29,7 +29,7 @@ const java = new JavaCaller({
 
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
-
+const path = require('path');
 
 app.use(express.json());
 
@@ -185,6 +185,10 @@ app.post('/api/search', (req, res) => {
     console.log(err)
     res.sendStatus(500);
   })
+})
+
+app.get('/api/searchnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'classes.json'));
 })
 
 app.post('/api/createuser', (req, res) => {
