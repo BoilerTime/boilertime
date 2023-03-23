@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "test2": "mocha --reporter spec --exit --grep \"Sprint 2\"",
     "test": "mocha --reporter spec --exit"
   },
   "repository": {

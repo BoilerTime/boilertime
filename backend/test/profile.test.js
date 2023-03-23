@@ -10,8 +10,8 @@ chai.should();
 var auth = {}
 before(function (done) {
   const userLogin = {
-    email: "mayer56@purdue.edu",
-    password: "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+    email: "boilertimepurdue@gmail.com",
+    password: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
   }
   chai.request(app)
     .post('/api/login')
@@ -71,6 +71,15 @@ describe("POST Test Profile", () => {
         done();
       });
   });
+
+  it("Get Profile API Call Fails without Body", (done) => {
+    chai.request(app)
+      .post('/api/get/profile')
+      .end((err, res) => {
+        res.should.have.status(401);
+        done();
+      });
+  });
   
   it("API Call Verify Profile Updated", (done) => {
     chai.request(app)
@@ -90,15 +99,6 @@ describe("POST Test Profile", () => {
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body.user_id).to.equal(auth.user_id);
-        done();
-      });
-  });
-
-  it("Get Profile API Call Fails without Body", (done) => {
-    chai.request(app)
-      .post('/api/get/profile')
-      .end((err, res) => {
-        res.should.have.status(401);
         done();
       });
   });

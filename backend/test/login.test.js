@@ -12,8 +12,8 @@ describe("POST Test User Login", () => {
     
     //Data to test against
     const userLogin = {
-        email: "mayer56@purdue.edu",
-        password: "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+        email: "boilertimepurdue@gmail.com",
+        password: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
     }
 
     // Test that the status code is returned as 200
