@@ -142,11 +142,21 @@ app.post('/api/forgotpassword', (req, res) => {
       html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.json({user_id: cryptr.encrypt(user_id), email: email});
+    res.sendStatus(200);
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
   });
+});
+
+/**
+ * Encrypts User ID
+ * @param {string} user_id - user_id
+ */
+app.post('/api/encryptuserid', (req, res) => {
+  const user_id = req.body.user_id;
+  const encrypted = cryptr.encrypt(user_id);
+  res.json({ user_id: encrypted });
 });
 
 /**
