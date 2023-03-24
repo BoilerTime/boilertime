@@ -72,8 +72,8 @@
                 </button>
               </div>
             </div>
-            <button onclick="showPasswordChange()" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">Change Password</button>
-            <div id="TestsDiv" style="display:none">
+            <button @click="showPasswordChange" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">Change Password</button>
+            <div v-if="TestsDiv">
               <form @submit.prevent="() => changePassword()">
                 <!--Password text & input box-->
                 <label for="password" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">New
@@ -91,7 +91,7 @@
                 <!--Confirms the password change-->
                 <div class="container py-7 px-5 min-w-full flex flex-col items-center">
                   <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
-                    Change Password
+                    Confirm Change
                   </button>
                 </div>
               </form>
@@ -233,17 +233,17 @@ var user_id = userStore.user_id
 
 const password = ref('')
 const confpassword = ref('')
+var TestsDiv=ref(false);
 function showPasswordChange() {
-  var T = document.getElementById("TestsDiv"),
-    displayValue = "";
-  if (T.style.display == "") {
-    displayValue = "none";
-  }
-  T.style.display = displayValue;
+  TestsDiv.value = true;
 }
 async function changePassword() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
+  await axios.post('http://localhost:3001/api/forgotpassword', {
+    //WAIT FOR JOSH TO ADD ROUTE FOR GETTING A USER'S EMAIL
+    //SEND EMAIL TO BACKEND
+  })
   if (newpassword === newconfpassword) {
     await axios.post('http://localhost:3001/api/resetpassword', {
       user_id: user_id,
@@ -255,7 +255,7 @@ async function changePassword() {
       })
       .catch(function (error) {
         console.error(error)
-        alert("Email does not exist. Please re-enter.")
+        alert("Error: " + error)
       });
   } else {
     alert("Passwords do not match")
