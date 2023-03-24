@@ -785,6 +785,10 @@ app.post('/api/add/flag', jwt.authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * Call for creating a guest
+ * @returns {string} access token - The access token of guest
+ */
 app.post('/api/guest', async (req, res) => {
   jwt.createGuest().then(user => {
     //console.log(user);

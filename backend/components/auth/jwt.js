@@ -46,6 +46,9 @@ async function authenticateUser({ email, password }) {
   });
 }
 
+/**
+ * This function creates a guest token and signs it with GUEST_ACCESS
+ */
 async function createGuest() {
   var guest = {};
   const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '30m' }); 
@@ -56,6 +59,11 @@ async function createGuest() {
   return { guest: guest, accessToken: guestAccess };
 } 
 
+/**
+ * This function checks if the given token is signed wtih GUEST_ACCESS or not
+ * @param {string} accessToken - access token of user 
+ * @returns {boolean} guest - true if user is guest, and false if not
+ */
 async function checkGuest(accessToken) {
   guest = undefined;
   jwt.verify(accessToken, process.env.GUEST_ACCESS, async (err, user) => {
