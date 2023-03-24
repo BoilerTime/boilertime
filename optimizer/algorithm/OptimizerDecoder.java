@@ -5,7 +5,7 @@ import optimizer.Utils;
 
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule best) {
-        String result = "{\"data\": [";
+        String result = "{\"status\": 200, \"message\":, \"schedule\", \"data\": [";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\"},";
         
         //Pull the string that represents the best individual 
