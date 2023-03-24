@@ -38,14 +38,14 @@ async function createGroup(user_id, group_name) {
 
 async function duplicateGroups(user_id, group_id) {
   const profile = await profiles.doc(user_id).get();
-  doc = profile.data();
+  const doc = profile.data();
   return doc.groups != undefined && doc.groups.includes(group_id);
 }
 
 
 async function getGroups(user_id) {
   const profile = await profiles.doc(user_id).get();
-  doc = profile.data();
+  const doc = profile.data();
   if (doc.groups == undefined) {
     return [];
   } else {
