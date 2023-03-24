@@ -228,6 +228,15 @@ app.post('/api/createschedule', async (req, res) => {
   });
 });
 
+app.post('/api/getclasses', async (req, res) => {
+  await schedule.getClasses(req.body.user_id).then((classes) => {
+    res.send(classes);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
+
 /**
  * Add bookmark given bookmark and user_id
  * @param {string} user_id - The user_id of the user that wants to update their bookmark
