@@ -82,9 +82,11 @@ public class ScheduleClient implements Runnable  {
             //First, we instantiate the times for each
             x.instantiateTimes(numOfTimes);
             x.instantiateDurations(numOfTimes);
+            x.instantiateWeekDays(numOfTimes);
             for(int i = 0; i < numOfTimes; i++) {
                 x.addCourseTime(Integer.parseInt(input.readLine()));
                 x.addDuration(Integer.parseInt(input.readLine()));
+                x.addWeekDays(input.readLine());
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();

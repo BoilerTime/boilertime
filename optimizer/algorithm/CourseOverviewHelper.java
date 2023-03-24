@@ -8,6 +8,9 @@ public class CourseOverviewHelper {
     //Course Duration
     private int[] courseDurations;
     private int courseDurationsPtr;
+    //Days of week
+    private WeekDays[][] weekDays;
+    private int weekDaysPtr;
 
     /**
      * Constructor to create a wrapper class that assists in instantaiting a CourseOverview method.
@@ -16,6 +19,7 @@ public class CourseOverviewHelper {
         //Indicate that both of the course stacks cannot be used yet
         this.courseTimesPtr = -1;
         this.courseDurationsPtr = -1;
+        this.weekDaysPtr = -1;
         courseName = null;
     }
 
@@ -82,6 +86,54 @@ public class CourseOverviewHelper {
             return null;
         }
 
-        return new CourseOverview(courseName, courseTimes, courseDurations);
+        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays);
     }
+
+    /**
+     * A helper method that allows the 
+     * @param length
+     */
+    public void instantiateWeekDays(int length) {
+        this.weekDays = new WeekDays[length][];
+        this.weekDaysPtr = 0;
+    }
+
+    public int addWeekDays(String days) {
+        if(this.weekDaysPtr == -1) {
+            return -1; 
+        }
+        String[] aDays = days.split(",");
+        weekDays[weekDaysPtr] = new WeekDays[aDays.length];
+        for(int i = 0; i < aDays.length; i++) {
+            WeekDays temp;
+            switch(aDays[i]) {
+                case "Monday":
+                    temp = (WeekDays.monday);
+                    break;
+                case "Tuesday":
+                    temp = WeekDays.tuesday;
+                    break;
+                case "Wednesday":
+                    temp = WeekDays.wednesday;
+                    break;
+                case "Thursday":
+                    temp = WeekDays.thursday;
+                    break;
+                case "Friday":
+                    temp = WeekDays.friday;
+                    break;
+                case "Saturday":
+                    temp = WeekDays.saturday;
+                    break;
+                case "Sunday":
+                    temp = WeekDays.sunday;
+                default: 
+                    temp = WeekDays.monday;
+            }
+            weekDays[weekDaysPtr][i] = temp;
+        }
+        return 1;
+    }
+
+
 }

@@ -77,7 +77,8 @@ public class OptimizerDecoder {
                     }
                 }
             }
-            results[i] = new CourseOverview(courseName, Utils.parseArrayList(times), Utils.parseArrayList(durations));
+            WeekDays[][] rand = new WeekDays[1][1];
+            results[i] = new CourseOverview(courseName, Utils.parseArrayList(times), Utils.parseArrayList(durations), rand);
         }
         return results;
     }

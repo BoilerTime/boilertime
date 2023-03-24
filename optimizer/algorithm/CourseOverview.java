@@ -3,12 +3,14 @@ package optimizer.algorithm;
 public class CourseOverview {
     private String courseName; 
     private int[] courseTimes;
-    private int[] courseDurations; 
+    private int[] courseDurations;
+    private WeekDays[][] courseDaysOfWeek; 
 
-    public CourseOverview(String name, int[] times, int[] courseDurations) {
+    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek) {
         this.courseName = name; 
         this.courseTimes = times; 
         this.courseDurations = courseDurations; 
+        this.courseDaysOfWeek = daysOfWeek;
     }
 
     public String getCourseName() {
@@ -29,5 +31,9 @@ public class CourseOverview {
         } else {
             return courseTimes.length;
         }
+    }
+
+    public WeekDays[][] getWeekDays() {
+        return this.courseDaysOfWeek;
     }
 }
