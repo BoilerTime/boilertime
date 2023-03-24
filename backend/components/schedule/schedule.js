@@ -10,7 +10,8 @@ const db = getFirestore()
 const schedules = db.collection('user_schedules')
 
 module.exports = {
-  addClasses
+  addClasses,
+  getClasses
 }
 
 /** 
@@ -30,4 +31,21 @@ async function addClasses(user) {
     console.error(err);
     throw new Error(500);
   })
+}
+
+/**
+  * Adds the given classes and preferences to the databases given the email
+  * @param {string} user_id - the user_id of the user
+**/
+async function getClasses(user_id) {
+  const classes = await db.collection('user_schedules').doc(user_id).collection('spring_2023').doc('schedule').get().catch((err) => { 
+    console.error(err);
+    throw new Error(500);
+  });
+  const doc = classes.data();
+  if (doc == undefined) {
+    throw new Error(500);
+  } else {
+    return doc;
+  }
 }
