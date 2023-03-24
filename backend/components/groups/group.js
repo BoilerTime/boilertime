@@ -50,13 +50,19 @@ async function getGroups(user_id) {
     return [];
   } else {
     const myGroups = [];
-    doc.groups.forEach(async function(group_id){
+    doc.groups.forEach(async function (group_id) {
       const group = await groups.doc(group_id).get();
       const data = group.data()
-      myGroups.push({...data, "group_id": group.id});
+      myGroups.push({ ...data, "group_id": group.id });
     });
     return myGroups;
   }
+}
+
+async function getGroup(group_id) {
+  const group = await groups.doc(group_id).get();
+  const data = group.data()
+  return { ...data, "group_id": group.id };
 }
 
 async function joinGroup(user_id, group_id) {
@@ -81,4 +87,4 @@ async function joinGroup(user_id, group_id) {
   }
 }
 
-module.exports = { createGroup, joinGroup, getGroups }
+module.exports = { createGroup, joinGroup, getGroups, getGroup }

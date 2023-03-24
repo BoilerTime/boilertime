@@ -676,6 +676,21 @@ app.post('/api/groups', async (req, res) => {
   });
 });
 
+/**
+ * Call for getting groups of a user
+ * @param {string} group_id - The user_id associated with the owner of the group
+ * @returns {JSON} group - group info
+ */
+app.post('/api/group', async (req, res) => {
+  const group_id = req.body.group_id;
+  await group.getGroup(group_id).then((groups) => {
+    res.json(groups);
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
+  });
+});
+
 /*
  * Call for getting the building name from Short Code
  * @param {string} room - The user_id associated with the rating to flag

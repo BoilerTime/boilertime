@@ -78,6 +78,21 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
       });
   });
 
+  it("API Call Get Group Just Created", (done) => {
+    chai.request(app)
+      .post('/api/group')
+      .send({...auth, ...group_id})
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body).to.have.ownPropertyDescriptor('group_name');
+        expect(res.body.group_name).to.equal(newGroup.group_name);
+        expect(res.body.member_names).to.eql(["boilertimepurdue@gmail.com", "jjyang@purdue.edu"]);
+        expect(res.body.member_ids).to.eql([auth.user_id, auth2.user_id]);
+        done();
+      });
+  });
+
+
   it("API Call Fails with Duplicate Member from Owner", (done) => {
     chai.request(app)
       .post('/api/joingroup')
