@@ -1,10 +1,5 @@
 package optimizer.network;
 import java.io.*;
-import java.net.Socket;
-import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.Random;
-
 import optimizer.Utils;
 
 public class NetworkHandler {

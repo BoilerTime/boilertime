@@ -3,7 +3,6 @@ package optimizer.network;
 //Java threading and networking libraries
 import java.io.*;
 import java.net.Socket;
-import java.nio.CharBuffer;
 import java.util.Arrays;
 
 import optimizer.algorithm.*;
@@ -12,8 +11,6 @@ public class ScheduleClient implements Runnable  {
     
     //The socket that is currently being run
     private Socket netSocket;
-    private BufferedReader input;
-    private PrintWriter output;
 
     public ScheduleClient(Socket s) {
         this.netSocket = s;
@@ -95,9 +92,9 @@ public class ScheduleClient implements Runnable  {
             x.instantiateDurations(numOfTimes);
             x.instantiateWeekDays(numOfTimes);
             for(int i = 0; i < numOfTimes; i++) {
-                x.addCourseTime(Integer.parseInt(input.readLine()));
-                x.addDuration(Integer.parseInt(input.readLine()));
-                x.addWeekDays(input.readLine());
+                x.addCourseTime(Integer.parseInt(network.getIncomingMessage()));
+                x.addDuration(Integer.parseInt(network.getIncomingMessage()));
+                x.addWeekDays(network.getIncomingMessage());
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
@@ -133,7 +130,7 @@ public class ScheduleClient implements Runnable  {
                 //terminate();
                 return;
             }
-            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()));
+            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.toString(courses[i].getWeekDays()));
         }
         //System.out.println("Result: " + numOfCourses);
         Population resultPop = new Population(courses);
