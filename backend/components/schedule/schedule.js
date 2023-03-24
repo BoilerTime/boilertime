@@ -38,10 +38,14 @@ async function addClasses(user) {
   * @param {string} user_id - the user_id of the user
 **/
 async function getClasses(user_id) {
-  await db.collection('user_schedules').doc(user_id).collection('spring_2023').doc('schedule').get().then((res) => {
-    return res.data();
-  }).catch((err) =>{
+  const classes = await db.collection('user_schedules').doc(user_id).collection('spring_2023').doc('schedule').get().catch((err) => { 
     console.error(err);
     throw new Error(500);
-  })
+  });
+  const doc = classes.data();
+  if (doc == undefined) {
+    throw new Error(500);
+  } else {
+    return doc;
+  }
 }
