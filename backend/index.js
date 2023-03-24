@@ -808,16 +808,24 @@ app.listen(port, () => {
  * @param {string} group_name - The name of the group\
  * @returns {string} group_id - The id of the group
  */
-app.post('/api/creategroup', async (req, res) => {
-  const user_id = req.body.user_id;
-  const group_name = req.body.group_name;
-  await group.createGroup(user_id, group_name).then((group_id) => {
-    console.log(group_name + ' created with id ' + group_id)
-    res.json({group_id: group_id});
-  }).catch((err) => {
-    console.log(err);
-    res.sendStatus(err.message);
-  });
+app.post('/api/creategroup',jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_name = req.body.group_name;
+    await group.createGroup(user_id, group_name).then((group_id) => {
+      console.log(group_name + ' created with id ' + group_id)
+      res.json({group_id: group_id});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
 });
 
 /**
@@ -826,16 +834,24 @@ app.post('/api/creategroup', async (req, res) => {
  * @param {string} group_id - The id of the group
  * @returns {string} group_name - The name of the group
  */
-app.post('/api/joingroup', async (req, res) => {
-  const user_id = req.body.user_id;
-  const group_id = req.body.group_id;
-  await group.joinGroup(user_id, group_id).then((group_name) => {
-    console.log(user_id + ' joined ' + group_name );
-    res.json({group_name: group_name});
-  }).catch((err) => {
-    console.log(err);
-    res.sendStatus(err.message);
-  });
+app.post('/api/joingroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.joinGroup(user_id, group_id).then((group_name) => {
+      console.log(user_id + ' joined ' + group_name );
+      res.json({group_name: group_name});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
 });
 
 /**
@@ -843,14 +859,22 @@ app.post('/api/joingroup', async (req, res) => {
  * @param {string} user_id - The user_id associated with the owner of the group
  * @returns {string} group_name - The name of the group
  */
-app.post('/api/groups', async (req, res) => {
-  const user_id = req.body.user_id;
-  await group.getGroups(user_id).then((groups) => {
-    res.json({groups: groups});
-  }).catch((err) => {
-    console.log(err);
-    res.sendStatus(500);
-  });
+app.post('/api/groups', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    await group.getGroups(user_id).then((groups) => {
+      res.json({groups: groups});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(500);
+    });
+  }
 });
 
 /**
