@@ -7,10 +7,27 @@ const save = require('../schedule/saveschedule');
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
+const WebSocket = require("ws");
 
+const ws = new WebSocket('ws://localhost:3002', {'permessage-deflate': true});
+
+
+//var client = new ws('ws://localhost:3002', 'echo-protocol');
+//client.send("request open");
 const optimizeSchedule = async function(java, schedule) {
     let optimizecourses = [];
-
+    //ws.is
+    console.log("Connection is: " + ws.OPEN === ws.readyState);
+    console.log("Ready State: " + ws.readyState);
+    console.log("Open: " + ws.OPEN);
+    if(ws.readyState == ws.OPEN) {
+        //console.log("TwT")
+        //ws.send("This is a test");
+    } else {
+        ws = new WebSocket('ws://localhost:3002', {'permessage-deflate': true});
+    }
+    
+    
     let requiredLength = schedule.required_classes.length;
     let optionalLength = schedule.optional_classes.length;
 
@@ -58,38 +75,45 @@ const optimizeSchedule = async function(java, schedule) {
         }
 
     }
-    var mwfOptions = [];
-    var tfOptions = [];
+    console.log(output)
+
+    var mwfOptions = {courses: []};
+    const courseTemplate = {name: "", count: 0, times: [], durations: []};
+    var tfOptions = {courses: []};
     for(let i = 0; i < output.length; i++) {
         //Get the time in the proper order
-        let timeString = "["
-        for(let j  = 0; j < output[i].startTimes.length; j++){
-            timeString+=output[i].startTimes[j] + ",";
-        }
-        timeString = timeString.substring(0, timeString.length-1);//knock the trailing , off
-        timeString+="]"
-        //Get the durations in the proper order 
-        let durationString = "["
-        for(let j  = 0; j < output[i].durations.length; j++){
-            durationString+=output[i].durations[j] + ",";
-        }
-        durationString = durationString.substring(0, durationString.length-1);//knock the trailing , off
-        durationString+="]"
+        //let timeString = "["
+        let newTemplate = JSON.parse(JSON.stringify(courseTemplate));
+        newTemplate.name = output[i].name;
+        newTemplate.count = output[i].startTimes.length;
 
-        let result = format;
-        result = result.replace("name", output[i].name);
-        result = result.replace("[times]", timeString);
-        result = result.replace("[durations]", durationString);
+        for(let j  = 0; j < output[i].startTimes.length; j++){
+            newTemplate.durations.push(output[i].durations[j]);
+            newTemplate.times.push(output[i].startTimes[j]);
+        }
         if(output[i].isMWF) {
-            mwfOptions.push(result);
+            mwfOptions.courses.push(newTemplate);
         } else {
-            tfOptions.push(result);
+            tfOptions.courses.push(newTemplate);
         }
         
     }
+    console.log(mwfOptions);
+
+    ws.send(mwfOptions.courses.length);
+    for(let i = 0; i < mwfOptions.courses.length; i++) {
+        ws.send(mwfOptions.courses[i].name);
+        ws.send(mwfOptions.courses[i].count);
+        for(let j = 0; j < mwfOptions.courses[i].count; j++) {
+            //console.log(mwfOptions.courses[i]);
+            ws.send(mwfOptions.courses[i].times[j]);
+            ws.send(mwfOptions.courses[i].durations[j]);
+        }
+        //ws.send(mwfOptions.courses[i].)
+    }
 
     //Run the MWF routine
-    var mwfResults;
+    /*var mwfResults;
     var tfResults;
 
     if(mwfOptions.length > 0) {
@@ -155,7 +179,23 @@ const optimizeSchedule = async function(java, schedule) {
         //console.log(dbOut);
         dbOut.schedule.push(tempOut);
     }
-    await save.saveSchedule(schedule.user_id, dbOut);
+    await save.saveSchedule(schedule.user_id, dbOut);*/
 }
 
 module.exports = {optimizeSchedule};
+
+
+ws.on('error', console.error);
+
+ws.on('open', function open() {
+  console.log('connected');
+});
+
+ws.on('close', function close() {
+  console.log('disconnected');
+});
+
+ws.on('message', function message(data) {
+  console.log(data.toString())
+});
+

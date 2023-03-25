@@ -106,6 +106,16 @@ onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }).then((response) => {
+    selectedRequiredCourses.value = response.data.required_classes
+  })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }).then((response) => {
+    selectedOptionalCourses.value = response.data.optional_classes
+  })
 })
 
 const searchTerm = ref('')

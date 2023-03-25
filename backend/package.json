@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test2": "mocha --reporter spec --exit --grep \"Sprint 2\"",
+    "test": "mocha --reporter spec --exit"
   },
   "repository": {
     "type": "git",
@@ -33,14 +34,19 @@
     "iso8601-duration": "^2.1.1",
     "java-caller": "^2.7.0",
     "mocha": "^10.2.0",
+    "mocha-suppress-logs": "^0.3.1",
     "moment": "^2.29.4",
     "supertest": "^6.3.3",
-    "websocket": "^1.0.34"
+    "websocket": "^1.0.34",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "firebase-admin": "^11.5.0",
     "jsdoc": "^4.0.1",
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.20"
+  },
+  "mocha": {
+      "require": "mocha-suppress-logs"
   }
 }
