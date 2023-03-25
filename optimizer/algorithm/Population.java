@@ -31,27 +31,11 @@ public class Population {
         //How long is each course ID suppossed to be?
         int totalSections = 0;
         //int singleCount = 0;
-        HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
+        //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
+        ArrayList<Section> singleCount = new ArrayList<Section>();
         for(int i = 0; i < c.length; i++) {
             totalSections += c[i].getNumberOfSections();
             registerdCourses[i] = new Course(c[i]);
-            if(c[i].getNumberOfSections() == 1) {
-                //singleCount++;
-                int time = c[i].getCourseTimes()[0];
-                if(singleCount.containsKey(Integer.valueOf(time))) {
-                    int currentCount = singleCount.get(Integer.valueOf(time));
-                    System.out.println("Count is: " + currentCount + " for time  " + time);
-                    singleCount.put(Integer.valueOf(time), Integer.valueOf(currentCount+1));
-                    //System.out.println(singleCount.get(Integer.valueOf(time)).intValue());
-                } else {
-                    singleCount.put(Integer.valueOf(time), Integer.valueOf(1));
-                }
-            }
-        }
-        System.out.println("Conflicts = " + Utils.findNumConflicts(singleCount));
-        if(Utils.findNumConflicts(singleCount) > 0) {
-            this.isSatisfiable = false;
-            return;
         }
         
         //Find the total number of bits required to represent based on the log of the total number of sections
@@ -63,7 +47,17 @@ public class Population {
             for(int j = 0; j < instSections.length; j++) {
                 idSection.put(instSections[j].getID(), instSections[j]);
             }
+            //Determine if we have courses that only have a single section, as this warrants pre-entry analysis. 
+            if(instSections.length == 1) {
+                singleCount.add(instSections[0]);
+            }
             minCount+=c[i].getNumberOfSections();
+        }
+
+        if(singleCount.size() > 0) {
+            this.isSatisfiable = this.findBadSchedule(singleCount);
+        } else {
+            this.isSatisfiable = true;
         }
     }
 
@@ -198,6 +192,7 @@ public class Population {
 
     private int calculateStartConflicts(Schedule x) {
         HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+        ArrayList<Moment> mCount = new ArrayList<Moment>();
         Section[] sections = x.getSections();
         for(int i = 0; i < sections.length; i++) {
             //If the section contained is a null ptr, then just ignore it. 
@@ -210,11 +205,14 @@ public class Population {
                 Integer temp = count.get(time);
                 temp = Integer.valueOf(temp.intValue() + 1);
                 count.put(time, temp);
+                mCount.add(new Moment(sections[i].getTime(), sections[i].getWeekDays()));
             } else {
                 count.put(time, Integer.valueOf(1));
+                //mCount.put(m, Integer.valueOf(1));
             }
         }
-        return Utils.findNumConflicts(count);
+        System.out.println("Non Overlapping: " + Utils.findNonOverlappingDayTime(mCount));
+        return (Utils.findNumConflicts(count) - Utils.findNonOverlappingDayTime(mCount));
     }
 
     private int calculateDurationConflicts(Schedule x) {
@@ -264,5 +262,13 @@ public class Population {
         }
         return Utils.findNumSConflicts(c);
     }
+
+    private boolean findBadSchedule(ArrayList<Section> courses) {
+        Schedule s = new Schedule(courses.toArray(new Section[courses.size()]));
+        if(calculateStartConflicts(s) > 0 || calculateDurationConflicts(s) > 0) {
+            return false;
+        }
+        return true; 
+    } 
 
 }

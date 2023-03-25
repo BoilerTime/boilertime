@@ -127,11 +127,14 @@ public class CourseOverviewHelper {
                     break;
                 case "Sunday":
                     temp = WeekDays.sunday;
+                    break;
                 default: 
                     temp = WeekDays.monday;
+                    break;
             }
             weekDays[weekDaysPtr][i] = temp;
         }
+        this.weekDaysPtr++;
         return 1;
     }
 

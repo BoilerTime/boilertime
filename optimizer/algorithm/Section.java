@@ -1,5 +1,7 @@
 package optimizer.algorithm;
 
+import java.util.Arrays;
+
 public class Section {
     private final Course parentCourse;
     private final int time;

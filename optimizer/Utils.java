@@ -393,4 +393,42 @@ public class Utils {
         }
         return numConflicts;
     }
+
+
+    public static int findNumMConflicts(HashMap<Moment, Integer> m) {
+        int numConflicts = 0;
+        Integer[] vals = m.values().toArray(new Integer[m.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            if(vals[i].intValue()> 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
+
+    public static int findNonOverlappingDayTime(ArrayList<Moment> moments) {
+        Moment[] m = moments.toArray(new Moment[moments.size()]);
+        int count = 0;
+        for(int i = 0; i < m.length; i++) {
+            for(int j = 0; j < m.length; j++) {
+                if(j != i) {
+                    WeekDays[] w1 = m[i].getWeekDays();
+                    WeekDays[] w2 = m[j].getWeekDays();
+                    Arrays.sort(w1);
+                    Arrays.sort(w2);
+                    boolean foundOverlap = false;
+                    int min = Math.min(w1.length, w2.length);
+                    for(int k = 0; k < min; k++) {
+                        if(Arrays.binarySearch(w2, w1[k]) != -1) {
+                            foundOverlap = true;
+                        }
+                    }
+                    if(foundOverlap) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return (count);
+    }
 }

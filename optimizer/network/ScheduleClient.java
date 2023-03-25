@@ -130,7 +130,7 @@ public class ScheduleClient implements Runnable  {
                 //terminate();
                 return;
             }
-            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.toString(courses[i].getWeekDays()));
+            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()));
         }
         //System.out.println("Result: " + numOfCourses);
         Population resultPop = new Population(courses);
