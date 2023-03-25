@@ -101,7 +101,7 @@ const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
 
-var accessToken = userStore.access_token
+var accessToken = userStore.accessToken;
 const config = {
   headers: {
     'authorization': `Bearer ${accessToken}`
@@ -280,7 +280,16 @@ function submit() {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value
-    }).then(() => {
+    }, config).then(() => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
       navigateTo('/app/view')
     })
   }

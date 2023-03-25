@@ -38,6 +38,12 @@ try {
 }
 
 isLoggedIn = userStore.isLoggedIn
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 async function verifyToken() {
   await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
@@ -49,7 +55,7 @@ async function getUserInfo() {
   axios
     .post("http://localhost:3001/api/get/profile/", {
       user_id: userStore.user_id,
-    })
+    }, config)
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
