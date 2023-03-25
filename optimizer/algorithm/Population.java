@@ -2,6 +2,7 @@ package optimizer.algorithm;
 
 import java.util.*;
 import optimizer.Utils;
+import java.time.
 
 public class Population {
 
@@ -190,29 +191,21 @@ public class Population {
         }
     }
 
-    private int calculateStartConflicts(Schedule x) {
+    private int calculateStartConflicts(int[] times) {
         HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
         ArrayList<Moment> mCount = new ArrayList<Moment>();
-        Section[] sections = x.getSections();
-        for(int i = 0; i < sections.length; i++) {
+        for(int i = 0; i < times.length; i++) {
             //If the section contained is a null ptr, then just ignore it. 
-            if(sections[i] == null) {
-                continue;
-            }
-
-            Integer time = Integer.valueOf(sections[i].getTime());
+            Integer time = Integer.valueOf(times[i]);
             if(count.containsKey(time)) {
                 Integer temp = count.get(time);
                 temp = Integer.valueOf(temp.intValue() + 1);
                 count.put(time, temp);
-                mCount.add(new Moment(sections[i].getTime(), sections[i].getWeekDays()));
             } else {
                 count.put(time, Integer.valueOf(1));
-                //mCount.put(m, Integer.valueOf(1));
             }
         }
-        System.out.println("Non Overlapping: " + Utils.findNonOverlappingDayTime(mCount));
-        return (Utils.findNumConflicts(count) - Utils.findNonOverlappingDayTime(mCount));
+        return (Utils.findNumConflicts(count));
     }
 
     private int calculateDurationConflicts(Schedule x) {
@@ -245,6 +238,36 @@ public class Population {
         return total;
     }
 
+    private int calculateTimeConflicts(Schedule x) {
+        Section[] sections = x.getSections();
+        int[][][] dayTimeDuration = new int[7][][];
+        int conflictCount = 0;
+        for(int i = 0; i < dayTimeDuration.length; i++) {
+            int dayCount = 0; 
+            for(int j = 0; j < sections.length; j++) {
+                if(sections[j] == null) {
+                    continue;
+                }
+                if(this.hasWeekDay(sections[i].getWeekDays(), i)) {
+                    dayCount++;
+                }
+            }
+            dayTimeDuration[i] = new int[2][dayCount];
+
+            int index = 0;
+            for(int j = 0; j < sections.length; j++) {
+                if(sections[j] == null) {
+                    continue;
+                }
+                if(this.hasWeekDay(sections[i].getWeekDays(), i)) {
+                    //dayCount++;
+                    dayTimeDuration[i][0][index] = sections[j].getTime();
+                    dayTimeDuration[i][1][index] = sections[j].getDuration();
+                }
+            }
+        }
+    }
+
     private int calculateNameConflicts(Schedule x) {
         HashMap<String, Integer> c = new HashMap<String, Integer>();
         Section[] s = x.getSections();
@@ -270,5 +293,15 @@ public class Population {
         }
         return true; 
     } 
+
+    private boolean hasWeekDay(WeekDays[] days, int i) {
+        WeekDays target = WeekDays.values()[i];
+        for(int j = 0; j < days.length; j++) {
+            if(days[j] == target) {
+                return true;
+            }
+        }
+        return false; 
+    }
 
 }
