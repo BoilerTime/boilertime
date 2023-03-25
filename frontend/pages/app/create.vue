@@ -32,17 +32,14 @@
               {{ result }}
             </li>
           </ul>
-            <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
-              <template #item="{ element }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
-                  @mouseover="element.hovering = true" @mouseout="element.hovering = false"
-                  @click="removeFromSelected(index)">
-                  {{ element }}
-                  <button v-if="element.hovering" class="ml-2 text-sm font-bold" @click="removeFromSelected(index)">
-                    ✖</button>
-                </div>
-              </template>
-            </draggable>
+          <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
+            <template #item="{ element, index }">
+              <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+                @click="removeFromSelected(index)">
+                {{ element }}
+              </div>
+            </template>
+          </draggable>
           <div class="relative mt-8">
             <label class="text-md font-semibold">Add classes you want to take:</label>
             <input v-model="optionalSearchTerm"
@@ -56,31 +53,30 @@
                 {{ result }}
               </li>
             </ul>
-              <draggable v-model="selectedOptionalCourses" group="classes" item-key="id" class="flex flex-wrap">
-                <template #item="{ element }">
-                  <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
-                    @mouseover="element.hovering = true" @mouseout="element.hovering = false"
-                    @click="removeOptional(index)">
-                    {{ element }}
-                    <button v-if="element.hovering" class="ml-2 text-sm font-bold" @click="removeOptional(index)">
-                      ✖</button>
-                  </div>
-                </template>
-              </draggable>
-          </div>
-          <div class="relative mt-8">
-            <label class="text-md font-semibold">Drag classes here to bookmark them for later:</label>
-            <draggable v-model="bookmarked_classes" group="classes" item-key="id" class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
-              <template #item="{ element }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 hover:bg-red-500" @click="removeFromBookmarked(index)">
+            <draggable v-model="selectedOptionalCourses" group="classes" item-key="id" class="flex flex-wrap">
+              <template #item="{ element, index }">
+                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+                  @click="removeOptional(index)">
                   {{ element }}
                 </div>
               </template>
             </draggable>
           </div>
-          <div class="mt-8">
-            <button @click="submit" class="bg-yellow-500 text-white p-2 rounded-md">
-              Submit preferences
+          <div class="relative mt-8">
+            <label class="text-md font-semibold">Drag classes here to bookmark them for later:</label>
+            <draggable v-model="bookmarked_classes" group="classes" item-key="id"
+              class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
+              <template #item="{ element, index }">
+                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 hover:bg-red-500"
+                  @click="removeFromBookmarked(index)">
+                  {{ element }}
+                </div>
+              </template>
+            </draggable>
+          </div>
+          <div class="mt-4">
+            <button @click="submit" class="bg-yellow-500 text-white p-2 text-md rounded-md">
+              Submit
             </button>
           </div>
         </div>
@@ -90,7 +86,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import draggable from 'vuedraggable'
@@ -99,23 +95,36 @@ const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
 
+var accessToken = userStore.access_token
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
+
 onBeforeMount(() => {
-  axios.get('http://localhost:3001/api/searchnew').then((response) => {
+  axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
     data.value = response.data
   })
-  axios.get('http://localhost:3001/api/searchnew').then((response) => {
+  axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
     optionalData.value = response.data
   })
   axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
-  }).then((response) => {
+  }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
   })
   axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
-  }).then((response) => {
+  }, config).then((response) => {
     selectedOptionalCourses.value = response.data.optional_classes
   })
+  axios.post('http://localhost:3001/api/getbookmarks', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    bookmarked_classes.value = response.data.bookmarks
+  })
+  console.log(bookmarked_classes.value)
 })
 
 const searchTerm = ref('')
@@ -193,11 +202,22 @@ function addToSelectedOptional(item) {
 }
 
 function removeFromSelected(index) {
+  console.log(index)
   selectedRequiredCourses.value.splice(index, 1)
 }
 
 function removeOptional(index) {
   selectedOptionalCourses.value.splice(index, 1)
+}
+
+function removeFromBookmarked(index) {
+  bookmarked_classes.value.splice(index, 1);
+  axios.post('http://localhost:3001/api/removebookmark', {
+    user_id: userStore.user_id,
+    class_name: bookmarked_classes.value
+  }, config).then(() => {
+    console.log('Bookmark removed')
+  })
 }
 
 const bookmarked_classes = ref([])
@@ -206,17 +226,6 @@ function addToBookmarked(item) {
     this.bookmarked_classes.push(item);
   }
 }
-
-function removeFromBookmarked(index) {
-  this.bookmarked_classes.splice(index, 1);
-}
-
-watchEffect(() => {
-  console.log(filteredResults.value)
-  console.log(filteredOptionalResults.value)
-  console.log(selectedRequiredCourses.value)
-  console.log(selectedOptionalCourses.value)
-})
 
 watchEffect(() => {
   if (searchTerm.value.length > 0) {
@@ -231,6 +240,31 @@ watchEffect(() => {
     isOptionalSearchActive.value = true
   } else {
     isOptionalSearchActive.value = false
+  }
+})
+
+watch(bookmarked_classes, (newVal, oldVal) => {
+  if (newVal.length > oldVal.length) {
+    const newBookmark = newVal[newVal.length - 1]
+    console.log(`New bookmark added: ${newBookmark}`)
+    console.log(bookmarked_classes.value)
+    axios.post('http://localhost:3001/api/addbookmark', {
+      user_id: userStore.user_id,
+      class_name: bookmarked_classes.value
+    }, config).then(() => {
+      console.log('Bookmark added')
+    })
+  }
+  if (newVal.length < oldVal.length) {
+    const removedBookmark = oldVal[oldVal.length - 1]
+    console.log(`Bookmark removed: ${removedBookmark}`)
+    console.log(bookmarked_classes.value)
+    axios.post('http://localhost:3001/api/removebookmark', {
+      user_id: userStore.user_id,
+      class_name: bookmarked_classes.value
+    }, config).then(() => {
+      console.log('Bookmark removed')
+    })
   }
 })
 
