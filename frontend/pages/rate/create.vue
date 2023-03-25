@@ -66,6 +66,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
+                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
                     </div>
                     <!--Adds the inputs for reviewing a classroom-->
                     <div v-else-if="reviewtype === 'classroom'">
@@ -102,6 +104,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
+                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
                     </div>
                     <!--Adds the inputs for reviewing a TA-->
                     <div v-else-if="reviewtype === 'ta'">
@@ -138,6 +142,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
+                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
                     </div>
 
                     <!--CAPTCHA title and insert-->
@@ -177,6 +183,8 @@ const rating1 = ref('2.5')
 const rating2 = ref('2.5')
 const rating3 = ref('2.5')
 
+const written = ref("")
+
 
 /**
  * This function will take the review type and review selection and send the inserted
@@ -191,6 +199,7 @@ async function createreview() {
                 prequisite_strictness: rating1.value,
                 pace: rating2.value,
                 depth: rating3.value
+                //written: written.value ADD COMMA ABOVE
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
@@ -207,6 +216,7 @@ async function createreview() {
                 access_conv: rating1.value,
                 seating_quality: rating2.value,
                 technology_avail: rating3.value
+                //written: written.value ADD COMMA ABOVE
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
@@ -223,6 +233,7 @@ async function createreview() {
                 question_answering: rating1.value,
                 grading_fairness: rating3.value,
                 responsiveness: rating2.value
+                //written: written.value ADD COMMA ABOVE
             })
                 .then(function () {
                     alert("Thank you for submitting your review!")
