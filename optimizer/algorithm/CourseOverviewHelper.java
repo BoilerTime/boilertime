@@ -2,6 +2,7 @@ package optimizer.algorithm;
 
 public class CourseOverviewHelper {
     private String courseName;
+    private boolean required;
     //Course Time
     private int[] courseTimes;
     private int courseTimesPtr;
@@ -29,6 +30,14 @@ public class CourseOverviewHelper {
      */
     public void addCourseName(String name) {
         this.courseName = name;
+    }
+
+    /**
+     * Adds a flag of whether or not the course is required
+     * @param r A boolean true if the course is required, otherwise false. 
+     */
+    public void setRequired(boolean r) {
+        this.required = r;
     }
 
     /**
@@ -86,7 +95,7 @@ public class CourseOverviewHelper {
             return null;
         }
 
-        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays);
+        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required);
     }
 
     /**

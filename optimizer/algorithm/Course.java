@@ -6,6 +6,7 @@ import optimizer.Utils;
 public class Course {
     private final String courseName; 
     private final CourseOverview template;
+    private final boolean required;
     private boolean isRunnable;
     private Section[] sections;
     private HashMap<String, Section> idSection; 
@@ -13,6 +14,7 @@ public class Course {
 
     public Course(CourseOverview info) {
         this.courseName = info.getCourseName();
+        this.required = info.isRequired();
         this.template = info;
         this.sections = new Section[info.getCourseTimes().length];
         this.idSection = new HashMap<String, Section>();
@@ -35,7 +37,7 @@ public class Course {
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Utils.arrToString(id);
-            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i]);
+            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required);
             idSection.put(sid, sections[i]);
         }
         return sections;

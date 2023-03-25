@@ -80,6 +80,13 @@ public class ScheduleClient implements Runnable  {
             }
             x.addCourseName(temp);
             //System.out.println("Added a name to the course!");
+            temp = network.getIncomingMessage();
+            if(temp.equals("True")) {
+                x.setRequired(true);
+            } else {
+                x.setRequired(false);
+            }
+
             //next, we need to determine how many courses are going to be transmitted
             String t = network.getIncomingMessage();
             if(t == null) {

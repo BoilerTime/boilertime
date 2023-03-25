@@ -1,6 +1,5 @@
 package optimizer.algorithm;
 
-import java.util.Arrays;
 
 public class Section {
     private final Course parentCourse;
@@ -8,13 +7,15 @@ public class Section {
     private final int duration;
     private final String ID;
     private final WeekDays daysOfWeekDays[];
+    private final boolean required; 
 
-    public Section(Course p, int t, int d, String id, WeekDays[] days) {
+    public Section(Course p, int t, int d, String id, WeekDays[] days, boolean require) {
         this.parentCourse = p;
         this.time = t;
         this.duration = d;
         this.ID = id;
         this.daysOfWeekDays = days; 
+        this.required = require; 
     } 
 
     public Course getParent() {
@@ -35,6 +36,10 @@ public class Section {
 
     public WeekDays[] getWeekDays() {
         return this.daysOfWeekDays;
+    }
+
+    public boolean isRequired() {
+        return this.required;
     }
 
 }
