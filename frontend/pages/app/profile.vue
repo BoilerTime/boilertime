@@ -72,7 +72,7 @@
                 </button>
               </div>
             </div>
-            <button @click="showPasswordChange" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">Change Password</button>
+            <button @click="showPasswordChange" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-3 rounded">Change Password</button>
             <div v-if="TestsDiv">
               <form @submit.prevent="() => changePassword()">
                 <!--Password text & input box-->
@@ -81,15 +81,15 @@
                 <input type="password" id="password" aria-describedby="helper-text-explanation"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                                   focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
-                <!--Confirm Passord text & input box-->
-                <label for="confpassword" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Confirm
+                <!--Confirm Password text & input box-->
+                <label for="confpassword" class="pt-1 text-sm font-medium text-gray-900 dark:text-black">Confirm
                   Password</label>
                 <input type="password" id="confpassword" aria-describedby="helper-text-explanation"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                                   focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
 
                 <!--Confirms the password change-->
-                <div class="container py-7 px-5 min-w-full flex flex-col items-center">
+                <div class="container py-3 px-5 min-w-full flex flex-col items-center">
                   <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
                     Confirm Change
                   </button>
@@ -216,6 +216,7 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from 'js-sha256'
+import { encrypt } from "iron-webcrypto";
 
 var userStore = useUserStore();
 var isModalVisible = ref(false);
@@ -237,28 +238,46 @@ var TestsDiv=ref(false);
 function showPasswordChange() {
   TestsDiv.value = true;
 }
+
+var encrypteduserid = "";
+
+/**
+ * changePassword() will take in the new password and the confirmation,
+ * making sure the two are the same before updating the user's password.
+ */
+
 async function changePassword() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
-  await axios.post('http://localhost:3001/api/forgotpassword', {
-    //WAIT FOR JOSH TO ADD ROUTE FOR GETTING A USER'S EMAIL
-    //SEND EMAIL TO BACKEND
+  // Getting the encrypted user ID
+  console.log("userid: " + user_id)
+  await axios.post('http://localhost:3001/api/encryptuserid', {
+    user_id: user_id
   })
+  .then((res) => {
+    encrypteduserid = res.data.user_id;
+    console.log("encrypted id: " + encrypteduserid)
+  })
+  .catch(function (error) {
+    console.error(error)
+    alert("Error: " + error)
+  });
+  // Resetting the password
   if (newpassword === newconfpassword) {
     await axios.post('http://localhost:3001/api/resetpassword', {
-      user_id: user_id,
+      user_id: encrypteduserid,
       password: newpassword
     })
       .then(function () {
         alert("Password has been changed.")
-        navigateTo("/app/profile_page")
+        navigateTo("/app/profile")
       })
       .catch(function (error) {
         console.error(error)
         alert("Error: " + error)
       });
   } else {
-    alert("Passwords do not match")
+    alert("Passwords do not match.")
   }
 }
 
