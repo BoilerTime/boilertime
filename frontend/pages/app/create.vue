@@ -29,7 +29,11 @@
             class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
             <li v-for="result in filteredResults" :key="result"
               class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white" @click="addToSelected(result)">
-              {{ result }}
+              <span class="bg-yellow-500 flex items-center" v-if="bookmarked_classes.includes(result)">
+                <BookmarkIcon class="w-4 mr-2" />
+                <span>{{ result }}</span>
+              </span>
+              <span v-else>{{ result }}</span>
             </li>
           </ul>
           <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
@@ -90,6 +94,8 @@ import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import draggable from 'vuedraggable'
+
+import { BookmarkIcon } from "@heroicons/vue/24/outline"
 
 const data = ref([])
 const optionalData = ref([])
