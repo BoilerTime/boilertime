@@ -250,13 +250,11 @@ async function changePassword() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
   // Getting the encrypted user ID
-  console.log("userid: " + user_id)
   await axios.post('http://localhost:3001/api/encryptuserid', {
     user_id: user_id
   })
   .then((res) => {
     encrypteduserid = res.data.user_id;
-    console.log("encrypted id: " + encrypteduserid)
   })
   .catch(function (error) {
     console.error(error)
