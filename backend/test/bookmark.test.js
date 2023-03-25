@@ -27,7 +27,11 @@ before(function (done) {
 
 describe("POST Test bookmark", () => {
   const add = {
-    class_name: "CS 18000"
+    class_name: ["CS 18000"]
+  }
+
+  const remove = {
+    class_name: []
   }
 
   var bookmarks = []
@@ -56,7 +60,7 @@ describe("POST Test bookmark", () => {
         res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('bookmarks');
         expect(res.body.bookmarks.length).to.equal(bookmarks.length+1)
-        expect(res.body.bookmarks).to.contain(add.class_name)
+        expect(res.body.bookmarks).to.eql(add.class_name)
         done();
       });
   });
@@ -65,7 +69,7 @@ describe("POST Test bookmark", () => {
     chai.request(app)
       .post('/api/removebookmark')
       .set({ "authorization": `Bearer ${token}` })
-      .send({...auth, ...add})
+      .send({...auth, ...remove})
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('bookmarks');

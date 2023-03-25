@@ -34,7 +34,7 @@ async function authenticateUser({ email, password }) {
   profile.forEach(doc => {
     if (doc.data().isVerified) {
       var user = { user_id: doc.data().user_id };
-      const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
+      const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '30m' });
       const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
       user = { user_id: doc.data().user_id, accessToken: access_token };
       doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
@@ -156,7 +156,8 @@ async function generateNewAccessToken(user) {
         */
       //else {
       const user1 = { user_id: doc.data().user_id };
-      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '15s' });
+      console.log("\n\n MAKE NEW ACCESS TOKEN \n\n")
+      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '30m' });
       //doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
       doc.ref.update({ access_token: newAccessToken, refresh_token: null });
       return (newAccessToken1 = newAccessToken);
