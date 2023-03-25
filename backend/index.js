@@ -226,7 +226,8 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(418);
   }
   else {
-    await getSchedule.getSchedule(req.body.user_id).then((schedule) => {
+    await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
+      await utils.addScheduleCount();
       res.send({...schedule, accessToken: req.user.accessToken});
     }).catch(err => {
       console.log(err)
@@ -345,8 +346,9 @@ app.post('/api/getbookmarks', jwt.authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/verifyaccount', (req, res) => {
-  verifyaccount.verifyaccount(req.body.userID).then((user) => {
+app.post('/api/verifyaccount', async (req, res) => {
+  verifyaccount.verifyaccount(req.body.userID).then(async (user) => {
+    await utils.addUserCount();
     res.json(user);
   }).catch(err => {
     console.error(err);
@@ -931,5 +933,56 @@ app.post('/api/building', async (req, res) => {
     });
   }
 });
+
+app.post('/api/get/num_users', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    res.json({num_users: await utils.getNumUsers(), accessToken: req.user.accessToken });
+  }
+});
+
+app.post('/api/get/num_schedules', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    res.json({num_schedules: await utils.getNumSchedules(), accessToken: req.user.accessToken });
+  }
+});
+
+app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await utils.addUserCount();
+    res.sendStatus(200);
+  }
+});
+
+app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await utils.addScheduleCount();
+    res.sendStatus(200);
+  }
+});
+
 
 module.exports = app;

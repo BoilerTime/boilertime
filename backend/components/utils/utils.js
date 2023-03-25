@@ -7,6 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 const ratingsCollection = db.collection('ratings');
+const schedules = db.collection('generated_schedules')
 
 /**
  * Get the user_id given the email
@@ -288,6 +289,26 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
+async function getNumUsers() {
+  const profile = await users.doc('user_count').get();
+  return (num_users = profile.data().num_users);
+}
+
+async function getNumSchedules() {
+  const doc = await schedules.doc('schedules_count').get();
+  return (num_schedules = doc.data().num_schedules);
+}
+
+async function addUserCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users + 1});
+}
+
+async function addScheduleCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules + 1 });
+}
+
 module.exports = {
   getUID,
   findExistingUsers,
@@ -306,5 +327,9 @@ module.exports = {
   sortClassrooms,
   getBuildingName,
   generateBuildings,
-  getUserEmail
+  getUserEmail,
+  getNumUsers,
+  getNumSchedules,
+  addUserCount,
+  addScheduleCount
 };
