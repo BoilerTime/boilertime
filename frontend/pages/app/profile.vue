@@ -236,6 +236,12 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 
+/**
+ * Call for creating group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_name - The name of the group\
+ * @returns {string} group_id - The id of the group
+ */
 var userStore = useUserStore();
 var isModalVisible = ref(false);
 var isCourseModalVisible = ref(false);
@@ -249,6 +255,12 @@ var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
 
 var user_id = userStore.user_id
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 /* CAPTCHA variables */
 const randval1 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1))
@@ -328,8 +340,14 @@ async function getBookmarks() {
   axios
     .post("http://localhost:3001/api/getbookmarks", {
       user_id: userStore.user_id,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       console.log(response.data.bookmarks);
       bookmarkedClasses.value = response.data.bookmarks;
     })
@@ -343,12 +361,18 @@ async function deletecourses(course) {
     .post("http://localhost:3001/api/delete/ratings/courses", {
       user_id: userStore.user_id,
       course: course,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       console.log(response.data);
       alert("Successfully deleted request")
       location.reload()
-    })
+    }, config)
     .catch((error) => {
       console.error(error);
     });
@@ -359,8 +383,15 @@ async function deleteclassrooms(classroom) {
     .post("http://localhost:3001/api/delete/ratings/classrooms", {
       user_id: userStore.user_id,
       classroom: classroom,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       console.log(response.data);
       alert("Successfully deleted request")
       location.reload()
@@ -375,8 +406,15 @@ async function deleteta(ta) {
     .post("http://localhost:3001/api/delete/ratings/tas", {
       user_id: userStore.user_id,
       ta: ta,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       console.log(response.data);
       alert("Successfully deleted request")
       location.reload()
@@ -390,8 +428,15 @@ async function getUserInfo() {
   axios
     .post("http://localhost:3001/api/get/profile/", {
       user_id: userStore.user_id,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
       gradMonth.value = response.data.grad_month;
@@ -410,24 +455,51 @@ let tas = []
 async function getratings() {
   await axios.post("http://localhost:3001/api/get/user_ratings/courses", {
     user_id: userStore.user_id
-  }).then((response) => {
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+      location.reload();
+    }
     courses = response.data
   }).catch((error) => {
     console.error(error)
-  })
-  await axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
-    user_id: userStore.user_id
-  }).then((response) => {
-    classrooms = response.data
-  }).catch((error) => {
-    console.error(error)
-  })
-  await axios.post("http://localhost:3001/api/get/user_ratings/tas", {
-    user_id: userStore.user_id
-  }).then((response) => {
-    tas = response.data
-  }).catch((error) => {
-    console.error(error)
+  }).then(async () => {
+    await axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
+      user_id: userStore.user_id
+    }, config).then((response) => {
+      /*
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
+      */
+      classrooms = response.data
+    }).catch((error) => {
+      console.error(error)
+    })
+    await axios.post("http://localhost:3001/api/get/user_ratings/tas", {
+      user_id: userStore.user_id
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
+      tas = response.data
+    }).catch((error) => {
+      console.error(error)
+    })
   })
 }
 
@@ -437,8 +509,15 @@ async function flagCourse(course) {
       type: 'course',
       user_id: userStore.user_id,
       name: course.name.value
-    })
+    }, config)
     .then(function() {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       alert("Review report successfully submitted.");
       isCourseModalVisible.value = false;
     })
@@ -461,8 +540,15 @@ async function submit() {
       grad_month: gradMonth.value,
       grad_year: gradYear.value,
       is_grad_student: isGradStudent.value,
-    })
+    }, config)
     .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+      }
       isModalVisible.value = false;
     })
     .catch((error) => {
