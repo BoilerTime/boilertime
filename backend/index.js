@@ -710,8 +710,7 @@ app.post('/api/building', async (req, res) => {
 app.post('/api/get/darkmode', async (req, res) => {
   const user_id = req.body.user_id;
   darkMode = await utils.getDarkMode(user_id);
-  res.json({ darkMode: darkMode });
-  console.log(darkMode);
+  res.json({ dark_mode: darkMode });
 });
 
 module.exports = app;

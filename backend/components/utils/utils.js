@@ -289,8 +289,9 @@ async function getBuildingName(room) {
 }
 
 async function getDarkMode(user_id) {
-  const darkMode = await users.doc(user_id).dark_mode.get();
-  return darkMode;
+  const profile = await users.doc(user_id).get();
+  return (darkMode = profile.data().dark_mode);
+
 }
 
 module.exports = {
