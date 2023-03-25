@@ -20,8 +20,7 @@ export const useUserStore = defineStore("user", {
     },
     accessToken() {
         return this.user.accessToken;
-    },
-    
+    }
   },
   actions: {
     /**
@@ -37,10 +36,12 @@ export const useUserStore = defineStore("user", {
       const accessToken = await res.data.accessToken;
       const refreshToken = await res.data.refreshToken;
       const user_id = await res.data.user_id;
+      const dark_mode = await res.data.dark_mode;
       const user = {
         accessToken: accessToken,
         refreshToken: refreshToken,
-        user_id: user_id
+        user_id: user_id,
+        dark_mode: dark_mode,
       }
       this.user = user;
     },
