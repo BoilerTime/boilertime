@@ -808,7 +808,7 @@ app.post('/api/guest', async (req, res) => {
     //console.log(user);
     //console.log(accessToken);
     console.log(user);
-    res.json({ ...user, accessToken: req.user.accessToken });
+    res.json(user);
   }).catch(err => {
     console.log("HERE IN ERROR");
     console.error(err)
