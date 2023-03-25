@@ -713,4 +713,17 @@ app.post('/api/get/darkmode', async (req, res) => {
   res.json({ dark_mode: darkMode });
 });
 
+/*
+ * Call for setting the current theme as dictated by the database
+ * @param {string} user_id - The user_id associated with the current session
+ * @param {string} dark_mode - The dark mode boolean true or false
+ */
+app.post('/api/set/darkmode', async (req, res) => {
+  const user_id = req.body.user_id;
+  const darkMode = req.body.dark_mode;
+  await utils.setDarkMode(user_id, darkMode);
+  res.sendStatus(200);
+});
+
+
 module.exports = app;

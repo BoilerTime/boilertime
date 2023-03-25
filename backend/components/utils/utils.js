@@ -291,7 +291,11 @@ async function getBuildingName(room) {
 async function getDarkMode(user_id) {
   const profile = await users.doc(user_id).get();
   return (darkMode = profile.data().dark_mode);
+}
 
+async function setDarkMode(user_id, darkMode) {
+  const profile = await users.doc(user_id).get();
+  profile.ref.update({ dark_mode: darkMode });
 }
 
 module.exports = {
@@ -313,5 +317,6 @@ module.exports = {
   getBuildingName,
   generateBuildings,
   getUserEmail,
-  getDarkMode
+  getDarkMode,
+  setDarkMode
 };
