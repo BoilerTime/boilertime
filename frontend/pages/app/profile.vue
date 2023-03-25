@@ -1,6 +1,6 @@
 <template>
   <NavBar />
-  <div class="h-screen p-16 bg-gray-200">
+  <div class="h-screen overflow-scroll p-16 bg-gray-200">
     <!--Transition Container-->
     <TransitionRoot
       :show="isModalVisible"

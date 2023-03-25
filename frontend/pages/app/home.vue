@@ -1,7 +1,9 @@
 <template>
   <main>
     <NavBar />
-    <Search />
+    <div class="dark:bg-neutral-600 h-screen overflow-scroll">
+    </div>
+    <!-- <Search /> -->
   </main>
 </template>
   

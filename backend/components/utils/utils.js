@@ -288,6 +288,11 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
+async function getDarkMode(user_id) {
+  const darkMode = await users.doc(user_id).dark_mode.get();
+  return darkMode;
+}
+
 module.exports = {
   getUID,
   findExistingUsers,
@@ -306,5 +311,6 @@ module.exports = {
   sortClassrooms,
   getBuildingName,
   generateBuildings,
-  getUserEmail
+  getUserEmail,
+  getDarkMode
 };

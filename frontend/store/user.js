@@ -21,6 +21,7 @@ export const useUserStore = defineStore("user", {
     accessToken() {
         return this.user.accessToken;
     },
+    
   },
   actions: {
     /**
