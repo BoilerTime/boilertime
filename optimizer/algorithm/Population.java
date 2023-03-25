@@ -2,7 +2,6 @@ package optimizer.algorithm;
 
 import java.util.*;
 import optimizer.Utils;
-import java.time.
 
 public class Population {
 
@@ -56,7 +55,8 @@ public class Population {
         }
 
         if(singleCount.size() > 0) {
-            this.isSatisfiable = this.findBadSchedule(singleCount);
+            this.isSatisfiable = this.calculateTimeConflicts(new Schedule(singleCount.toArray(new Section[singleCount.size()]))) == 0;
+            System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;
         }
@@ -184,8 +184,7 @@ public class Population {
             int fitnessScore = 0;
             fitnessScore += x[i].getInvalidCount()*10000;
             fitnessScore += x[i].getInvalidCount()*1000;
-            fitnessScore += calculateStartConflicts(x[i])*100;
-            fitnessScore += calculateDurationConflicts(x[i])*10;
+            fitnessScore += calculateTimeConflicts(x[i])*100;
             fitnessScore += calculateNameConflicts(x[i]);
             x[i].setFitnessScore(fitnessScore);
         }
@@ -193,7 +192,6 @@ public class Population {
 
     private int calculateStartConflicts(int[] times) {
         HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
-        ArrayList<Moment> mCount = new ArrayList<Moment>();
         for(int i = 0; i < times.length; i++) {
             //If the section contained is a null ptr, then just ignore it. 
             Integer time = Integer.valueOf(times[i]);
@@ -208,28 +206,18 @@ public class Population {
         return (Utils.findNumConflicts(count));
     }
 
-    private int calculateDurationConflicts(Schedule x) {
-        Section[] sections = x.getSections();
-        int[][] minStartEnd = new int[sections.length][2];
-        for(int i = 0; i < sections.length; i++) {
-            if(sections[i] == null) {
-                continue;
-            }
-            minStartEnd[i][0] = (60 * (sections[i].getTime()/100) + (sections[i].getTime() % 100));
-            minStartEnd[i][1] = minStartEnd[i][0] + sections[i].getDuration();
-        }
-
+    private int calculateDurationConflicts(int[][] timeDuration) {
         int total = 0; 
-        for(int i = 0; i < sections.length; i++) {
-            for(int j = 0; j < sections.length; j++) {
+        for(int i = 0; i < timeDuration[0].length; i++) {
+            for(int j = 0; j < timeDuration[0].length; j++) {
                 if(i != j) {
                     //If minStartEnd[j] ⊂ minStartEnd[i]
-                    if(minStartEnd[i][0] < minStartEnd[j][0] && minStartEnd[i][1] > minStartEnd[j][1]) {
+                    if(timeDuration[0][i] < timeDuration[0][i] && timeDuration[1][i] > timeDuration[1][j]) {
                         total++;
                     }
                     
                     //If there exists an intersection, but not a proper subset relationship between i and j
-                    if(minStartEnd[i][1] > minStartEnd[j][0] && minStartEnd[i][1] < minStartEnd[j][1]) {
+                    if(timeDuration[1][i] > timeDuration[0][j] && timeDuration[1][i] < timeDuration[1][j]) {
                         total++;
                     }
                 }
@@ -248,7 +236,7 @@ public class Population {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(this.hasWeekDay(sections[i].getWeekDays(), i)) {
+                if(this.hasWeekDay(sections[j].getWeekDays(), i)) {
                     dayCount++;
                 }
             }
@@ -259,13 +247,18 @@ public class Population {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(this.hasWeekDay(sections[i].getWeekDays(), i)) {
+                if(this.hasWeekDay(sections[j].getWeekDays(), i)) {
                     //dayCount++;
-                    dayTimeDuration[i][0][index] = sections[j].getTime();
-                    dayTimeDuration[i][1][index] = sections[j].getDuration();
+                    dayTimeDuration[i][0][index] = (60 * (sections[j].getTime()/100) + (sections[j].getTime() % 100));;
+                    dayTimeDuration[i][1][index] = dayTimeDuration[i][0][index] + sections[j].getDuration();
+                    index++;
                 }
             }
+            conflictCount += calculateStartConflicts(dayTimeDuration[i][0]);
+            //System.out.println(conflictCount);
+            conflictCount += calculateDurationConflicts(dayTimeDuration[i]);
         }
+        return conflictCount;
     }
 
     private int calculateNameConflicts(Schedule x) {
@@ -285,14 +278,6 @@ public class Population {
         }
         return Utils.findNumSConflicts(c);
     }
-
-    private boolean findBadSchedule(ArrayList<Section> courses) {
-        Schedule s = new Schedule(courses.toArray(new Section[courses.size()]));
-        if(calculateStartConflicts(s) > 0 || calculateDurationConflicts(s) > 0) {
-            return false;
-        }
-        return true; 
-    } 
 
     private boolean hasWeekDay(WeekDays[] days, int i) {
         WeekDays target = WeekDays.values()[i];
