@@ -1,6 +1,5 @@
 package optimizer.network;
 import java.io.*;
-import optimizer.Utils;
 
 public class NetworkHandler {
     private InputStream rawIn;
