@@ -156,6 +156,8 @@
           <li>How strict are the prerequisite requirements: {{ course.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ course.rating[1] }}</li>
           <li>How in-depth is the material: {{ course.rating[2] }}</li>
+          <li>Your Review: </li>
+          <!--<li>{{ course.written }}</li>-->
           <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(course.course, course.rating[0], course.rating[1], course.rating[2], 'course', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deletecourses(course.course)">Delete</a>
             <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
@@ -167,6 +169,8 @@
           <li>How strict are the prerequisite requirements: {{ classroom.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ classroom.rating[1] }}</li>
           <li>How in-depth is the material: {{ classroom.rating[2] }}</li>
+          <li>Your Review: </li>
+          <!--<li>{{ classroom.written }}</li>-->
           <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(classroom.classroom, classroom.rating[0], classroom.rating[1], classroom.rating[2], 'classroom', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteclassrooms(classroom.classroom)">Delete</a>
             <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
@@ -178,13 +182,15 @@
           <li>How strict are the prerequisite requirements: {{ ta.rating[0] }}</li>
           <li>How is the pace of the materials covered: {{ ta.rating[1] }}</li>
           <li>How in-depth is the material: {{ ta.rating[2] }}</li>
+          <li>Your Review:</li>
+          <!--<li>{{ ta.written }}</li>-->
           <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], 'ta')">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteta(ta.ta)">Delete</a>
             <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
         </ul>
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
         </ul>
-        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3" :type="editType" :id="user_id"/>
+        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3" :written="editWritten" :type="editType" :id="user_id"/>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
@@ -315,13 +321,15 @@ var editTitle = ref("")
 var editQ1 = ref("")
 var editQ2 = ref("")
 var editQ3 = ref("")
+var editWritten = ref("")
 var editType = ref("")
 
-async function edit(title, q1, q2, q3, type) {
+async function edit(title, q1, q2, q3,/* written,*/ type) {
   editTitle.value = title
   editQ1.value = q1
   editQ2.value = q2
   editQ3.value = q3
+  editWritten.value = written
   editType.value = type
   openModal()
 }

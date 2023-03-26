@@ -417,8 +417,8 @@ app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => 
     const prequisiteStrictness = req.body.prequisite_strictness;
     const pace = req.body.pace;
     const depth = req.body.depth;
-    //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+    const explanation = req.body.explanation;
+    result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation);
     if (!result) {
       //console.log('here sending bad status');
       res.sendStatus(409);
@@ -453,8 +453,9 @@ app.post('/api/edit/ratings/courses', jwt.authenticateToken, async (req, res) =>
     const prequisiteStrictness = req.body.prequisite_strictness;
     const pace = req.body.pace;
     const depth = req.body.depth;
+    const explanation = req.body.explanation;
     //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth).then(() => {
+    await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -528,7 +529,8 @@ app.post('/api/add/ratings/classrooms', jwt.authenticateToken, async (req, res) 
     const access_conv = req.body.access_conv;
     const seating_quality = req.body.seating_quality;
     const technology_avail = req.body.technology_avail;
-    result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
+    const explanation = req.body.explanation;
+    result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation);
     if (result) {
       await utils.addRatingsCount();
       res.json({accessToken: req.user.accessToken });
@@ -560,7 +562,8 @@ app.post('/api/edit/ratings/classrooms', jwt.authenticateToken, async (req, res)
     const access_conv = req.body.access_conv;
     const seating_quality = req.body.seating_quality;
     const technology_avail = req.body.technology_avail;
-    await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail).then(() => {
+    const explanation = req.body.explanation;
+    await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation).then(() => {
       res.json({accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -645,7 +648,8 @@ app.post('/api/add/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const gradingFairness = req.body.grading_fairness;
     const questionAnswering = req.body.question_answering;
     const responsiveness = req.body.responsiveness;
-    result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness);
+    const explanation = req.body.explanation;
+    result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation);
     if (result) {
       await utils.addRatingsCount();
       res.json({ accessToken: req.user.accessToken });
@@ -678,7 +682,8 @@ app.post('/api/edit/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const gradingFairness = req.body.grading_fairness;
     const questionAnswering = req.body.question_answering;
     const responsiveness = req.body.responsiveness;
-    await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness).then(() => {
+    const explanation = req.body.explanation;
+    await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
