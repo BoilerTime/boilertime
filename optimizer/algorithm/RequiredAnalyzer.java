@@ -181,7 +181,4 @@ public class RequiredAnalyzer {
     public ArrayList<Integer> getRequiredScores() {
         return this.requiredScores;
     }
-
-
-
 }

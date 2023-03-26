@@ -116,9 +116,12 @@ public class Population {
 
             for(int j = 0; j < gene1[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, s1.getFitnessScore() + s2.getFitnessScore()) % 2 == 0) {
-                    //gene1[i][j] = !gene1[i][j];
-                    //gene2[i][j] = !gene2[i][j];
+                if(Utils.randInRange(r, 0, s1.getFitnessScore() + s2.getFitnessScore()) > 100) {
+                    if(s1.getFitnessScore() > s2.getFitnessScore()) {
+                        gene2[i][j] = !gene2[i][j];
+                    } else {
+                        gene1[i][j] = !gene1[i][j];
+                    }
                 } 
             }
         }
@@ -177,7 +180,7 @@ public class Population {
 
             for(int j = 0; j < parent[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, i*j) % 2 == 0) {
+                if(Utils.randInRange(r, 0, i*j+(target.getFitnessScore())) % 2 == 0) {
                     //System.out.println("Mutating!");
                     mutated[i][j] = !parent[i][j];
                 } else {
