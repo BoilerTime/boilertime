@@ -38,25 +38,31 @@ async function createGroup(user_id, group_name) {
 
 async function duplicateGroups(user_id, group_id) {
   const profile = await profiles.doc(user_id).get();
-  doc = profile.data();
+  const doc = profile.data();
   return doc.groups != undefined && doc.groups.includes(group_id);
 }
 
 
 async function getGroups(user_id) {
   const profile = await profiles.doc(user_id).get();
-  doc = profile.data();
+  const doc = profile.data();
   if (doc.groups == undefined) {
     return [];
   } else {
     const myGroups = [];
-    for (var i = 0; i < doc.groups.length; i++) {
-      const group = await groups.doc(doc.groups[i]).get();
+    doc.groups.forEach(async function (group_id) {
+      const group = await groups.doc(group_id).get();
       const data = group.data()
-      myGroups.push({...data, "group_id": group.id});
-    }
+      myGroups.push({ ...data, "group_id": group.id });
+    });
     return myGroups;
   }
+}
+
+async function getGroup(group_id) {
+  const group = await groups.doc(group_id).get();
+  const data = group.data()
+  return { ...data, "group_id": group.id };
 }
 
 async function joinGroup(user_id, group_id) {
@@ -81,4 +87,4 @@ async function joinGroup(user_id, group_id) {
   }
 }
 
-module.exports = { createGroup, joinGroup, getGroups }
+module.exports = { createGroup, joinGroup, getGroups, getGroup }

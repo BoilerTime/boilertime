@@ -37,10 +37,10 @@ public class Population {
             registerdCourses[i] = new Course(c[i]);
             if(c[i].getNumberOfSections() == 1) {
                 //singleCount++;
-                int time = c[i].getCourseDurations()[0];
+                int time = c[i].getCourseTimes()[0];
                 if(singleCount.containsKey(Integer.valueOf(time))) {
                     int currentCount = singleCount.get(Integer.valueOf(time));
-                    //System.out.println("Count is: " + currentCount);
+                    System.out.println("Count is: " + currentCount + " for time  " + time);
                     singleCount.put(Integer.valueOf(time), Integer.valueOf(currentCount+1));
                     //System.out.println(singleCount.get(Integer.valueOf(time)).intValue());
                 } else {
@@ -48,7 +48,7 @@ public class Population {
                 }
             }
         }
-
+        System.out.println("Conflicts = " + Utils.findNumConflicts(singleCount));
         if(Utils.findNumConflicts(singleCount) > 0) {
             this.isSatisfiable = false;
             return;

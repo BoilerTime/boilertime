@@ -126,7 +126,7 @@ function getStudentClass(grad_year, grad_month) {
 async function addBookmark(user_id, class_name) {
   const profile = users.doc(user_id)
   const union = await profile.update({
-    bookmarks: FieldValue.arrayUnion(class_name)
+    bookmarks: class_name
   })
   const bookmarks = await getBookmarks(user_id).then((bookmarks) => {
     return (bookmarks)
@@ -141,7 +141,7 @@ async function addBookmark(user_id, class_name) {
 async function reomveBookmark(user_id, class_name) {
   const profile = users.doc(user_id)
   const union = await profile.update({
-    bookmarks: FieldValue.arrayRemove(class_name)
+    bookmarks: class_name
   })
   const bookmarks = await getBookmarks(user_id).then((bookmarks) => {
     return (bookmarks)
