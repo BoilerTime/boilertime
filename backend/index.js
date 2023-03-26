@@ -77,7 +77,6 @@ app.post('/api/auth/user', jwt.authenticateToken, (req, res) => {
  * @param {boolean} isGradStudent - whether user is a graduate student or not
  */
 app.post('/api/update/profile', jwt.authenticateToken, async (req, res) => {
-  console.log('UPDATING PROFILE\n\n\n');
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
@@ -806,7 +805,7 @@ app.post('/api/guest', async (req, res) => {
     console.log(user);
     res.json(user);
   }).catch(err => {
-    console.log("HERE IN ERROR");
+    console.log("error");
     console.error(err)
     res.sendStatus(401);
   });
@@ -938,9 +937,17 @@ app.post('/api/building', async (req, res) => {
  */
 
 app.post('/api/get/darkmode', jwt.authenticateToken, async (req, res) => {
-  const user_id = req.body.user_id;
-  darkMode = await utils.getDarkMode(user_id);
-  res.json({ dark_mode: darkMode });
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    darkMode = await utils.getDarkMode(user_id);
+    res.json({ dark_mode: darkMode });
+  }
 });
 
 /*
@@ -948,11 +955,20 @@ app.post('/api/get/darkmode', jwt.authenticateToken, async (req, res) => {
  * @param {string} user_id - The user_id associated with the current session
  * @param {string} dark_mode - The dark mode boolean true or false
  */
-app.post('/api/set/darkmode', async (req, res) => {
-  const user_id = req.body.user_id;
-  const darkMode = req.body.dark_mode;
-  await utils.setDarkMode(user_id, darkMode);
-  res.sendStatus(200);
+app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const darkMode = req.body.dark_mode;
+    await utils.setDarkMode(user_id, darkMode);
+    console.log('Changed Darkmode to ' + darkMode);
+    res.sendStatus(200);
+  }
 });
 
 module.exports = app;

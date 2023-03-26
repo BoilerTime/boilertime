@@ -295,7 +295,11 @@ async function getDarkMode(user_id) {
 
 async function setDarkMode(user_id, darkMode) {
   const profile = await users.doc(user_id).get();
-  profile.ref.update({ dark_mode: darkMode });
+  await profile.ref.update({ dark_mode: darkMode }).catch((error) => {
+    console.error(error);
+    throw error;
+  })
+
 }
 
 module.exports = {
