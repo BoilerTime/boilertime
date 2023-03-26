@@ -10,8 +10,10 @@ public class Population {
     private final int scheduleSize;
     private final int generationSize = 50;
     private final int maxIterations = 1000;
+    private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
+    private RequiredAnalyzer required;
     Random r;
 
     public Population(CourseOverview[] registeredC) {
@@ -20,6 +22,7 @@ public class Population {
         this.scheduleSize = registeredC.length;
         r = new Random();
         this.generateCourseStruct(registeredC);
+        this.required = new RequiredAnalyzer(true);
     }
 
 
@@ -30,11 +33,15 @@ public class Population {
     private void generateCourseStruct(CourseOverview[] c) {
         //How long is each course ID suppossed to be?
         int totalSections = 0;
+        this.numRequired= 0;
         //int singleCount = 0;
         //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
         ArrayList<Section> singleCount = new ArrayList<Section>();
         for(int i = 0; i < c.length; i++) {
             totalSections += c[i].getNumberOfSections();
+            if(c[i].isRequired()) {
+                numRequired ++;
+            }
             registerdCourses[i] = new Course(c[i]);
         }
         
@@ -55,7 +62,7 @@ public class Population {
         }
 
         if(singleCount.size() > 0) {
-            this.isSatisfiable = this.calculateTimeConflicts(new Schedule(singleCount.toArray(new Section[singleCount.size()]))) == 0;
+            this.isSatisfiable = RequiredAnalyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Section[singleCount.size()]))) == 0;
             System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;
@@ -133,11 +140,12 @@ public class Population {
             fitPool[i] = generateSeed();
         }
         //Calculate the fitness score of said starting population. 
-        calculateFitnessScores(fitPool);
+        RequiredAnalyzer.calculateFitnessScores(fitPool, true, numRequired);
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(bestFitnessScore > 0 && iterationCount < this.maxIterations) {
+            System.out.println("UwU");
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             
@@ -163,130 +171,37 @@ public class Population {
             }
             
             //Now that we're done forming the generation, it's time to determine its fitness scores
-            this.calculateFitnessScores(thisGen);
+            RequiredAnalyzer.calculateFitnessScores(thisGen, true, numRequired);
 
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
-
+            System.out.println("Tangent Score: " + required.addScore(thisGen[0]));
             //Now, perform a roulette-wheel integration into the overall fitness pool
             Utils.mergeInto(thisGen, fitPool, r);
-
-            bestFitnessScore = fitPool[0].getFitnessScore();
+            bestFitnessScore = fitPool[0].getRequiredScore();
+            System.out.println("Best = " + bestFitnessScore);
+            System.out.println("Recorded best = " + fitPool[0].getRequiredScore() + " " + fitPool[0].getFitnessScore());
+            for(int k = 0; k < fitPool[0].getSections().length; k++) {
+                if(fitPool[0].getSections()[k] != null) {
+                    System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore());
+                } else {
+                    System.out.println("NULL!");
+                }
+            }
+            //System.out.println("Record best is = " + Arrays.toString(fitPool[0].getSections()));
             iterationCount++;
         }
-
+        System.out.println("\n\n===================");
+        System.out.println("Found Optimal Solution After " + iterationCount + " Generations");
+        System.out.println("Courses:");
+        for(int k = 0; k < fitPool[0].getSections().length; k++) {
+            if(fitPool[0].getSections()[k] != null) {
+                System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + Arrays.toString(fitPool[0].getSections()[k].getWeekDays()));
+            } else {
+                System.out.println("NULL!");
+            }
+        }
+        System.out.println("===================\n\n");
         return fitPool[0];
     }
-
-    private void calculateFitnessScores(Schedule[] x) {
-        for(int i = 0; i < x.length; i++) {
-            //x[i].setFitnessScore(x[i].getInvalidCount());
-            int fitnessScore = 0;
-            fitnessScore += x[i].getInvalidCount()*10000;
-            fitnessScore += x[i].getInvalidCount()*1000;
-            fitnessScore += calculateTimeConflicts(x[i])*100;
-            fitnessScore += calculateNameConflicts(x[i]);
-            x[i].setFitnessScore(fitnessScore);
-        }
-    }
-
-    private int calculateStartConflicts(int[] times) {
-        HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
-        for(int i = 0; i < times.length; i++) {
-            //If the section contained is a null ptr, then just ignore it. 
-            Integer time = Integer.valueOf(times[i]);
-            if(count.containsKey(time)) {
-                Integer temp = count.get(time);
-                temp = Integer.valueOf(temp.intValue() + 1);
-                count.put(time, temp);
-            } else {
-                count.put(time, Integer.valueOf(1));
-            }
-        }
-        return (Utils.findNumConflicts(count));
-    }
-
-    private int calculateDurationConflicts(int[][] timeDuration) {
-        int total = 0; 
-        for(int i = 0; i < timeDuration[0].length; i++) {
-            for(int j = 0; j < timeDuration[0].length; j++) {
-                if(i != j) {
-                    //If minStartEnd[j] ⊂ minStartEnd[i]
-                    if(timeDuration[0][i] < timeDuration[0][i] && timeDuration[1][i] > timeDuration[1][j]) {
-                        total++;
-                    }
-                    
-                    //If there exists an intersection, but not a proper subset relationship between i and j
-                    if(timeDuration[1][i] > timeDuration[0][j] && timeDuration[1][i] < timeDuration[1][j]) {
-                        total++;
-                    }
-                }
-            }
-        }
-        return total;
-    }
-
-    private int calculateTimeConflicts(Schedule x) {
-        Section[] sections = x.getSections();
-        int[][][] dayTimeDuration = new int[7][][];
-        int conflictCount = 0;
-        for(int i = 0; i < dayTimeDuration.length; i++) {
-            int dayCount = 0; 
-            for(int j = 0; j < sections.length; j++) {
-                if(sections[j] == null) {
-                    continue;
-                }
-                if(this.hasWeekDay(sections[j].getWeekDays(), i)) {
-                    dayCount++;
-                }
-            }
-            dayTimeDuration[i] = new int[2][dayCount];
-
-            int index = 0;
-            for(int j = 0; j < sections.length; j++) {
-                if(sections[j] == null) {
-                    continue;
-                }
-                if(this.hasWeekDay(sections[j].getWeekDays(), i)) {
-                    //dayCount++;
-                    dayTimeDuration[i][0][index] = (60 * (sections[j].getTime()/100) + (sections[j].getTime() % 100));;
-                    dayTimeDuration[i][1][index] = dayTimeDuration[i][0][index] + sections[j].getDuration();
-                    index++;
-                }
-            }
-            conflictCount += calculateStartConflicts(dayTimeDuration[i][0]);
-            //System.out.println(conflictCount);
-            conflictCount += calculateDurationConflicts(dayTimeDuration[i]);
-        }
-        return conflictCount;
-    }
-
-    private int calculateNameConflicts(Schedule x) {
-        HashMap<String, Integer> c = new HashMap<String, Integer>();
-        Section[] s = x.getSections();
-        for(int i = 0; i < s.length; i++) {
-            if(s[i] == null) {
-                continue;
-            }
-            String temp = s[i].getParent().getCourseName();
-            if(c.containsKey(temp)) {
-                Integer count = c.get(temp);
-                c.put(temp, Integer.valueOf(count.intValue() + 1));
-            } else {
-                c.put(temp, Integer.valueOf(1));
-            }
-        }
-        return Utils.findNumSConflicts(c);
-    }
-
-    private boolean hasWeekDay(WeekDays[] days, int i) {
-        WeekDays target = WeekDays.values()[i];
-        for(int j = 0; j < days.length; j++) {
-            if(days[j] == target) {
-                return true;
-            }
-        }
-        return false; 
-    }
-
 }
