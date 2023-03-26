@@ -354,7 +354,7 @@ public class Utils {
         }
 
         for(int i = merge.length; i < target.length; i++) {
-            if(Utils.randInRange(r, 0, i) % 2 == 0) {
+            if(Utils.randInRange(r, 0, i*i) % 2 == 0) {
                 target[i] = temp[i/2];
             }
         }

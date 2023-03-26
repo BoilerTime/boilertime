@@ -1,6 +1,7 @@
 package optimizer.algorithm;
 
 import java.util.*;
+import java.io.*;
 import optimizer.Utils;
 
 public class Population {
@@ -9,7 +10,8 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
-    private final int maxIterations = 1000;
+    private final int maxIterations = 10000;
+    private final int maxScheduleSize = 5;
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
@@ -19,7 +21,7 @@ public class Population {
     public Population(CourseOverview[] registeredC) {
         this.registerdCourses = new Course[registeredC.length];
         this.idSection = new HashMap<String, Section>();
-        this.scheduleSize = registeredC.length;
+        this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random();
         this.generateCourseStruct(registeredC);
         this.required = new RequiredAnalyzer(true);
@@ -69,6 +71,13 @@ public class Population {
         }
     }
 
+    private int calculateScheduleSize(int size) {
+        if(size < this.maxScheduleSize) {
+            return size;
+        }
+        return this.maxScheduleSize;
+    }
+
     /**
      * A protected seed generator that generates a seed with only courses that exist
      * @return A schedule that contains sections that exist, but could contain duplicates or other issues. 
@@ -107,26 +116,78 @@ public class Population {
 
             for(int j = 0; j < gene1[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, i*j) % 2 == 0) {
-                    gene1[i][j] = !gene1[i][j];
-                    gene2[i][j] = !gene2[i][j];
+                if(Utils.randInRange(r, 0, s1.getFitnessScore() + s2.getFitnessScore()) % 2 == 0) {
+                    //gene1[i][j] = !gene1[i][j];
+                    //gene2[i][j] = !gene2[i][j];
                 } 
             }
         }
 
-        //Make the child be randomly selecting genes from each of the two parents
+        //Generate cross-over intervals inspired by the fitness scores of the two 
+        int betterSectionPtr;
+        int upperBound;
+        RequiredAnalyzer.calculateIndividualRequiredScore(s1, true, this.scheduleSize);
+        RequiredAnalyzer.calculateIndividualRequiredScore(s2, true, this.scheduleSize);
+        if(s1.getFitnessScore() > s2.getFitnessScore()) {
+            betterSectionPtr = 1;//s2.getFitnessScore();
+            upperBound = s2.getFitnessScore();
+        } else if(s1.getFitnessScore() < s2.getFitnessScore()) {
+            betterSectionPtr = 0;//s1.getFitnessScore();
+            upperBound = s2.getFitnessScore();
+        } else {
+            betterSectionPtr = Utils.randInRange(r, 0, 1);
+            upperBound = s1.getFitnessScore();
+        }
+        //int upperBound = Math.max(s1.getFitnessScore(), s2.getFitnessScore());
+        int swapClass = Math.max(1, upperBound % (gene1.length-1));
+
+        //Perform the swaps that favor the better individual but still allow the worse individual to have some influence
         for(int i = 0; i < gener.length; i++) {
-            int crossGene = Utils.randInRange(r, 0, 1);
-            if(crossGene == 0) {
-                gener[i] = gene1[i];
+            if(i == swapClass) {
+                if(betterSectionPtr == 0) {
+                    gener[i] = gene1[i];
+                } else {
+                    gener[i] = gene2[i];
+                }
             } else {
-                gener[i] = gene2[i];
+                if(betterSectionPtr == 0) {
+                    gener[i] = gene2[i];
+                } else {
+                    gener[i] = gene1[i];
+                }
             }
         }
 
         //Now, we must make a new Section
         return new Schedule(idSection, gener);
     }
+
+    private Schedule mutateSchedule(Schedule target) {
+        boolean[][] parent = new boolean[target.getSections().length][this.sectionLen];
+        boolean[][] mutated = new boolean[parent.length][this.sectionLen];
+        RequiredAnalyzer.calculateIndividualRequiredScore(target, true, scheduleSize);
+        //Decompose the schedules into boolean genes of each of their constituent sections
+        for(int i = 0; i < parent.length; i++) {
+            
+            if(target.getSections()[i] == null) {
+                parent[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            } else {
+                parent[i] = Utils.stringToBoolArray(target.getSections()[i].getID());
+            } 
+
+            for(int j = 0; j < parent[i].length; j++) {
+                //Under certain conditions, flip some bits before crossing over
+                if(Utils.randInRange(r, 0, i*j) % 2 == 0) {
+                    //System.out.println("Mutating!");
+                    mutated[i][j] = !parent[i][j];
+                } else {
+                    mutated[i][j] = parent[i][j];
+                }
+            }
+        }
+        return new Schedule(idSection, mutated);
+    }
+
 
     public Schedule getBestSchedule() {
         if(!this.isSatisfiable) {
@@ -145,7 +206,7 @@ public class Population {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(bestFitnessScore > 0 && iterationCount < this.maxIterations) {
-            System.out.println("UwU");
+            System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             
@@ -168,6 +229,16 @@ public class Population {
                     rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
                 }
                 thisGen[i] = this.crossOver(fitPool[rand1], fitPool[rand2]);
+            }
+
+            if(iterationCount >2) {
+                int tangent = required.calculateTangent(iterationCount -2, iterationCount - 1);
+                System.out.println("Tangent from previous two = " + tangent);
+                if(Math.abs(tangent) == 0 || Math.abs(tangent) > 1000) {
+                    for(int i = 0; i < thisGen.length; i++) {
+                        thisGen[i] = this.mutateSchedule(thisGen[i]);
+                    }
+                }
             }
             
             //Now that we're done forming the generation, it's time to determine its fitness scores
@@ -201,7 +272,25 @@ public class Population {
                 System.out.println("NULL!");
             }
         }
+
+        System.out.println(required.getRequiredScores().toString());
         System.out.println("===================\n\n");
+
+
+
+        FileWriter out;
+        //Print the scores out to a file
+        try {
+            out = new FileWriter("/Users/henrymayer-school/btime/output.txt");
+            Integer[] res = required.getRequiredScores().toArray(new Integer[required.getRequiredScores().size()]);
+            for(int i = 0; i < res.length; i++) {
+                out.write(res[i].intValue() + "\n");
+            }
+            out.close();
+
+        } catch (IOException e) {
+
+        }
         return fitPool[0];
     }
 }

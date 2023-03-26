@@ -1,6 +1,7 @@
 package optimizer.algorithm;
 import optimizer.Utils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -127,11 +128,24 @@ public class RequiredAnalyzer {
             fitnessScore += calculateNameConflicts(x[i]) * 1000;
             fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * 10000;
             //results[i] = fitnessScore;
-            System.out.println("Fitness Score = " + fitnessScore);
+            //System.out.println("Fitness Score = " + fitnessScore);
             x[i].setRequiredScore(fitnessScore);
             x[i].setOptionalScore(0);
         }
         return results;
+    }
+
+    public static int calculateIndividualRequiredScore(Schedule x, boolean mode, int requiredCount) {
+        int fitnessScore = 0;
+        fitnessScore += x.getInvalidCount() * 10;
+        fitnessScore += calculateTimeConflicts(x) * 100;
+        fitnessScore += calculateNameConflicts(x) * 1000;
+        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * 10000;
+        //results[i] = fitnessScore;
+        //System.out.println("Fitness Score = " + fitnessScore);
+        x.setRequiredScore(fitnessScore);
+        x.setOptionalScore(0);
+        return fitnessScore;
     }
 
     private static int calculateRequiredSatisifability(Schedule target, int num) {
@@ -162,6 +176,10 @@ public class RequiredAnalyzer {
 
     public int calculateTangent(int pt1, int pt2) {
         return requiredScores.get(pt1) - requiredScores.get(pt2);
+    }
+
+    public ArrayList<Integer> getRequiredScores() {
+        return this.requiredScores;
     }
 
 

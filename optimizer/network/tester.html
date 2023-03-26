@@ -6,7 +6,7 @@
             socket.onopen = function(e) {
                 alert("[open] Connection established");
                 //alert("Sending to server");
-                socket.send("3");
+                socket.send("6");
 
                 socket.send("CS180")
                 socket.send("True")
@@ -38,7 +38,7 @@
 
                 socket.send("MA265")
                 socket.send("True")
-                socket.send("5")
+                socket.send("6")
 
                 socket.send("1400")
                 socket.send("50")
@@ -66,6 +66,43 @@
                 socket.send("1200")
                 socket.send("40")
                 socket.send("Monday,Wednesday,Friday")
+
+                socket.send("CS307")
+                socket.send("True")
+                socket.send("1")
+
+                socket.send("1800")
+                socket.send("50")
+                socket.send("Monday,Wednesday,Friday")
+
+                socket.send("CS381")
+                socket.send("True")
+                socket.send("2")
+                socket.send("0900")
+                socket.send("50")
+                socket.send("Monday,Wednesday,Friday")
+                socket.send("1100")
+                socket.send("50")
+                socket.send("Tuesday,Thursday")
+
+
+                socket.send("SCLA101")
+                socket.send("True")
+                socket.send("4")
+                socket.send("0900")
+                socket.send("50")
+                socket.send("Monday,Wednesday,Friday")
+                socket.send("1100")
+                socket.send("50")
+                socket.send("Tuesday,Thursday")
+                socket.send("2200")
+                socket.send("50")
+                socket.send("Tuesday,Thursday")
+                socket.send("0800")
+                socket.send("50")
+                socket.send("Monday,Wednesday")
+
+
 
             };
 
