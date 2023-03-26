@@ -1,7 +1,6 @@
 package optimizer.algorithm;
 import optimizer.Utils;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,12 +8,12 @@ public class RequiredAnalyzer {
 
     private ArrayList<Integer> requiredScores;
     private ArrayList<Integer> deltaRequiredScores;
-    private final boolean mode;
+    private final boolean optimizationMode;
 
     public RequiredAnalyzer(boolean m) {
         this.requiredScores = new ArrayList<Integer>();
         this.deltaRequiredScores = new ArrayList<Integer>();
-        this.mode = m;
+        this.optimizationMode = m;
     }
 
 
@@ -144,7 +143,7 @@ public class RequiredAnalyzer {
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
-        x.setOptionalScore(0);
+        //x.setOptionalScore(0);
         return fitnessScore;
     }
 

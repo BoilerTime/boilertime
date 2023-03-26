@@ -3,6 +3,7 @@ package optimizer.algorithm;
 import java.util.*;
 import java.io.*;
 import optimizer.Utils;
+import optimizer.network.NetworkHandler;
 
 public class Population {
 
@@ -12,19 +13,23 @@ public class Population {
     private final int generationSize = 50;
     private final int maxIterations = 10000;
     private final int maxScheduleSize = 5;
+    private final NetworkHandler net;
+    private final TimeOfDay timePreference;
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private RequiredAnalyzer required;
     Random r;
 
-    public Population(CourseOverview[] registeredC) {
+    public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference) {
         this.registerdCourses = new Course[registeredC.length];
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random();
         this.generateCourseStruct(registeredC);
         this.required = new RequiredAnalyzer(true);
+        this.net = network;
+        this.timePreference = timePreference;
     }
 
 
@@ -180,7 +185,7 @@ public class Population {
 
             for(int j = 0; j < parent[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, i*j+(target.getFitnessScore())) % 2 == 0) {
+                if(Utils.randInRange(r, 0, i*j+(1+target.getFitnessScore())) % 2 == 0) {
                     //System.out.println("Mutating!");
                     mutated[i][j] = !parent[i][j];
                 } else {

@@ -56,7 +56,7 @@ public class ScheduleClient implements Runnable  {
         
         if(numberOfClasses > 0 && numberOfClasses < 11) {
             //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
-            network.sendMessage("{\"status\":200,\"message\":\"Received\",\"data\":null}");
+            network.sendMessage("{\"status\":200,\"message\":\"Received Number of Classes\",\"data\":null}");
         } else {
             //System.err.println("Illegal number of classes sent!");
             network.sendMessage("{\"status\":400,\"message\":\"Illegal\",\"data\":null}");
@@ -65,6 +65,28 @@ public class ScheduleClient implements Runnable  {
         }
             //System.out.println("Wrote the initial message!");
         return numberOfClasses;
+    }
+
+    private TimeOfDay getTODPrefernece(NetworkHandler network) {
+        String rawTOD = network.getIncomingMessage();
+        TimeOfDay res = null;
+        while(res == null) { 
+            switch (rawTOD) {
+                case "Morning":
+                    res = TimeOfDay.MORNGING;
+                    network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
+                    break;
+                case "Afternoon":
+                    res = TimeOfDay.AFTERNOON;
+                    network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
+                    break;
+                default:
+                    //Do smth
+                    network.sendMessage("{\"status\":400,\"message\":\"Illegal Time of Day\",\"data\":null}");
+                    break;
+            }
+        }
+        return res; 
     }
 
     private CourseOverview getCourseInfo(NetworkHandler network) {
@@ -127,6 +149,7 @@ public class ScheduleClient implements Runnable  {
             System.out.println("Result is: " + numOfCourses);
         }
         courses = new CourseOverview[numOfCourses];
+        TimeOfDay timePrefernce = getTODPrefernece(network);
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
             /*
@@ -140,7 +163,7 @@ public class ScheduleClient implements Runnable  {
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
         //System.out.println("Result: " + numOfCourses);
-        Population resultPop = new Population(courses);
+        Population resultPop = new Population(courses, network, timePrefernce);
         Schedule resultsIndividual = resultPop.getBestSchedule();
         writeBestToOutput(resultPop, resultsIndividual, network);
     }
