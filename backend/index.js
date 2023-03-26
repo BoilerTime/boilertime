@@ -227,7 +227,7 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   }
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
-      await utils.addScheduleCount();
+      await utils.addSchedulesCount();
       res.send({...schedule, accessToken: req.user.accessToken});
     }).catch(err => {
       console.log(err)
@@ -348,7 +348,7 @@ app.post('/api/getbookmarks', jwt.authenticateToken, async (req, res) => {
 
 app.post('/api/verifyaccount', async (req, res) => {
   verifyaccount.verifyaccount(req.body.userID).then(async (user) => {
-    await utils.addUserCount();
+    await utils.addUsersCount();
     res.json(user);
   }).catch(err => {
     console.error(err);
@@ -425,6 +425,7 @@ app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => 
     }
     else {
       //console.log('here sending good status');
+      await utils.addRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }
   }
@@ -529,6 +530,7 @@ app.post('/api/add/ratings/classrooms', jwt.authenticateToken, async (req, res) 
     const technology_avail = req.body.technology_avail;
     result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
     if (result) {
+      await utils.addRatingsCount();
       res.json({accessToken: req.user.accessToken });
     }
     else {
@@ -645,6 +647,7 @@ app.post('/api/add/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const responsiveness = req.body.responsiveness;
     result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness);
     if (result) {
+      await utils.addRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }
     else {
@@ -934,54 +937,31 @@ app.post('/api/building', async (req, res) => {
   }
 });
 
-app.post('/api/get/num_users', jwt.authenticateToken, async (req, res) => {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (await jwt.checkGuest(token)) {
-    // if guest send 418
-    res.sendStatus(418);
-  }
-  else {
-    res.json({num_users: await utils.getNumUsers(), accessToken: req.user.accessToken });
-  }
+app.post('/api/get/num_users', async (req, res) => {
+  res.json({ num_users: await utils.getNumUsers() });
 });
 
-app.post('/api/get/num_schedules', jwt.authenticateToken, async (req, res) => {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (await jwt.checkGuest(token)) {
-    // if guest send 418
-    res.sendStatus(418);
-  }
-  else {
-    res.json({num_schedules: await utils.getNumSchedules(), accessToken: req.user.accessToken });
-  }
+app.post('/api/get/num_schedules', async (req, res) => {
+  res.json({ num_schedules: await utils.getNumSchedules() });
+});
+
+app.post('/api/get/num_ratings', async (req, res) => {
+  res.json({ num_ratings: await utils.getNumRatings() });
 });
 
 app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (await jwt.checkGuest(token)) {
-    // if guest send 418
-    res.sendStatus(418);
-  }
-  else {
-    await utils.addUserCount();
+    await utils.addUsersCount();
     res.sendStatus(200);
-  }
 });
 
 app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (await jwt.checkGuest(token)) {
-    // if guest send 418
-    res.sendStatus(418);
-  }
-  else {
-    await utils.addScheduleCount();
+    await utils.addSchedulesCount();
     res.sendStatus(200);
-  }
+});
+
+app.post('/api/add/ratings_count', jwt.authenticateToken, async (req, res) => {
+    await utils.addRatingsCount();
+    res.sendStatus(200);
 });
 
 

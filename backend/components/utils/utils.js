@@ -299,14 +299,24 @@ async function getNumSchedules() {
   return (num_schedules = doc.data().num_schedules);
 }
 
-async function addUserCount() {
+async function getNumRatings() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  return (num_ratings = doc.data().num_ratings);
+}
+
+async function addUsersCount() {
   const profile = await users.doc('user_count').get();
   profile.ref.update({ num_users: profile.data().num_users + 1});
 }
 
-async function addScheduleCount() {
+async function addSchedulesCount() {
   const doc = await schedules.doc('schedules_count').get();
   doc.ref.update({ num_schedules: doc.data().num_schedules + 1 });
+}
+
+async function addRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings + 1 });
 }
 
 module.exports = {
@@ -330,6 +340,8 @@ module.exports = {
   getUserEmail,
   getNumUsers,
   getNumSchedules,
-  addUserCount,
-  addScheduleCount
+  getNumRatings,
+  addUsersCount,
+  addSchedulesCount,
+  addRatingsCount
 };
