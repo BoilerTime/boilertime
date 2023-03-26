@@ -25,7 +25,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test bookmark", () => {
+describe("POST Test bookmark Sprint 2 User Story 1", () => {
   const add = {
     class_name: ["CS 18000"]
   }
