@@ -95,13 +95,13 @@ public class ScheduleClient implements Runnable  {
             int numOfTimes = Integer.parseInt(t);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
-            x.instantiateTimes(numOfTimes);
-            x.instantiateDurations(numOfTimes);
-            x.instantiateWeekDays(numOfTimes);
+            x.instantiateHelper(numOfTimes);
+
             for(int i = 0; i < numOfTimes; i++) {
                 x.addCourseTime(Integer.parseInt(network.getIncomingMessage()));
                 x.addDuration(Integer.parseInt(network.getIncomingMessage()));
                 x.addWeekDays(network.getIncomingMessage());
+                x.addRating(Double.parseDouble(network.getIncomingMessage()));
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
@@ -137,7 +137,7 @@ public class ScheduleClient implements Runnable  {
                 //terminate();
                 return;
             }
-            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()));
+            System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
         //System.out.println("Result: " + numOfCourses);
         Population resultPop = new Population(courses);

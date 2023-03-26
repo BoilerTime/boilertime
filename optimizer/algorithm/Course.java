@@ -37,7 +37,7 @@ public class Course {
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Utils.arrToString(id);
-            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required);
+            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i]);
             idSection.put(sid, sections[i]);
         }
         return sections;

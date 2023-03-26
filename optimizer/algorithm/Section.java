@@ -8,14 +8,16 @@ public class Section {
     private final String ID;
     private final WeekDays daysOfWeekDays[];
     private final boolean required; 
+    private final double rating;
 
-    public Section(Course p, int t, int d, String id, WeekDays[] days, boolean require) {
+    public Section(Course p, int t, int d, String id, WeekDays[] days, boolean require, double rating) {
         this.parentCourse = p;
         this.time = t;
         this.duration = d;
         this.ID = id;
         this.daysOfWeekDays = days; 
         this.required = require; 
+        this.rating = rating;
     } 
 
     public Course getParent() {
@@ -40,6 +42,10 @@ public class Section {
 
     public boolean isRequired() {
         return this.required;
+    }
+
+    public double getRating() {
+        return this.rating;
     }
 
 }
