@@ -153,13 +153,13 @@ try {
   console.log(err);
 }
 
-isLoggedIn = userStore.isLoggedIn
+isLoggedIn = userStore.isLoggedIn;
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
-    'authorization': `Bearer ${accessToken}`
-  }
-}
+    authorization: `Bearer ${accessToken}`,
+  },
+};
 
 async function verifyToken() {
   await userStore
@@ -170,13 +170,32 @@ async function verifyToken() {
 }
 
 async function getUserInfo() {
-  axios
-    .post("http://localhost:3001/api/get/profile/", {
-      user_id: userStore.user_id,
-    }, config)
+  await axios
+    .post(
+      "http://localhost:3001/api/get/profile/",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  await axios
+    .post(
+      "http://localhost:3001/api/get/darkmode/",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
+    .then((response) => {
+      userStore.user.dark_mode = response.data.dark_mode;
+      //console.log(userStore.user.dark_mode + "hello");
     })
     .catch((error) => {
       console.error(error);
@@ -185,6 +204,7 @@ async function getUserInfo() {
 
 async function setTheme(darkMode) {
   isDarkMode.value = darkMode;
+  userStore.user.dark_mode = darkMode;
   axios
     .post("http://localhost:3001/api/set/darkmode/", {
       user_id: userStore.user_id,
@@ -196,16 +216,16 @@ async function setTheme(darkMode) {
 }
 
 onMounted(() => {
-  getUserInfo();
+  getUserInfo().then(() => {
+    if (userStore.user.dark_mode == undefined) {
+      isDarkMode.value = $isDarkMode;
+      //console.log(isDarkMode.value);
+      //console.log("system");
+    } else {
+      isDarkMode.value = userStore.user.dark_mode;
+      //console.log(isDarkMode.value);
+    }
+  });
   verifyToken();
-  if (userStore.dark_mode == undefined) {
-    isDarkMode.value = $isDarkMode;
-    console.log(isDarkMode.value);
-    console.log("system")
-  } else {
-    isDarkMode.value = userStore.dark_mode;
-    console.log(isDarkMode.value);
-  }
-
 });
 </script>

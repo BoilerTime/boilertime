@@ -1,4 +1,5 @@
 <template>
+  <NavBar />
   <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
