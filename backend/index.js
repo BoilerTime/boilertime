@@ -707,7 +707,7 @@ app.post('/api/building', async (req, res) => {
  * @param {string} user_id - The user_id associated with the current session
  */
 
-app.post('/api/get/darkmode', async (req, res) => {
+app.post('/api/get/darkmode', jwt.authenticateToken, async (req, res) => {
   const user_id = req.body.user_id;
   darkMode = await utils.getDarkMode(user_id);
   res.json({ dark_mode: darkMode });
