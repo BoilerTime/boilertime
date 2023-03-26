@@ -14,7 +14,6 @@ var token = '';
 var numRatings = 0;
 var timestamp = Timestamp.now();
 var date = dayjs.unix(timestamp.seconds + timestamp.nanoseconds/1000000).$d;
-console.log("\n\n NEW DATE " + date.toDateString() + " \n\n\n");
 var courseRating = {
   "course": "CS30700",
   "prequisite_strictness": 2.1,
@@ -100,7 +99,6 @@ describe("POST Test Ratings", () => {
 
 
   it("API Call Add Course Rating", (done) => {
-    console.log(auth)
     chai.request(app)
       .post('/api/add/ratings/courses')
       .set({ "authorization": `Bearer ${token}` })
@@ -112,13 +110,11 @@ describe("POST Test Ratings", () => {
   });
 
   it("API Call to Get Number of Course Ratings", (done) => {
-    console.log(auth)
     chai.request(app)
       .post('/api/get/num_ratings')
       .end((err, res) => {
-        console.log('THIS IS NUM RATINGS ' + res.num_ratings);
         res.should.have.status(200);
-        numRatings = res.num_ratings 
+        numRatings = res.body.num_ratings; 
         done();
       })
   });
@@ -146,20 +142,17 @@ describe("POST Test Ratings", () => {
       });
   });
 
-  it("API Call to Get Number of Course Ratings After Deleting a Rating", async (done) => {
+  it("API Call to Get Number of Course Ratings After Deleting a Rating", (done) => {
     chai.request(app)
       .post('/api/get/num_ratings')
-      .end(async (err, res) => {
+      .end((err, res) => {
         res.should.have.status(200);
-        console.log("THIS IS NUM RATINGS " + res.body + ' <> ' + numRatings - 1);
-        await console.log(res.body);
-        await expect(res.num_ratings).deep.to.equal(numRatings - 1);
+        expect(res.body.num_ratings).to.equal(numRatings - 1);
         done();
       })
   });
 
   it("API Call Add Classroom Rating", (done) => {
-    console.log(auth)
     chai.request(app)
       .post('/api/add/ratings/classrooms')
       .set({ "authorization": `Bearer ${token}` })
@@ -194,7 +187,6 @@ describe("POST Test Ratings", () => {
   });
 
   it("API Call Add TA Rating", (done) => {
-    console.log(auth)
     chai.request(app)
       .post('/api/add/ratings/tas')
       .set({ "authorization": `Bearer ${token}` })
@@ -212,7 +204,6 @@ describe("POST Test Ratings", () => {
       .send({user_id: auth.user_id})
       .end((err, res) => {
         res.should.have.status(200);
-        console.log(res.body);
         expect(res.body).to.eql(expectedTARating);
         done();
       });
