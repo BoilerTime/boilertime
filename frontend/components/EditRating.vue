@@ -34,8 +34,8 @@
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
                   <label class="mb-1">Third rating: {{ q3 }}</label><br>
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
-                  <label class="mb-1">New Review: </label><br>
-                  <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="written_edit"></textarea>
+                  <label class="mb-1">Current Review: {{ expl }}</label><br>
+                  <textarea type="text" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="expl_edit"></textarea>
                 </form>
               </div>
 
@@ -63,7 +63,7 @@ import axios from 'axios'
 var q1_edit = ref('')
 var q2_edit = ref('')
 var q3_edit = ref('')
-var written_edit = ref('')
+var expl_edit = ref('')
 
 const props = defineProps({
   isOpen: {
@@ -90,10 +90,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  /*written: {
+  expl: {
     type: String,
     required: true,
-  },*/
+  },
   type: {
     type: String,
     required: true,
@@ -112,13 +112,14 @@ async function submit() {
     const prequisiteStrictness = q1_edit.value;
     const pace = q2_edit.value;
     const depth = q3_edit.value;
-    const written = written_edit.value;
+    const explanation  = expl_edit.value;
     const data = {
       user_id: user_id,
       course: course,
       prequisite_strictness: prequisiteStrictness,
       pace: pace,
       depth: depth,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.prequisite_strictness = props.q1
@@ -129,8 +130,8 @@ async function submit() {
     if (q3_edit.value == "") {
       data.depth = props.q3
     }
-    if (written_edit.value == "") {
-      data.written = props.written
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
     }
     setTimeout(async () => {
       console.log(data)
@@ -152,13 +153,14 @@ async function submit() {
     const access_conv = q1_edit.value;
     const seating_quality = q2_edit.value;
     const technology_avail = q3_edit.value;
-    const written = written_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       classroom: classroom,
       access_conv: access_conv,
       seating_quality: seating_quality,
       technology_avail: technology_avail,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.access_conv = props.q1
@@ -169,8 +171,8 @@ async function submit() {
     if (q3_edit.value == "") {
       data.technology_avail = props.q3
     }
-    if (written_edit.value == "") {
-      data.written = props.written
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
     }
     setTimeout(async () => {
       console.log(data)
@@ -192,13 +194,14 @@ async function submit() {
     const grading_fairness = q1_edit.value;
     const question_answering = q2_edit.value;
     const responsiveness = q3_edit.value;
-    const written = written_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       ta: ta,
       grading_fairness: grading_fairness,
       question_answering: question_answering,
       responsiveness: responsiveness,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.grading_fairness = props.q1
@@ -209,8 +212,8 @@ async function submit() {
     if (q3_edit.value == "") {
       data.responsiveness = props.q3
     }
-    if (written_edit.value == "") {
-      data.written = props.written
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
     }
     setTimeout(async () => {
       console.log(data)
