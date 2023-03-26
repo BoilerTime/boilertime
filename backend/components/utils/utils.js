@@ -319,6 +319,21 @@ async function addRatingsCount() {
   doc.ref.update({ num_ratings: doc.data().num_ratings + 1 });
 }
 
+async function decrementUsersCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users - 1});
+}
+
+async function decrementSchedulesCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules - 1 });
+}
+
+async function decrementRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings - 1 });
+}
+
 module.exports = {
   getUID,
   findExistingUsers,
@@ -343,5 +358,8 @@ module.exports = {
   getNumRatings,
   addUsersCount,
   addSchedulesCount,
-  addRatingsCount
+  addRatingsCount,
+  decrementUsersCount,
+  decrementSchedulesCount,
+  decrementRatingsCount
 };

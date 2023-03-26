@@ -480,7 +480,8 @@ app.post('/api/delete/ratings/courses',jwt.authenticateToken, async (req, res) =
     const course = req.body.course;
     const user_id = req.body.user_id;
     //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    await courseRatings.deleteUserRating(user_id, course).then(() => {
+    await courseRatings.deleteUserRating(user_id, course).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -587,7 +588,8 @@ app.post('/api/delete/ratings/classrooms', jwt.authenticateToken, async (req, re
   else {
     const user_id = req.body.user_id;
     const classroom = req.body.classroom;
-    await classroomRatings.deleteClassroomRating(user_id, classroom).then(() => {
+    await classroomRatings.deleteClassroomRating(user_id, classroom).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -707,7 +709,8 @@ app.post('/api/delete/ratings/tas', jwt.authenticateToken, async (req, res) => {
   else {
     const user_id = req.body.user_id;
     const ta = req.body.ta;
-    await taRatings.deleteUserRating(user_id, ta).then(() => {
+    await taRatings.deleteUserRating(user_id, ta).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
