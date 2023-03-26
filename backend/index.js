@@ -134,7 +134,7 @@ app.post('/api/login', (req, res) => {
     //console.log(user);
     //console.log(accessToken);
     console.log("Logged in: " + email)
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id });
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id, dark_mode: dark_mode });
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
