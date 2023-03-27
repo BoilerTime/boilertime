@@ -258,6 +258,7 @@ public class Population {
             //Now, perform a roulette-wheel integration into the overall fitness pool
             Utils.mergeInto(thisGen, fitPool, r);
             bestFitnessScore = fitPool[0].getRequiredScore();
+            Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
             System.out.println("Best = " + bestFitnessScore);
             System.out.println("Recorded best = " + fitPool[0].getRequiredScore() + " " + fitPool[0].getFitnessScore());
             for(int k = 0; k < fitPool[0].getSections().length; k++) {
