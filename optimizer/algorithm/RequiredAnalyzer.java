@@ -10,6 +10,12 @@ public class RequiredAnalyzer {
     private ArrayList<Integer> deltaRequiredScores;
     private final boolean optimizationMode;
 
+    //Implements the penalty scores found in the documentation for the algorithm. 
+    private static final int nullPenalty = 10000;
+    private static final int timeConflictPenalty = 1000;
+    private static final int nameConflictPenalty = 100;
+    private static final int unfulfilledRequirementPenalty = 10;
+
     public RequiredAnalyzer(boolean m) {
         this.requiredScores = new ArrayList<Integer>();
         this.deltaRequiredScores = new ArrayList<Integer>();
@@ -122,10 +128,10 @@ public class RequiredAnalyzer {
         for(int i = 0; i < x.length; i++) {
             //x[i].setFitnessScore(x[i].getInvalidCount());
             int fitnessScore = 0;
-            fitnessScore += x[i].getInvalidCount() * 10;
-            fitnessScore += calculateTimeConflicts(x[i]) * 100;
-            fitnessScore += calculateNameConflicts(x[i]) * 1000;
-            fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * 10000;
+            fitnessScore += x[i].getInvalidCount() * nullPenalty;
+            fitnessScore += calculateTimeConflicts(x[i]) * timeConflictPenalty;
+            fitnessScore += calculateNameConflicts(x[i]) * nameConflictPenalty;
+            fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * unfulfilledRequirementPenalty;
             //results[i] = fitnessScore;
             //System.out.println("Fitness Score = " + fitnessScore);
             x[i].setRequiredScore(fitnessScore);
@@ -136,10 +142,10 @@ public class RequiredAnalyzer {
 
     public static int calculateIndividualRequiredScore(Schedule x, boolean mode, int requiredCount) {
         int fitnessScore = 0;
-        fitnessScore += x.getInvalidCount() * 10;
-        fitnessScore += calculateTimeConflicts(x) * 100;
-        fitnessScore += calculateNameConflicts(x) * 1000;
-        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * 10000;
+        fitnessScore += x.getInvalidCount() * nullPenalty;
+        fitnessScore += calculateTimeConflicts(x) * timeConflictPenalty;
+        fitnessScore += calculateNameConflicts(x) * nameConflictPenalty;
+        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * unfulfilledRequirementPenalty;
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
