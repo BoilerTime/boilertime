@@ -11,8 +11,10 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
-    private final int maxIterations = 10000;
+    private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
+    private final int mutationRate = 3; 
+    private final int crossOverRate = 90;
     private final NetworkHandler net;
     private final TimeOfDay timePreference;
     private int numRequired;
@@ -100,6 +102,12 @@ public class Population {
     private Schedule crossOver(Schedule s1, Schedule s2) {
         //Determine how many characters there are in a section
         //int sectionLength = s1.getSections()[0].getID().length();
+        if(Utils.randInRange(r, 0, 100) > crossOverRate) {
+            if(s1.getFitnessScore() > s2.getFitnessScore()) {
+                return s1;
+            }
+            return s2;
+        }
         boolean[][] gene1 = new boolean[s1.getSections().length][this.sectionLen];
         boolean[][] gene2 = new boolean[gene1.length][this.sectionLen];
         boolean[][] gener = new boolean[gene1.length][this.sectionLen];
@@ -121,7 +129,7 @@ public class Population {
 
             for(int j = 0; j < gene1[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, s1.getFitnessScore() + s2.getFitnessScore()) > 100) {
+                if(Utils.randInRange(r, 0, 1+(s1.getFitnessScore() * s2.getFitnessScore())) > Utils.randInRange(r, 0, 1+(s1.getFitnessScore()))) {
                     if(s1.getFitnessScore() > s2.getFitnessScore()) {
                         gene2[i][j] = !gene2[i][j];
                     } else {
@@ -148,10 +156,11 @@ public class Population {
         }
         //int upperBound = Math.max(s1.getFitnessScore(), s2.getFitnessScore());
         int swapClass = Math.max(1, upperBound % (gene1.length-1));
+        swapClass = Math.max(swapClass, Utils.randInRange(r, 0, gene1.length-1));
 
         //Perform the swaps that favor the better individual but still allow the worse individual to have some influence
         for(int i = 0; i < gener.length; i++) {
-            if(i == swapClass) {
+            if(i == swapClass && (upperBound != 0 || Utils.randInRange(r, 0, swapClass) % 2 == 0)) {
                 if(betterSectionPtr == 0) {
                     gener[i] = gene1[i];
                 } else {
@@ -185,7 +194,7 @@ public class Population {
 
             for(int j = 0; j < parent[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, i*j+(1+target.getFitnessScore())) % 2 == 0) {
+                if(Utils.randInRange(r, 0, 100) < this.mutationRate) {
                     //System.out.println("Mutating!");
                     mutated[i][j] = !parent[i][j];
                 } else {
@@ -213,7 +222,7 @@ public class Population {
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
-        while(bestFitnessScore > 0 && iterationCount < this.maxIterations) {
+        while(iterationCount < this.maxIterations) {
             System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
@@ -224,7 +233,7 @@ public class Population {
                 while(secondPtr == i) {
                     secondPtr = Utils.randInRange(r, 0, fitPool.length - 1);
                 }
-                thisGen[i] = crossOver(fitPool[i], fitPool[secondPtr]);
+                thisGen[i] = crossOver(fitPool[0], fitPool[secondPtr]);
             }
 
             //Now, let's do some random crosses to fill up to the rest of the array
@@ -241,11 +250,15 @@ public class Population {
 
             if(iterationCount >2) {
                 int tangent = required.calculateTangent(iterationCount -2, iterationCount - 1);
-                System.out.println("Tangent from previous two = " + tangent);
-                if(Math.abs(tangent) == 0 || Math.abs(tangent) > 1000) {
+                //System.out.println("Tangent from previous two = " + tangent);
+                if(Math.abs(tangent) < 100) {
                     for(int i = 0; i < thisGen.length; i++) {
                         thisGen[i] = this.mutateSchedule(thisGen[i]);
                     }
+                }
+            } else {
+                for(int i = 0; i < thisGen.length; i++) {
+                    thisGen[i] = this.mutateSchedule(thisGen[i]);
                 }
             }
             
@@ -254,13 +267,18 @@ public class Population {
 
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
+            //System.out.println("Current Array: " + Arrays.toString(thisGen));
             System.out.println("Tangent Score: " + required.addScore(thisGen[0]));
+            /*System.out.println("Scores for this generation: ");
+            for(int i = 0; i < thisGen.length; i++) {
+                System.out.print(thisGen[i].getFitnessScore() + ", ");
+            }*/
             //Now, perform a roulette-wheel integration into the overall fitness pool
             Utils.mergeInto(thisGen, fitPool, r);
             bestFitnessScore = fitPool[0].getRequiredScore();
             Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
-            System.out.println("Best = " + bestFitnessScore);
-            System.out.println("Recorded best = " + fitPool[0].getRequiredScore() + " " + fitPool[0].getFitnessScore());
+            ///System.out.println("Best = " + bestFitnessScore);
+            //System.out.println("Recorded best = " + fitPool[0].getRequiredScore() + " " + fitPool[0].getFitnessScore());
             for(int k = 0; k < fitPool[0].getSections().length; k++) {
                 if(fitPool[0].getSections()[k] != null) {
                     System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore());
@@ -268,6 +286,10 @@ public class Population {
                     System.out.println("NULL!");
                 }
             }
+            //System.out.println("Fit Pool Scores: "); 
+            /*for(int i = 0; i < fitPool.length; i++) {
+                System.out.print(fitPool[i].getFitnessScore() + ", ");
+            }*/
             //System.out.println("Record best is = " + Arrays.toString(fitPool[0].getSections()));
             iterationCount++;
         }

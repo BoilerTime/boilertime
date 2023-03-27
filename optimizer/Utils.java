@@ -348,14 +348,15 @@ public class Utils {
     public static void mergeInto(Schedule[] merge, Schedule[] target, Random r) {
         Schedule[] temp = new Schedule[merge.length];
 
-        for(int i = 0; i < merge.length; i++) {
-            temp[i] = target[i];
-            target[i] = merge[i];
+        for(int i = merge.length; i < target.length - (merge.length / 4); i++) {
+            temp[i - merge.length] = target[i];
+            target[i] = merge[i - merge.length];
         }
 
-        for(int i = merge.length; i < target.length; i++) {
-            if(Utils.randInRange(r, 0, i*i) % 2 == 0) {
-                target[i] = temp[i/2];
+        int tempCtr = 0;
+        for(int i = merge.length + (merge.length / 2); i < target.length; i++) {
+            if(Utils.randInRange(r, 0, 1+target[i].getFitnessScore()) > 5) {
+                target[i] = temp[tempCtr++];
             }
         }
     }
