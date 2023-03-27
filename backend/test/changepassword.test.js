@@ -25,7 +25,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test Forgot and Reset Password", () => {
+describe("POST Test Forgot and Reset Password Sprint 2 User Story 18", () => {
   // Test that the status code is returned as 200
   it("API Forgot Password", (done) => {
     chai.request(app)
