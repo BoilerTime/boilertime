@@ -11,7 +11,8 @@ var auth = {}
 
 const userLogin = {
   email: "boilertimepurdue@gmail.com",
-  password: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+  password: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+  user_id: "20e834b376efa194c62512fde47f3cc02d8fec5cfb241b8d4c7a8388d1059740"
 }
 
 before(function (done) {
@@ -33,8 +34,20 @@ describe("POST Test Forgot and Reset Password Sprint 2 User Story 18", () => {
       .send(userLogin)
       .end((err, res) => {
         res.should.have.status(200);
-        expect(res.body).to.have.ownPropertyDescriptor('user_id');
-        expect(res.body).to.have.ownPropertyDescriptor('email');
+        done();
+      });
+  });
+
+  var encrypted = {}
+  it("API Encrypt User ID", (done) => {
+    chai.request(app)
+      .post('/api/encryptuserid')
+      .send(userLogin)
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body).to.have.property('user_id');
+        expect(res.body.user_id).to.not.equal(userLogin.user_id);
+        encrypted = res.body;
         done();
       });
   });
@@ -46,7 +59,7 @@ describe("POST Test Forgot and Reset Password Sprint 2 User Story 18", () => {
   it("API Change Password", (done) => {
     chai.request(app)
       .post('/api/resetpassword')
-      .send({...newpassword, ...auth})
+      .send({...newpassword, ...encrypted})
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body).to.eql(newpassword);
@@ -75,7 +88,7 @@ describe("POST Test Forgot and Reset Password Sprint 2 User Story 18", () => {
   it("API Call To Restore Password", (done) => {
     chai.request(app)
       .post('/api/resetpassword')
-      .send({...auth, ...userLogin})
+      .send({...encrypted, password: userLogin.password})
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body.password).to.equal(userLogin.password);
