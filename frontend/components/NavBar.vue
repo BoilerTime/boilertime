@@ -11,7 +11,7 @@
         <a href="/app/profile" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
         <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         <a href="/app/home" @click="logout" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log Out</a>
-        Logged in as: {{ (userStore.user.user_id).slice(0,10) }}...
+        Logged in as: {{ (user_id).slice(0,10) }}...
       </div>
       <div v-else class="flex items-center justify-end">
         <a href="/auth/login" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log in</a>
@@ -32,6 +32,7 @@ var firstname = ref("")
 var lastname = ref("")
 
 const userStore = useUserStore()
+var user_id = ref("")
 
 try {
 } catch (err) {
@@ -58,6 +59,14 @@ async function verifyToken() {
 }
 
 async function getUserInfo() {
+  try {
+    if (userStore.user.user_id == null) {
+      user_id.value = "guest";
+    }
+  } catch (err) {
+    return;
+  }
+  user_id.value = userStore.user.user_id;
   axios
     .post("http://localhost:3001/api/get/profile/", {
       user_id: userStore.user_id,

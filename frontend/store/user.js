@@ -77,5 +77,16 @@ export const useUserStore = defineStore("user", {
         navigateTo('/auth/login');
       });
     },
+    async createGuest() {
+      await axios.post('http://localhost:3001/api/guest')
+      .then(response => {
+        this.user = {
+          accessToken: response.data["accessToken"]
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   },
 });
