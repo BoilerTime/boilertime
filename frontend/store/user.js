@@ -4,7 +4,11 @@ import axios from "axios";
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
-      user: null,
+      user: {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
+      },
     };
   },
   persist: persistedState.localStorage,
@@ -13,7 +17,7 @@ export const useUserStore = defineStore("user", {
   */
   getters: {
     isLoggedIn() {
-        return !!this.user;
+        return this.user.user_id !== "";
     },
     user_id() {
         return this.user.user_id;
@@ -40,6 +44,13 @@ export const useUserStore = defineStore("user", {
         accessToken: accessToken,
         refreshToken: refreshToken,
         user_id: user_id
+      }
+      this.user = user;
+    }, async logOut() {
+      const user = {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
       }
       this.user = user;
     },
