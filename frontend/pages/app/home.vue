@@ -11,7 +11,7 @@ import { onMounted, onUnmounted } from "vue";
 import { useUserStore } from "../../store/user"
 const userStore = useUserStore();
 
-if (!userStore.isLoggedIn) {
+if (!userStore.user.accessToken == null) {
   navigateTo("/auth/login");
 }
 

@@ -8,6 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 var auth = {}
+var token = '';
 before(function (done) {
   const userLogin = {
     email: "boilertimepurdue@gmail.com",
@@ -18,14 +19,19 @@ before(function (done) {
     .send(userLogin)
     .end((err, res) => {
       res.should.have.status(200);
-      auth = res.body;
+      token = res.body.accessToken;
+      auth = {...res.body};
       done();
     });
 });
 
-describe("POST Test bookmark", () => {
+describe("POST Test bookmark Sprint 2 User Story 1", () => {
   const add = {
-    class_name: "CS 18000"
+    class_name: ["CS 18000"]
+  }
+
+  const remove = {
+    class_name: []
   }
 
   var bookmarks = []
@@ -35,6 +41,7 @@ describe("POST Test bookmark", () => {
     console.log(auth)
     chai.request(app)
       .post('/api/getbookmarks')
+      .set({ "authorization": `Bearer ${token}` })
       .send(auth)
       .end((err, res) => {
         res.should.have.status(200);
@@ -47,12 +54,13 @@ describe("POST Test bookmark", () => {
   it("API Call Add Bookmark", (done) => {
     chai.request(app)
       .post('/api/addbookmark')
+      .set({ "authorization": `Bearer ${token}` })
       .send({...auth, ...add})
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('bookmarks');
         expect(res.body.bookmarks.length).to.equal(bookmarks.length+1)
-        expect(res.body.bookmarks).to.contain(add.class_name)
+        expect(res.body.bookmarks).to.eql(add.class_name)
         done();
       });
   });
@@ -60,7 +68,8 @@ describe("POST Test bookmark", () => {
   it("API Call Remove Bookmark", (done) => {
     chai.request(app)
       .post('/api/removebookmark')
-      .send({...auth, ...add})
+      .set({ "authorization": `Bearer ${token}` })
+      .send({...auth, ...remove})
       .end((err, res) => {
         res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('bookmarks');
@@ -70,29 +79,59 @@ describe("POST Test bookmark", () => {
       });
   });
 
-  it("API Call Fails without Body", (done) => {
+  it("API Call Fails without Body for Get", (done) => {
+    chai.request(app)
+      .post('/api/getbookmarks')
+      .set({ "authorization": `Bearer ${token}` })
+      .end((err, res) => {
+        res.should.have.status(500);
+        done();
+      });
+  });
+
+  it("API Call Fails without Body for Add", (done) => {
+    chai.request(app)
+      .post('/api/addbookmark')
+      .set({ "authorization": `Bearer ${token}` })
+      .end((err, res) => {
+        res.should.have.status(500);
+        done();
+      });
+  });
+
+  it("API Call Fails without Body for Remove", (done) => {
+    chai.request(app)
+      .post('/api/removebookmark')
+      .set({ "authorization": `Bearer ${token}` })
+      .end((err, res) => {
+        res.should.have.status(500);
+        done();
+      });
+  });
+
+  it("API Call Fails without Authentication for Get", (done) => {
     chai.request(app)
       .post('/api/getbookmarks')
       .end((err, res) => {
-        res.should.have.status(500);
+        res.should.have.status(401);
         done();
       });
   });
 
-  it("API Call Fails without Body", (done) => {
+  it("API Call Fails without Authentication for Add", (done) => {
     chai.request(app)
       .post('/api/addbookmark')
       .end((err, res) => {
-        res.should.have.status(500);
+        res.should.have.status(401);
         done();
       });
   });
 
-  it("API Call Fails without Body", (done) => {
+  it("API Call Fails without Authentication for Remove", (done) => {
     chai.request(app)
       .post('/api/removebookmark')
       .end((err, res) => {
-        res.should.have.status(500);
+        res.should.have.status(401);
         done();
       });
   });

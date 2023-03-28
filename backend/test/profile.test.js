@@ -8,6 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 var auth = {}
+var token = '';
 before(function (done) {
   const userLogin = {
     email: "boilertimepurdue@gmail.com",
@@ -18,6 +19,7 @@ before(function (done) {
     .send(userLogin)
     .end((err, res) => {
       res.should.have.status(200);
+      token = res.body.accessToken;
       auth = res.body;
       done();
     });
@@ -28,6 +30,7 @@ describe("POST Test Profile", () => {
   it("API Call Returns Status 200", (done) => {
     chai.request(app)
       .post('/api/get/profile')
+      .set({ "authorization": `Bearer ${token}` })
       .send(auth)
       .end((err, res) => {
         res.should.have.status(200);
@@ -40,6 +43,7 @@ describe("POST Test Profile", () => {
   it("API Call To Get Initial Profile", (done) => {
     chai.request(app)
       .post('/api/get/profile')
+      .set({ "authorization": `Bearer ${token}` })
       .send(auth)
       .end((err, res) => {
         res.should.have.status(200);
@@ -64,6 +68,7 @@ describe("POST Test Profile", () => {
   it("API Call To Update Profile", (done) => {
     chai.request(app)
       .post('/api/update/profile')
+      .set({ "authorization": `Bearer ${token}` })
       .send({...auth, ...profile})
       .end((err, res) => {
         res.should.have.status(200);
@@ -75,6 +80,16 @@ describe("POST Test Profile", () => {
   it("Get Profile API Call Fails without Body", (done) => {
     chai.request(app)
       .post('/api/get/profile')
+      .set({ "authorization": `Bearer ${token}` })
+      .end((err, res) => {
+        res.should.have.status(401);
+        done();
+      });
+  });
+
+  it("Get Profile API Call Fails without Authentication", (done) => {
+    chai.request(app)
+      .post('/api/get/profile')
       .end((err, res) => {
         res.should.have.status(401);
         done();
@@ -84,6 +99,7 @@ describe("POST Test Profile", () => {
   it("API Call Verify Profile Updated", (done) => {
     chai.request(app)
       .post('/api/get/profile')
+      .set({ "authorization": `Bearer ${token}` })
       .send(auth)
       .end((err, res) => {
         res.should.have.status(200);
@@ -95,6 +111,7 @@ describe("POST Test Profile", () => {
   it("API Call To Restore Profile to Original", (done) => {
     chai.request(app)
       .post('/api/update/profile')
+      .set({ "authorization": `Bearer ${token}` })
       .send({...auth, ...originalProfile})
       .end((err, res) => {
         res.should.have.status(200);
