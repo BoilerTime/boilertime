@@ -8,8 +8,8 @@
         </a>
       </div>
       <div v-if="isLoggedIn" class="flex items-center justify-end">
-        <a href="/app/profile" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
-        <a href="/app/create" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
+        <a href="/app/profile" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
+        <a href="/app/create" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
         <a href="/app/home" @click="logout" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log Out</a>
         Logged in as: {{ (user_id).slice(0,10) }}...
       </div>
@@ -28,6 +28,7 @@ import { useUserStore } from "../store/user"
 import { ref } from "vue"
 
 let isLoggedIn = false;
+let isVerified = false;
 var firstname = ref("")
 var lastname = ref("")
 
@@ -39,7 +40,8 @@ try {
   console.log(err)
 }
 
-isLoggedIn = userStore.isLoggedIn
+isLoggedIn = userStore.user.accessToken != null;
+isVerified = userStore.user_id;
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
