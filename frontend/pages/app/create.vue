@@ -1,5 +1,7 @@
 <template>
-  <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
+  <main>
+    <NavBar />
+    <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
         <div class="text-4xl font-bold text-black">
@@ -98,6 +100,7 @@
       </div>
     </div>
   </section>
+  </main>
 </template>
 
 <script setup>
