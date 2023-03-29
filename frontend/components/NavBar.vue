@@ -97,18 +97,10 @@
           </Menu>
         </div>
         <!-- Profile Button -->
-        <a
-          href="/app/profile"
-          class="lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8 dark: dark:lg:text-gray-100"
-          >Your Profile</a
-        >
-        <!-- Create Schedule Button -->
-        <a
-          href="/app/create"
-          class="lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8 dark: dark:lg:text-gray-100"
-          >Create Schedule</a
-        >
-        Logged in as: {{ userStore.user.user_id.slice(0, 10) }}...
+        <a href="/app/profile" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
+        <a href="/app/create" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
+        <a href="/app/home" @click="logout" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log Out</a>
+        Logged in as: {{ (user_id).slice(0,10) }}...
       </div>
       <!-- Menu for not logged in User -->
       <div v-else class="flex items-center justify-end">
@@ -141,6 +133,9 @@ import {
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 
 let isLoggedIn = false;
+let isVerified = false;
+var firstname = ref("")
+var lastname = ref("")
 var firstname = ref("");
 var lastname = ref("");
 var isDarkMode = ref();
@@ -148,18 +143,27 @@ var isDarkMode = ref();
 const userStore = useUserStore();
 var accessToken = userStore.accessToken;
 const { $isDarkMode } = useNuxtApp();
+const userStore = useUserStore()
+var user_id = ref("")
 
 try {
 } catch (err) {
   console.log(err);
 }
 
-isLoggedIn = userStore.isLoggedIn
+isLoggedIn = userStore.user.accessToken != null;
+isVerified = userStore.user_id;
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
     'authorization': `Bearer ${accessToken}`
   }
+}
+
+async function logout() {
+  console.log("logout")
+  userStore.logOut()
+}
 };
 
 async function verifyToken() {
@@ -171,12 +175,18 @@ async function verifyToken() {
 }
 
 async function getUserInfo() {
-  await axios
-    .post(
-      "http://localhost:3001/api/get/profile/",
-      {
-        user_id: userStore.user_id,
-      }, config)
+  try {
+    if (userStore.user.user_id == null) {
+      user_id.value = "guest";
+    }
+  } catch (err) {
+    return;
+  }
+  user_id.value = userStore.user.user_id;
+  axios
+    .post("http://localhost:3001/api/get/profile/", {
+      user_id: userStore.user_id,
+    }, config)
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;

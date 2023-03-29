@@ -8,6 +8,10 @@ const utils = require('../utils/utils');
 
 const db = getFirestore();
 const users = db.collection('user_profile');
+
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.RESET);
+
 /*
  * Update the password 
  * @param {string} user_id - The user_id of the user having their password updated
@@ -15,6 +19,7 @@ const users = db.collection('user_profile');
  * @throws {500} if no user_id is found
  */
 async function updatePassword({ user_id, new_password }) {
+  user_id = cryptr.decrypt(user_id);
   const profile = await users.doc(user_id).get();
   if (profile.empty) {
     throw new Error(500);

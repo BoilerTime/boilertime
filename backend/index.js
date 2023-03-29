@@ -40,7 +40,7 @@ app.use(express.json());
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -141,6 +141,8 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.RESET);
 
 /**
  * Sends an email to reset the password
@@ -154,14 +156,24 @@ app.post('/api/forgotpassword', (req, res) => {
       from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${user_id}">Reset Password</a>`
+      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.json({user_id: user_id, email: email});
+    res.sendStatus(200);
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
   });
+});
+
+/**
+ * Encrypts User ID
+ * @param {string} user_id - user_id
+ */
+app.post('/api/encryptuserid', (req, res) => {
+  const user_id = req.body.user_id;
+  const encrypted = cryptr.encrypt(user_id);
+  res.json({ user_id: encrypted });
 });
 
 /**

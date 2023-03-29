@@ -4,7 +4,11 @@ import axios from "axios";
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
-      user: null,
+      user: {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
+      },
     };
   },
   persist: persistedState.localStorage,
@@ -13,7 +17,7 @@ export const useUserStore = defineStore("user", {
   */
   getters: {
     isLoggedIn() {
-        return !!this.user;
+        return this.user.user_id !== "";
     },
     user_id() {
         return this.user.user_id;
@@ -44,6 +48,13 @@ export const useUserStore = defineStore("user", {
         dark_mode: dark_mode,
       }
       this.user = user;
+    }, async logOut() {
+      const user = {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
+      }
+      this.user = user;
     },
     async verifyToken(token, user_id) {
       const config = {
@@ -68,5 +79,16 @@ export const useUserStore = defineStore("user", {
         navigateTo('/auth/login');
       });
     },
+    async createGuest() {
+      await axios.post('http://localhost:3001/api/guest')
+      .then(response => {
+        this.user = {
+          accessToken: response.data["accessToken"]
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   },
 });
