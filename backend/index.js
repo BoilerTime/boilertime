@@ -32,6 +32,7 @@ const java = new JavaCaller({
 
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+const path = require('path');
 
 
 app.use(express.json());
@@ -166,6 +167,10 @@ app.post('/api/forgotpassword', (req, res) => {
     res.sendStatus(401);
   });
 });
+
+app.get('/api/searchnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'classes.json'));
+})
 
 /**
  * Encrypts User ID
