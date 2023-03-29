@@ -10,7 +10,7 @@
       <!-- Menu for logged in User -->
       <div
         v-if="isLoggedIn"
-        class="flex items-center justify-end dark:text-gray-100"
+        class="flex items-center justify-end dark:text-gray-200"
       >
         <!-- Dark Mode Toggle -->
         <div>
@@ -21,7 +21,7 @@
               >
                 <sun v-if="!isDarkMode" class="h-7 w-7 ml-0.5 text-yellow-500">
                 </sun>
-                <moon v-else class="h-7 w-7 ml-0.5 text-purple-500"> </moon>
+                <moon v-else class="h-7 w-7 ml-0.5 text-indigo-500"> </moon>
               </MenuButton>
             </div>
             <transition
@@ -41,7 +41,7 @@
                       :class="[
                         active
                           ? 'bg-gray-100 text-gray-900 dark:bg-neutral-500 dark:text-gray-100'
-                          : 'text-gray-900 dark:text-white',
+                          : 'text-gray-900 dark:text-gray-200',
                         'flex w-full rounded-md px-2 py-2 text-sm',
                       ]"
                       @click="setTheme(false)"
@@ -59,7 +59,7 @@
                       :class="[
                         active
                           ? 'bg-gray-100 text-gray-900 dark:bg-neutral-500 dark:text-gray-100'
-                          : 'text-gray-900 dark:text-white',
+                          : 'text-gray-900 dark:text-gray-200',
                         'flex w-full rounded-md px-2 py-2 text-sm',
                       ]"
                       @click="setTheme(true)"
@@ -78,7 +78,7 @@
                       :class="[
                         active
                           ? 'bg-gray-100 text-gray-900 dark:bg-neutral-500 dark:text-gray-100'
-                          : 'text-gray-900 dark:text-white',
+                          : 'text-gray-900 dark:text-gray-200',
                         'flex w-full rounded-md px-2 py-2 text-sm',
                       ]"
                       @click="setThemePref()"
@@ -97,9 +97,9 @@
           </Menu>
         </div>
         <!-- Profile Button -->
-        <a href="/app/profile" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Your Profile</a>
-        <a href="/app/create" v-if="isVerified" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Create Schedule</a>
-        <a href="/app/home" @click="logout" class="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 lg:mr-8">Log Out</a>
+        <a href="/app/profile" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Your Profile</a>
+        <a href="/app/create" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Create Schedule</a>
+        <a href="/app/home" @click="logout" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Log Out</a>
         Logged in as: {{ (user_id).slice(0,10) }}...
       </div>
       <!-- Menu for not logged in User -->
