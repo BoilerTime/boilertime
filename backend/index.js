@@ -933,8 +933,4 @@ app.post('/api/building', async (req, res) => {
   }
 });
 
-app.post('/api/talist', (req, res) => {
-  tas.getTAs();
-});
-
 module.exports = app;
