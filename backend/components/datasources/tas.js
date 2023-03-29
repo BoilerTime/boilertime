@@ -17,6 +17,7 @@ console.log(professorList.includes('Gao, Jing') + " << This is the value");
 
 async function getTAs() {
   let taMap = new Map([[String.prototype, [String.prototype]]]);
+  let lecturersList = [];
 
   // Loop through each subject
   for (let i = 0; i < courseList.length; i++) {
@@ -49,12 +50,18 @@ async function getTAs() {
             //jconsole.log(name);
             // Do something with the instructor
             console.log(professorList.includes(formattedName) + " includes value");
+            console.log("This is the meeting type  " + meeting.Type);
             if (professorList.includes(formattedName)) {
               //console.log(formattedName);
               console.log("THIS IS A PROFESSOR");
               console.log(formattedName + ' << formatted name\n');
             }
-            else {
+            else if (meeting.Type == "Lecture") {
+              lecturersList.push(instructor.Name);
+              console.log("THIS IS A LECTURER");
+              console.log(formattedName + ' << formatted name\n');
+            }
+            else if (!lecturersList.includes(instructor.Name)){
               //console.log(formattedName + "\n\n");
               if (taMap.has(instructor.Name)) {
                 newArr = taMap.get(instructor.Name);
@@ -75,20 +82,26 @@ async function getTAs() {
       }
     }
   }
+  for (var i = 0; i < lecturersList.length; i++) {
+    if (taMap.has(lecturersList[i])) {
+      taMap.delete(lecturersList[i]);
+    }
+  }
   console.log(taMap);
+  //writeToFile(taMap);
+  const obj = Object.fromEntries(taMap);
+	fs.writeFile('tas.json', JSON.stringify(obj), function (err) {
+		if (err) throw err;
+		console.log('Saved!');
+	});
   return taMap;
 }
 
 function writeToFile(taMap) {
-
-	fs.writeFile('courses.json', JSON.stringify(courses), function (err) {
+	fs.writeFile('tas.json', JSON.stringify(taMap), function (err) {
 		if (err) throw err;
 		console.log('Saved!');
 	});
-
-  for (tas in taMap) {
-    
-  }
 }
 
 async function getPurdueDirectoryInfo(name) {
