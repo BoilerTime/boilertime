@@ -28,10 +28,11 @@ const { JavaCaller } = require("java-caller");
 const java = new JavaCaller({
   jar: "../btime.jar"
 });
-//Data scraper imports
 
+//Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+const tas = require('./components/datasources/tas.js');
 
 
 app.use(express.json());
@@ -930,6 +931,10 @@ app.post('/api/building', async (req, res) => {
       return;
     });
   }
+});
+
+app.post('/api/talist', (req, res) => {
+  tas.getTAs();
 });
 
 module.exports = app;
