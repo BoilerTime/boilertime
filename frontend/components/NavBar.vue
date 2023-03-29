@@ -72,6 +72,7 @@
                       Dark
                     </button>
                   </MenuItem>
+                  <!--Not entirely working, system preference is not constant, and it only works on page refresh.-->
                   <MenuItem v-slot="{ active }">
                     <button
                       :class="[
@@ -80,7 +81,7 @@
                           : 'text-gray-900 dark:text-white',
                         'flex w-full rounded-md px-2 py-2 text-sm',
                       ]"
-                      @click="setTheme()"
+                      @click="setThemePref()"
                     >
                       <computer
                         :active="active"
@@ -129,7 +130,6 @@
 </template>
 
 <script setup>
-//import { defineStore } from "pinia";
 import axios from "axios";
 import { useUserStore } from "../store/user";
 import { ref } from "vue";
@@ -146,6 +146,7 @@ var lastname = ref("");
 var isDarkMode = ref();
 
 const userStore = useUserStore();
+var accessToken = userStore.accessToken;
 const { $isDarkMode } = useNuxtApp();
 
 try {
@@ -175,9 +176,7 @@ async function getUserInfo() {
       "http://localhost:3001/api/get/profile/",
       {
         user_id: userStore.user_id,
-      },
-      config
-    )
+      }, config)
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
@@ -205,11 +204,34 @@ async function getUserInfo() {
 async function setTheme(darkMode) {
   isDarkMode.value = darkMode;
   userStore.user.dark_mode = darkMode;
+  changePageTheme();
   axios
     .post("http://localhost:3001/api/set/darkmode/", {
       user_id: userStore.user_id,
       dark_mode: isDarkMode.value,
-    })
+    }, config)
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function changePageTheme() {
+  if (isDarkMode.value == true) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+}
+
+//not entirely working
+async function setThemePref() {
+  isDarkMode.value = $isDarkMode;
+  userStore.user.dark_mode = $isDarkMode;
+  axios
+    .post("http://localhost:3001/api/set/darkmode/", {
+      user_id: userStore.user_id,
+      dark_mode: isDarkMode.value,
+    }, config)
     .catch((error) => {
       console.error(error);
     });
@@ -219,13 +241,16 @@ onMounted(() => {
   getUserInfo().then(() => {
     if (userStore.user.dark_mode == undefined) {
       isDarkMode.value = $isDarkMode;
+      changePageTheme();
       //console.log(isDarkMode.value);
       //console.log("system");
     } else {
       isDarkMode.value = userStore.user.dark_mode;
+      changePageTheme();
       //console.log(isDarkMode.value);
     }
   });
   verifyToken();
 });
+
 </script>
