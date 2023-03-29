@@ -143,7 +143,6 @@ var isDarkMode = ref();
 const userStore = useUserStore();
 var accessToken = userStore.accessToken;
 const { $isDarkMode } = useNuxtApp();
-const userStore = useUserStore()
 var user_id = ref("")
 
 try {
@@ -163,7 +162,6 @@ const config = {
 async function logout() {
   console.log("logout")
   userStore.logOut()
-}
 };
 
 async function verifyToken() {
