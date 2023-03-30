@@ -60,7 +60,7 @@ var group_id = "";
 async function creategroup() {
     await axios.post('http://localhost:3001/api/creategroup', {
         user_id: user_id,
-        group_name: group_name
+        group_name: group_name.value
     })
         .then((res) => {
             group_id = "localhost:3000/group/join/?group_id=" + res.data.group_id;

@@ -203,6 +203,17 @@
           </ul>
         </div>
       </div>
+      <!--Flex grouping for groups-->
+      <div class="mt-5">
+        <h1 class="font-bold text-2xl mb-5">Groups 😎</h1>
+        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+          <ul class="list-inside list-item">
+            <li class="mb-2 font-bold" v-for="(item, index) in groups" :key="index">
+              {{ item }}
+            </li>
+          </ul>
+        </div>
+      </div>
       <!--Edit Profile Button-->
       <div class="grid grid-flow-col gap-4 justify-end mb-5">
         <button
@@ -241,6 +252,7 @@ var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
+var groups = ref([]);
 
 var user_id = userStore.user_id
 
@@ -328,6 +340,22 @@ async function getBookmarks() {
     .catch((error) => {
       console.error(error);
     });
+}
+
+async function getGroups() {
+  axios.post('http://localhost:3001/api/groups', {
+    user_id: userStore.user_id
+  })
+  .then((res) => {
+    console.log(res.data)
+    console.log("groups:", res.data.groups);
+    groups.value = res.data.groups;
+    console.log("groups2:", groups)
+  })
+  .catch(function (error) {
+    console.error(error);
+    alert(error);
+  })
 }
 
 async function deletecourses(course) {
@@ -465,6 +493,7 @@ async function submit() {
 onMounted(async () => {
   getUserInfo();
   getBookmarks();
+  getGroups();
   await getratings();
   setTimeout(() => {
     console.log(courses)
@@ -473,5 +502,4 @@ onMounted(async () => {
     isDataLoaded.value = true;
   }, 1000)
 });
-
 </script>
