@@ -72,7 +72,7 @@ const getSchedule = async function(user) {
  */
 async function getAllUserSchedules(user_id) {
   const userSchedules = await schedules.doc(user_id);
-  var jArray = [];
+  var jScheduleArray = [];
   var numSchedules = 0;
   const collections = await userSchedules.listCollections();
 
@@ -80,14 +80,16 @@ async function getAllUserSchedules(user_id) {
     doc = await userSchedules.collection(collections[i].id).doc("schedule").get();
     doc = await doc.data();
     const jsonObj = {
+      "term_id": collections[i].id,
       "optional_classes": await doc.optional_classes,
       "required_classes": await doc.required_classes,
       "personal_preferences": await doc.personal_preferences
     }
-    jArray[collections[i].id] = (jsonObj);
+    jScheduleArray.push(jsonObj);
     numSchedules++;
   }
-  return { "num_schedules": numSchedules, ...jArray };
+  jScheduleArray.push({ "num_schedules": numSchedules });
+  return jScheduleArray;
 }
 
 module.exports = {
