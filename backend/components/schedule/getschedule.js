@@ -80,7 +80,6 @@ async function getAllUserSchedules(user_id) {
     doc = await userSchedules.collection(collections[i].id).doc("schedule").get();
     doc = await doc.data();
     const jsonObj = {
-      "term_id": collections[i].id,
       "optional_classes": await doc.optional_classes,
       "required_classes": await doc.required_classes,
       "personal_preferences": await doc.personal_preferences
