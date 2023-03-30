@@ -27,9 +27,9 @@
             <label class="text-md font-semibold">Select your time of day preference:</label>
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
+                <div v-for="time in timePreference" :key="time_pref" class="flex items-center">
+                  <input :id="time.id" type="radio"  :onclick="time_pref = time.id" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                  <label :for="time.id" :checked="time_pref == time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
                 </div>
               </div>
             </fieldset>
@@ -119,6 +119,7 @@ const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref('')
+var courseList; 
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -176,7 +177,9 @@ onMounted(() => {
     console.log("Are we open? " + isOpen.value)
   }
   $socket.onmessage = ((data) => {
-    console.log("data", data)
+    console.log(data.data)
+    console.log("data", JSON.parse(data.data))
+    console.log(courseList);
   })
 
   $socket.onclose = function () {
@@ -318,7 +321,6 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 
 function submit() {
   if (selectedRequiredCourses.value.length > 0) {
-    $socket.send(selectedRequiredCourses.value.length)
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
@@ -327,6 +329,9 @@ function submit() {
       rmp: rmp.value
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule)
+      courseList = response.data.schedule;
+      console.log("TWT")
+      console.log(courseList)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
@@ -336,11 +341,14 @@ function submit() {
         accessToken = userStore.accessToken;
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      navigateTo('/app/view')
+      //navigateTo('/app/view')
     })
   } else {
     console.log("Error: No classes!")
   }
+  console.log("List: ")
+
+  
 }
 
 function sendToOptimizer(data) {
@@ -350,15 +358,18 @@ function sendToOptimizer(data) {
   //We first need to send them number of classes we will be optimzing by
   $socket.send(data.length)
   //Next, we send the time of day preferences
-  $socket.send(time_pref.value);
+  $socket.send("Morning")
+  //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
-  $socket.send(rmp.value);
+  $socket.send("None");
 
   //Next, we can start iterating over the course list
   for(let i = 0; i < data.length; i++) {
     //First, we can send the name of the course
     $socket.send(data[i].name)
     //Next, we can send the number of sections
+    $socket.send(data[i].isRequired)
+
     $socket.send(data[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < data[i].startTimes.length; j++) {
@@ -367,7 +378,7 @@ function sendToOptimizer(data) {
       //Durations
       $socket.send(data[i].durations[j]);
       //Week days 
-      $socket.send(data[i].weekDays[j]);
+      $socket.send(data[i].daysOfWeek[j]);
       //RMP
       $socket.send(data[i].rmp[j]);
       //Section ID

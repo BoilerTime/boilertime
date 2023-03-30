@@ -72,6 +72,7 @@ public class ScheduleClient implements Runnable  {
     private TimeOfDay getTODPrefernece(NetworkHandler network) {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
+        System.out.println("Got Raw " + rawTOD);
         while(res == null) { 
             if(rawTOD.equalsIgnoreCase("morning")) {
                 res = TimeOfDay.MORNGING;
@@ -132,17 +133,32 @@ public class ScheduleClient implements Runnable  {
             if(t == null) {
                 return null;
             }
+            System.out.println("twt" + t);
             int numOfTimes = Integer.parseInt(t);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
             x.instantiateHelper(numOfTimes);
 
             for(int i = 0; i < numOfTimes; i++) {
-                x.addCourseTime(Integer.parseInt(network.getIncomingMessage()));
-                x.addDuration(Integer.parseInt(network.getIncomingMessage()));
-                x.addWeekDays(network.getIncomingMessage());
-                x.addRating(Double.parseDouble(network.getIncomingMessage()));
-                x.addSectionId(network.getIncomingMessage());
+                String message = network.getIncomingMessage();
+                System.out.println("OwO" + message);
+                x.addCourseTime(Integer.parseInt(message));
+
+                message = network.getIncomingMessage();
+                System.out.println("TwT" + message);
+                x.addDuration(Integer.parseInt(message));
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addWeekDays(message);
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addRating(Double.parseDouble(message));
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addSectionId(message);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();

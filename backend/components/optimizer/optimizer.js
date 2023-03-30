@@ -25,7 +25,16 @@ const optimizeSchedule = async function(schedule) {
     }
 
     var output = [];
-    let resultFormat = {"name": "", "startTimes": [], "durations": [], "daysOfWeek": [], "sectionIDs": [], "collectionIDs": [], "rmp": []};
+    let resultFormat = {
+        "name": "", 
+        "isRequired": false,
+        "startTimes": [], 
+        "durations": [], 
+        "daysOfWeek": [], 
+        "sectionIDs": [], 
+        "collectionIDs": [], 
+        "rmp": []
+    };
     
     for(let i = 0; i < optimizecourses.length; i++) {
         //console.log(optimizecourses[i].split(" ")[0] + " + " + optimizecourses[i].split(" ")[1]);
@@ -40,6 +49,7 @@ const optimizeSchedule = async function(schedule) {
             });
         output.push(JSON.parse(JSON.stringify(resultFormat)))
         output[i].name = optimizecourses[i];
+        output[i].isRequired = i < requiredLength;//optimizecourses[i].isRequired//schedule[i].isRequired
         output[i].collectionIDs = collectionResults;
         for(let j = 0; j < results.length; j++) {
             results[j] = await results[j];
@@ -58,6 +68,7 @@ const optimizeSchedule = async function(schedule) {
               })
         }
     }
+    console.log("UWU")
 
     //await Promise.all(output).then((data) => {console.log(data)})
     
