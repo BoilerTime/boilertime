@@ -1,5 +1,5 @@
 package optimizer.algorithm;
 
 public enum TimeOfDay {
-    MORNGING, AFTERNOON
+    MORNGING, AFTERNOON, NONE
 }

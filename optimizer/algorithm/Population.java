@@ -1,6 +1,7 @@
 package optimizer.algorithm;
 
 import java.util.*;
+import java.util.prefs.PreferenceChangeListener;
 import java.io.*;
 import optimizer.Utils;
 import optimizer.network.NetworkHandler;
@@ -11,19 +12,21 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
-    private final int maxIterations = 100000;
+    private final int maxIterations = 1000;
     private final int maxScheduleSize = 5;
     private final int mutationRate = 3; 
     private final int crossOverRate = 90;
     private final NetworkHandler net;
     private final TimeOfDay timePreference;
+    private final PreferenceList[] preferences; 
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private RequiredAnalyzer required;
+    private PreferenceAnalyzer optional; 
     Random r;
 
-    public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference) {
+    public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
         this.registerdCourses = new Course[registeredC.length];
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
@@ -32,6 +35,8 @@ public class Population {
         this.required = new RequiredAnalyzer(true);
         this.net = network;
         this.timePreference = timePreference;
+        this.preferences = preferences;
+        this.optional = new PreferenceAnalyzer(true, preferences, timePreference);
     }
 
 
@@ -47,6 +52,7 @@ public class Population {
         //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
         ArrayList<Section> singleCount = new ArrayList<Section>();
         for(int i = 0; i < c.length; i++) {
+            System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
             if(c[i].isRequired()) {
                 numRequired ++;
@@ -264,7 +270,8 @@ public class Population {
             
             //Now that we're done forming the generation, it's time to determine its fitness scores
             RequiredAnalyzer.calculateFitnessScores(thisGen, true, numRequired);
-
+            this.optional.calculateOptionalScore(thisGen);
+            System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
             //System.out.println("Current Array: " + Arrays.toString(thisGen));
@@ -304,7 +311,7 @@ public class Population {
             }
         }
 
-        System.out.println(required.getRequiredScores().toString());
+        //System.out.println(required.getRequiredScores().toString());
         System.out.println("===================\n\n");
 
 

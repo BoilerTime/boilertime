@@ -7,7 +7,6 @@ import java.util.HashMap;
 public class RequiredAnalyzer {
 
     private ArrayList<Integer> requiredScores;
-    private ArrayList<Integer> deltaRequiredScores;
     private final boolean optimizationMode;
 
     //Implements the penalty scores found in the documentation for the algorithm. 
@@ -18,7 +17,6 @@ public class RequiredAnalyzer {
 
     public RequiredAnalyzer(boolean m) {
         this.requiredScores = new ArrayList<Integer>();
-        this.deltaRequiredScores = new ArrayList<Integer>();
         this.optimizationMode = m;
     }
 
@@ -149,7 +147,7 @@ public class RequiredAnalyzer {
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
-        //x.setOptionalScore(0);
+        x.setOptionalScore(0);
         return fitnessScore;
     }
 
@@ -174,7 +172,6 @@ public class RequiredAnalyzer {
             //Calculate Δ fitness
             int backTwo = this.requiredScores.get(this.requiredScores.size() - 2);
             delta -= backTwo;
-            deltaRequiredScores.add(Integer.valueOf(delta));
         }
         return delta;
     }

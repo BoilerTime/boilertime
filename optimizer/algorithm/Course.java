@@ -6,9 +6,11 @@ import optimizer.Utils;
 public class Course {
     private final String courseName; 
     private final CourseOverview template;
+    private double[] ratingsArr;
     private final boolean required;
     private boolean isRunnable;
     private Section[] sections;
+    private final double maxRating; 
     private HashMap<String, Section> idSection; 
 
 
@@ -19,6 +21,8 @@ public class Course {
         this.sections = new Section[info.getCourseTimes().length];
         this.idSection = new HashMap<String, Section>();
         this.isRunnable = false;
+        this.ratingsArr = info.getRatings();
+        this.maxRating = this.getMaxRating();
     }
 
     /**
@@ -62,4 +66,30 @@ public class Course {
     public String getCourseName() {
         return this.courseName;
     }
+
+    /**
+     * An O(n) helper method that gets the number of ratings that are less than a target rating that is to be searched for in the array
+     * @param target The value of interest to be searched for and describe
+     * @return The results of the search query. 
+     */
+    public int getNumLessThan(double target) {
+        int numLessThan = 0;
+        for(int i = 0; i < ratingsArr.length; i++) {
+            if(ratingsArr[i] < target) {
+                numLessThan++;
+            }
+        }
+        return numLessThan;
+    }
+
+    private double getMaxRating() {
+        double max = Double.MIN_VALUE;
+        for(int i = 0; i < this.ratingsArr.length; i++) {
+            if(ratingsArr[i] > max) {
+                max = ratingsArr[i];
+            }
+        }
+        return max; 
+    }
+
 }

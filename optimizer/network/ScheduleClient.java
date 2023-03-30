@@ -71,22 +71,38 @@ public class ScheduleClient implements Runnable  {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
         while(res == null) { 
-            switch (rawTOD) {
-                case "Morning":
-                    res = TimeOfDay.MORNGING;
-                    network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
-                    break;
-                case "Afternoon":
-                    res = TimeOfDay.AFTERNOON;
-                    network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
-                    break;
-                default:
-                    //Do smth
-                    network.sendMessage("{\"status\":400,\"message\":\"Illegal Time of Day\",\"data\":null}");
-                    break;
+            if(rawTOD.equalsIgnoreCase("morning")) {
+                res = TimeOfDay.MORNGING;
+                network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
+            } else if (rawTOD.equalsIgnoreCase("afternoon")) {
+                res = TimeOfDay.AFTERNOON;
+                network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
+            } else if(rawTOD.equalsIgnoreCase("none")) {
+                res = TimeOfDay.NONE;
+                network.sendMessage("{\"status\":200,\"message\":\"Received Time of Day\",\"data\":null}");
+            } else {
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal Time of Day\",\"data\":null}");
+                rawTOD = network.getIncomingMessage();
             }
+            
         }
         return res; 
+    }
+
+    private boolean usingRMP(NetworkHandler network) {
+        String rawRMP = network.getIncomingMessage();
+        while(true) {
+            if(rawRMP.equalsIgnoreCase("RMP")) {
+                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
+                return true;
+            } else if(rawRMP.equalsIgnoreCase("None")) {
+                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
+                return false;
+            } else {
+                rawRMP = network.getIncomingMessage();
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal RMP\",\"data\":null}");
+            }
+        }
     }
 
     private CourseOverview getCourseInfo(NetworkHandler network) {
@@ -149,9 +165,28 @@ public class ScheduleClient implements Runnable  {
             System.out.println("Result is: " + numOfCourses);
         }
         courses = new CourseOverview[numOfCourses];
-        TimeOfDay timePrefernce = getTODPrefernece(network);
+
+        //Handle the fetching of preferences and generation of a preferences list/
+        TimeOfDay timePreference = getTODPrefernece(network);
+        boolean usingRMP = usingRMP(network);
+        PreferenceList[] preferences = new PreferenceList[2];
+        if(usingRMP) {
+            preferences[0] = PreferenceList.RMP;
+            preferences[1] = PreferenceList.TOD;
+            timePreference = TimeOfDay.AFTERNOON;
+        } else {
+            preferences[1] = PreferenceList.TOD;
+            preferences[0] = PreferenceList.RMP;
+        }
+
+        if(timePreference == TimeOfDay.NONE) {
+            timePreference = TimeOfDay.MORNGING;
+            //preferences[1] = TimeOfDay.MORNGING;
+        }
+
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
+            System.out.println("UwU" + courses[i]);
             /*
              * There was an error, terminate the thread and give up
              * To-do: Add a better error handling mechanism. 
@@ -163,7 +198,7 @@ public class ScheduleClient implements Runnable  {
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
         //System.out.println("Result: " + numOfCourses);
-        Population resultPop = new Population(courses, network, timePrefernce);
+        Population resultPop = new Population(courses, network, timePreference, preferences);
         Schedule resultsIndividual = resultPop.getBestSchedule();
         writeBestToOutput(resultPop, resultsIndividual, network);
     }
