@@ -1,16 +1,10 @@
 package optimizer.network;
 import java.io.*;
-import java.net.Socket;
-import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.Random;
-
-import optimizer.Utils;
 
 public class NetworkHandler {
-    private InputStream rawIn; 
+    private InputStream rawIn;
     private OutputStream rawOut;
-    private boolean isInitialized; 
+    private boolean isInitialized;
 
     public NetworkHandler(InputStream input, OutputStream output) {
         this.rawIn = input;
@@ -21,7 +15,7 @@ public class NetworkHandler {
     /**
      * A private helper method that completes the handshake with the client attempting to connect to the server
      * @param input The input object that allows reading of a line of input that is incoming
-     * @param output The output object the allows printing a string of output. 
+     * @param output The output object the allows printing a string of output.
      */
     private void init(BufferedReader input, PrintWriter output) {
         try {
@@ -45,7 +39,7 @@ public class NetworkHandler {
             output.flush();
             //output.println("UwU");
             //output.println("{\"status\":200,\"message\":\"Connection Open\",\"data\":null}");
-            this.isInitialized = true; 
+            this.isInitialized = true;
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             //this.terminate();
@@ -56,7 +50,7 @@ public class NetworkHandler {
 
     /**
      * This method gets input from the client, unmasks it, and returns it as a string. Note: this method will take control of the program for a potentially indefinite amount of time until a message arrives
-     * @return The unmasked message that has been received from the client, or null if the connection is invalid. 
+     * @return The unmasked message that has been received from the client, or null if the connection is invalid.
      */
     public String getIncomingMessage() {
         if(!isInitialized) {
@@ -69,7 +63,7 @@ public class NetworkHandler {
             //System.out.println((input[0] & 0x80));
             int opcode = (input[0] & 0xf);
             boolean isMasked = (input[1] & 0x80) != 0;
-            //int length = (input[1] & 0x7f); 
+            //int length = (input[1] & 0x7f);
             int length;
             if((input[1] & 0x7f) < 126) {
                 length = (int) (input[1] & 0x7f);
@@ -121,7 +115,7 @@ public class NetworkHandler {
 
             if(!isMasked) {
                 return new String(incomingMessage);
-            } 
+            }
             return new String(masker(incomingMessage, mask));
         } catch (IOException e) {
             return null;
@@ -131,7 +125,7 @@ public class NetworkHandler {
     /**
      * This method enables the sending of a method to the client following appropriate websocket conventions
      * @param message The message that is to be sent
-     * @return True, if the message is sent. False, if the message cannot be sent for any reason. 
+     * @return True, if the message is sent. False, if the message cannot be sent for any reason.
      */
     public boolean sendMessage(String message) {
         if(!isInitialized) {
@@ -176,7 +170,7 @@ public class NetworkHandler {
             //output.print(y);
             //netSocket.getOutputStream().write(buffer);
             rawOut.flush();
-            
+
             return true;
         } catch (IOException e) {
             return false;
@@ -187,7 +181,7 @@ public class NetworkHandler {
      * A helper function that can add/remove a mask on a given message
      * @param message A byte array that represents the message that is to have the masking operation applied
      * @param mask A 4-byte array that represents the mask to apply
-     * @return The message[] array that has had the mask operation applied. 
+     * @return The message[] array that has had the mask operation applied.
      */
     private byte[] masker(byte[] message, byte[] mask) {
         byte[] result = new byte[message.length];
@@ -195,11 +189,11 @@ public class NetworkHandler {
             result[i] = (byte) (message[i] ^ mask[i & 0x3]);
         }
         return result;
-    }    
+    }
 
     /**
      * A method that terminates an ongoing websocket connection. This should always be used before closing a thread to clean the connection up (avoid a dropped connection)
-     * @return True, if the connection was closed, false otherwise. 
+     * @return True, if the connection was closed, false otherwise.
      */
     public boolean close() {
         if(!this.isInitialized) {
@@ -214,6 +208,6 @@ public class NetworkHandler {
             return false;
         }
         this.isInitialized = false;
-        return true; 
+        return true;
     }
 }
