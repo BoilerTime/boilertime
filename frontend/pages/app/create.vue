@@ -222,7 +222,7 @@ const filteredOptionalResults = computed(() => {
   }
 
   return optionalData.value.filter((item) => {
-    return item.toLowerCase().includes(optionalSearchTerm.value.toLowerCase())
+    return item.toLowerCase().startsWith(optionalSearchTerm.value.toLowerCase())
   })
 })
 
