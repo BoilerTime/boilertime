@@ -175,6 +175,23 @@ function addToSelected(item) {
     selectedRequiredCourses.value.push(item)
     isSearchActive.value = false
     searchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
@@ -218,6 +235,23 @@ function addToSelectedOptional(item) {
     selectedOptionalCourses.value.push(item)
     isOptionalSearchActive.value = false
     optionalSearchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
@@ -232,10 +266,44 @@ function addToSelectedOptional(item) {
 function removeFromSelected(index) {
   console.log(index)
   selectedRequiredCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeOptional(index) {
   selectedOptionalCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeFromBookmarked(index) {
@@ -302,9 +370,9 @@ function submit() {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time.value,
+      time: time_pref.value,
       rmp: rmp.value
-    }, config).then(() => {
+    }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
