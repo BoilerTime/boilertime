@@ -93,8 +93,10 @@ let click = ''
 const calendarOptions = ref({
   plugins: [timeGridPlugin],
   initialView: 'timeGridWeek',
+  slotMinTime: "7:00:00",
+  slotMaxTime: "21:00:00",
   weekends: false,
-  height: "160vh",
+  height: "100vh",
   aspectRatio: 10,
   events: result,
   eventClick: function(info) {
