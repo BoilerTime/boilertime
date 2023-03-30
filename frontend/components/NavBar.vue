@@ -192,7 +192,7 @@ async function getUserInfo() {
     .catch((error) => {
       console.error(error);
     });
-  await axios
+  axios
     .post(
       "http://localhost:3001/api/get/darkmode/",
       {
@@ -246,6 +246,7 @@ async function setThemePref() {
 }
 
 onMounted(() => {
+  changePageTheme();
   getUserInfo().then(() => {
     if (userStore.user.dark_mode == undefined) {
       isDarkMode.value = $isDarkMode;
