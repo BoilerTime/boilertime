@@ -348,14 +348,15 @@ public class Utils {
     public static void mergeInto(Schedule[] merge, Schedule[] target, Random r) {
         Schedule[] temp = new Schedule[merge.length];
 
-        for(int i = 0; i < merge.length; i++) {
-            temp[i] = target[i];
-            target[i] = merge[i];
+        for(int i = merge.length; i < target.length - (merge.length / 4); i++) {
+            temp[i - merge.length] = target[i];
+            target[i] = merge[i - merge.length];
         }
 
-        for(int i = merge.length; i < target.length; i++) {
-            if(Utils.randInRange(r, 0, i) % 2 == 0) {
-                target[i] = temp[i/2];
+        int tempCtr = 0;
+        for(int i = merge.length + (merge.length / 2); i < target.length; i++) {
+            if(Utils.randInRange(r, 0, 1+target[i].getFitnessScore()) > 5) {
+                target[i] = temp[tempCtr++];
             }
         }
     }
@@ -392,5 +393,56 @@ public class Utils {
             }
         }
         return numConflicts;
+    }
+
+
+    public static int findNumMConflicts(HashMap<Moment, Integer> m) {
+        int numConflicts = 0;
+        Integer[] vals = m.values().toArray(new Integer[m.size()]);
+        for(int i = 0; i < vals.length; i++) {
+            if(vals[i].intValue()> 1) {
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
+
+    public static int findNonOverlappingDayTime(ArrayList<Moment> moments) {
+        Moment[] m = moments.toArray(new Moment[moments.size()]);
+        int count = 0;
+        for(int i = 0; i < m.length; i++) {
+            for(int j = 0; j < m.length; j++) {
+                if(j != i) {
+                    WeekDays[] w1 = m[i].getWeekDays();
+                    WeekDays[] w2 = m[j].getWeekDays();
+                    Arrays.sort(w1);
+                    Arrays.sort(w2);
+                    boolean foundOverlap = false;
+                    int min = Math.min(w1.length, w2.length);
+                    for(int k = 0; k < min; k++) {
+                        if(Arrays.binarySearch(w2, w1[k]) != -1) {
+                            foundOverlap = true;
+                        }
+                    }
+                    if(foundOverlap) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return (count);
+    }
+
+    /**
+     * A helper method that calculates the median of a set of doubles
+     * @param dataSet The set of values that are of interest
+     * @return The mean of the set of values. 
+     */
+    public static double calculateMean(double[] dataSet) {
+        double mean = 0;
+        for(int i = 0; i < dataSet.length; i++) {
+            mean += dataSet[i];
+        }
+        return mean / (double) dataSet.length;
     }
 }
