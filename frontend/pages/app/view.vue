@@ -30,6 +30,13 @@ const scheduleData = ref([]);
 const isDataLoaded = ref(false);
 
 const userStore = useUserStore();
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
+
 
 let result = [];
 
@@ -108,7 +115,7 @@ onBeforeMount(async () => {
   try {
     const response = await axios.post('http://localhost:3001/api/optimizedschedule', {
       user_id: userStore.user_id
-    })
+    }, config)
     scheduleData.value = response.data.schedule;
     console.log(response.data.schedule)
     convertSchedule(scheduleData.value);

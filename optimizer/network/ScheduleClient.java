@@ -34,6 +34,7 @@ public class ScheduleClient implements Runnable  {
 
     private void terminate() {
         try {
+            System.out.println("Closing the connection!");
             netSocket.close();
         } catch (NullPointerException | IOException e) {
             System.err.println("Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
@@ -44,6 +45,7 @@ public class ScheduleClient implements Runnable  {
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
         String rawClasses = network.getIncomingMessage();//nput.readLine();
+        System.out.println("Got raw: " + rawClasses);
         if(rawClasses == null) {
             return -1;
         }
@@ -140,6 +142,7 @@ public class ScheduleClient implements Runnable  {
                 x.addDuration(Integer.parseInt(network.getIncomingMessage()));
                 x.addWeekDays(network.getIncomingMessage());
                 x.addRating(Double.parseDouble(network.getIncomingMessage()));
+                x.addSectionId(network.getIncomingMessage());
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
@@ -159,11 +162,12 @@ public class ScheduleClient implements Runnable  {
 
     private void communicateAndRun(NetworkHandler network) {
         CourseOverview courses[];
-        int numOfCourses = -1; //= getCoursesCount(input);
-        while(numOfCourses < 1) {
-            numOfCourses = getCoursesCount(network);
-            System.out.println("Result is: " + numOfCourses);
+        int numOfCourses = getCoursesCount(network);
+        if(numOfCourses == -1) {
+            this.terminate();
+            return;
         }
+
         courses = new CourseOverview[numOfCourses];
 
         //Handle the fetching of preferences and generation of a preferences list/

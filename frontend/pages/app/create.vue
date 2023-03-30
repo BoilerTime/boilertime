@@ -111,11 +111,14 @@ import draggable from 'vuedraggable'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
 
+const { $socket } = useNuxtApp()
+
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
+const isOpen = ref('')
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -166,6 +169,22 @@ const filteredResults = computed(() => {
   })
 })
 
+onMounted(() => {
+  $socket.onopen = () => {
+    console.log("Connected")
+    isOpen.value = true;
+    console.log("Are we open? " + isOpen.value)
+  }
+  $socket.onmessage = ((data) => {
+    console.log("data", data)
+  })
+
+  $socket.onclose = function () {
+    console.log("disconnected")
+  }
+
+})
+
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
@@ -208,6 +227,7 @@ const filteredOptionalResults = computed(() => {
     return item.toLowerCase().includes(optionalSearchTerm.value.toLowerCase())
   })
 })
+
 
 const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
@@ -298,13 +318,15 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 
 function submit() {
   if (selectedRequiredCourses.value.length > 0) {
+    $socket.send(selectedRequiredCourses.value.length)
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time.value,
+      time: time_pref.value,
       rmp: rmp.value
-    }, config).then(() => {
+    }, config).then((response) => {
+      sendToOptimizer(response.data.schedule)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
@@ -316,8 +338,16 @@ function submit() {
       }
       navigateTo('/app/view')
     })
+  } else {
+    console.log("Error: No classes!")
   }
 }
+
+function sendToOptimizer(data) {
+  console.log(data)
+}
+
+
 </script>
 
 <style scoped>
