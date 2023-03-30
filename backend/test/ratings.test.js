@@ -35,6 +35,17 @@ var expectedCourseRating = {"0": {
   }
 }
 
+var expectedCourseRating2 = {
+  "rating": [
+    2.1,
+    3.2,
+    2.3
+  ],
+  "timestamp": date.toDateString(),
+  "flag_count": 0,
+  "explanation": "Test"
+}
+
 var classroomRating = {
   "classroom": "LWSNB160",
   "access_conv": 5.0,
@@ -56,6 +67,16 @@ var expectedClassroomRating = {"0": {
   }
 }
 
+var expectedClassroomRating2 = {
+  "rating": [
+    5.0,
+    5.0,
+    5.0
+  ],
+  "timestamp": date.toDateString(),
+  "flag_count": 0,
+  "explanation": "Test"
+}
 
 var taRating = {
   "ta": "Mahad Faruqi",
@@ -79,6 +100,17 @@ var expectedTARating = {"0": {
   }
 }
 
+var expectedTARating2 = {
+  "rating": [
+    5.0,
+    5.0,
+    0.0
+  ],
+  "timestamp": date.toDateString(),
+  "flag_count": 0,
+  "explanation": "Test"
+}
+
 before(function (done) {
   const userLogin = {
     email: "boilertimepurdue@gmail.com",
@@ -95,7 +127,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test Ratings", () => {
+describe("POST Test Ratings Sprint 2 User Story 3, 4, 5, 6, 10", () => {
 
 
   it("API Call Add Course Rating", (done) => {
@@ -131,6 +163,20 @@ describe("POST Test Ratings", () => {
       });
   });
 
+  it("API Call To Get Course Ratings After Add", (done) => {
+    chai.request(app)
+      .post('/api/get/course_ratings/courses')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({course_name : courseRating.course})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedCourseRating2);
+        expect(res.body).to.deep.include(expectedCourseRating2);
+        done();
+      });
+  });
+
   it("API Call To Delete User Course Ratings", (done) => {
     chai.request(app)
       .post('/api/delete/ratings/courses')
@@ -138,6 +184,20 @@ describe("POST Test Ratings", () => {
       .send({user_id: auth.user_id, course: courseRating.course})
       .end((err, res) => {
         res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("API Call To Get Course Ratings After Delete", (done) => {
+    chai.request(app)
+      .post('/api/get/course_ratings/courses')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({course_name : courseRating.course})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedCourseRating2);
+        expect(res.body).to.not.deep.include(expectedCourseRating2);
         done();
       });
   });
@@ -175,6 +235,20 @@ describe("POST Test Ratings", () => {
       });
   });
 
+  it("API Call To Get Classroom Ratings After Add", (done) => {
+    chai.request(app)
+      .post('/api/get/classroom_ratings/classrooms')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({classroom : classroomRating.classroom})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedClassroomRating2);
+        expect(res.body).to.deep.include(expectedClassroomRating2);
+        done();
+      });
+  });
+
   it("API Call To Delete User Classroom Ratings", (done) => {
     chai.request(app)
       .post('/api/delete/ratings/classrooms')
@@ -182,6 +256,20 @@ describe("POST Test Ratings", () => {
       .send({user_id: auth.user_id, classroom: classroomRating.classroom})
       .end((err, res) => {
         res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("API Call To Get Classroom Ratings After Delete", (done) => {
+    chai.request(app)
+      .post('/api/get/classroom_ratings/classrooms')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({classroom : classroomRating.classroom})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedClassroomRating2);
+        expect(res.body).to.not.deep.include(expectedClassroomRating2);
         done();
       });
   });
@@ -209,6 +297,20 @@ describe("POST Test Ratings", () => {
       });
   });
 
+  it("API Call To Get TA Ratings After Add", (done) => {
+    chai.request(app)
+      .post('/api/get/ta_ratings/tas')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({ta : taRating.ta})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedTARating2);
+        expect(res.body).to.deep.include(expectedTARating2);
+        done();
+      });
+  });
+
   it("API Call To Delete User TA Ratings", (done) => {
     chai.request(app)
       .post('/api/delete/ratings/tas')
@@ -216,6 +318,20 @@ describe("POST Test Ratings", () => {
       .send({user_id: auth.user_id, ta: taRating.ta})
       .end((err, res) => {
         res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("API Call To Get TA Ratings After Delete", (done) => {
+    chai.request(app)
+      .post('/api/get/ta_ratings/tas')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({ta : taRating.ta})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body);
+        console.log(expectedTARating2);
+        expect(res.body).to.not.deep.include(expectedTARating2);
         done();
       });
   });
