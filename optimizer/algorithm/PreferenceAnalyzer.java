@@ -10,12 +10,11 @@ public class PreferenceAnalyzer {
      * True = Maximization (higher values better)
      * False = Minimizatio (lower values better)
      */
-    private boolean optimizationMode;
     private PreferenceList[] optimizationParameterRanking;
     private TimeOfDay timePreference; 
 
     //Convergence Parameter
-    private ArrayList<Integer> preferenceScore;
+    private ArrayList<Integer> optionalScore;
     private ArrayList<Integer> timeScore;
     private ArrayList<Integer> rmpScore; 
 
@@ -26,11 +25,10 @@ public class PreferenceAnalyzer {
      * @param m The direction that is to be optimized in favor of. True = Maximization (higher values better). False = Minimizatio (lower values better)
      * @param prefernceList The order in which preferences are to be considered, with [0] being the highest priority and [max-1] being the lowest priority.
      */
-    public PreferenceAnalyzer(boolean m, PreferenceList[] preferenceList, TimeOfDay time) {
-        this.optimizationMode = m;
+    public PreferenceAnalyzer(PreferenceList[] preferenceList, TimeOfDay time) {
         this.optimizationParameterRanking = preferenceList;
         this.timePreference = time;
-        this.preferenceScore = new ArrayList<Integer>();
+        this.optionalScore = new ArrayList<Integer>();
         this.timeScore = new ArrayList<Integer>();
         this.rmpScore = new ArrayList<Integer>();
     }
@@ -90,7 +88,8 @@ public class PreferenceAnalyzer {
         int weightedPenalty = 0; 
         for(int i = 0; i < this.optimizationParameterRanking.length; i++) {
             if(optimizationParameterRanking[i] == PreferenceList.RMP) {
-                weightedPenalty += ((i+1) *parameterDiscriminat) * rmp;
+                weightedPenalty += ((i+1) * parameterDiscriminat) * rmp;
+                //System.out.println("Parameter Discriminat = " + (((i+1) * parameterDiscriminat) * rmp));
             } else {
                 weightedPenalty += ((i+1) * parameterDiscriminat) * time;
             }
@@ -99,6 +98,18 @@ public class PreferenceAnalyzer {
     }
 
     public ArrayList<Integer> getPreferenceScores() {
-        return this.preferenceScore;
+        return this.optionalScore;
+    }
+
+    public int addScore(Schedule target) {
+        int score = target.getOptionalScore();
+        this.optionalScore.add(Integer.valueOf(score));
+        int delta = score;
+        if(this.optionalScore.size() > 2 ) {
+            //Calculate Δ fitness
+            int backTwo = this.optionalScore.get(this.optionalScore.size() - 2);
+            delta -= backTwo;
+        }
+        return delta;
     }
 }

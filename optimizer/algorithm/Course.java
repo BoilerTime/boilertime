@@ -75,7 +75,7 @@ public class Course {
     public int getNumLessThan(double target) {
         int numLessThan = 0;
         for(int i = 0; i < ratingsArr.length; i++) {
-            if(ratingsArr[i] < target) {
+            if(ratingsArr[i] > target) {
                 numLessThan++;
             }
         }

@@ -432,4 +432,17 @@ public class Utils {
         }
         return (count);
     }
+
+    /**
+     * A helper method that calculates the median of a set of doubles
+     * @param dataSet The set of values that are of interest
+     * @return The mean of the set of values. 
+     */
+    public static double calculateMean(double[] dataSet) {
+        double mean = 0;
+        for(int i = 0; i < dataSet.length; i++) {
+            mean += dataSet[i];
+        }
+        return mean / (double) dataSet.length;
+    }
 }

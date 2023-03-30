@@ -7,7 +7,6 @@ import java.util.HashMap;
 public class RequiredAnalyzer {
 
     private ArrayList<Integer> requiredScores;
-    private final boolean optimizationMode;
 
     //Implements the penalty scores found in the documentation for the algorithm. 
     private static final int nullPenalty = 10000;
@@ -15,9 +14,8 @@ public class RequiredAnalyzer {
     private static final int nameConflictPenalty = 100;
     private static final int unfulfilledRequirementPenalty = 10;
 
-    public RequiredAnalyzer(boolean m) {
+    public RequiredAnalyzer() {
         this.requiredScores = new ArrayList<Integer>();
-        this.optimizationMode = m;
     }
 
 
@@ -121,7 +119,7 @@ public class RequiredAnalyzer {
         return total;
     }
 
-    public static int[] calculateFitnessScores(Schedule[] x, boolean mode, int requiredCount) {
+    public static int[] calculateFitnessScores(Schedule[] x, int requiredCount) {
         int[] results = new int[x.length];
         for(int i = 0; i < x.length; i++) {
             //x[i].setFitnessScore(x[i].getInvalidCount());
@@ -133,7 +131,6 @@ public class RequiredAnalyzer {
             //results[i] = fitnessScore;
             //System.out.println("Fitness Score = " + fitnessScore);
             x[i].setRequiredScore(fitnessScore);
-            x[i].setOptionalScore(0);
         }
         return results;
     }
@@ -147,7 +144,6 @@ public class RequiredAnalyzer {
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
-        x.setOptionalScore(0);
         return fitnessScore;
     }
 

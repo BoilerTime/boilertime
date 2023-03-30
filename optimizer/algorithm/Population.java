@@ -2,6 +2,9 @@ package optimizer.algorithm;
 
 import java.util.*;
 import java.util.prefs.PreferenceChangeListener;
+
+import javax.xml.namespace.QName;
+
 import java.io.*;
 import optimizer.Utils;
 import optimizer.network.NetworkHandler;
@@ -12,7 +15,7 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
-    private final int maxIterations = 1000;
+    private final int maxIterations = 10000;
     private final int maxScheduleSize = 5;
     private final int mutationRate = 3; 
     private final int crossOverRate = 90;
@@ -22,8 +25,7 @@ public class Population {
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
-    private RequiredAnalyzer required;
-    private PreferenceAnalyzer optional; 
+    private QualityAnalyzer q; 
     Random r;
 
     public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
@@ -32,11 +34,10 @@ public class Population {
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random();
         this.generateCourseStruct(registeredC);
-        this.required = new RequiredAnalyzer(true);
         this.net = network;
         this.timePreference = timePreference;
         this.preferences = preferences;
-        this.optional = new PreferenceAnalyzer(true, preferences, timePreference);
+        this.q = new QualityAnalyzer(preferences, timePreference);
     }
 
 
@@ -224,7 +225,9 @@ public class Population {
             fitPool[i] = generateSeed();
         }
         //Calculate the fitness score of said starting population. 
-        RequiredAnalyzer.calculateFitnessScores(fitPool, true, numRequired);
+        //RequiredAnalyzer.calculateFitnessScores(fitPool, true, numRequired);
+        q.calculateFitnessScores(fitPool, numRequired);
+        System.out.println("First score  = " + fitPool[0].getFitnessScore());
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
@@ -255,7 +258,7 @@ public class Population {
             }
 
             if(iterationCount >2) {
-                int tangent = required.calculateTangent(iterationCount -2, iterationCount - 1);
+                int tangent = q.calculateTangent(iterationCount -2, iterationCount - 1);
                 //System.out.println("Tangent from previous two = " + tangent);
                 if(Math.abs(tangent) < 100) {
                     for(int i = 0; i < thisGen.length; i++) {
@@ -269,13 +272,16 @@ public class Population {
             }
             
             //Now that we're done forming the generation, it's time to determine its fitness scores
-            RequiredAnalyzer.calculateFitnessScores(thisGen, true, numRequired);
-            this.optional.calculateOptionalScore(thisGen);
+            //RequiredAnalyzer.calculateFitnessScores(thisGen, true, numRequired);
+            //this.optional.calculateOptionalScore(thisGen);
+
+            q.calculateFitnessScores(thisGen, numRequired);
             System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
+            System.out.println(thisGen[0].getRequiredScore());
             //System.out.println("Current Array: " + Arrays.toString(thisGen));
-            System.out.println("Tangent Score: " + required.addScore(thisGen[0]));
+            System.out.println("Tangent Score: " + q.addScore(thisGen[0]));
             /*System.out.println("Scores for this generation: ");
             for(int i = 0; i < thisGen.length; i++) {
                 System.out.print(thisGen[i].getFitnessScore() + ", ");
@@ -288,7 +294,7 @@ public class Population {
             //System.out.println("Recorded best = " + fitPool[0].getRequiredScore() + " " + fitPool[0].getFitnessScore());
             for(int k = 0; k < fitPool[0].getSections().length; k++) {
                 if(fitPool[0].getSections()[k] != null) {
-                    System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore());
+                    System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore() + " " + fitPool[0].getOptionalScore() + " " + fitPool[0].getRequiredScore());
                 } else {
                     System.out.println("NULL!");
                 }
@@ -311,16 +317,16 @@ public class Population {
             }
         }
 
-        //System.out.println(required.getRequiredScores().toString());
+        System.out.println(q.getOverallScores().toString());
         System.out.println("===================\n\n");
-
+        System.out.println("Convergence: " + q.mayHaveConverged());
 
 
         FileWriter out;
         //Print the scores out to a file
         try {
             out = new FileWriter("/Users/henrymayer-school/btime/output.txt");
-            Integer[] res = required.getRequiredScores().toArray(new Integer[required.getRequiredScores().size()]);
+            Integer[] res = q.getOverallScores().toArray(new Integer[q.getOverallScores().size()]);
             for(int i = 0; i < res.length; i++) {
                 out.write(res[i].intValue() + "\n");
             }
