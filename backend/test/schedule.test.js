@@ -60,11 +60,10 @@ describe("POST Test Schedule Sprint 2 User Story 8", () => {
       .end((err, res) => {
         res.should.have.status(200);
         console.log(res.body)
-        expect(res.body).to.have.ownPropertyDescriptor('num_schedules');
-        expect(res.body).to.have.ownPropertyDescriptor('spring_2023');
-        expect(res.body.spring_2023).to.have.ownPropertyDescriptor('optional_classes');
-        expect(res.body.spring_2023).to.have.ownPropertyDescriptor('required_classes');
-        expect(res.body.spring_2023).to.have.ownPropertyDescriptor('personal_preferences');
+        expect(res.body[0]).to.have.ownPropertyDescriptor('optional_classes');
+        expect(res.body[0]).to.have.ownPropertyDescriptor('required_classes');
+        expect(res.body[0]).to.have.ownPropertyDescriptor('personal_preferences');
+        expect(res.body[res.body.length - 1]).to.have.ownPropertyDescriptor('num_schedules');
         done();
       });
   });
