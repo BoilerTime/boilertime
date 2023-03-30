@@ -22,7 +22,7 @@ public class Course {
         this.idSection = new HashMap<String, Section>();
         this.isRunnable = false;
         this.ratingsArr = info.getRatings();
-        this.maxRating = this.getMaxRating();
+        this.maxRating = this.calculateMaxRating();
     }
 
     /**
@@ -72,7 +72,7 @@ public class Course {
      * @param target The value of interest to be searched for and describe
      * @return The results of the search query. 
      */
-    public int getNumLessThan(double target) {
+    public int getNumBetterThan(double target) {
         int numLessThan = 0;
         for(int i = 0; i < ratingsArr.length; i++) {
             if(ratingsArr[i] > target) {
@@ -82,7 +82,7 @@ public class Course {
         return numLessThan;
     }
 
-    private double getMaxRating() {
+    private double calculateMaxRating() {
         double max = Double.MIN_VALUE;
         for(int i = 0; i < this.ratingsArr.length; i++) {
             if(ratingsArr[i] > max) {
@@ -90,6 +90,10 @@ public class Course {
             }
         }
         return max; 
+    }
+
+    public double getMaxRating() {
+        return this.maxRating;
     }
 
 }

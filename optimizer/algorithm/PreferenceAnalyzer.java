@@ -57,7 +57,7 @@ public class PreferenceAnalyzer {
                 continue;
             }
             double rating = courses[i].getRating();
-            int betterThan = courses[i].getParent().getNumLessThan(rating);
+            int betterThan = courses[i].getParent().getNumBetterThan(rating);
             cummulativePenalty += betterThan;
         }
         return cummulativePenalty;

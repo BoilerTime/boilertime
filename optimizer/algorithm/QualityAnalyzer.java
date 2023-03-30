@@ -10,7 +10,7 @@ public class QualityAnalyzer {
     private RequiredAnalyzer req;
 
 
-    private final int numSimilarForConvergence = 100; 
+    public final static int numSimilarForConvergence = 100; 
 
     /**
      * A construct to the quality analyzer
@@ -61,7 +61,7 @@ public class QualityAnalyzer {
 
     public boolean mayHaveConverged() {
         int size = bestSchedules.size();
-        if(size < this.numSimilarForConvergence) {
+        if(size < numSimilarForConvergence) {
             return false; 
         }
 
@@ -70,7 +70,7 @@ public class QualityAnalyzer {
         //If convergence has indeed occured. 
 
         //double resScore = fft.get(fft.size() - 1).doubleValue();
-        double[] referenceFrame = new double[this.numSimilarForConvergence];
+        double[] referenceFrame = new double[numSimilarForConvergence];
         for(int i = 0; i < referenceFrame.length; i++) {
             referenceFrame[i] = fft.get(size - (numSimilarForConvergence - i)).doubleValue();
         }
