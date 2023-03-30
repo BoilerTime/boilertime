@@ -25,7 +25,7 @@ const optimizeSchedule = async function(schedule) {
     }
 
     var output = [];
-    let resultFormat = {"name": "", "startTimes": [], "durations": [], "isMWF": false, "sectionIDs": [], "collectionIDs": []};
+    let resultFormat = {"name": "", "startTimes": [], "durations": [], "daysOfWeek": [], "sectionIDs": [], "collectionIDs": [], "rmp": []};
     
     for(let i = 0; i < optimizecourses.length; i++) {
         //console.log(optimizecourses[i].split(" ")[0] + " + " + optimizecourses[i].split(" ")[1]);
@@ -49,8 +49,27 @@ const optimizeSchedule = async function(schedule) {
                 let date = new Date(doc.data().starttime);
                 output[i].startTimes.push(date.getUTCHours()+ "" + date.getUTCMinutes());
                 output[i].durations.push(moment.duration(rawDur).hours()*60 + moment.duration(rawDur).minutes());
+                output[i].daysOfWeek.push(doc.data().daysOfWeek);
                 output[i].sectionIDs.push(doc.id);
+                
+                let name = doc.data().instructor.Name
+                ///console.log(await utils.getProfessorRating(name));
+                output[i].rmp.push((utils.getProfessorRating(name)))
               })
+        }
+    }
+
+    //await Promise.all(output).then((data) => {console.log(data)})
+    
+    for(let i = 0; i < output.length; i++) {
+        for(let j = 0; j < output[i].rmp.length; j++) {
+            let prom = output[i].rmp[j];
+            await prom.then((value) => {
+                output[i].rmp[j] = value.avgRating;
+            }).catch((error) => {
+                console.log(error);
+                output[i].rmp[j] = 0.0;
+            })
         }
     }
     console.log(output)

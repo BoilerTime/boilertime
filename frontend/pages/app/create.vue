@@ -356,7 +356,23 @@ function sendToOptimizer(data) {
 
   //Next, we can start iterating over the course list
   for(let i = 0; i < data.length; i++) {
-
+    //First, we can send the name of the course
+    $socket.send(data[i].name)
+    //Next, we can send the number of sections
+    $socket.send(data[i].startTimes.length);
+    //Next, we iterate through each of the options and send the parameters of that option
+    for(let j = 0; j < data[i].startTimes.length; j++) {
+      //First, we can send the start time
+      $socket.send(data[i].startTimes[j]);
+      //Durations
+      $socket.send(data[i].durations[j]);
+      //Week days 
+      $socket.send(data[i].weekDays[j]);
+      //RMP
+      $socket.send(data[i].rmp[j]);
+      //Section ID
+      $socket.send(data[i].sectionIDs[j]);
+    }
   }
 }
 
