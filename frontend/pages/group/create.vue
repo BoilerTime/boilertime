@@ -50,6 +50,12 @@ import { useUserStore } from "../../store/user";
 var isModalVisible = ref(false);
 var userStore = useUserStore();
 var user_id = userStore.user_id;
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 var group_name = ref('');
 var group_id = "";
 
@@ -61,7 +67,7 @@ async function creategroup() {
     await axios.post('http://localhost:3001/api/creategroup', {
         user_id: user_id,
         group_name: group_name.value
-    })
+    }, config)
         .then((res) => {
             group_id = "localhost:3000/group/join/?group_id=" + res.data.group_id;
             isModalVisible.value = true;

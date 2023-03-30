@@ -199,21 +199,20 @@
         <h1 class="font-bold text-2xl mb-5">Groups 😎</h1>
         <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
           <ul class="list-inside list-item">
-            <li class="mb-2 font-bold" v-for="(item, index) in groups" :key="index">
-              {{ item }}
+            <li class="divide-y divide-solid">
+                <li v-for="(item, index) in groups" :key="index">
+                <li class="mb-2 font-bold">Group Name:</li>
+                <li class="mb-2 font-light">{{ item.group_name }}</li>
+                <li class="mb-2 font-bold">Group Members:</li>
+                <li class="font-light mb-2" v-for="(item, index) in groups[index].member_names" :key="index">
+                    {{ item }}
+                </li>
+                <li class="mb-2 font-bold">Invite Link:</li>
+                <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
+                    item.group_id }}</li>
+                </li>
             </li>
-          </ul>
-        </div>
-      </div>
-      <!--Flex grouping for groups-->
-      <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">Groups 😎</h1>
-        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
-          <ul class="list-inside list-item">
-            <li class="mb-2 font-bold" v-for="(item, index) in groups" :key="index">
-              {{ item }}
-            </li>
-          </ul>
+        </ul>
         </div>
       </div>
       <!--Edit Profile Button-->
@@ -240,12 +239,6 @@ import { TransitionRoot } from "@headlessui/vue";
 import sha256 from 'js-sha256'
 import { encrypt } from "iron-webcrypto";
 
-/**
- * Call for creating group
- * @param {string} user_id - The user_id associated with the owner of the group
- * @param {string} group_name - The name of the group\
- * @returns {string} group_id - The id of the group
- */
 var userStore = useUserStore();
 var isModalVisible = ref(false);
 var isCourseModalVisible = ref(false);
@@ -408,13 +401,10 @@ async function getBookmarks() {
 
 async function getGroups() {
   axios.post('http://localhost:3001/api/groups', {
-    user_id: userStore.user_id
-  })
+    user_id: user_id
+  }, config)
   .then((res) => {
-    console.log(res.data)
-    console.log("groups:", res.data.groups);
     groups.value = res.data.groups;
-    console.log("groups2:", groups)
   })
   .catch(function (error) {
     console.error(error);

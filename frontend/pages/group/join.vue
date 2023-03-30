@@ -20,6 +20,12 @@ import { useUserStore } from "../../store/user";
 
 const userStore = useUserStore();
 var user_id = userStore.user_id;
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 var isUserLoggedIn = userStore.isUserLoggedIn;
 if (isUserLoggedIn == false) {
     alert("You are not logged in. Please log in to join a group. Redirecting to the home page.")
@@ -38,7 +44,7 @@ async function joingroup() {
     await axios.post('http://localhost:3001/api/joingroup', {
         user_id: user_id,
         group_id: group_id
-    })
+    }, config)
         .then(function () {
             alert("Group has been joined! Redirecting you to the home page.");
             navigateTo('/app/home');
