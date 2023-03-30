@@ -28,12 +28,11 @@ const { JavaCaller } = require("java-caller");
 const java = new JavaCaller({
   jar: "../btime.jar"
 });
-//Data scraper imports
 
+//Data scraper imports
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
 const path = require('path');
-
 
 app.use(express.json());
 
@@ -170,6 +169,18 @@ app.post('/api/forgotpassword', (req, res) => {
 
 app.get('/api/searchnew', (req, res) => {
   res.sendFile(path.join(__dirname, 'classes.json'));
+})
+
+app.get('/api/classroomsnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'classrooms.json'));
+})
+
+app.get('/api/professorsnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'professors.json')); 
+})
+
+app.get('/api/tasnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'tas.json'));
 })
 
 /**
