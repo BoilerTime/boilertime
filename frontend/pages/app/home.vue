@@ -2,7 +2,7 @@
   <main>
     <NavBar />
     <div class="flex flex-row">
-      <div v-for="(schedule, index) in userSchedules" class="w-1/10 bg-green-200 p-60 h-1/4">
+      <div v-for="(schedule, index) in userSchedules" class="w-1/3 bg-green-200 pb-60 pl-60 pr-60 h-1/4">
         {{schedule.term_id}}
       </div>
     </div>
