@@ -344,7 +344,20 @@ function submit() {
 }
 
 function sendToOptimizer(data) {
-  console.log(data)
+  if(!isOpen.value) {
+    console.log("Critical Error: WS isn't open ")
+  }
+  //We first need to send them number of classes we will be optimzing by
+  $socket.send(data.length)
+  //Next, we send the time of day preferences
+  $socket.send(time_pref.value);
+  //Next, we send the RMP prefernces
+  $socket.send(rmp.value);
+
+  //Next, we can start iterating over the course list
+  for(let i = 0; i < data.length; i++) {
+
+  }
 }
 
 
