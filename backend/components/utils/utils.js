@@ -7,6 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 const ratingsCollection = db.collection('ratings');
+const schedules = db.collection('generated_schedules')
 
 /**
  * Get the user_id given the email
@@ -288,6 +289,50 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
+async function getNumUsers() {
+  const profile = await users.doc('user_count').get();
+  return (num_users = profile.data().num_users);
+}
+
+async function getNumSchedules() {
+  const doc = await schedules.doc('schedules_count').get();
+  return (num_schedules = doc.data().num_schedules);
+}
+
+async function getNumRatings() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  return (num_ratings = doc.data().num_ratings);
+}
+
+async function addUsersCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users + 1});
+}
+
+async function addSchedulesCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules + 1 });
+}
+
+async function addRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings + 1 });
+}
+
+async function decrementUsersCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users - 1});
+}
+
+async function decrementSchedulesCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules - 1 });
+}
+
+async function decrementRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings - 1 });
+}
 async function getDarkMode(user_id) {
   const profile = await users.doc(user_id).get();
   return (darkMode = profile.data().dark_mode);
@@ -299,7 +344,6 @@ async function setDarkMode(user_id, darkMode) {
     console.error(error);
     throw error;
   })
-
 }
 
 module.exports = {
@@ -321,6 +365,15 @@ module.exports = {
   getBuildingName,
   generateBuildings,
   getUserEmail,
+  getNumUsers,
+  getNumSchedules,
+  getNumRatings,
+  addUsersCount,
+  addSchedulesCount,
+  addRatingsCount,
+  decrementUsersCount,
+  decrementSchedulesCount,
+  decrementRatingsCount,
   getDarkMode,
   setDarkMode
 };

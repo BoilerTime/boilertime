@@ -241,6 +241,7 @@
                   course.rating[0],
                   course.rating[1],
                   course.rating[2],
+                  course.explanation,
                   'course',
                   userStore.user_id
                 )
@@ -288,6 +289,7 @@
                   classroom.rating[0],
                   classroom.rating[1],
                   classroom.rating[2],
+                  course.explanation,
                   'classroom',
                   userStore.user_id
                 )
@@ -327,7 +329,7 @@
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
               @click="
-                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], 'ta')
+                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], ta.explanation, 'ta')
               "
               >Edit</a
             ><a class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg" @click="deleteta(ta.ta)"
@@ -339,16 +341,7 @@
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
         </ul>
-        <EditRating
-          :isOpen="isOpen"
-          :closeEdit="closeEdit"
-          :title="editTitle"
-          :q1="editQ1"
-          :q2="editQ2"
-          :q3="editQ3"
-          :type="editType"
-          :id="user_id"
-        />
+        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3" :expl="editExpl" :type="editType" :id="user_id"/>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
@@ -550,19 +543,21 @@ function openModal() {
   isOpen.value = true;
 }
 
-var editTitle = ref("");
-var editQ1 = ref("");
-var editQ2 = ref("");
-var editQ3 = ref("");
-var editType = ref("");
+var editTitle = ref("")
+var editQ1 = ref("")
+var editQ2 = ref("")
+var editQ3 = ref("")
+var editExpl = ref("")
+var editType = ref("")
 
-async function edit(title, q1, q2, q3, type) {
-  editTitle.value = title;
-  editQ1.value = q1;
-  editQ2.value = q2;
-  editQ3.value = q3;
-  editType.value = type;
-  openModal();
+async function edit(title, q1, q2, q3, expl, type) {
+  editTitle.value = title
+  editQ1.value = q1
+  editQ2.value = q2
+  editQ3.value = q3
+  editExpl.value = expl
+  editType.value = type
+  openModal()
 }
 
 /** THE ABOVE IS FOR EDIT MODAL */
