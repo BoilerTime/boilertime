@@ -333,6 +333,18 @@ async function decrementRatingsCount() {
   const doc = await ratingsCollection.doc('ratings_count').get();
   doc.ref.update({ num_ratings: doc.data().num_ratings - 1 });
 }
+async function getDarkMode(user_id) {
+  const profile = await users.doc(user_id).get();
+  return (darkMode = profile.data().dark_mode);
+}
+
+async function setDarkMode(user_id, darkMode) {
+  const profile = await users.doc(user_id).get();
+  await profile.ref.update({ dark_mode: darkMode }).catch((error) => {
+    console.error(error);
+    throw error;
+  })
+}
 
 module.exports = {
   getUID,
@@ -361,5 +373,7 @@ module.exports = {
   addRatingsCount,
   decrementUsersCount,
   decrementSchedulesCount,
-  decrementRatingsCount
+  decrementRatingsCount,
+  getDarkMode,
+  setDarkMode
 };

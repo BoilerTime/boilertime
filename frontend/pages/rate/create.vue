@@ -66,8 +66,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
-                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
-                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
+                        <label for="explanation" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="explanation" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="explanation"></textarea>
                     </div>
                     <!--Adds the inputs for reviewing a classroom-->
                     <div v-else-if="reviewtype === 'classroom'">
@@ -104,8 +104,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
-                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
-                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
+                        <label for="explanation" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="explanation" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="explanation"></textarea>
                     </div>
                     <!--Adds the inputs for reviewing a TA-->
                     <div v-else-if="reviewtype === 'ta'">
@@ -142,8 +142,8 @@
                             <span class="text-sm text-black">0</span>
                             <span class="text-sm text-black">5</span>
                         </div>
-                        <label for="written" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
-                        <textarea id="written" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..."></textarea>
+                        <label for="explanation" class="block mb-2 text-sm font-medium text-gray-900">Your Review:</label>
+                        <textarea id="explanation" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="explanation"></textarea>
                     </div>
 
                     <!--CAPTCHA title and insert-->
@@ -175,15 +175,21 @@ const randval2 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Ma
 const actualval = randval1 + randval2
 const enterval = ref('')
 
-var userstore = useUserStore();
 const reviewtype = ref('')
 const reviewselection = ref('')
 
 const rating1 = ref('2.5')
 const rating2 = ref('2.5')
 const rating3 = ref('2.5')
+const explanation = ref("")
 
-const written = ref("")
+const userStore = useUserStore();
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 
 /**
@@ -194,54 +200,54 @@ async function createreview() {
     if (actualval == enterval.value) {
         if (reviewtype.value === "course") {
             await axios.post('http://localhost:3001/api/add/ratings/courses', {
-                user_id: userstore.user_id,
+                user_id: userStore.user_id,
                 course: reviewselection.value,
                 prequisite_strictness: rating1.value,
                 pace: rating2.value,
-                depth: rating3.value
-                //written: written.value ADD COMMA ABOVE
-            })
+                depth: rating3.value,
+                explanation: explanation.value
+            }, config)
                 .then(function () {
                     alert("Thank you for submitting your review!")
                     navigateTo("/app/profile")
                 })
-                .catch(function (error) {
+                .catch((error) => {
                     console.error();
-                    alert("You have already submitted a review for this course.");
+                    alert("Error:" + error);
                 })
         } else if (reviewtype.value === "classroom") {
             await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
-                user_id: userstore.user_id,
+                user_id: userStore.user_id,
                 classroom: reviewselection.value,
                 access_conv: rating1.value,
                 seating_quality: rating2.value,
-                technology_avail: rating3.value
-                //written: written.value ADD COMMA ABOVE
-            })
+                technology_avail: rating3.value,
+                explanation: explanation.value
+            }, config)
                 .then(function () {
                     alert("Thank you for submitting your review!")
                     navigateTo("/app/profile")
                 })
-                .catch(function (error) {
+                .catch((error) => {
                     console.error();
-                    alert("You have already submitted a review for this classroom.");
+                    alert("Error:" + error);
                 })
         } else if (reviewtype.value === "ta") {
             await axios.post('http://localhost:3001/api/add/ratings/tas', {
-                user_id: userstore.user_id,
+                user_id: userStore.user_id,
                 ta: reviewselection.value,
                 question_answering: rating1.value,
                 grading_fairness: rating3.value,
-                responsiveness: rating2.value
-                //written: written.value ADD COMMA ABOVE
-            })
+                responsiveness: rating2.value,
+                explanation: explanation.value
+            }, config)
                 .then(function () {
                     alert("Thank you for submitting your review!")
                     navigateTo("/app/profile")
                 })
-                .catch(function (error) {
+                .catch((error) => {
                     console.error();
-                    alert("You have already submitted a review for this TA.");
+                    alert("Error:" + error);
                 })
         }
     } else {

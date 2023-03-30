@@ -6,7 +6,7 @@
         {{schedule.term_id}}
       </div>
     </div>
-
+    <!-- <Search /> -->
   </main>
 </template>
   
@@ -23,16 +23,6 @@ const config = {
   headers: {
     'authorization': `Bearer ${accessToken}`
   }
-}
-
-if (!userStore.isLoggedIn) {
-  navigateTo("/auth/login");
-}
-
-async function verifyToken() {
-  await userStore.verifyToken(userStore.accessToken, userStore.user_id).then((res) => {
-      //console.log(res.accessToken);
-  });
 }
 
 const userSchedules = ref([])

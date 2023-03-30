@@ -1,15 +1,17 @@
 <template>
-  <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
+  <main>
+    <NavBar />
+    <section class="flex p-24 bg-gray-200 dark:bg-neutral-600 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
-        <div class="text-4xl font-bold text-black">
+        <div class="text-4xl font-bold text-black dark:text-gray-200">
           Get started with
         </div>
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="text-lg font-semibold mt-8 mb-4">What is the difference between these two?</h2>
-        <p class="text-md leading-relaxed">Classes you have to take are your required classes for the semester.
+        <h2 class="text-lg font-semibold mt-8 mb-4 dark:text-gray-200">What is the difference between these two?</h2>
+        <p class="text-md leading-relaxed dark:text-gray-200">Classes you have to take are your required classes for the semester.
           It's classes that are up next on your major's degree plan. We will prioritize this when generating your
           optimized
           schedule.
@@ -19,16 +21,27 @@
           schedule.
         </p>
       </div>
-      <div class="rounded-lg bg-white p-12 shadow-2xl col-span-3">
+      <div class="rounded-lg bg-white dark:bg-neutral-700 p-12 shadow-2xl col-span-3">
         <div class="relative">
-          <label class="text-md font-semibold">Add classes you have to take:</label>
+          <div class="mb-8">
+            <label class="text-md font-semibold">Select your time of day preference:</label>
+            <fieldset class="mt-2">
+              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                <div v-for="time in timePreference" :key="time.id" class="flex items-center">
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <label class="text-md font-semibold dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
-            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
             placeholder="Search for classes..." @keyup.enter="addSingleResultToSelected">
           <ul v-if="isSearchActive && filteredResults.length > 0"
-            class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+            class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
             <li v-for="result in filteredResults" :key="result"
-              class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white" @click="addToSelected(result)">
+              class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white" @click="addToSelected(result)">
               <span class="bg-yellow-500 flex items-center" v-if="bookmarked_classes.includes(result)">
                 <BookmarkIcon class="w-4 mr-2" />
                 <span>{{ result }}</span>
@@ -38,28 +51,28 @@
           </ul>
           <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
             <template #item="{ element, index }">
-              <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                 @click="removeFromSelected(index)">
                 {{ element }}
               </div>
             </template>
           </draggable>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Add classes you want to take:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Add classes you want to take:</label>
             <input v-model="optionalSearchTerm"
-              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
               placeholder="Search for classes..." @keyup.enter="addSingleOptionalToSelected">
             <ul v-if="isOptionalSearchActive && filteredOptionalResults.length > 0"
-              class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+              class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
               <li v-for="result in filteredOptionalResults" :key="result"
-                class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white"
+                class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white"
                 @click="addToSelectedOptional(result)">
                 {{ result }}
               </li>
             </ul>
             <draggable v-model="selectedOptionalCourses" group="classes" item-key="id" class="flex flex-wrap">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                   @click="removeOptional(index)">
                   {{ element }}
                 </div>
@@ -67,19 +80,19 @@
             </draggable>
           </div>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Drag classes here to bookmark them for later:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Drag classes here to bookmark them for later:</label>
             <draggable v-model="bookmarked_classes" group="classes" item-key="id"
               class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500"
                   @click="removeFromBookmarked(index)">
                   {{ element }}
                 </div>
               </template>
             </draggable>
           </div>
-          <div class="mt-4">
-            <button @click="submit" class="bg-yellow-500 text-white p-2 text-md rounded-md">
+          <div class="mt-8">
+            <button @click="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md">
               Submit
             </button>
           </div>
@@ -87,6 +100,7 @@
       </div>
     </div>
   </section>
+  </main>
 </template>
 
 <script setup>
@@ -100,6 +114,8 @@ import { BookmarkIcon } from "@heroicons/vue/24/outline"
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
+const time_pref = ref('')
+const rmp = ref('')
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -107,6 +123,12 @@ const config = {
     'authorization': `Bearer ${accessToken}`
   }
 }
+
+const timePreference = [
+  { id: 'none', title: 'No preference' },
+  { id: 'morning', title: 'Before 12 noon' },
+  { id: 'afternoon', title: 'After 12 noon' },
+]
 
 onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
@@ -153,6 +175,23 @@ function addToSelected(item) {
     selectedRequiredCourses.value.push(item)
     isSearchActive.value = false
     searchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
@@ -183,7 +222,7 @@ const filteredOptionalResults = computed(() => {
   }
 
   return optionalData.value.filter((item) => {
-    return item.toLowerCase().includes(optionalSearchTerm.value.toLowerCase())
+    return item.toLowerCase().startsWith(optionalSearchTerm.value.toLowerCase())
   })
 })
 
@@ -196,6 +235,23 @@ function addToSelectedOptional(item) {
     selectedOptionalCourses.value.push(item)
     isOptionalSearchActive.value = false
     optionalSearchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
@@ -210,10 +266,44 @@ function addToSelectedOptional(item) {
 function removeFromSelected(index) {
   console.log(index)
   selectedRequiredCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeOptional(index) {
   selectedOptionalCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeFromBookmarked(index) {
@@ -279,8 +369,10 @@ function submit() {
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value
-    }, config).then(() => {
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
