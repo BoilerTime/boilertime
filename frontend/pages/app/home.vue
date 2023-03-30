@@ -1,10 +1,11 @@
 <template>
-  <NavBar/>
   <main>
+    <NavBar />
     <div class="flex flex-wrap">
       <!-- Add button -->
       <div class="w-1/4 p-4 cursor-pointer" @click="navigateToCreateSchedule()">
-        <div class="flex items-center justify-center w-full h-full text-gray-400 bg-white border-2 border-gray-400 border-dashed hover:text-gray-500 hover:bg-gray-100 transition duration-300">
+        <div
+          class="flex items-center justify-center w-full h-full text-gray-400 bg-white border-2 border-gray-400 border-dashed hover:text-gray-500 hover:bg-gray-100 transition duration-300">
           <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path d="M10 3a1 1 0 0 1 1 1v4h4a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H6a1 1 0 0 1 0-2h4V4a1 1 0 0 1 1-1z" />
           </svg>
@@ -12,9 +13,11 @@
       </div>
 
       <!-- Data items -->
-      <div v-for="(schedule, index) in userSchedules" :key="index" class="w-1/4 p-4 cursor-pointer h-96" @click="getScheduleView(schedule.term_id)">
-        <div class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-           <div class="px-4 py-2 bg-blue-500">
+      <div v-for="(schedule, index) in userSchedules" :key="index" class="w-1/4 p-4 cursor-pointer h-96"
+        @click="getScheduleView(schedule.term_id)">
+        <div
+          class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
+          <div class="px-4 py-2 bg-blue-500">
             <h2 class="text-lg font-bold text-white">{{ schedule.term_id }}</h2>
             <p class="text-sm text-white">{{ schedule.optional_classes }}</p>
             <p class="text-sm text-white">{{ schedule.required_classes }}</p>
@@ -52,16 +55,9 @@ async function navigateToCreateSchedule() {
 }
 
 async function getScheduleView(term_id) {
-  console.log(term_id);
-  await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
-    user_id: userStore.user_id,
-    term_id: term_id,
-  }, config).then((response) => {
-    optimizedSchedule.value = response.data
-    console.log(optimizedSchedule.value);
-  })
+  navigateTo('/app/view/' + term_id)
 }
- 
+
 onBeforeMount(async () => {
   await axios.post('http://localhost:3001/api/get/user_schedules', {
     user_id: userStore.user_id,

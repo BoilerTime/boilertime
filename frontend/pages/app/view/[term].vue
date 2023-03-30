@@ -24,12 +24,13 @@ import { ref, onBeforeMount } from 'vue';
 
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { useUserStore } from '../../store/user'
+import { useUserStore } from '../../../store/user'
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
 
 const userStore = useUserStore();
+const route = useRoute()
 
 let result = [];
 
@@ -53,14 +54,14 @@ async function convertSchedule(schedule) {
         const response = await axios.post('http://localhost:3001/api/getgpa', {
           "prof_name": prof_name,
           "class_name": class_name
-        })
+        }, config)
         return response.data.averageGPA
       }
 
       async function getrmp(prof_name) {
         const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
           "prof_name": prof_name
-        })
+        }, config)
         return response.data.avgRating
       }
 
@@ -104,18 +105,21 @@ const calendarOptions = ref({
   }
 })
 
-onBeforeMount(async () => {
-  try {
-    const response = await axios.post('http://localhost:3001/api/optimizedschedule', {
-      user_id: userStore.user_id
-    })
-    scheduleData.value = response.data.schedule;
-    console.log(response.data.schedule)
-    convertSchedule(scheduleData.value);
-  } catch (error) {
-    console.log(error)
-    alert("No schedule data found. Please generate a schedule first");
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
   }
+}
+
+onBeforeMount(async () => {
+  await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    user_id: userStore.user_id,
+    term_id: route.params.term,
+  }, config).then((response) => {
+    scheduleData.value = response.data.schedule
+    convertSchedule(scheduleData.value)
+  })
 });
 
 onMounted(() => {
