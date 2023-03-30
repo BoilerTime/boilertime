@@ -288,6 +288,20 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
+async function getDarkMode(user_id) {
+  const profile = await users.doc(user_id).get();
+  return (darkMode = profile.data().dark_mode);
+}
+
+async function setDarkMode(user_id, darkMode) {
+  const profile = await users.doc(user_id).get();
+  await profile.ref.update({ dark_mode: darkMode }).catch((error) => {
+    console.error(error);
+    throw error;
+  })
+
+}
+
 module.exports = {
   getUID,
   findExistingUsers,
@@ -306,5 +320,7 @@ module.exports = {
   sortClassrooms,
   getBuildingName,
   generateBuildings,
-  getUserEmail
+  getUserEmail,
+  getDarkMode,
+  setDarkMode
 };

@@ -1,17 +1,17 @@
 <template>
   <main>
     <NavBar />
-    <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
+    <section class="flex p-24 bg-gray-200 dark:bg-neutral-600 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
-        <div class="text-4xl font-bold text-black">
+        <div class="text-4xl font-bold text-black dark:text-gray-200">
           Get started with
         </div>
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="text-lg font-semibold mt-8 mb-4">What is the difference between these two?</h2>
-        <p class="text-md leading-relaxed">Classes you have to take are your required classes for the semester.
+        <h2 class="text-lg font-semibold mt-8 mb-4 dark:text-gray-200">What is the difference between these two?</h2>
+        <p class="text-md leading-relaxed dark:text-gray-200">Classes you have to take are your required classes for the semester.
           It's classes that are up next on your major's degree plan. We will prioritize this when generating your
           optimized
           schedule.
@@ -21,7 +21,7 @@
           schedule.
         </p>
       </div>
-      <div class="rounded-lg bg-white p-12 shadow-2xl col-span-3">
+      <div class="rounded-lg bg-white dark:bg-neutral-700 p-12 shadow-2xl col-span-3">
         <div class="relative">
           <div class="mb-8">
             <label class="text-md font-semibold">Select your time of day preference:</label>
@@ -34,14 +34,14 @@
               </div>
             </fieldset>
           </div>
-          <label class="text-md font-semibold">Add classes you have to take:</label>
+          <label class="text-md font-semibold dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
-            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
             placeholder="Search for classes..." @keyup.enter="addSingleResultToSelected">
           <ul v-if="isSearchActive && filteredResults.length > 0"
-            class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+            class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
             <li v-for="result in filteredResults" :key="result"
-              class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white" @click="addToSelected(result)">
+              class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white" @click="addToSelected(result)">
               <span class="bg-yellow-500 flex items-center" v-if="bookmarked_classes.includes(result)">
                 <BookmarkIcon class="w-4 mr-2" />
                 <span>{{ result }}</span>
@@ -51,28 +51,28 @@
           </ul>
           <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
             <template #item="{ element, index }">
-              <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                 @click="removeFromSelected(index)">
                 {{ element }}
               </div>
             </template>
           </draggable>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Add classes you want to take:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Add classes you want to take:</label>
             <input v-model="optionalSearchTerm"
-              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
               placeholder="Search for classes..." @keyup.enter="addSingleOptionalToSelected">
             <ul v-if="isOptionalSearchActive && filteredOptionalResults.length > 0"
-              class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+              class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
               <li v-for="result in filteredOptionalResults" :key="result"
-                class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white"
+                class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white"
                 @click="addToSelectedOptional(result)">
                 {{ result }}
               </li>
             </ul>
             <draggable v-model="selectedOptionalCourses" group="classes" item-key="id" class="flex flex-wrap">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                   @click="removeOptional(index)">
                   {{ element }}
                 </div>
@@ -80,11 +80,11 @@
             </draggable>
           </div>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Drag classes here to bookmark them for later:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Drag classes here to bookmark them for later:</label>
             <draggable v-model="bookmarked_classes" group="classes" item-key="id"
               class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500"
                   @click="removeFromBookmarked(index)">
                   {{ element }}
                 </div>
@@ -92,7 +92,7 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="submit" class="bg-yellow-500 text-white p-2 text-md rounded-md">
+            <button @click="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md">
               Submit
             </button>
           </div>
