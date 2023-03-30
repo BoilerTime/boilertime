@@ -34,7 +34,7 @@
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
                   <label class="mb-1">Third rating: {{ q3 }}</label><br>
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
-                  <label class="mb-1">Current Review: {{ expl }}</label><br>
+                  <label class="mb-1">Current Review:</label><br>
                   <textarea type="text" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="expl_edit"></textarea>
                 </form>
               </div>
@@ -53,17 +53,23 @@
 </template>
 
 <script setup>
-
-
-
 import { defineProps } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import axios from 'axios'
+import { useUserStore } from "../store/user";
 
 var q1_edit = ref('')
 var q2_edit = ref('')
 var q3_edit = ref('')
 var expl_edit = ref('')
+
+var userStore = useUserStore();
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 const props = defineProps({
   isOpen: {
@@ -112,7 +118,7 @@ async function submit() {
     const prequisiteStrictness = q1_edit.value;
     const pace = q2_edit.value;
     const depth = q3_edit.value;
-    const explanation  = expl_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       course: course,
@@ -135,7 +141,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/courses", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/courses", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -176,7 +182,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -217,7 +223,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/tas", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/tas", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
