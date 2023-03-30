@@ -232,6 +232,8 @@
             How is the pace of the materials covered? {{ course.rating[1] }}
           </li>
           <li>How in-depth is the material? {{ course.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ course.explanation }}</li>
           <li class="flex gap-2 place-items-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
@@ -280,6 +282,8 @@
             How is the pace of the materials covered? {{ classroom.rating[1] }}
           </li>
           <li>How in-depth is the material? {{ classroom.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ classroom.explanation }}</li>
           <li class="flex gap-2 place-items-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
@@ -325,6 +329,8 @@
           </li>
           <li>How is the pace of the materials covered? {{ ta.rating[1] }}</li>
           <li>How in-depth is the material? {{ ta.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ ta.explanation }}</li>
           <li class="flex gap-2 place-item-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
