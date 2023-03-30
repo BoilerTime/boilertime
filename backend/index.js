@@ -972,5 +972,26 @@ app.post('/api/add/ratings_count', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(200);
 });
 
+/*
+ * Call for getting all user_schedules
+ * @param {string} room - The user_id of the user
+ */
+app.post('/api/get/user_schedules', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    var user_id = req.body.user_id;
+    await getSchedule.getAllUserSchedules(user_id).then((jArray) => {
+      res.json(jArray);
+    }).catch((err) => {
+      console.error(err)
+    });
+  }
+});
+
 
 module.exports = app;
