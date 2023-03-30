@@ -99,6 +99,8 @@
         <!-- Profile Button -->
         <a href="/app/profile" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Your Profile</a>
         <a href="/app/create" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Create Schedule</a>
+        <a href="/group/view" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">My Groups</a>
+        <a href="/group/create" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Create Group</a>
         <a href="/app/home" @click="logout" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Log Out</a>
         Logged in as: {{ (user_id).slice(0,10) }}...
       </div>
