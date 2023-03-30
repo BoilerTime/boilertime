@@ -1,5 +1,7 @@
 <template>
-  <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
+  <main>
+    <NavBar />
+    <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
         <div class="text-4xl font-bold text-black">
@@ -21,6 +23,17 @@
       </div>
       <div class="rounded-lg bg-white p-12 shadow-2xl col-span-3">
         <div class="relative">
+          <div class="mb-8">
+            <label class="text-md font-semibold">Select your time of day preference:</label>
+            <fieldset class="mt-2">
+              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                <div v-for="time in timePreference" :key="time.id" class="flex items-center">
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
           <label class="text-md font-semibold">Add classes you have to take:</label>
           <input v-model="searchTerm"
             class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -78,7 +91,7 @@
               </template>
             </draggable>
           </div>
-          <div class="mt-4">
+          <div class="mt-8">
             <button @click="submit" class="bg-yellow-500 text-white p-2 text-md rounded-md">
               Submit
             </button>
@@ -87,6 +100,7 @@
       </div>
     </div>
   </section>
+  </main>
 </template>
 
 <script setup>
@@ -100,6 +114,8 @@ import { BookmarkIcon } from "@heroicons/vue/24/outline"
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
+const time_pref = ref('')
+const rmp = ref('')
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -107,6 +123,12 @@ const config = {
     'authorization': `Bearer ${accessToken}`
   }
 }
+
+const timePreference = [
+  { id: 'none', title: 'No preference' },
+  { id: 'morning', title: 'Before 12 noon' },
+  { id: 'afternoon', title: 'After 12 noon' },
+]
 
 onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
@@ -279,7 +301,9 @@ function submit() {
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value
+      optional_classes: selectedOptionalCourses.value,
+      time: time.value,
+      rmp: rmp.value
     }, config).then(() => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
