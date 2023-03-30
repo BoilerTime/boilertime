@@ -32,6 +32,7 @@ const java = new JavaCaller({
 
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
+const path = require('path');
 
 
 app.use(express.json());
@@ -40,7 +41,7 @@ app.use(express.json());
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -77,7 +78,6 @@ app.post('/api/auth/user', jwt.authenticateToken, (req, res) => {
  * @param {boolean} isGradStudent - whether user is a graduate student or not
  */
 app.post('/api/update/profile', jwt.authenticateToken, async (req, res) => {
-  console.log('UPDATING PROFILE\n\n\n');
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
@@ -135,13 +135,15 @@ app.post('/api/login', (req, res) => {
     //console.log(user);
     //console.log(accessToken);
     console.log("Logged in: " + email)
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id });
+    res.json({ accessToken: accessToken, refreshToken: refreshToken, user_id: user_id, dark_mode: dark_mode });
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
   });
 });
 
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.RESET);
 
 /**
  * Sends an email to reset the password
@@ -155,14 +157,28 @@ app.post('/api/forgotpassword', (req, res) => {
       from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${user_id}">Reset Password</a>`
+      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
-    res.json({user_id: user_id, email: email});
+    res.sendStatus(200);
   }).catch(err => {
     console.error(err)
     res.sendStatus(401);
   });
+});
+
+app.get('/api/searchnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'classes.json'));
+})
+
+/**
+ * Encrypts User ID
+ * @param {string} user_id - user_id
+ */
+app.post('/api/encryptuserid', (req, res) => {
+  const user_id = req.body.user_id;
+  const encrypted = cryptr.encrypt(user_id);
+  res.json({ user_id: encrypted });
 });
 
 /**
@@ -256,6 +272,25 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       res.json({accessToken: req.user.accessToken});
     }).catch((err) => {
       console.log(err)
+      res.sendStatus(500);
+    });
+  }
+});
+
+app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    console.log(req.body);
+    await schedule.addClasses(req.body).then((input) => {
+      console.log("Schedule Added to Database")
+      res.json({accessToken: req.user.accessToken});
+    }).catch(err => {
+      console.error(err)
       res.sendStatus(500);
     });
   }
@@ -811,7 +846,7 @@ app.post('/api/guest', async (req, res) => {
     console.log(user);
     res.json(user);
   }).catch(err => {
-    console.log("HERE IN ERROR");
+    console.log("error");
     console.error(err)
     res.sendStatus(401);
   });
@@ -934,6 +969,46 @@ app.post('/api/building', async (req, res) => {
       res.sendStatus(500);
       return;
     });
+  }
+});
+
+/*
+ * Call for getting the current theme as dictated by the database
+ * @param {string} user_id - The user_id associated with the current session
+ */
+
+app.post('/api/get/darkmode', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    darkMode = await utils.getDarkMode(user_id);
+    res.json({ dark_mode: darkMode });
+  }
+});
+
+/*
+ * Call for setting the current theme as dictated by the database
+ * @param {string} user_id - The user_id associated with the current session
+ * @param {string} dark_mode - The dark mode boolean true or false
+ */
+app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const darkMode = req.body.dark_mode;
+    await utils.setDarkMode(user_id, darkMode);
+    console.log('Changed Darkmode to ' + darkMode);
+    res.sendStatus(200);
   }
 });
 

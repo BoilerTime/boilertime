@@ -1,6 +1,6 @@
 <template>
   <NavBar />
-  <div class="h-screen p-16 bg-gray-200">
+  <div class="h-screen overflow-scroll p-16 bg-gray-200 dark:bg-neutral-600">
     <!--Transition Container-->
     <TransitionRoot
       :show="isModalVisible"
@@ -14,41 +14,47 @@
       <!--Edit Profile Modal-->
       <Modal @closed="closeModal">
         <template #header>
-          <h1 class="font-extrabold text-3xl">Edit Profile</h1>
+          <h1 class="font-extrabold text-3xl dark:text-gray-200">
+            Edit Profile
+          </h1>
         </template>
         <template #body>
           <div class="flex flex-col gap-4">
             <div class="flex flex-row gap-4">
               <div class="flex flex-col gap-2">
-                <label for="firstname" class="font-bold">First Name</label>
+                <label for="firstname" class="font-bold dark:text-gray-200"
+                  >First Name</label
+                >
                 <input
                   type="text"
                   id="firstname"
                   v-model="firstname"
-                  class="border rounded-lg p-2"
+                  class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="First Name"
                 />
               </div>
               <div class="flex flex-col gap-2">
-                <label for="lastname" class="font-bold">Last Name</label>
+                <label for="lastname" class="font-bold dark:text-gray-200"
+                  >Last Name</label
+                >
                 <input
                   type="text"
                   id="lastname"
                   v-model="lastname"
-                  class="border rounded-lg p-2"
+                  class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Last Name"
                 />
               </div>
             </div>
             <div class="flex flex-row gap-4 place-content-center">
               <div class="flex flex-col gap-4">
-                <label for="gradMonth" class="font-bold"
+                <label for="gradMonth" class="font-bold dark:text-gray-200"
                   >Graduation Month</label
                 >
                 <select
                   id="gradMonth"
                   v-model="gradMonth"
-                  class="border rounded-lg p-2"
+                  class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Month"
                 >
                   <option value="January">January</option>
@@ -66,11 +72,13 @@
                 </select>
               </div>
               <div class="flex flex-col gap-4">
-                <label for="gradYear" class="font-bold">Graduation Year</label>
+                <label for="gradYear" class="font-bold dark:text-gray-200"
+                  >Graduation Year</label
+                >
                 <select
                   id="gradYear"
                   v-model="gradYear"
-                  class="border rounded-lg p-2"
+                  class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Year"
                 >
                   <option value="2023">2023</option>
@@ -94,24 +102,76 @@
                 </select>
               </div>
               <div class="flex flex-col gap-4">
-                <label for="isGradStudent" class="font-bold justify-end"
+                <label
+                  for="isGradStudent"
+                  class="font-bold dark:text-gray-200 justify-end"
                   >Graduate Student</label
                 >
                 <button
                   id="isGradStudent"
                   @click="isGradStudent = !isGradStudent"
-                  class="border rounded-lg p-2 bg-blue-500 hover:bg-blue-700 text-white"
+                  class="border rounded-lg p-2 bg-indigo-500 hover:bg-indigo-700 text-white dark:border-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {{ isGradStudent ? "Yes" : "No" }}
                 </button>
               </div>
+            </div>
+            <button
+              @click="showPasswordChange"
+              class="text-black dark:text-gray-200 text-lg font-bold py-2 px-3 hover:underline"
+            >
+              Need to change your password?
+            </button>
+            <div v-if="TestsDiv">
+              <form @submit.prevent="() => changePassword()">
+                <!--Password text & input box-->
+                <label
+                  for="password"
+                  class="block mb-2 font-bold text-black dark:text-gray-200"
+                  >New Password</label
+                >
+                <input
+                  type="password"
+                  id="password"
+                  class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Password"
+                  v-model="password"
+                  required
+                />
+                <!--Confirm Password text & input box-->
+                <label
+                  for="confpassword"
+                  class="block mb-2 mt-2 font-bold text-black dark:text-gray-200"
+                  >Confirm Password</label
+                >
+                <input
+                  type="password"
+                  id="confpassword"
+                  class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Password"
+                  v-model="confpassword"
+                  required
+                />
+
+                <!--Confirms the password change-->
+                <div
+                  class="container py-3 px-5 w-full flex flex-col items-center"
+                >
+                  <button
+                    type="submit"
+                    class="bg-green-500 hover:bg-green-700 border dark:border-black text-white font-bold py-2 px-10 rounded-lg"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </template>
         <template #footer>
           <button
             type="button"
-            class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg"
+            class="w-1/8 bg-yellow-500 hover:bg-yellow-700 border dark:border-black text-white font-bold py-2 px-2 rounded-lg"
             @click="submit"
           >
             Submit
@@ -122,7 +182,7 @@
 
     <!--Profile Card-->
     <div
-      class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row"
+      class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-700 border dark:border-black rounded-lg shadow-lg grid grid-flow-row"
     >
       <!--Flex grouping for profile info content-->
       <div class="flex flex-auto gap-4">
@@ -134,58 +194,149 @@
         </div>
         <!--Profile Info-->
         <div class="place-self-center">
-          <h1 class="font-extrabold text-2xl">
+          <h1 class="font-extrabold text-4xl dark:text-gray-200">
             {{ firstname }} {{ lastname }}
           </h1>
-          <h1 class="font-light text-md">{{ gradMonth }} {{ gradYear }}</h1>
-          <h1 class="font-light text-md">
+          <h1 class="font-light text-md dark:text-gray-200">{{ gradMonth }} {{ gradYear }}</h1>
+          <h1 class="font-light text-md dark:text-gray-200 italic">
             {{ isGradStudent ? "Graduate" : "Undergraduate" }}
           </h1>
         </div>
       </div>
       <!--Flex grouping for user ratings-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">User Ratings ⭐️</h1>
+        <h1 class="font-bold text-2xl dark:text-gray-200">User Ratings ⭐️</h1>
       </div>
-        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
-        <h1 class="font-bold text-2xl mt-3 mb-3">Courses</h1>
-        <ul class="list-inside list-item mb-6" v-for="(course, index) in courses" :key="index" v-if="isDataLoaded">
-          <li class="font-bold text-lg">{{ course.course }}</li>
-          <li class="font-light text-sm mb-2">Submitted at: {{ course.timestamp }}</li>
-          <li class="font-light text-sm mb-2 text-red-500" v-if="course.flag_count >= 3">This review has been flagged for review by the content moderators</li>
-          <li>How strict are the prerequisite requirements: {{ course.rating[0] }}</li>
-          <li>How is the pace of the materials covered: {{ course.rating[1] }}</li>
-          <li>How in-depth is the material: {{ course.rating[2] }}</li>
-          <li>Your Review: </li>
-          <li>{{ course.explanation }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(course.course, course.rating[0], course.rating[1], course.rating[2], course.explanation, 'course', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deletecourses(course.course)">Delete</a>
-            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
+      <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4">
+        <h1 class="font-bold text-2xl mb-3">Courses</h1>
+        <ul
+          class="list-inside list-item mb-6"
+          v-for="(course, index) in courses"
+          :key="index"
+          v-if="isDataLoaded"
+        >
+          <li class="font-bold text-lg">{{ course.course }} </li>
+          <li class="font-light italic text-sm mb-2">
+            Submitted at: {{ course.timestamp }}
+          </li>
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="course.flag_count >= 3"
+          >
+            This review has been flagged for review by the content moderators
+          </li>
+          <li>
+            How strict are the prerequisite requirements? {{ course.rating[0] }}
+          </li>
+          <li>
+            How is the pace of the materials covered? {{ course.rating[1] }}
+          </li>
+          <li>How in-depth is the material? {{ course.rating[2] }}</li>
+          <li class="flex gap-2 place-items-center">
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+              @click="
+                edit(
+                  course.course,
+                  course.rating[0],
+                  course.rating[1],
+                  course.rating[2],
+                  course.explanation,
+                  'course',
+                  userStore.user_id
+                )
+              "
+              >Edit</a
+            ><a
+              class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+              @click="deletecourses(course.course)"
+              >Delete</a
+            >
+            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+          </li>
         </ul>
         <h1 class="font-bold text-2xl mt-3 mb-3">Classrooms</h1>
-        <ul class="list-inside list-item mb-6" v-for="classroom in classrooms" v-if="isDataLoaded">
+        <ul
+          class="list-inside list-item mb-6"
+          v-for="classroom in classrooms"
+          v-if="isDataLoaded"
+        >
           <li class="font-bold text-lg">{{ classroom["classroom"] }}</li>
-          <li class="font-light text-sm mb-2">Submitted at: {{ classroom.timestamp }}</li>
-          <li class="font-light text-sm mb-2 text-red-500" v-if="classroom.flag_count >= 3">This review has been flagged for review by the content moderators</li>
-          <li>How strict are the prerequisite requirements: {{ classroom.rating[0] }}</li>
-          <li>How is the pace of the materials covered: {{ classroom.rating[1] }}</li>
-          <li>How in-depth is the material: {{ classroom.rating[2] }}</li>
-          <li>Your Review: </li>
-          <li>{{ classroom.explanation }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(classroom.classroom, classroom.rating[0], classroom.rating[1], classroom.rating[2], classroom.explanation, 'classroom', userStore.user_id)">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteclassrooms(classroom.classroom)">Delete</a>
-            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
+          <li class="font-light text-sm mb-2 italic">
+            Submitted at: {{ classroom.timestamp }}
+          </li>
+          <!-- Classroom Reivews, edit content because it does not make sense -->
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="classroom.flag_count >= 3"
+          >
+            This review has been flagged for review by the content moderators
+          </li>
+          <li>
+            How strict are the prerequisite requirements?
+            {{ classroom.rating[0] }}
+          </li>
+          <li>
+            How is the pace of the materials covered? {{ classroom.rating[1] }}
+          </li>
+          <li>How in-depth is the material? {{ classroom.rating[2] }}</li>
+          <li class="flex gap-2 place-items-center">
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+              @click="
+                edit(
+                  classroom.classroom,
+                  classroom.rating[0],
+                  classroom.rating[1],
+                  classroom.rating[2],
+                  course.explanation,
+                  'classroom',
+                  userStore.user_id
+                )
+              "
+              >Edit</a
+            ><a
+              class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+              @click="deleteclassrooms(classroom.classroom)"
+              >Delete</a
+            >
+            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+          </li>
         </ul>
-        <h1 class="font-bold text-2xl mt-3 mb-3">TAs</h1>
-        <ul class="list-inside list-item mb-6" v-for="ta in tas" v-if="isDataLoaded">
+        <h1 class="font-bold text-2xl mt-3 mb-3">Teaching Assistants</h1>
+        <ul
+          class="list-inside list-item mb-2"
+          v-for="ta in tas"
+          v-if="isDataLoaded"
+        >
           <li class="font-bold text-lg">{{ ta["ta"] }}</li>
-          <li class="font-light text-sm mb-2">Submitted at: {{ ta.timestamp }}</li>
-          <li class="font-light text-sm mb-2 text-red-500" v-if="ta.flag_count >= 3">This review has been flagged for review by the content moderators</li>
-          <li>How strict are the prerequisite requirements: {{ ta.rating[0] }}</li>
-          <li>How is the pace of the materials covered: {{ ta.rating[1] }}</li>
-          <li>How in-depth is the material: {{ ta.rating[2] }}</li>
-          <li>Your Review:</li>
-          <li>{{ ta.explanation }}</li>
-          <li class="mt-6"><a class="mr-3 bg-yellow-500 p-3 rounded-md" @click="edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], ta.explanation, 'ta')">Edit</a><a class="bg-red-500 p-3 rounded-md" @click="deleteta(ta.ta)">Delete</a>
-            <a class="ml-3 bg-blue-500 p-3 rounded-md" @click="flag">Flag</a></li>
+          <li class="font-light text-sm mb-2 italic">
+            Submitted at: {{ ta.timestamp }}
+          </li>
+          <!--Flagging Teaching Assistants, review label content (does not make sense)-->
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="ta.flag_count >= 3"
+          >
+            This review has been flagged for review by the content moderators
+          </li>
+          <li>
+            How strict are the prerequisite requirements? {{ ta.rating[0] }}
+          </li>
+          <li>How is the pace of the materials covered? {{ ta.rating[1] }}</li>
+          <li>How in-depth is the material? {{ ta.rating[2] }}</li>
+          <li class="flex gap-2 place-item-center">
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
+              @click="
+                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], ta.explanation, 'ta')
+              "
+              >Edit</a
+            ><a class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg" @click="deleteta(ta.ta)"
+              >Delete</a
+            >
+            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+          </li>
         </ul>
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
@@ -194,13 +345,11 @@
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">Bookmarked Classes ❗️</h1>
-        <div
-          class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4"
-        >
+        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">Bookmarked Classes ❗️</h1>
+        <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 p-4">
           <ul class="list-inside list-item">
             <li
-              class="mb-2 font-bold"
+              class="mb-2 font-bold text-lg"
               v-for="(item, index) in bookmarkedClasses"
               :key="index"
             >
@@ -210,17 +359,17 @@
         </div>
       </div>
       <!--Edit Profile Button-->
-      <div class="grid grid-flow-col gap-4 justify-end mb-5">
+      <div class="grid grid-flow-col gap-4 justify-end">
         <button
           type="button"
-          class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg"
+          class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
           @click="showModal"
         >
           Edit Profile
         </button>
         <!--Go home-->
         <button
-          class="w-1/8 bg-gray-400 hover:bg-gray-700 text-white py-2 px-2 rounded-lg"
+          class="w-1/8 bg-indigo-500 hover:bg-indigo-700 font-bold border dark:border-black text-white py-2 px-2 rounded-lg"
         >
           <a href="/app/home">Home</a>
         </button>
@@ -235,6 +384,10 @@ import axios from "axios";
 import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
+import sha256 from "js-sha256";
+import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
+//import { encrypt } from "iron-webcrypto";
+//import test from "node:test";
 
 /**
  * Call for creating group
@@ -254,24 +407,81 @@ var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
 
-var user_id = userStore.user_id
+var user_id = userStore.user_id;
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
-    'authorization': `Bearer ${accessToken}`
+    authorization: `Bearer ${accessToken}`,
+  },
+};
+
+const password = ref("");
+const confpassword = ref("");
+var TestsDiv = ref(false);
+function showPasswordChange() {
+  if (TestsDiv.value == true) {
+    TestsDiv.value = false;
+  } else {
+    TestsDiv.value = true;
+  }
+}
+
+var encrypteduserid = "";
+
+/**
+ * changePassword() will take in the new password and the confirmation,
+ * making sure the two are the same before updating the user's password.
+ */
+
+async function changePassword() {
+  var newpassword = sha256(password.value);
+  var newconfpassword = sha256(confpassword.value);
+  // Getting the encrypted user ID
+  await axios
+    .post("http://localhost:3001/api/encryptuserid", {
+      user_id: user_id,
+    })
+    .then((res) => {
+      encrypteduserid = res.data.user_id;
+    })
+    .catch(function (error) {
+      console.error(error);
+      alert("Error: " + error);
+    });
+  // Resetting the password
+  if (newpassword === newconfpassword) {
+    await axios
+      .post("http://localhost:3001/api/resetpassword", {
+        user_id: encrypteduserid,
+        password: newpassword,
+      })
+      .then(function () {
+        alert("Password has been changed.");
+        navigateTo("/app/profile");
+      })
+      .catch(function (error) {
+        console.error(error);
+        alert("Error: " + error);
+      });
+  } else {
+    alert("Passwords do not match.");
   }
 }
 
 /* CAPTCHA variables */
-const randval1 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1))
-const randval2 = Math.floor(Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1))
-const actualval = randval1 + randval2
-const enterval = ref('')
+const randval1 = Math.floor(
+  Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1)
+);
+const randval2 = Math.floor(
+  Math.random() * (Math.floor(20) - Math.ceil(1)) + Math.ceil(1)
+);
+const actualval = randval1 + randval2;
+const enterval = ref("");
 
 var isDataLoaded = ref(false);
 
 function flag() {
-  window.prompt("Why are you flagging this?","");
+  window.prompt("Why are you flagging this?", "");
 }
 
 function showModal() {
@@ -308,13 +518,13 @@ function closeFlagModal() {
 
 /** THIS IS FOR EDIT MODAL */
 
-const isOpen = ref(false)
+const isOpen = ref(false);
 
 function closeEdit() {
-  isOpen.value = false
+  isOpen.value = false;
 }
 function openModal() {
-  isOpen.value = true
+  isOpen.value = true;
 }
 
 var editTitle = ref("")
@@ -338,15 +548,19 @@ async function edit(title, q1, q2, q3, expl, type) {
 
 async function getBookmarks() {
   axios
-    .post("http://localhost:3001/api/getbookmarks", {
-      user_id: userStore.user_id,
-    }, config)
+    .post(
+      "http://localhost:3001/api/getbookmarks",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       console.log(response.data.bookmarks);
       bookmarkedClasses.value = response.data.bookmarks;
@@ -358,20 +572,24 @@ async function getBookmarks() {
 
 async function deletecourses(course) {
   axios
-    .post("http://localhost:3001/api/delete/ratings/courses", {
-      user_id: userStore.user_id,
-      course: course,
-    }, config)
+    .post(
+      "http://localhost:3001/api/delete/ratings/courses",
+      {
+        user_id: userStore.user_id,
+        course: course,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       console.log(response.data);
-      alert("Successfully deleted request")
-      location.reload()
+      alert("Successfully deleted request");
+      location.reload();
     }, config)
     .catch((error) => {
       console.error(error);
@@ -380,21 +598,25 @@ async function deletecourses(course) {
 
 async function deleteclassrooms(classroom) {
   axios
-    .post("http://localhost:3001/api/delete/ratings/classrooms", {
-      user_id: userStore.user_id,
-      classroom: classroom,
-    }, config)
+    .post(
+      "http://localhost:3001/api/delete/ratings/classrooms",
+      {
+        user_id: userStore.user_id,
+        classroom: classroom,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       console.log(response.data);
-      alert("Successfully deleted request")
-      location.reload()
+      alert("Successfully deleted request");
+      location.reload();
     })
     .catch((error) => {
       console.error(error);
@@ -403,21 +625,25 @@ async function deleteclassrooms(classroom) {
 
 async function deleteta(ta) {
   axios
-    .post("http://localhost:3001/api/delete/ratings/tas", {
-      user_id: userStore.user_id,
-      ta: ta,
-    }, config)
+    .post(
+      "http://localhost:3001/api/delete/ratings/tas",
+      {
+        user_id: userStore.user_id,
+        ta: ta,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       console.log(response.data);
-      alert("Successfully deleted request")
-      location.reload()
+      alert("Successfully deleted request");
+      location.reload();
     })
     .catch((error) => {
       console.error(error);
@@ -426,16 +652,20 @@ async function deleteta(ta) {
 
 async function getUserInfo() {
   axios
-    .post("http://localhost:3001/api/get/profile/", {
-      user_id: userStore.user_id,
-    }, config)
+    .post(
+      "http://localhost:3001/api/get/profile/",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
@@ -448,32 +678,46 @@ async function getUserInfo() {
     });
 }
 
-let courses = []
-let classrooms = []
-let tas = []
+let courses = [];
+let classrooms = [];
+let tas = [];
 
 async function getratings() {
-  await axios.post("http://localhost:3001/api/get/user_ratings/courses", {
-    user_id: userStore.user_id
-  }, config).then((response) => {
-    if (response.data["accessToken"] != undefined) {
-      userStore.user = {
-        accessToken: response.data["accessToken"],
-        //refreshToken: response.data["refreshToken"],
-        user_id: user_id
+  await axios
+    .post(
+      "http://localhost:3001/api/get/user_ratings/courses",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
+    .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id,
+        };
+        accessToken = userStore.accessToken;
+        config.headers["authorization"] = `Bearer ${accessToken}`;
+        location.reload();
       }
-      accessToken = userStore.accessToken;
-      config.headers['authorization'] = `Bearer ${accessToken}`;
-      location.reload();
-    }
-    courses = response.data
-  }).catch((error) => {
-    console.error(error)
-  }).then(async () => {
-    await axios.post("http://localhost:3001/api/get/user_ratings/classrooms", {
-      user_id: userStore.user_id
-    }, config).then((response) => {
-      /*
+      courses = response.data;
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .then(async () => {
+      await axios
+        .post(
+          "http://localhost:3001/api/get/user_ratings/classrooms",
+          {
+            user_id: userStore.user_id,
+          },
+          config
+        )
+        .then((response) => {
+          /*
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
@@ -482,49 +726,62 @@ async function getratings() {
         }
       }
       */
-      classrooms = response.data
-    }).catch((error) => {
-      console.error(error)
-    })
-    await axios.post("http://localhost:3001/api/get/user_ratings/tas", {
-      user_id: userStore.user_id
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-      }
-      tas = response.data
-    }).catch((error) => {
-      console.error(error)
-    })
-  })
+          classrooms = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      await axios
+        .post(
+          "http://localhost:3001/api/get/user_ratings/tas",
+          {
+            user_id: userStore.user_id,
+          },
+          config
+        )
+        .then((response) => {
+          if (response.data["accessToken"] != undefined) {
+            userStore.user = {
+              accessToken: response.data["accessToken"],
+              //refreshToken: response.data["refreshToken"],
+              user_id: user_id,
+            };
+          }
+          tas = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
 }
 
 async function flagCourse(course) {
   if (actualval == enterval.value) {
-    await axios.post("http://localhost:3001/api/add/flag", {
-      type: 'course',
-      user_id: userStore.user_id,
-      name: course.name.value
-    }, config)
-    .then(function() {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
+    await axios
+      .post(
+        "http://localhost:3001/api/add/flag",
+        {
+          type: "course",
+          user_id: userStore.user_id,
+          name: course.name.value,
+        },
+        config
+      )
+      .then(function () {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id,
+          };
         }
-      }
-      alert("Review report successfully submitted.");
-      isCourseModalVisible.value = false;
-    })
-    .catch(function (error) {
-      console.error();
-      alert(error);
-    });
+        alert("Review report successfully submitted.");
+        isCourseModalVisible.value = false;
+      })
+      .catch(function (error) {
+        console.error();
+        alert(error);
+      });
   } else {
     alert("CAPTCHA entered incorrectly. Please try again.");
   }
@@ -532,22 +789,26 @@ async function flagCourse(course) {
 
 async function submit() {
   axios
-    .post("http://localhost:3001/api/update/profile", {
-      user_id: userStore.user_id,
-      firstname: firstname.value,
-      lastname: lastname.value,
-      classification_year: "Freshman",
-      grad_month: gradMonth.value,
-      grad_year: gradYear.value,
-      is_grad_student: isGradStudent.value,
-    }, config)
+    .post(
+      "http://localhost:3001/api/update/profile",
+      {
+        user_id: userStore.user_id,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        classification_year: "Freshman",
+        grad_month: gradMonth.value,
+        grad_year: gradYear.value,
+        is_grad_student: isGradStudent.value,
+      },
+      config
+    )
     .then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
           //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
+          user_id: user_id,
+        };
       }
       isModalVisible.value = false;
     })
@@ -561,11 +822,10 @@ onMounted(async () => {
   getBookmarks();
   await getratings();
   setTimeout(() => {
-    console.log(courses)
-    console.log(classrooms)
-    console.log(tas)
+    console.log(courses);
+    console.log(classrooms);
+    console.log(tas);
     isDataLoaded.value = true;
-  }, 1000)
+  }, 1000);
 });
-
 </script>
