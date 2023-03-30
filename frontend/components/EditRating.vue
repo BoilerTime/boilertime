@@ -1,11 +1,11 @@
 <template>
-  <TransitionRoot appear :show="isOpen">
+  <TransitionRoot :show="isOpen">
     <Dialog as="div" @close="closeEdit">
       <TransitionChild
-        enter="duration-500"
+        enter="duration-100"
         enter-from="opacity-0"
         enter-to="opacity-100"
-        leave="duration-300"
+        leave="duration-100"
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
@@ -15,30 +15,30 @@
       <div class="fixed inset-0">
         <div class="flex min-h-full items-center justify-center text-center">
           <TransitionChild
-            enter="duration-500"
+            enter="duration-100"
             enter-from="opacity-0"
             enter-to="opacity-100"
-            leave="duration-300"
+            leave="duration-100"
             leave-from="opacity-100"
             leave-to="opacity-0"
           >
-            <DialogPanel class="text-left bg-white p-6 rounded-lg">
-              <DialogTitle class="text-lg font-medium leading-6 text-gray-900">
+            <DialogPanel class="text-left bg-white dark:bg-neutral-700 p-6 rounded-lg">
+              <DialogTitle class="text-lg font-medium leading-6 text-black dark:text-gray-200">
                 Edit rating for {{ title }}
               </DialogTitle>
               <div class="mt-2">
                 <form>
-                  <label class="mb-1">First rating: {{ q1 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q1_edit"><br>
-                  <label class="mt-1 mb-1">Second rating: {{ q2 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
-                  <label class="mb-1">Third rating: {{ q3 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
+                  <label class="mb-1 dark:text-gray-200">First rating: {{ q1 }}</label><br>
+                  <input type="text" class="bg-gray-200 dark:bg-neutral-500 dark:text-gray-200 hover:outline-none focus:outline-none p-1 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" v-model="q1_edit"><br>
+                  <label class="mt-1 mb-1 dark:text-gray-200">Second rating: {{ q2 }}</label><br>
+                  <input type="text" class="bg-gray-200 dark:bg-neutral-500 dark:text-gray-200 hover:outline-none focus:outline-none p-1 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" v-model="q2_edit"><br>
+                  <label class="mb-1 dark:text-gray-200">Third rating: {{ q3 }}</label><br>
+                  <input type="text" class="bg-gray-200 dark:bg-neutral-500 dark:text-gray-200 hover:outline-none focus:outline-none p-1 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" v-model="q3_edit"><br>
                 </form>
               </div>
 
-              <div class="mt-4">
-                <button class="inline-flex justify-center rounded-md border border-transparent bg-yellow-500 px-4 py-2 text-sm font-medium text-white" @click="submit">
+              <div class="mt-4 flex place-content-center">
+                <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="submit">
                   Submit changes
                 </button>
               </div>
