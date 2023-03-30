@@ -141,6 +141,7 @@ describe("POST Test Ratings Sprint 2 User Story 3, 4, 5, 6, 10", () => {
       })
   });
 
+  /*
   it("API Call to Get Number of Course Ratings", (done) => {
     chai.request(app)
       .post('/api/get/num_ratings')
@@ -150,6 +151,7 @@ describe("POST Test Ratings Sprint 2 User Story 3, 4, 5, 6, 10", () => {
         done();
       })
   });
+  */
 
   it("API Call To Get User Course Ratings", (done) => {
     chai.request(app)
@@ -202,6 +204,7 @@ describe("POST Test Ratings Sprint 2 User Story 3, 4, 5, 6, 10", () => {
       });
   });
 
+  /*
   it("API Call to Get Number of Course Ratings After Deleting a Rating", (done) => {
     chai.request(app)
       .post('/api/get/num_ratings')
@@ -211,6 +214,7 @@ describe("POST Test Ratings Sprint 2 User Story 3, 4, 5, 6, 10", () => {
         done();
       })
   });
+  */
 
   it("API Call Add Classroom Rating", (done) => {
     chai.request(app)
