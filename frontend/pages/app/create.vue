@@ -94,7 +94,6 @@ import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import draggable from 'vuedraggable'
-
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
 
 const data = ref([])
