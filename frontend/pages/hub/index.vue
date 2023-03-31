@@ -1,5 +1,5 @@
 <template>
-  <main class="dark:bg-neutral-500 h-screen">
+  <main class="dark:bg-neutral-500 h-screen overflow-auto">
     <NavBar />
     <div class="flex flex-col items-center mt-12">
       <h1 class="mb-6 text-2xl font-bold text-center dark:text-gray-200">Aggregated reviews for your <br>professor, classroom, course, and TA
