@@ -110,7 +110,6 @@ import { useUserStore } from "../../store/user";
 import draggable from 'vuedraggable'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
-
 const { $socket } = useNuxtApp()
 
 const data = ref([])
@@ -177,10 +176,16 @@ onMounted(() => {
     console.log("Are we open? " + isOpen.value)
   }
   $socket.onmessage = ((data) => {
-    console.log(data.data)
-    console.log("data", JSON.parse(data.data))
-    console.log(courseList);
-  })
+    //console.log("data", JSON.parse(data.data))
+    try {
+      let response = JSON.parse(data.data);
+      if(response?.message == "schedule") {
+        parseCoursesResponse(response.data);
+      }
+    } catch (e) {
+      console.log("Wasnt JSON!!" + e)
+    }
+})
 
   $socket.onclose = function () {
     console.log("disconnected")
@@ -387,7 +392,51 @@ function sendToOptimizer(data) {
   }
 }
 
+function parseCoursesResponse(data) {
+  let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let serverOutput = {"schedule": []};
+  for(let i = 0; i < data.length; i++) {
+    let name = data[i].courseID;
+    let thisFormat = JSON.parse(JSON.stringify(serverFormat));
+    let indexForTarget = findCourse(name);
+    //console.log("index = " + indexForTarget)
+    //console.log("Data = " + JSON.stringify(data[i]))
+    let indexIn = findIDIndex(indexForTarget, data[i].sectionId);
+    thisFormat.subject = name.split(' ')[0];
+    thisFormat.number = name.split(' ')[1];
 
+    thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
+    thisFormat.userSections.meetings.push(data[i].sectionId);
+    serverOutput.schedule.push(thisFormat)
+    //console.log("indexIn = " + indexIn)
+    //console.log("The optimal schedule is at: " +  data[i].courseStartTime + " and runs for " + data[i].courseDuration + " and whose professor has " + courseList[indexForTarget].rmp[indexIn]); 
+  }
+
+  console.log(serverOutput)
+} 
+
+
+function findCourse(target) {
+  for(let i = 0; i < courseList.length; i++) {
+    if(courseList[i].name == target) {
+      return i;
+    }
+  }
+}
+
+function findIDIndex(position, target) {
+  for(let i = 0; i < courseList[position].sectionIDs.length; i++) {
+    if(courseList[position].sectionIDs[i] == target) {
+      return i;
+    }
+  }
+}
+
+function saveOptimizedSchedule(schedule) {
+  axios.post('http://localhost:3001/api/saveoptimizedschedule', {
+    data: schedule
+  })
+}
 </script>
 
 <style scoped>

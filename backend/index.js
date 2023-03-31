@@ -278,6 +278,13 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   }
 });
 
+
+app.post('/api/saveoptimizedschedule', async (req, res) => {
+  await saveSchedule.saveSchedule(req.body);
+  res.sendStatus(200);
+})
+
+
 app.post('/api/getclasses', async (req, res) => {
   await schedule.getClasses(req.body.user_id).then((classes) => {
     res.send(classes);
