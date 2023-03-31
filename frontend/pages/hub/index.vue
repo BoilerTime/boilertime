@@ -131,11 +131,44 @@
                 <span class="font-bold mr-2 text-gray-700">Availability of technology:</span>
                 <span class="text-gray-600">{{ rating.rating[2] }}</span>
               </div>
-              <div class="flex items-center">
-                <span class="font-bold mr-2 text-gray-700">Flagged:</span>
-                <span class="text-gray-600">{{ rating.flag_count }}</span>
+              <div class="flex items-center mb-2">
+                <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                <span class="text-gray-600">{{ rating.explanation }}</span>
               </div>
+              <div class="flex items-center" v-if="rating.flag_count >= 3">
+                <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                <span class="text-red-500">{{ rating.flag_count }} times</span>
+              </div>
+              <button v-if="rating.user_id != userStore.user_id" class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded" @click="flag(rating.user_id, 'classroom')">
+                Flag
+              </button>
             </div>
+          </div>
+          <div v-if="!showTextBox3" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+            @click="showTextBox3 = true">
+            <span class="font-bold text-lg text-gray-700">Add your rating</span>
+          </div>
+          <div v-if="showTextBox3" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+            <h3 class="font-bold text-lg text-gray-700 mb-2">Submit your rating</h3>
+            <form @submit.prevent="submitClassroomRating">
+              <div class="flex flex-col mb-2">
+                <label for="convenience" class="font-bold text-gray-700 mb-1">Convenience of access</label>
+                <input type="number" min="1" max="5" v-model="convenience" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="quality" class="font-bold text-gray-700 mb-1">Quality of seating</label>
+                <input type="number" min="1" max="5" v-model="quality" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="technology" class="font-bold text-gray-700 mb-1">Availability of technology</label>
+                <input type="number" min="1" max="5" v-model="technology" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="explanation" class="font-bold text-gray-700 mb-1">Explanation of rating</label>
+                <textarea type="text" v-model="explanation" class="border border-gray-400 p-2 rounded-lg" />
+              </div>
+              <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4">Submit</button>
+            </form>
           </div>
         </div>
       </div>
@@ -161,10 +194,17 @@
                 <span class="font-bold mr-2 text-gray-700">Depth of material covered:</span>
                 <span class="text-gray-600">{{ rating.rating[2] }}</span>
               </div>
-              <div class="flex items-center">
-                <span class="font-bold mr-2 text-gray-700">Flagged:</span>
-                <span class="text-gray-600">{{ rating.flag_count }}</span>
+              <div class="flex items-center mb-2">
+                <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                <span class="text-gray-600">{{ rating.explanation }}</span>
               </div>
+              <div class="flex items-center" v-if="rating.flag_count >= 3">
+                <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                <span class="text-red-500">{{ rating.flag_count }} times</span>
+              </div>
+              <button v-if="rating.user_id != userStore.user_id" class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded" @click="flag(rating.user_id, 'course')">
+                Flag
+              </button>
             </div>
           </div>
           <div v-if="!showTextBox" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
@@ -197,6 +237,16 @@
         </div>
         <div class="flex flex-col items-center py-6 mb-12" v-if="resultType === 'TA'">
           <div class="w-full max-w-md">
+            <div class="flex justify-between mb-1">
+              <span class="text-base font-medium text-blue-700">Involved with</span>
+              <div class="flex items-center">
+                <ul>
+                  <li v-for="(course, index) in actual_course" :key="index">
+                    <p class="text-base font-medium text-blue-700">{{ course }}</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
             <h2 class="font-bold text-2xl mb-4">Ratings</h2>
             <div v-for="(group, index) in resultData" :key="index">
               <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
@@ -217,10 +267,17 @@
                   <span class="font-bold mr-2 text-gray-700">Fairness of grading:</span>
                   <span class="text-gray-600">{{ rating.rating[2] }}</span>
                 </div>
-                <div class="flex items-center">
-                  <span class="font-bold mr-2 text-gray-700">Flagged:</span>
-                  <span class="text-gray-600">{{ rating.flag_count }}</span>
+                <div class="flex items-center mb-2">
+                  <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                  <span class="text-gray-600">{{ rating.explanation }}</span>
                 </div>
+                <div class="flex items-center" v-if="rating.flag_count >= 3">
+                  <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                  <span class="text-red-500">{{ rating.flag_count }} times</span>
+                </div>
+                <button v-if="rating.user_id != userStore.user_id" class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded" @click="flag(rating.user_id, 'ta')">
+                  Flag
+                </button>
               </div>
             </div>
             <div v-if="!showTextBox2" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
@@ -269,6 +326,7 @@ const professors = ref([])
 const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
+const tas_inv = ref([])
 
 var isSearchActive = ref(true)
 var searchType = ref('Professor')
@@ -284,6 +342,20 @@ var accessToken = userStore.accessToken;
 const config = {
   headers: {
     'authorization': `Bearer ${accessToken}`
+  }
+}
+
+async function flag(id, type) {
+  try {
+    await axios.post('http://localhost:3001/api/add/flag', {
+      user_id: id,
+      type: type,
+      name: result.value
+    }, config)
+    alert('Successfully flagged!')
+  } catch (error) {
+    alert('Failed to flag. Please try again.')
+    console.error(error)
   }
 }
 
@@ -324,12 +396,12 @@ const fairness = ref('')
 
 async function submitTaRating() {
   try {
-    await axios.post('http://localhost:3001/api/add/ratings/courses', {
+    await axios.post('http://localhost:3001/api/add/ratings/tas', {
       user_id: userStore.user_id,
-      course: result.value,
-      prerequisite_strictness: prereq.value,
-      pace: pace.value,
-      depth: depth.value,
+      ta: result.value,
+      grading_fairness: fairness.value,
+      question_answering: helpfulness.value,
+      responsiveness: responsiveness.value,
       explanation: explanation.value
     }, config)
     alert('Successfully submitted rating!')
@@ -343,11 +415,44 @@ async function submitTaRating() {
       console.error(error)
     }
   }
-  prereq.value = ''
-  pace.value = ''
-  depth.value = ''
+  helpfulness.value = ''
+  responsiveness.value = ''
+  fairness.value = ''
   explanation.value = ''
-  showTextBox.value = false
+  showTextBox2.value = false
+}
+
+const showTextBox3 = ref(false)
+const convenience = ref('')
+const quality = ref('')
+const technology = ref('')
+
+async function submitClassroomRating() {
+  try {
+    await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
+      user_id: userStore.user_id,
+      classroom: result.value.replace(/ /g, ''),
+      access_conv: convenience.value,
+      seating_quality: quality.value,
+      technology_avail: technology.value,
+      explanation: explanation.value
+    }, config)
+    alert('Successfully submitted rating!')
+    location.reload()
+  } catch (error) {
+    if (error.response.status === 409) {
+      alert('You have already submitted a rating for this course.')
+      return
+    } else {
+      alert('Failed to submit rating. Please try again.')
+      console.error(error)
+    }
+  }
+  convenience.value = ''
+  quality.value = ''
+  technology.value = ''
+  explanation.value = ''
+  showTextBox3.value = false
 }
 
 async function fetch() {
@@ -367,6 +472,7 @@ async function fetch() {
     await axios.get('http://localhost:3001/api/tasnew')
       .then(response => {
         tas.value = Object.keys(response.data)
+        tas_inv.value = response.data
       })
   } catch (error) {
     console.error(error)
@@ -375,6 +481,7 @@ async function fetch() {
 
 const filteredResults = computed(() => {
   resultData.value = []
+  actual_course.value = []
   if (!searchTerm.value) {
     return []
   }
@@ -398,6 +505,8 @@ const filteredResults = computed(() => {
 })
 
 var actual_name = ref('')
+var actual_course = ref([])
+
 async function navigate(selected, type) {
   searchTerm.value = ''
   result.value = selected;
@@ -479,6 +588,7 @@ async function navigate(selected, type) {
     })
       .then(response => {
         var data = response.data
+        actual_course.value = tas_inv.value[result.value]
         resultData.value.push(response.data)
         isDataLoaded.value = true;
       })

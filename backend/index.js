@@ -182,6 +182,10 @@ app.get('/api/tasnew', (req, res) => {
   res.sendFile(path.join(__dirname, 'tas.json'));
 })
 
+app.get('/api/buildingsnew', (req, res) => {
+  res.sendFile(path.join(__dirname, 'buildings.json'));
+})
+
 /**
  * Encrypts User ID
  * @param {string} user_id - user_id
@@ -484,6 +488,7 @@ app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => 
     res.sendStatus(418);
   }
   else {
+    console.log(req.body)
     const course = req.body.course;
     const user_id = req.body.user_id;
     const prequisiteStrictness = req.body.prequisite_strictness;
@@ -856,6 +861,7 @@ app.post('/api/getoverall_gpa', async (req, res) => {
  * @param {string} name - THe name of the course, classroom, ta (CS30700, LWSNB160, Chirayu Garg)
  */
 app.post('/api/add/flag', jwt.authenticateToken, async (req, res) => {
+  console.log(req.body)
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
