@@ -203,7 +203,7 @@
 
             <!-- Data items -->
             <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
-              @click="getScheduleView(schedule.term_id)">
+              @click="getScheduleView(index)">
               <div
                 class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
                 <div class="flex items-center justify-left flex-grow" style="margin-left: 5%; margin-top: 5%;">
@@ -634,7 +634,7 @@ function parseCoursesResponse(data) {
       string+= tempForm;
       console.log(data[i][j]);
       string = string.replace("course_name", data[i][j].courseID);
-      string = string.replace("course_time", data[i][j].courseStartTime);
+      string = string.replace("course_time", fto2(data[i][j].courseStartTime));
       if(j != data[i].length - 1) {
         string += ", "
       }
@@ -697,6 +697,24 @@ function saveOptimizedSchedule(schedule) {
     console.log("Couldn't save schedule because of " + exception);
   })
   console.log("Done!")
+}
+
+function fto2(time) {
+  if(time.length == 3) {
+    let hours = time.substring(0, 1);
+    let minutes = time.substring(1, 3)
+    hours = parseInt(hours);
+    minutes = parseInt(minutes);
+    return hours + ":" + minutes;
+  } else if (time.length == 4) {
+    let hours = time.substring(0, 2);
+    let minutes = time.substring(2, 4);
+    console.log(hours + " " + minutes)
+    hours = ((hours + 11) % 12 + 1);
+    hours = parseInt(hours) % 12 || 12;
+    minutes = parseInt(minutes);
+    return hours + ":" + minutes;
+  }
 }
 </script>
 
