@@ -18,9 +18,20 @@
         <div
           class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
           <div class="px-4 py-2 bg-blue-500">
-            <h2 class="text-lg font-bold text-white">{{ schedule.term_id }}</h2>
-            <p class="text-sm text-white">{{ schedule.optional_classes }}</p>
-            <p class="text-sm text-white">{{ schedule.required_classes }}</p>
+            <h2 class="text-lg font-bold text-white">{{ formatTitle(schedule.term_id) }}</h2>
+          </div>
+          <div class="flex items-center justify-center flex-grow">
+            <div class="text-left -center">
+              Required: <span class="text-sm text-black" v-for="(classes, index) in schedule.required_classes"
+              >{{ classes }}
+              <span v-if="index !== schedule.required_classes.length - 1">, </span>
+              </span>
+              <br/>
+              Optional: <span class="text-sm text-black" v-for="(classes, index) in schedule.optional_classes"
+              >{{ classes }} 
+              <span v-if="index !== schedule.optional_classes.length - 1">, </span>
+              </span>
+            </div>
           </div>
           <div class="px-4 py-2 mt-auto bg-white">
             <span class="text-sm text-gray-500">{{ schedule.timestamp }}</span>
@@ -56,6 +67,10 @@ async function navigateToCreateSchedule() {
 
 async function getScheduleView(term_id) {
   navigateTo('/app/view/' + term_id)
+}
+
+function formatTitle(title) {
+  return title.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
 onBeforeMount(async () => {
