@@ -24,12 +24,14 @@ import { ref, onBeforeMount } from 'vue';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
+
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
 const userStore = useUserStore();
 const route = useRoute()
 let result = [];
 async function convertSchedule(schedule) {
+  console.log(schedule)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
       const startDateTime = new Date(meeting.startTime);
@@ -98,10 +100,13 @@ const config = {
   }
 }
 onBeforeMount(async () => {
+  success();
   await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
+    console.log(":1")
+    console.log(response.data)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
   })
