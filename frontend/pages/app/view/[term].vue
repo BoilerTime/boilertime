@@ -1,17 +1,17 @@
 <template>
   <main>
     <NavBar />
-    <div class="p-3 bg-gray-200 h-full flex items-stretch">
+    <div class="flex items-stretch h-full p-3 bg-gray-200 dark:bg-neutral-500">
       <div class="p-12" v-if="isDataLoaded">
         <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
       </div>
-      <div v-else class="p-12 h-screen bg-gray-200">
+      <div v-else class="h-screen p-12 bg-gray-200 dark:bg-neutral-500">
         <h1>Loading...</h1>
       </div>
       <div id="calendar" v-if="result.length > 0">
         <FullCalendar :options="calendarOptions" />
       </div>
-      <div v-else class="p-12 h-screen bg-gray-200">
+      <div v-else class="h-screen p-12 bg-gray-200 dark:bg-neutral-500">
         <h1>Loading...</h1>
       </div>
     </div>
@@ -24,12 +24,16 @@ import { ref, onBeforeMount } from 'vue';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
+import { POSITION, useToast } from "vue-toastification";
+const toast = useToast();
+
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
 const userStore = useUserStore();
 const route = useRoute()
 let result = [];
 async function convertSchedule(schedule) {
+  console.log(schedule)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
       const startDateTime = new Date(meeting.startTime);
@@ -98,13 +102,27 @@ const config = {
   }
 }
 onBeforeMount(async () => {
+
+
   await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
+
+    console.log(response.data + response.data.time);
+    showWarning(response.data.time, response.data.rmp)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
-  })
+  }).catch((e) => {
+    console.error(e);
+    toast.error("Error: You haven't optimized this schedule yet!", {
+          timeout: 10000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+    setTimeout(() => {
+      navigateTo('/app/create')
+    }, 500);
+    })
 });
 onMounted(() => {
   nextTick(() => {
@@ -113,6 +131,20 @@ onMounted(() => {
     }, 1000);
   });
 })
+
+function showWarning(time, rmp) {
+  if(time.toUpperCase() == "NONE") {
+    toast.warning("Warning: RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  } else {
+    toast.warning("Warning: Time of Day may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  }
+}
 </script>
 
 <style scoped>

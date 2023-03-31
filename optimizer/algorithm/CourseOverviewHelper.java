@@ -100,7 +100,7 @@ public class CourseOverviewHelper {
         if(this.weekDaysPtr == -1) {
             return -1; 
         }
-        String[] aDays = days.split(",");
+        String[] aDays = days.split(", ");
         weekDays[weekDaysPtr] = new WeekDays[aDays.length];
         for(int i = 0; i < aDays.length; i++) {
             WeekDays temp;
