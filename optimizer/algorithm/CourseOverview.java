@@ -5,16 +5,18 @@ public class CourseOverview {
     private int[] courseTimes;
     private int[] courseDurations;
     private WeekDays[][] courseDaysOfWeek; 
+    private String[] sectionIds;
     private final boolean required; 
     private double ratings[]; 
 
-    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings) {
+    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings, String[] sectionIds) {
         this.courseName = name; 
         this.courseTimes = times; 
         this.courseDurations = courseDurations; 
         this.courseDaysOfWeek = daysOfWeek;
         this.required = isRequired;
         this.ratings = ratings;
+        this.sectionIds = sectionIds;
     }
 
     public String getCourseName() {
@@ -49,4 +51,7 @@ public class CourseOverview {
         return this.ratings;
     }
     
+    public String[] getSectionIds() {
+        return this.sectionIds;
+    }
 }

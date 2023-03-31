@@ -34,6 +34,7 @@ public class ScheduleClient implements Runnable  {
 
     private void terminate() {
         try {
+            System.out.println("Closing the connection!");
             netSocket.close();
         } catch (NullPointerException | IOException e) {
             System.err.println("Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
@@ -44,6 +45,7 @@ public class ScheduleClient implements Runnable  {
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
         String rawClasses = network.getIncomingMessage();//nput.readLine();
+        System.out.println("Got raw: " + rawClasses);
         if(rawClasses == null) {
             return -1;
         }
@@ -70,6 +72,7 @@ public class ScheduleClient implements Runnable  {
     private TimeOfDay getTODPrefernece(NetworkHandler network) {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
+        System.out.println("Got Raw " + rawTOD);
         while(res == null) { 
             if(rawTOD.equalsIgnoreCase("morning")) {
                 res = TimeOfDay.MORNGING;
@@ -130,16 +133,32 @@ public class ScheduleClient implements Runnable  {
             if(t == null) {
                 return null;
             }
+            System.out.println("twt" + t);
             int numOfTimes = Integer.parseInt(t);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
             x.instantiateHelper(numOfTimes);
 
             for(int i = 0; i < numOfTimes; i++) {
-                x.addCourseTime(Integer.parseInt(network.getIncomingMessage()));
-                x.addDuration(Integer.parseInt(network.getIncomingMessage()));
-                x.addWeekDays(network.getIncomingMessage());
-                x.addRating(Double.parseDouble(network.getIncomingMessage()));
+                String message = network.getIncomingMessage();
+                System.out.println("OwO" + message);
+                x.addCourseTime(Integer.parseInt(message));
+
+                message = network.getIncomingMessage();
+                System.out.println("TwT" + message);
+                x.addDuration(Integer.parseInt(message));
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addWeekDays(message);
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addRating(Double.parseDouble(message));
+
+                message = network.getIncomingMessage();
+                System.out.println(message);
+                x.addSectionId(message);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
@@ -159,11 +178,12 @@ public class ScheduleClient implements Runnable  {
 
     private void communicateAndRun(NetworkHandler network) {
         CourseOverview courses[];
-        int numOfCourses = -1; //= getCoursesCount(input);
-        while(numOfCourses < 1) {
-            numOfCourses = getCoursesCount(network);
-            System.out.println("Result is: " + numOfCourses);
+        int numOfCourses = getCoursesCount(network);
+        if(numOfCourses == -1) {
+            this.terminate();
+            return;
         }
+
         courses = new CourseOverview[numOfCourses];
 
         //Handle the fetching of preferences and generation of a preferences list/

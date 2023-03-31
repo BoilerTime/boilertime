@@ -15,6 +15,9 @@ public class CourseOverviewHelper {
     //Ratings
     private double[] ratings;
     private int ratingsPtr;
+    //Section ids
+    private String[] sectionIds;
+    private int sectionIdsPtr;
 
     /**
      * Constructor to create a wrapper class that assists in instantaiting a CourseOverview method.
@@ -25,6 +28,7 @@ public class CourseOverviewHelper {
         this.courseDurationsPtr = -1;
         this.weekDaysPtr = -1;
         this.ratingsPtr = -1;
+        this.sectionIdsPtr = -1;
         courseName = null;
     }
 
@@ -89,7 +93,7 @@ public class CourseOverviewHelper {
         if(this.ratingsPtr < 0 || this.ratings.length != this.ratingsPtr) {
             return null; 
         }
-        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required, ratings);
+        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required, ratings, sectionIds);
     }
 
     public int addWeekDays(String days) {
@@ -150,6 +154,9 @@ public class CourseOverviewHelper {
         //Ratings
         this.ratings = new double[length];
         this.ratingsPtr = 0;
+        //Ids
+        this.sectionIds = new String[length];
+        this.sectionIdsPtr = 0;
     }
 
     public double addRating(double r) {
@@ -158,6 +165,14 @@ public class CourseOverviewHelper {
         }
         this.ratings[ratingsPtr++] = r;
         return r;  
+    }
+
+    public String addSectionId(String id) {
+        if(this.sectionIdsPtr < 0) {
+            return null;
+        }
+        this.sectionIds[sectionIdsPtr++] = id;
+        return id;
     }
 
 }
