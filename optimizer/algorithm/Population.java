@@ -323,9 +323,9 @@ public class Population {
             } else if (convergneceScore > .1) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
             } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":35}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":30}");
             } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":50}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":40}");
             }
             return !(convergneceScore < 1.0E-4f);
         }

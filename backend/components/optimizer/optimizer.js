@@ -64,7 +64,7 @@ const optimizeSchedule = async function(schedule) {
                 
                 let name = doc.data().instructor.Name
                 ///console.log(await utils.getProfessorRating(name));
-                output[i].rmp.push((utils.getProfessorRating(name)))
+                output[i].rmp.push((utils.getProfRatingsNoError(name)))
               })
         }
     }

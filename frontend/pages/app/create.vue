@@ -101,13 +101,78 @@
     </div>
   </section>
   </main>
+
+  <TransitionRoot :show="isOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium leading-6 text-gray-900 text-center"
+              >
+                Optimizing Your Schedule!
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                </p>
+                <br/>
+                <p class="text-sm text-gray-500">
+                  Progress: 
+                </p>
+                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+              </div>
+
+              
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup>
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
+import ProgressBar from "../../components/ProgressBar.vue";
+
 import draggable from 'vuedraggable'
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
 const { $socket } = useNuxtApp()
@@ -117,7 +182,18 @@ const optionalData = ref([])
 const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
-const isOpen = ref('')
+const isOpen = ref(false)
+const completed = ref(0)
+
+var totalSum;
+
+function closeModal() {
+  isOpen.value = false
+}
+function openModal() {
+  isOpen.value = true
+}
+
 var courseList; 
 
 var accessToken = userStore.accessToken;
@@ -155,7 +231,6 @@ onBeforeMount(() => {
   }, config).then((response) => {
     bookmarked_classes.value = response.data.bookmarks
   })
-  console.log(bookmarked_classes.value)
 })
 
 const searchTerm = ref('')
@@ -172,15 +247,24 @@ const filteredResults = computed(() => {
 onMounted(() => {
   $socket.onopen = () => {
     console.log("Connected")
-    isOpen.value = true;
     console.log("Are we open? " + isOpen.value)
   }
   $socket.onmessage = ((data) => {
-    //console.log("data", JSON.parse(data.data))
+    console.log("data", JSON.parse(data.data))
     try {
       let response = JSON.parse(data.data);
       if(response?.message == "schedule") {
         parseCoursesResponse(response.data);
+      } else if (response?.message == "Status Update") {
+        if(completed.value < 100) {
+          //completed.value = (completed.value + response.data)%100;v
+          var temp = completed.value + response.data;
+          if(temp > 99) {
+            completed.value = 99;
+          } else {
+            completed.value = temp;
+          }
+        }
       }
     } catch (e) {
       console.log("Wasnt JSON!!" + e)
@@ -326,6 +410,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 
 function submit() {
   if (selectedRequiredCourses.value.length > 0) {
+    openModal()
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
@@ -363,7 +448,7 @@ function sendToOptimizer(data) {
   //We first need to send them number of classes we will be optimzing by
   $socket.send(data.length)
   //Next, we send the time of day preferences
-  $socket.send("Morning")
+  $socket.send("Afternoon")
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
   $socket.send("None");
@@ -413,6 +498,8 @@ function parseCoursesResponse(data) {
   }
 
   console.log(serverOutput)
+  saveOptimizedSchedule(serverOutput)
+  navigateTo('/app/view')
 } 
 
 
@@ -434,8 +521,14 @@ function findIDIndex(position, target) {
 
 function saveOptimizedSchedule(schedule) {
   axios.post('http://localhost:3001/api/saveoptimizedschedule', {
-    data: schedule
+    data: schedule,
+    user_id: userStore.user_id
+  }).then(() => {
+    console.log("Schedule Saved!");
+  }).catch((exception) => {
+    console.log("Couldn't save schedule because of " + exception);
   })
+  console.log("Done!")
 }
 </script>
 

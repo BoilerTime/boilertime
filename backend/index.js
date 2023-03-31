@@ -280,7 +280,9 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
 
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
-  await saveSchedule.saveSchedule(req.body);
+  console.log("Saving!")
+  console.log(req.body.data)
+  await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
   res.sendStatus(200);
 })
 
