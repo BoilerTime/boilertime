@@ -1,11 +1,11 @@
 <template>
   <main>
     <NavBar />
-    <div class="flex flex-wrap dark:bg-neutral-500 h-screen" v-if="userSchedules.length !== 0">
+    <div class="flex flex-wrap h-screen dark:bg-neutral-500" v-if="userSchedules.length !== 0">
       <!-- Add button -->
       <div class="w-1/4 p-4 cursor-pointer" @click="navigateToCreateSchedule()">
         <div
-          class="flex items-center justify-center w-full h-80 text-gray-400 bg-white dark:bg-neutral-700 border-2 rounded-lg border-gray-400 border-dashed hover:text-gray-500 hover:bg-gray-100 transition duration-300">
+          class="flex items-center justify-center w-full text-gray-400 bg-white border-2 border-gray-400 border-dashed rounded-lg h-80 dark:bg-neutral-700 hover:text-gray-500 hover:bg-gray-100 transition duration-300">
           <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path d="M10 3a1 1 0 0 1 1 1v4h4a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H6a1 1 0 0 1 0-2h4V4a1 1 0 0 1 1-1z" />
           </svg>
@@ -16,7 +16,7 @@
       <div v-for="(schedule, index) in userSchedules" :key="index" class="w-1/4 p-4 cursor-pointer h-96"
         @click="getScheduleView(schedule.term_id)">
         <div
-          class="flex flex-col justify-between w-full h-80 overflow-hidden bg-white dark:bg-neutral-700 border-2 border-gray-400 dark:border-black rounded-lg transition duration-300 dark:text-white">
+          class="flex flex-col justify-between w-full overflow-hidden bg-white border-2 border-gray-400 rounded-lg h-80 dark:bg-neutral-700 dark:border-black transition duration-300 dark:text-white">
           <div class="px-4 py-2 bg-yellow-500">
             <h2 class="text-lg font-bold text-black">{{ formatTitle(schedule.term_id) }}</h2>
           </div>
