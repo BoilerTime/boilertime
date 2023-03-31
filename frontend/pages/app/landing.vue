@@ -39,6 +39,23 @@
           maximize your semester now.
         </h2>
         <!--Live counting statistic-->
+          maximize your semester.
+        </h2>
+        <!--Statistics-->
+        <div class="flex flex-row items-center justify-between gap-10 text-white mt-10">
+            <div>
+                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">4728</span> Classes Available</h1>
+            </div>
+            <div>
+                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">{{ users }}</span> Active Users</h1>
+            </div>
+            <div>
+                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">{{ ratings }}</span> Ratings Created</h1>
+            </div>
+            <div>
+                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">{{ schedules }}</span> Schedules Made</h1>
+            </div>
+        </div>
         <!--Sign up button-->
         <div class="pt-16">
           <a
@@ -54,6 +71,10 @@
       ></div>
       <!--Functionality-->
       <div class="bg-white pb-36 px-36 flex flex-col gap-12">
+        <img
+          src="/Create-Schedule-Page.png"
+          class="flex place-self-center max-w-6xl max-h-6xl mb-12 shadow-lg rounded-lg outline-black"
+        />
         <div>
           <h1 class="text-6xl font-extrabold text-black mb-14">
             What does BoilerTime do?
@@ -136,6 +157,25 @@
             finished generating it for you. Feel free to access the other
             features that we have provided for you!
           </p>
+        <div class="flex flex-row-reverse items-center gap-12 justify-between">
+            <div class="flex">
+                <img src="/Create-Photo.png" class="shadow-lg rounded-lg"/>
+            </div>
+          <div class="flex flex-col gap-12 mt-10">
+            <p class="text-3xl font-bold">
+              First, after signing up or logging in, click to create your
+              schedule on the home page.
+            </p>
+            <p class="text-3xl font-bold">
+              Next, choose the classes that you want to take and need to take
+              and what you want out of your schedule.
+            </p>
+            <p class="text-3xl font-bold">
+              That's it! You should be presented with your schedule after we
+              have finished generating it for you. Feel free to access the other
+              features that we have provided for you!
+            </p>
+          </div>
         </div>
       </div>
       <!--FAQ-->
@@ -147,6 +187,9 @@
         </div>
         <div class="w-full pt-12">
           <div class="mx-auto w-full rounded-2xl bg-indigo-200 p-4">
+          <div
+            class="mx-auto w-full rounded-2xl bg-gradient-to-r from-indigo-400 to-indigo-200 p-4"
+          >
             <Disclosure v-slot="{ open }">
               <DisclosureButton
                 class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 text-left text-lg font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
@@ -257,6 +300,8 @@
       >
         © 2023 | BoilerTime. All rights reserved. BoilerTime is a project
         created for Purdue University, CS307: Sofware Engineering I.
+      <div class="mx-auto flex items-center py-8 px-12 text-lg font-light">
+        © 2023 BoilerTime. All rights reserved. BoilerTime is a product made for Purdue University, CS307: Software Engineering I.
       </div>
     </footer>
   </main>
@@ -264,6 +309,7 @@
 <script setup>
 import { ref } from "vue";
 import {} from "@heroicons/vue/24/outline";
+import axios from 'axios';
 import {
   ChevronUpIcon,
   UserGroupIcon,
@@ -279,4 +325,53 @@ import {
   DisclosurePanel,
   DisclosureButton,
 } from "@headlessui/vue";
+
+var users = ref();
+var schedules = ref();
+var ratings = ref();
+
+async function getUsers() {
+    await axios
+        .post(
+            "http://localhost:3001/api/get/num_users",
+        {},
+        ).then((res) => {
+            users.value = res.data.num_users;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+async function getRatings() {
+    await axios
+        .post(
+            "http://localhost:3001/api/get/num_ratings",
+        {},
+        ).then((res) => {
+            ratings.value = res.data.num_ratings;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+function getSchedules() {
+    axios
+        .post(
+            "http://localhost:3001/api/get/num_schedules",
+        {},
+        ).then((res) => {
+            schedules.value = res.data.num_schedules;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+onMounted(async () => {
+    getUsers();
+    getRatings();
+    getSchedules();
+});
+
 </script>
