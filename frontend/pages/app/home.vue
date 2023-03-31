@@ -67,9 +67,8 @@ async function getScheduleView(term_id) {
   navigateTo('/app/view/' + term_id)
 }
 
-function trimClass(classes) {
-  console.log(classes.trim() + 'space?');
-  return classes.trim();
+function formatTitle(title) {
+  return title.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
 onBeforeMount(async () => {
