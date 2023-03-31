@@ -148,7 +148,9 @@
                 </p>
                 <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
               </div>
-
+              <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" >
+                Submit
+              </button>
               
 
             </DialogPanel>
@@ -782,6 +784,12 @@ function fto2(time) {
     minutes = parseInt(minutes);
     return hours + ":" + minutes + amPM;
   }
+}
+function cancel() {
+  //$socket.close()
+  console.log("CLOSING!!!")
+  $socket.close();
+  navigateTo('/app/home')
 }
 
 function getScheduleView(index) {
