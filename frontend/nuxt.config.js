@@ -3,11 +3,18 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: [
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'],
+    '@pinia-plugin-persistedstate/nuxt',
+  ],
   postcss: {
     plugins: {
       tailwindcss: {},
-      autoprefixer: {},
+      autoprefixer: {}, 
     },
   },
+  serverHandlers: [
+    {
+        route: '/ws',
+        handler: '~/store/websocket'
+    }
+]
 })

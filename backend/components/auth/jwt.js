@@ -34,11 +34,11 @@ async function authenticateUser({ email, password }) {
   profile.forEach(doc => {
     if (doc.data().isVerified) {
       var user = { user_id: doc.data().user_id };
-      const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '30m' });
+      const access_token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
       const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
       user = { user_id: doc.data().user_id, accessToken: access_token };
       doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
-      return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
+      return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token, dark_mode = doc.data().dark_mode);
     } else {
       throw new Error("User Is Not Verified")
     }
@@ -51,7 +51,7 @@ async function authenticateUser({ email, password }) {
  */
 async function createGuest() {
   var guest = {};
-  const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '30m' }); 
+  const guestAccess = jwt.sign(guest, process.env.GUEST_ACCESS, { expiresIn: '1d' }); 
 
   await jwt.verify(guestAccess, process.env.GUEST_ACCESS, async (err, user) => {
     guest = user;
@@ -156,8 +156,8 @@ async function generateNewAccessToken(user) {
         */
       //else {
       const user1 = { user_id: doc.data().user_id };
+      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
       console.log("\n\n MAKE NEW ACCESS TOKEN \n\n")
-      newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '30m' });
       //doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
       doc.ref.update({ access_token: newAccessToken, refresh_token: null });
       return (newAccessToken1 = newAccessToken);

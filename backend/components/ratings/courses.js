@@ -27,7 +27,7 @@ const courseRatings = db.collection('ratings').doc('courses').collection('course
  * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
  * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
  */
-async function addUserRating(user_id, course, prequisiteStrictness, pace, depth) {
+async function addUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   if (await userAlreadyRated(user_id, course)) {
     //console.log('here SENDING FALSE');
@@ -39,7 +39,7 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
     rating[0] = prequisiteStrictness;
     rating[1] = pace;
     rating[2] = depth;
-    await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+    await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, explanation: explanation, timestamp: Timestamp.now()})
   }
   return true;
 }
@@ -52,7 +52,7 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth)
  * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
  * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
  */
-async function editUserRating(user_id, course, prequisiteStrictness, pace, depth) {
+async function editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   const userRatings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
   var rating = [];
@@ -60,7 +60,7 @@ async function editUserRating(user_id, course, prequisiteStrictness, pace, depth
   rating[1] = pace;
   rating[2] = depth;
   userRatings.forEach(async doc => {
-    await doc.ref.set({user_id: user_id, course: course, rating: rating, timestamp: Timestamp.now()})
+    await doc.ref.update({user_id: user_id, course: course, rating: rating, explanation, explanation, timestamp: Timestamp.now()})
   })
 }
 
@@ -94,7 +94,8 @@ async function getUserRatings(user_id) {
       "course": doc.course,
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
-      "flag_count": doc.flag_count
+      "flag_count": doc.flag_count,
+      "explanation": doc.explanation
     }
     jArray[count] = jsonObj;
     count++;
@@ -136,6 +137,7 @@ async function getCourseRatings(courseName) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
+      "explanation": doc.explanation,
       "user_id": doc.user_id
     }
     jArray[count] = (json);

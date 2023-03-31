@@ -27,13 +27,13 @@ const classroomRatings = db.collection('ratings').doc('classrooms').collection('
  * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
  * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
  */
-async function addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+async function addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation) {
   if (!(await userAlreadyRated(user_id, classroom))) {
     var rating = [];
     rating[0] = access_conv;
     rating[1] = seating_quality;
     rating[2] = technology_avail;
-    await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, flag_count: 0, timestamp: Timestamp.now()})
+    await classroomRatings.add({user_id: user_id, classroom: classroom, rating: rating, flag_count: 0, explanation: explanation, timestamp: Timestamp.now()})
     return true;
   }
   else {
@@ -49,14 +49,14 @@ async function addClassroomRating(user_id, classroom, access_conv, seating_quali
  * @param {number} seating_quality - Rating of seating quality out of 5 at rating[1]
  * @param {number} technology_avail - Rating of available technology out of 5 at rating[2]
  */
-async function editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail) {
+async function editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation) {
   const userRatings = await classroomRatings.where('user_id', '==', user_id).where('classroom', '==', classroom).get();
   var rating = [];
   rating[0] = access_conv;
   rating[1] = seating_quality;
   rating[2] = technology_avail;
   userRatings.forEach(async doc => {
-    doc.ref.set({user_id: user_id, classroom: classroom, rating: rating, timestamp: Timestamp.now()})
+    doc.ref.update({user_id: user_id, classroom: classroom, rating: rating, explanation: explanation, timestamp: Timestamp.now()})
   })
 }
 
@@ -92,7 +92,8 @@ async function getUserRatings(user_id) {
       "classroom": doc.classroom,
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
-      "flag_count": doc.flag_count
+      "flag_count": doc.flag_count,
+      "explanation": doc.explanation
     }
     jArray[count] = jsonObj;
     count++;
@@ -119,6 +120,7 @@ async function getClassroomRatings(classroom) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
+      "explanation": doc.explanation,
       "user_id": doc.user_id
     }
     jArray[count] = (json);

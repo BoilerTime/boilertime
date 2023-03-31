@@ -28,7 +28,7 @@ const taRatings = db.collection('ratings').doc('tas').collection('ta_ratings');
  * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
  * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
  */
-async function addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness) {
+async function addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation) {
   //console.log(await userAlreadyRated(user_id, ta) + " << this is the value");
   if (await userAlreadyRated(user_id, ta)) {
     //console.log('here SENDING FALSE');
@@ -40,7 +40,7 @@ async function addUserRating(user_id, ta, gradingFairness, questionAnswering, re
     rating[0] = gradingFairness;
     rating[1] = questionAnswering;
     rating[2] = responsiveness;
-    await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, timestamp: Timestamp.now()});
+    await taRatings.add({user_id: user_id, ta: ta, rating: rating, flag_count: 0, explanation: explanation, timestamp: Timestamp.now()});
   }
   return true;
 }
@@ -53,14 +53,14 @@ async function addUserRating(user_id, ta, gradingFairness, questionAnswering, re
  * @param {number} questionAnswering - Rating of question answering out of 5 at rating[2]
  * @param {number} responsiveness - Rating of responsiveness out of 5 at rating[3]
  */
-async function editUserRating(user_id, ta, gradingFairness, questionAnswering, responsivness) {
+async function editUserRating(user_id, ta, gradingFairness, questionAnswering, responsivness, explanation) {
   const ratings = await taRatings.where('user_id', '==', user_id).where('ta', '==', ta).get();
   var rating = [];
   rating[0] = gradingFairness;
   rating[1] = questionAnswering;
   rating[2] = responsivness;
   ratings.forEach(async doc => {
-    await doc.ref.set({user_id: user_id, ta: ta, rating: rating, timestamp: Timestamp.now()})
+    await doc.ref.update({user_id: user_id, ta: ta, rating: rating, explanation: explanation, timestamp: Timestamp.now()})
   })
 }
 
@@ -93,7 +93,8 @@ async function getUserRatings(user_id) {
       "ta": doc.ta,
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
-      "flag_count": doc.flag_count
+      "flag_count": doc.flag_count,
+      "explanation": doc.explanation
     }
     jArray[count] = jsonObj;
     count++;
@@ -120,6 +121,7 @@ async function getTARatings(ta) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
+      "explanation": doc.explanation,
       "user_id": doc.user_id
     }
     jArray[count] = (json);
