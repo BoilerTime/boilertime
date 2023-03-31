@@ -28,7 +28,7 @@
               </span>
               <br/>
               Optional: <span class="text-sm text-black" v-for="(classes, index) in schedule.optional_classes"
-              >{{ classes }} 
+              >{{ classes }}
               <span v-if="index !== schedule.optional_classes.length - 1">, </span>
               </span>
             </div>
