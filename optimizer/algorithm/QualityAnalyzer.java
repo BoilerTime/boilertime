@@ -27,13 +27,13 @@ public class QualityAnalyzer {
     }
 
     public void calculateFitnessScores(Schedule[] target, int requiredCount) {
-        System.out.println("Calculating fitness scores!");
+        //System.out.println("Calculating fitness scores!");
         RequiredAnalyzer.calculateFitnessScores(target, requiredCount);
         this.pref.calculateOptionalScore(target);
     }
 
     public int addScore(Schedule target) {
-        System.out.println("Score = " + target.getRequiredScore());
+        //System.out.println("Score = " + target.getRequiredScore());
         //Set the two functions to have their appropriate values 
         req.addScore(target);
         pref.addScore(target);
@@ -45,7 +45,7 @@ public class QualityAnalyzer {
         double omicron = (1.0f) / (1.0f + beta);
         double dOmicron = - ((1.0f) / Math.pow(((1.0f) + beta), 2.0f));
         fft.add(omicron);
-        System.out.println("Delta Omicron = " + dOmicron);
+        //System.out.println("Delta Omicron = " + dOmicron);
         
         return 0;
     }
@@ -81,7 +81,11 @@ public class QualityAnalyzer {
             //Calculate the square of the quantity w/o using math.pow which is slow
             rootMeanSquared += (referenceFrame[i] - windowMean) * (referenceFrame[i] - windowMean);
         }
-        System.out.println("RMS = " + Math.sqrt(rootMeanSquared / (double) size));
+        //System.out.println("RMS = " + Math.sqrt(rootMeanSquared / (double) size));
         return Math.sqrt(rootMeanSquared / (double) size);
+    }
+
+    public Schedule getBestSchedule() {
+        return this.bestSchedules.get(this.bestSchedules.size() - 1);
     }
 }
