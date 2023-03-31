@@ -294,7 +294,7 @@ public class Population {
 
         System.out.println(q.getOverallScores().toString());
         System.out.println("===================\n\n");
-        System.out.println("Convergence: " + q.mayHaveConverged());
+        //System.out.println("Convergence: " + q.mayHaveConverged());
 
 
         FileWriter out;
@@ -314,8 +314,20 @@ public class Population {
     }
 
     private boolean shouldContinue(int currentIndex) {
+        
         if(currentIndex > 0 && currentIndex % QualityAnalyzer.numSimilarForConvergence == 0) {
-            return !(q.mayHaveConverged());
+            //this.sendStatusUpdate(currentIndex);
+            double convergneceScore = q.getRMSConvergence();
+            if(convergneceScore > .5) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
+            } else if (convergneceScore > .1) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+            } else if (convergneceScore > 5E-3f) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":30}");
+            } else {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":40}");
+            }
+            return !(convergneceScore < 1.0E-4f);
         }
         return currentIndex < this.maxIterations; 
     }

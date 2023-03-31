@@ -56,6 +56,26 @@ async function getProfessorRating(professor) {
   throw new Error("Professor Not Found in RMP")
 }
 
+
+/**
+ * Searches RMP for a professor
+ * @param {string} professor - The name of the professor
+ * @returns {JSON} - A json containing details about the professor
+ */
+async function getProfRatingsNoError(professor) {
+  const purdueid = 'U2Nob29sLTc4Mw=='
+  let split = professor.replace("-", " ").split(" ").filter(item => item);
+  while (split.length > 0) {
+    const teachers = await ratings.searchTeacher(await concat(split), purdueid)
+    if (teachers.length == 0) {
+      split.splice(split.length - 2, 1);
+    } else {
+      const teacher = await ratings.getTeacher(teachers[0].id)
+      return teacher
+    }
+  }
+  return {avgRating: 2.5};
+}
 /**
  * Concatenate Array of String with spaces in between
  * @param {array} split - String to Join together with spaces
@@ -365,6 +385,7 @@ module.exports = {
   getBuildingName,
   generateBuildings,
   getUserEmail,
+  getProfRatingsNoError,
   getNumUsers,
   getNumSchedules,
   getNumRatings,

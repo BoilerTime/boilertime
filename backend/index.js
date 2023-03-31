@@ -285,15 +285,24 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       res.sendStatus(500);
     });
 
-    await optimizer.optimizeSchedule(java, req.body).then((data)=>{
+    await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
-      res.json({accessToken: req.user.accessToken});
+      res.json({accessToken: req.user.accessToken, schedule: data});
     }).catch((err) => {
       console.log(err)
       res.sendStatus(500);
     });
   }
 });
+
+
+app.post('/api/saveoptimizedschedule', async (req, res) => {
+  console.log("Saving!")
+  console.log(req.body.data)
+  await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
+  res.sendStatus(200);
+})
+
 
 app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
