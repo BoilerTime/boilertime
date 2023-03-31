@@ -761,19 +761,26 @@ function saveOptimizedSchedule(schedule) {
 
 function fto2(time) {
   if(time.length == 3) {
-    let hours = time.substring(0, 1);
-    let minutes = time.substring(1, 3)
+    let hours = parseInt(time.substring(0, 1));
+    let minutes = parseInt(time.substring(1, 3));
+    let amPM = " am";
+    if(hours > 12) {
+      amPM = " pm"
+    }
     hours = parseInt(hours);
     minutes = parseInt(minutes);
-    return hours + ":" + minutes;
+    return hours + ":" + minutes + amPM;
   } else if (time.length == 4) {
-    let hours = time.substring(0, 2);
-    let minutes = time.substring(2, 4);
+    let hours = parseInt(time.substring(0, 2));
+    let minutes = parseInt(time.substring(2, 4));
+    let amPM = " am";
+    if(hours > 12) {
+      amPM = " pm"
+    }
     console.log(hours + " " + minutes)
     hours = ((hours + 11) % 12 + 1);
-    hours = parseInt(hours) % 12 || 12;
     minutes = parseInt(minutes);
-    return hours + ":" + minutes;
+    return hours + ":" + minutes + amPM;
   }
 }
 
