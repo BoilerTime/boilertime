@@ -24,6 +24,8 @@ import { ref, onBeforeMount } from 'vue';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
+import { POSITION, useToast } from "vue-toastification";
+const toast = useToast();
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
@@ -100,16 +102,25 @@ const config = {
   }
 }
 onBeforeMount(async () => {
-  success();
+
+
   await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
-    console.log(":1")
-    console.log(response.data)
+
+    showWarning(response.data.time, response.data.rmp)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
-  })
+  }).catch((e) => {
+    toast.error("Error: You haven't optimized this schedule yet!", {
+          timeout: 10000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+    setTimeout(() => {
+      navigateTo('/app/create')
+    }, 500);
+    })
 });
 onMounted(() => {
   nextTick(() => {
@@ -118,6 +129,20 @@ onMounted(() => {
     }, 1000);
   });
 })
+
+function showWarning(time, rmp) {
+  if(time.toUpperCase() == "NONE") {
+    toast.warning("Warning: RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  } else {
+    toast.warning("Warning: Time of Day may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  }
+}
 </script>
 
 <style scoped>
