@@ -6,18 +6,22 @@ import optimizer.Utils;
 public class Schedule {
     private final Section[] sections;
     private int invalidCount; 
-    private int fitnessScore;
-    private boolean hasFitnessScore;
+    private int requiredFitnessScore;
+    private int optionalFitnessScore;
+    private boolean hasRequiredScore;
+    private boolean hasOptionalScore;
 
     public Schedule(Section[] s) {
         this.sections = s;
         this.invalidCount = 0;
-        this.hasFitnessScore = false;
+        this.hasRequiredScore = false;
+        this.hasOptionalScore = false;
     }
 
     public Schedule(HashMap<String, Section> idSection, boolean[][] result) {
         this.sections = this.configure(idSection, result);
-        this.hasFitnessScore = false; 
+        this.hasRequiredScore = false; 
+        this.hasOptionalScore = false;
     } 
 
     public Section[] getSections() {
@@ -44,16 +48,36 @@ public class Schedule {
     }
 
 
-    public int getFitnessScore() {
-        if(this.hasFitnessScore) {
-            return this.fitnessScore;
+    public int getRequiredScore() {
+        if(this.hasRequiredScore) {
+            return this.requiredFitnessScore;
         }
         return -1;
     }
 
-    public int setFitnessScore(int score) {
-        this.fitnessScore = score;
-        this.hasFitnessScore = true;
-        return this.fitnessScore;
+    public int setRequiredScore(int score) {
+        this.requiredFitnessScore = score;
+        this.hasRequiredScore = true;
+        return this.requiredFitnessScore;
+    }
+
+    public int getOptionalScore() {
+        if(this.hasOptionalScore) {
+            return this.optionalFitnessScore;
+        }
+        return -1;
+    }
+
+    public int setOptionalScore(int score) {
+        this.optionalFitnessScore = score;
+        this.hasOptionalScore = true;
+        return this.optionalFitnessScore;
+    }
+
+    public int getFitnessScore() {
+        if(this.hasOptionalScore && this.hasRequiredScore) {
+            return this.requiredFitnessScore + this.optionalFitnessScore;
+        }
+        return -1;
     }
 }

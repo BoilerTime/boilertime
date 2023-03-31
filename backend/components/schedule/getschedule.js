@@ -65,4 +65,34 @@ const getSchedule = async function(user) {
     return response;
 }
 
-module.exports = {getSchedule}
+/*
+ * This function gets all user schedules
+ * @param {string} user_id - the user_id of the user
+ * @returns {JSON} json of schedules
+ */
+async function getAllUserSchedules(user_id) {
+  const userSchedules = await schedules.doc(user_id);
+  var jScheduleArray = [];
+  var numSchedules = 0;
+  const collections = await userSchedules.listCollections();
+
+  for (var i = 0; i < collections.length; i++) {
+    doc = await userSchedules.collection(collections[i].id).doc("schedule").get();
+    doc = await doc.data();
+    const jsonObj = {
+      "term_id": collections[i].id,
+      "optional_classes": await doc.optional_classes,
+      "required_classes": await doc.required_classes,
+      "personal_preferences": await doc.personal_preferences
+    }
+    jScheduleArray.push(jsonObj);
+    numSchedules++;
+  }
+  jScheduleArray.push({ "num_schedules": numSchedules });
+  return jScheduleArray;
+}
+
+module.exports = {
+  getSchedule,
+  getAllUserSchedules
+}

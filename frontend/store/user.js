@@ -4,7 +4,11 @@ import axios from "axios";
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
-      user: null,
+      user: {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
+      },
     };
   },
   persist: persistedState.localStorage,
@@ -13,14 +17,14 @@ export const useUserStore = defineStore("user", {
   */
   getters: {
     isLoggedIn() {
-        return !!this.user;
+        return this.user.user_id !== "";
     },
     user_id() {
         return this.user.user_id;
     },
     accessToken() {
         return this.user.accessToken;
-    },
+    }
   },
   actions: {
     /**
@@ -36,10 +40,19 @@ export const useUserStore = defineStore("user", {
       const accessToken = await res.data.accessToken;
       const refreshToken = await res.data.refreshToken;
       const user_id = await res.data.user_id;
+      const dark_mode = await res.data.dark_mode;
       const user = {
         accessToken: accessToken,
         refreshToken: refreshToken,
-        user_id: user_id
+        user_id: user_id,
+        dark_mode: dark_mode,
+      }
+      this.user = user;
+    }, async logOut() {
+      const user = {
+        accessToken: "",
+        refreshToken: "",
+        user_id: ""
       }
       this.user = user;
     },
@@ -66,5 +79,16 @@ export const useUserStore = defineStore("user", {
         navigateTo('/auth/login');
       });
     },
+    async createGuest() {
+      await axios.post('http://localhost:3001/api/guest')
+      .then(response => {
+        this.user = {
+          accessToken: response.data["accessToken"]
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   },
 });

@@ -1,4 +1,3 @@
-
 <template>
   <header class="bg-white">
     <nav class="flex items-center justify-between px-12 py-8 mx-auto">

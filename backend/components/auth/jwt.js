@@ -38,7 +38,7 @@ async function authenticateUser({ email, password }) {
       const refresh_token = jwt.sign(user, process.env.REFRESH_TOKEN);
       user = { user_id: doc.data().user_id, accessToken: access_token };
       doc.ref.update({ access_token: access_token, refresh_token: refresh_token });
-      return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token);
+      return (user_id = doc.data().user_id, accessToken = access_token, refreshToken = refresh_token, dark_mode = doc.data().dark_mode);
     } else {
       throw new Error("User Is Not Verified")
     }
@@ -157,6 +157,7 @@ async function generateNewAccessToken(user) {
       //else {
       const user1 = { user_id: doc.data().user_id };
       newAccessToken = jwt.sign(user1, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+      console.log("\n\n MAKE NEW ACCESS TOKEN \n\n")
       //doc.ref.update({ access_token: newAccessToken, refresh_token: "" });
       doc.ref.update({ access_token: newAccessToken, refresh_token: null });
       return (newAccessToken1 = newAccessToken);
