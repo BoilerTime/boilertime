@@ -49,13 +49,13 @@ async function convertSchedule(schedule) {
           "prof_name": prof_name,
           "class_name": class_name
         }, config)
-        return response.data.averageGPA
+        return response?.data?.averageGPA || 0.0
       }
       async function getrmp(prof_name) {
         const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
           "prof_name": prof_name
         }, config)
-        return response.data.avgRating
+        return response?.data?.avgRating || 0.0
       }
       result.push({
         startTime: easternStartTime,
@@ -112,15 +112,7 @@ onBeforeMount(async () => {
     showWarning(response.data.time, response.data.rmp)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
-  }).catch((e) => {
-    toast.error("Error: You haven't optimized this schedule yet!", {
-          timeout: 10000,
-          position: POSITION.BOTTOM_RIGHT
-        });
-    setTimeout(() => {
-      navigateTo('/app/create')
-    }, 500);
-    })
+  })
 });
 onMounted(() => {
   nextTick(() => {
@@ -131,7 +123,8 @@ onMounted(() => {
 })
 
 function showWarning(time, rmp) {
-  if(time.toUpperCase() == "NONE") {
+  console.log(time);
+  if(time.toUpperCase() != "NONE") {
     toast.warning("Warning: RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
           timeout: 5000,
           position: POSITION.BOTTOM_RIGHT
