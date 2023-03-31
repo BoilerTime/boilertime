@@ -71,7 +71,8 @@
           </div>
           <div class="flex justify-between mb-1">
             <span class="text-base font-medium text-blue-700">Average rating</span>
-            <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{ ((resultData[1].avgRating) / 5.0 * 100).toPrecision(4) +
+            <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{ ((resultData[1].avgRating) / 5.0 *
+              100).toPrecision(4) +
               '%' }}</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
@@ -83,7 +84,8 @@
           </div>
           <div class="flex justify-between mb-1">
             <span class="text-base font-medium text-blue-700">Would take again</span>
-            <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{ (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
+            <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+              (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
               '%' }}</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0]">
@@ -97,11 +99,22 @@
         <div class="flex justify-between mb-1">
         </div>
       </div>
-      <div class="flex flex-col items-center py-6 mb-12" v-if="resultType == 'Classroom'">
+      <div class="flex flex-col items-center mb-12" v-if="resultType == 'Classroom'">
         <div class="w-full max-w-md">
-          <h2 class="font-bold text-2xl mb-4">Ratings</h2>
+          <iframe
+            width="450"
+            height="250"
+            style="border:0"
+            loading="lazy"
+            scrolling="no"
+            gestureHandling="none"
+            referrerpolicy="no-referrer-when-downgrade"
+            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + actual_name + 'Purdue+University,West+Lafayette+IN'">
+          </iframe>
+          <h2 class="font-bold text-2xl mb-4 mt-8">Ratings</h2>
           <div v-for="(group, index) in resultData" :key="index">
-            <div v-for="(rating, ratingIndex) in group" :key="ratingIndex" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+            <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
+              class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
               <div class="flex items-center mb-2">
                 <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
                 <span class="text-gray-600">{{ rating.timestamp }}</span>
@@ -126,11 +139,12 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center py-6 mb-12" v-if="resultType == 'Course'">
+      <div class="flex flex-col items-center py-6 mb-12" v-if="resultType === 'Course'">
         <div class="w-full max-w-md">
           <h2 class="font-bold text-2xl mb-4">Ratings</h2>
           <div v-for="(group, index) in resultData" :key="index">
-            <div v-for="(rating, ratingIndex) in group" :key="ratingIndex" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+            <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
+              class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
               <div class="flex items-center mb-2">
                 <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
                 <span class="text-gray-600">{{ rating.timestamp }}</span>
@@ -153,40 +167,93 @@
               </div>
             </div>
           </div>
+          <div v-if="!showTextBox" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+            @click="showTextBox = true">
+            <span class="font-bold text-lg text-gray-700">Add your rating</span>
+          </div>
+          <div v-if="showTextBox" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+            <h3 class="font-bold text-lg text-gray-700 mb-2">Submit your rating</h3>
+            <form @submit.prevent="submitRating">
+              <div class="flex flex-col mb-2">
+                <label for="prereq" class="font-bold text-gray-700 mb-1">Strictness of prerequisite requirements</label>
+                <input type="number" min="1" max="5" v-model="prereq" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="pace" class="font-bold text-gray-700 mb-1">Pace of material covered</label>
+                <input type="number" min="1" max="5" v-model="pace" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="depth" class="font-bold text-gray-700 mb-1">Depth of material covered</label>
+                <input type="number" min="1" max="5" v-model="depth" class="border border-gray-400 p-2 rounded-lg">
+              </div>
+              <div class="flex flex-col mb-2">
+                <label for="explanation" class="font-bold text-gray-700 mb-1">Explanation of rating</label>
+                <textarea type="text" v-model="explanation" class="border border-gray-400 p-2 rounded-lg" />
+              </div>
+              <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4">Submit</button>
+            </form>
+          </div>
         </div>
-      </div>
-      <div class="flex flex-col items-center py-6 mb-12" v-if="resultType === 'TA'">
-        <div class="w-full max-w-md">
-          <h2 class="font-bold text-2xl mb-4">Ratings</h2>
-          <div v-for="(group, index) in resultData" :key="index">
-            <div v-for="(rating, ratingIndex) in group" :key="ratingIndex" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
-              <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
-                <span class="text-gray-600">{{ rating.timestamp }}</span>
+        </div>
+        <div class="flex flex-col items-center py-6 mb-12" v-if="resultType === 'TA'">
+          <div class="w-full max-w-md">
+            <h2 class="font-bold text-2xl mb-4">Ratings</h2>
+            <div v-for="(group, index) in resultData" :key="index">
+              <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
+                class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+                <div class="flex items-center mb-2">
+                  <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
+                  <span class="text-gray-600">{{ rating.timestamp }}</span>
+                </div>
+                <div class="flex items-center mb-2">
+                  <span class="font-bold mr-2 text-gray-700">Helpfulness of answering questions:</span>
+                  <span class="text-gray-600">{{ rating.rating[0] }}</span>
+                </div>
+                <div class="flex items-center mb-2">
+                  <span class="font-bold mr-2 text-gray-700">Responsiveness:</span>
+                  <span class="text-gray-600">{{ rating.rating[1] }}</span>
+                </div>
+                <div class="flex items-center mb-2">
+                  <span class="font-bold mr-2 text-gray-700">Fairness of grading:</span>
+                  <span class="text-gray-600">{{ rating.rating[2] }}</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="font-bold mr-2 text-gray-700">Flagged:</span>
+                  <span class="text-gray-600">{{ rating.flag_count }}</span>
+                </div>
               </div>
-              <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Helpfulness of answering questions:</span>
-                <span class="text-gray-600">{{ rating.rating[0] }}</span>
-              </div>
-              <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Responsiveness:</span>
-                <span class="text-gray-600">{{ rating.rating[1] }}</span>
-              </div>
-              <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Fairness of grading:</span>
-                <span class="text-gray-600">{{ rating.rating[2] }}</span>
-              </div>
-              <div class="flex items-center">
-                <span class="font-bold mr-2 text-gray-700">Flagged:</span>
-                <span class="text-gray-600">{{ rating.flag_count }}</span>
-              </div>
+            </div>
+            <div v-if="!showTextBox2" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+              @click="showTextBox2 = true">
+              <span class="font-bold text-lg text-gray-700">Add your rating</span>
+            </div>
+            <div v-if="showTextBox2" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+              <h3 class="font-bold text-lg text-gray-700 mb-2">Submit your rating</h3>
+              <form @submit.prevent="submitTaRating">
+                <div class="flex flex-col mb-2">
+                  <label for="helpfulness" class="font-bold text-gray-700 mb-1">Helpfulness of answering questions</label>
+                  <input type="number" min="1" max="5" v-model="helpfulness" class="border border-gray-400 p-2 rounded-lg">
+                </div>
+                <div class="flex flex-col mb-2">
+                  <label for="responsiveness" class="font-bold text-gray-700 mb-1">Responsiveness</label>
+                  <input type="number" min="1" max="5" v-model="responsiveness" class="border border-gray-400 p-2 rounded-lg">
+                </div>
+                <div class="flex flex-col mb-2">
+                  <label for="fairness" class="font-bold text-gray-700 mb-1">Fairness of grading</label>
+                  <input type="number" min="1" max="5" v-model="fairness" class="border border-gray-400 p-2 rounded-lg">
+                </div>
+                <div class="flex flex-col mb-2">
+                  <label for="explanation" class="font-bold text-gray-700 mb-1">Explanation of rating</label>
+                  <textarea type="text" v-model="explanation" class="border border-gray-400 p-2 rounded-lg" />
+                </div>
+                <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4">Submit</button>
+              </form>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="items-center mt-12 px-24" v-else>
-    </div>
+      <div class="items-center mt-12 px-24" v-else>
+      </div>
   </main>
 </template>
 
@@ -194,6 +261,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue';
+import { useUserStore } from '../../store/user';
 
 const searchTerm = ref('')
 
@@ -209,7 +277,78 @@ var result = ref('')
 var resultType = ref('')
 var resultData = ref([])
 
+var userStore = useUserStore()
+
 var isDataLoaded = ref(false)
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
+
+const showTextBox = ref(false)
+const prereq = ref('')
+const pace = ref('')
+const depth = ref('')
+const explanation = ref('')
+
+async function submitRating() {
+  try {
+    await axios.post('http://localhost:3001/api/add/ratings/courses', {
+      user_id: userStore.user_id,
+      course: result.value.replace(/ /g, ''),
+      prequisite_strictness: prereq.value,
+      pace: pace.value,
+      depth: depth.value,
+      explanation: explanation.value
+    }, config)
+    alert('Successfully submitted rating!')
+    console.log(userStore.accessToken)
+  } catch (error) {
+    alert('Failed to submit rating. Please try again.')
+    console.log("ERRORED AT " + userStore.accessToken)
+    console.error(error)
+  }
+  prereq.value = ''
+  pace.value = ''
+  depth.value = ''
+  explanation.value = ''
+  showTextBox.value = false
+}
+
+const showTextBox2 = ref(false)
+const helpfulness = ref('')
+const responsiveness = ref('')
+const fairness = ref('')
+
+async function submitTaRating() {
+  try {
+    await axios.post('http://localhost:3001/api/add/ratings/courses', {
+      user_id: userStore.user_id,
+      course: result.value,
+      prerequisite_strictness: prereq.value,
+      pace: pace.value,
+      depth: depth.value,
+      explanation: explanation.value
+    }, config)
+    alert('Successfully submitted rating!')
+    location.reload()
+  } catch (error) {
+    if (error.response.status === 409) {
+      alert('You have already submitted a rating for this course.')
+      return
+    } else {
+      alert('Failed to submit rating. Please try again.')
+      console.error(error)
+    }
+  }
+  prereq.value = ''
+  pace.value = ''
+  depth.value = ''
+  explanation.value = ''
+  showTextBox.value = false
+}
 
 async function fetch() {
   try {
@@ -258,6 +397,7 @@ const filteredResults = computed(() => {
   }
 })
 
+var actual_name = ref('')
 async function navigate(selected, type) {
   searchTerm.value = ''
   result.value = selected;
@@ -308,8 +448,18 @@ async function navigate(selected, type) {
         console.log(response.data)
         var data = response.data
         resultData.value.push(data)
-        isDataLoaded.value = true;
       })
+    var search = result.value.split(' ')[0]
+    var lookup = await axios.get('http://localhost:3001/api/buildingsnew');
+    lookup = lookup.data
+    var len = 151
+    for (var i = 0; i < len; i++) {
+      if (Object.keys(lookup)[i] == search) {
+        actual_name.value = Object.values(lookup)[i]
+        break
+      }
+    }
+    isDataLoaded.value = true;
   }
   if (type == 'Course') {
     // course_ratings/courses
