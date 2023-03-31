@@ -1,8 +1,8 @@
 <template>
-  <main class="h-screen">
+  <main>
     <!--Container for the home nav bar-->
     <header class="bg-white">
-      <!--Nav-->
+      <!--Nav Tag-->
       <nav class="mx-auto flex items-center justify-between py-8 px-12">
         <!--Logo-->
         <div class="flex">
@@ -22,11 +22,9 @@
       </nav>
     </header>
     <!--Main Body-->
-    <div class="bg-white flex-col overflow-x-auto">
+    <div class="bg-white flex-col">
       <!--Hero, Sign up-->
-      <div
-        class="flex flex-col items-center text-center gap-2 bg-yellow-500 p-36"
-      >
+      <div class="flex-col text-center bg-yellow-500 p-36">
         <!--Title-->
         <h1 class="text-5xl font-extrabold text-white">
           Your Purdue GRIT® doesn't have to include a poor schedule
@@ -36,9 +34,6 @@
         </h2>
         <h2 class="text-2xl font-bold text-white outline-black">
           Quickly create perfect schedules that fit your preferences and
-          maximize your semester now.
-        </h2>
-        <!--Live counting statistic-->
           maximize your semester.
         </h2>
         <!--Statistics-->
@@ -143,20 +138,6 @@
             How do you use BoilerTime?
           </h1>
         </div>
-        <div class="flex flex-col justify-start gap-12 mt-10">
-          <p class="text-3xl font-bold">
-            First, after signing up or logging in, click to create your schedule
-            on the home page.
-          </p>
-          <p class="text-3xl font-bold">
-            Next, choose the classes that you want to take and need to take and
-            what you want out of your schedule.
-          </p>
-          <p class="text-3xl font-bold">
-            That's it! You should be presented with your schedule after we have
-            finished generating it for you. Feel free to access the other
-            features that we have provided for you!
-          </p>
         <div class="flex flex-row-reverse items-center gap-12 justify-between">
             <div class="flex">
                 <img src="/Create-Photo.png" class="shadow-lg rounded-lg"/>
@@ -186,7 +167,6 @@
           </h1>
         </div>
         <div class="w-full pt-12">
-          <div class="mx-auto w-full rounded-2xl bg-indigo-200 p-4">
           <div
             class="mx-auto w-full rounded-2xl bg-gradient-to-r from-indigo-400 to-indigo-200 p-4"
           >
@@ -295,11 +275,6 @@
       </div>
     </div>
     <footer class="bg-white">
-      <div
-        class="mx-auto flex items-center justify-between py-8 px-12 text-sm font-light"
-      >
-        © 2023 | BoilerTime. All rights reserved. BoilerTime is a project
-        created for Purdue University, CS307: Sofware Engineering I.
       <div class="mx-auto flex items-center py-8 px-12 text-lg font-light">
         © 2023 BoilerTime. All rights reserved. BoilerTime is a product made for Purdue University, CS307: Software Engineering I.
       </div>
@@ -308,7 +283,6 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import {} from "@heroicons/vue/24/outline";
 import axios from 'axios';
 import {
   ChevronUpIcon,
@@ -320,7 +294,6 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/vue/24/solid";
 import {
-  TransitionRoot,
   Disclosure,
   DisclosurePanel,
   DisclosureButton,
