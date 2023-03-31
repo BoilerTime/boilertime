@@ -24,12 +24,12 @@
       <div class="rounded-lg bg-white dark:bg-neutral-700 p-12 shadow-2xl col-span-3">
         <div class="relative">
           <div class="mb-8">
-            <label class="text-md font-semibold">Select your time of day preference:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Select your time of day preference:</label>
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="h-4 w-4" />
+                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">{{ time.title }}</label>
                 </div>
               </div>
             </fieldset>
@@ -130,20 +130,20 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-700 p-6 text-left align-middle shadow-xl transition-all"
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium leading-6 text-gray-900 text-center"
+                class="text-xl font-medium leading-6 text-gray-900 text-center dark:text-gray-200"
               >
                 Optimizing Your Schedule!
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-gray-200">
                   Hang tight, our algorithm is hard at work finding you the perfect schedule!
                 </p>
                 <br/>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-gray-200">
                   Progress: 
                 </p>
                 <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
