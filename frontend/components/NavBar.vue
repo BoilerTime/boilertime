@@ -33,7 +33,7 @@
               leave-to-class="opacity-0 transform scale-95"
             >
               <MenuItems
-                class="absolute -left-1.5 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-neutral-600"
+                class="z-50 absolute -left-1.5 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-neutral-600"
               >
                 <div class="p-1">
                   <MenuItem v-slot="{ active }">
