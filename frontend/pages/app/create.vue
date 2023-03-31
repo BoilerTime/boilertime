@@ -1,17 +1,17 @@
 <template>
   <main>
     <NavBar />
-    <section class="flex p-24 bg-gray-200 h-screen justify-center align-center items-center">
+    <section class="flex p-24 bg-gray-200 dark:bg-neutral-600 h-screen justify-center align-center items-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
-        <div class="text-4xl font-bold text-black">
+        <div class="text-4xl font-bold text-black dark:text-gray-200">
           Get started with
         </div>
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="text-lg font-semibold mt-8 mb-4">What is the difference between these two?</h2>
-        <p class="text-md leading-relaxed">Classes you have to take are your required classes for the semester.
+        <h2 class="text-lg font-semibold mt-8 mb-4 dark:text-gray-200">What is the difference between these two?</h2>
+        <p class="text-md leading-relaxed dark:text-gray-200">Classes you have to take are your required classes for the semester.
           It's classes that are up next on your major's degree plan. We will prioritize this when generating your
           optimized
           schedule.
@@ -21,27 +21,27 @@
           schedule.
         </p>
       </div>
-      <div class="rounded-lg bg-white p-12 shadow-2xl col-span-3">
+      <div class="rounded-lg bg-white dark:bg-neutral-700 p-12 shadow-2xl col-span-3">
         <div class="relative">
           <div class="mb-8">
             <label class="text-md font-semibold">Select your time of day preference:</label>
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                   <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
                 </div>
               </div>
             </fieldset>
           </div>
-          <label class="text-md font-semibold">Add classes you have to take:</label>
+          <label class="text-md font-semibold dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
-            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
             placeholder="Search for classes..." @keyup.enter="addSingleResultToSelected">
           <ul v-if="isSearchActive && filteredResults.length > 0"
-            class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+            class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
             <li v-for="result in filteredResults" :key="result"
-              class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white" @click="addToSelected(result)">
+              class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white" @click="addToSelected(result)">
               <span class="bg-yellow-500 flex items-center" v-if="bookmarked_classes.includes(result)">
                 <BookmarkIcon class="w-4 mr-2" />
                 <span>{{ result }}</span>
@@ -51,28 +51,28 @@
           </ul>
           <draggable v-model="selectedRequiredCourses" group="classes" item-key="id" class="flex flex-wrap">
             <template #item="{ element, index }">
-              <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                 @click="removeFromSelected(index)">
                 {{ element }}
               </div>
             </template>
           </draggable>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Add classes you want to take:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Add classes you want to take:</label>
             <input v-model="optionalSearchTerm"
-              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
               placeholder="Search for classes..." @keyup.enter="addSingleOptionalToSelected">
             <ul v-if="isOptionalSearchActive && filteredOptionalResults.length > 0"
-              class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+              class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
               <li v-for="result in filteredOptionalResults" :key="result"
-                class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white"
+                class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white"
                 @click="addToSelectedOptional(result)">
                 {{ result }}
               </li>
             </ul>
             <draggable v-model="selectedOptionalCourses" group="classes" item-key="id" class="flex flex-wrap">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                   @click="removeOptional(index)">
                   {{ element }}
                 </div>
@@ -80,11 +80,11 @@
             </draggable>
           </div>
           <div class="relative mt-8">
-            <label class="text-md font-semibold">Drag classes here to bookmark them for later:</label>
+            <label class="text-md font-semibold dark:text-gray-200">Drag classes here to bookmark them for later:</label>
             <draggable v-model="bookmarked_classes" group="classes" item-key="id"
               class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
               <template #item="{ element, index }">
-                <div class="text-sm p-1.5 bg-blue-500 text-white rounded-md mr-3 hover:bg-red-500"
+                <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500"
                   @click="removeFromBookmarked(index)">
                   {{ element }}
                 </div>
@@ -92,7 +92,7 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="submit" class="bg-yellow-500 text-white p-2 text-md rounded-md">
+            <button @click="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md">
               Submit
             </button>
           </div>
@@ -101,21 +101,100 @@
     </div>
   </section>
   </main>
+
+  <TransitionRoot :show="isOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium leading-6 text-gray-900 text-center"
+              >
+                Optimizing Your Schedule!
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                </p>
+                <br/>
+                <p class="text-sm text-gray-500">
+                  Progress: 
+                </p>
+                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+              </div>
+
+              
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup>
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
+import ProgressBar from "../../components/ProgressBar.vue";
+
 import draggable from 'vuedraggable'
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
+const { $socket } = useNuxtApp()
 
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
+const isOpen = ref(false)
+const completed = ref(0)
+
+var totalSum;
+
+function closeModal() {
+  isOpen.value = false
+}
+function openModal() {
+  isOpen.value = true
+}
+
+var courseList; 
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -152,7 +231,6 @@ onBeforeMount(() => {
   }, config).then((response) => {
     bookmarked_classes.value = response.data.bookmarks
   })
-  console.log(bookmarked_classes.value)
 })
 
 const searchTerm = ref('')
@@ -166,6 +244,39 @@ const filteredResults = computed(() => {
   })
 })
 
+onMounted(() => {
+  $socket.onopen = () => {
+    console.log("Connected")
+    console.log("Are we open? " + isOpen.value)
+  }
+  $socket.onmessage = ((data) => {
+    console.log("data", JSON.parse(data.data))
+    try {
+      let response = JSON.parse(data.data);
+      if(response?.message == "schedule") {
+        parseCoursesResponse(response.data);
+      } else if (response?.message == "Status Update") {
+        if(completed.value < 100) {
+          //completed.value = (completed.value + response.data)%100;v
+          var temp = completed.value + response.data;
+          if(temp > 99) {
+            completed.value = 99;
+          } else {
+            completed.value = temp;
+          }
+        }
+      }
+    } catch (e) {
+      console.log("Wasnt JSON!!" + e)
+    }
+})
+
+  $socket.onclose = function () {
+    console.log("disconnected")
+  }
+
+})
+
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
@@ -175,6 +286,23 @@ function addToSelected(item) {
     selectedRequiredCourses.value.push(item)
     isSearchActive.value = false
     searchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
@@ -205,9 +333,10 @@ const filteredOptionalResults = computed(() => {
   }
 
   return optionalData.value.filter((item) => {
-    return item.toLowerCase().includes(optionalSearchTerm.value.toLowerCase())
+    return item.toLowerCase().startsWith(optionalSearchTerm.value.toLowerCase())
   })
 })
+
 
 const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
@@ -218,6 +347,23 @@ function addToSelectedOptional(item) {
     selectedOptionalCourses.value.push(item)
     isOptionalSearchActive.value = false
     optionalSearchTerm.value = ''
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: time_pref.value,
+      rmp: rmp.value
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
   }
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
@@ -232,10 +378,44 @@ function addToSelectedOptional(item) {
 function removeFromSelected(index) {
   console.log(index)
   selectedRequiredCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeOptional(index) {
   selectedOptionalCourses.value.splice(index, 1)
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: time_pref.value,
+    rmp: rmp.value
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function removeFromBookmarked(index) {
@@ -298,13 +478,19 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 
 function submit() {
   if (selectedRequiredCourses.value.length > 0) {
+    openModal()
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time.value,
+      time: time_pref.value,
+      time: time_pref.value,
       rmp: rmp.value
-    }, config).then(() => {
+    }, config).then((response) => {
+      sendToOptimizer(response.data.schedule)
+      courseList = response.data.schedule;
+      console.log("TWT")
+      console.log(courseList)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
@@ -314,9 +500,104 @@ function submit() {
         accessToken = userStore.accessToken;
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      navigateTo('/app/view')
+      //navigateTo('/app/view')
     })
+  } else {
+    console.log("Error: No classes!")
   }
+  console.log("List: ")
+
+  
+}
+
+function sendToOptimizer(data) {
+  if(!isOpen.value) {
+    console.log("Critical Error: WS isn't open ")
+  }
+  //We first need to send them number of classes we will be optimzing by
+  $socket.send(data.length)
+  //Next, we send the time of day preferences
+  $socket.send("Afternoon")
+  //$socket.send(timePreference[time_pref.value]);
+  //Next, we send the RMP prefernces
+  $socket.send("None");
+
+  //Next, we can start iterating over the course list
+  for(let i = 0; i < data.length; i++) {
+    //First, we can send the name of the course
+    $socket.send(data[i].name)
+    //Next, we can send the number of sections
+    $socket.send(data[i].isRequired)
+
+    $socket.send(data[i].startTimes.length);
+    //Next, we iterate through each of the options and send the parameters of that option
+    for(let j = 0; j < data[i].startTimes.length; j++) {
+      //First, we can send the start time
+      $socket.send(data[i].startTimes[j]);
+      //Durations
+      $socket.send(data[i].durations[j]);
+      //Week days 
+      $socket.send(data[i].daysOfWeek[j]);
+      //RMP
+      $socket.send(data[i].rmp[j]);
+      //Section ID
+      $socket.send(data[i].sectionIDs[j]);
+    }
+  }
+}
+
+function parseCoursesResponse(data) {
+  let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let serverOutput = {"schedule": []};
+  for(let i = 0; i < data.length; i++) {
+    let name = data[i].courseID;
+    let thisFormat = JSON.parse(JSON.stringify(serverFormat));
+    let indexForTarget = findCourse(name);
+    //console.log("index = " + indexForTarget)
+    //console.log("Data = " + JSON.stringify(data[i]))
+    let indexIn = findIDIndex(indexForTarget, data[i].sectionId);
+    thisFormat.subject = name.split(' ')[0];
+    thisFormat.number = name.split(' ')[1];
+
+    thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
+    thisFormat.userSections.meetings.push(data[i].sectionId);
+    serverOutput.schedule.push(thisFormat)
+    //console.log("indexIn = " + indexIn)
+    //console.log("The optimal schedule is at: " +  data[i].courseStartTime + " and runs for " + data[i].courseDuration + " and whose professor has " + courseList[indexForTarget].rmp[indexIn]); 
+  }
+
+  console.log(serverOutput)
+  saveOptimizedSchedule(serverOutput)
+  navigateTo('/app/view/spring_2023')
+} 
+
+
+function findCourse(target) {
+  for(let i = 0; i < courseList.length; i++) {
+    if(courseList[i].name == target) {
+      return i;
+    }
+  }
+}
+
+function findIDIndex(position, target) {
+  for(let i = 0; i < courseList[position].sectionIDs.length; i++) {
+    if(courseList[position].sectionIDs[i] == target) {
+      return i;
+    }
+  }
+}
+
+function saveOptimizedSchedule(schedule) {
+  axios.post('http://localhost:3001/api/saveoptimizedschedule', {
+    data: schedule,
+    user_id: userStore.user_id
+  }).then(() => {
+    console.log("Schedule Saved!");
+  }).catch((exception) => {
+    console.log("Couldn't save schedule because of " + exception);
+  })
+  console.log("Done!")
 }
 </script>
 

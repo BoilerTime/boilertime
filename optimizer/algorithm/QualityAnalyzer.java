@@ -59,10 +59,10 @@ public class QualityAnalyzer {
     }
 
 
-    public boolean mayHaveConverged() {
+    public double getRMSConvergence() {
         int size = bestSchedules.size();
         if(size < numSimilarForConvergence) {
-            return false; 
+            return Double.MAX_VALUE; 
         }
 
         //If we have generated more than enough schedules for convergence to have potentially occured,
@@ -82,9 +82,6 @@ public class QualityAnalyzer {
             rootMeanSquared += (referenceFrame[i] - windowMean) * (referenceFrame[i] - windowMean);
         }
         System.out.println("RMS = " + Math.sqrt(rootMeanSquared / (double) size));
-        return Math.sqrt(rootMeanSquared / (double) size) < 1E-4f;
+        return Math.sqrt(rootMeanSquared / (double) size);
     }
-
-
-
 }

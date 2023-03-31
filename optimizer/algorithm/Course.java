@@ -12,6 +12,7 @@ public class Course {
     private Section[] sections;
     private final double maxRating; 
     private HashMap<String, Section> idSection; 
+    private String[] sectionIds;
 
 
     public Course(CourseOverview info) {
@@ -23,6 +24,7 @@ public class Course {
         this.isRunnable = false;
         this.ratingsArr = info.getRatings();
         this.maxRating = this.calculateMaxRating();
+        this.sectionIds = info.getSectionIds();
     }
 
     /**
@@ -41,7 +43,7 @@ public class Course {
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Utils.arrToString(id);
-            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i]);
+            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
             idSection.put(sid, sections[i]);
         }
         return sections;

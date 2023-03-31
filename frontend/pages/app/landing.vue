@@ -1,12 +1,12 @@
 <template>
-  <main class="h-screen">
+  <main>
     <!--Container for the home nav bar-->
     <header class="bg-white">
-      <!--Nav-->
+      <!--Nav Tag-->
       <nav class="mx-auto flex items-center justify-between py-8 px-12">
         <!--Logo-->
         <div class="flex">
-          <a href="/" class="flex items-center gap-4">
+          <a href="/app/landing" class="flex items-center gap-4">
             <img class="h-10 w-auto" src="/logo.png" />
             <p class="text-2xl font-bold">BoilerTime</p>
           </a>
@@ -24,9 +24,7 @@
     <!--Main Body-->
     <div class="bg-white flex-col">
       <!--Hero, Sign up-->
-      <div
-        class="flex flex-col items-center text-center gap-2 bg-yellow-500 p-36"
-      >
+      <div class="flex-col text-center bg-yellow-500 p-36">
         <!--Title-->
         <h1 class="text-5xl font-extrabold text-white">
           Your Purdue GRIT® doesn't have to include a poor schedule
@@ -36,7 +34,7 @@
         </h2>
         <h2 class="text-2xl font-bold text-white outline-black">
           Quickly create perfect schedules that fit your preferences and
-          maximize your semester now.
+          maximize your semester.
         </h2>
         <!--Statistics-->
         <div class="flex flex-row items-center justify-between gap-10 text-white mt-10">
@@ -277,11 +275,8 @@
       </div>
     </div>
     <footer class="bg-white">
-      <div
-        class="mx-auto flex items-center justify-between py-8 px-12 text-sm font-light"
-      >
-        © 2023 | BoilerTime. All rights reserved. BoilerTime is a project
-        created for Purdue University, CS307: Sofware Engineering I.
+      <div class="mx-auto flex items-center py-8 px-12 text-lg font-light">
+        © 2023 BoilerTime. All rights reserved. BoilerTime is a product made for Purdue University, CS307: Software Engineering I.
       </div>
     </footer>
   </main>
@@ -353,4 +348,3 @@ onMounted(async () => {
 });
 
 </script>
-  
