@@ -1,7 +1,7 @@
 <template>
   <main>
     <NavBar />
-    <div class="flex flex-wrap">
+    <div class="flex flex-wrap" v-if="userSchedules.length !== 0">
       <!-- Add button -->
       <div class="w-1/4 p-4 cursor-pointer" @click="navigateToCreateSchedule()">
         <div
@@ -34,6 +34,16 @@
           <div class="px-4 py-2 mt-auto bg-white">
             <span class="text-sm text-gray-500">{{ schedule.timestamp }}</span>
           </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="flex items-center justify-center h-screen">
+        <div class="flex items-center justify-center px-8 py-6 border border-black rounded rounded-lg shadow-lg bg-white-500 hover:bg-blue-100" @click="navigateToCreateSchedule()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-gray-400 " viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM5.5 9a.5.5 0 01.5-.5h3V5a.5.5 0 011 0v3h3a.5.5 0 010 1h-3v3a.5.5 0 01-1 0v-3h-3a.5.5 0 01-.5-.5z" />
+          </svg>
+          <span class="ml-4 text-lg text-black-400">Create a new schedule</span>
         </div>
       </div>
     </div>
