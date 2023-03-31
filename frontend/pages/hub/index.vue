@@ -1,8 +1,8 @@
 <template>
-  <main>
+  <main class="dark:bg-neutral-500 h-screen">
     <NavBar />
     <div class="flex flex-col items-center mt-12">
-      <h1 class="text-2xl font-bold mb-6 text-center">Aggregated reviews for your <br>professor, classroom, course, and TA
+      <h1 class="text-2xl font-bold mb-6 text-center dark:text-gray-200">Aggregated reviews for your <br>professor, classroom, course, and TA
       </h1>
       <div class="w-full max-w-lg flex justify-center">
         <div class="relative z-10">
