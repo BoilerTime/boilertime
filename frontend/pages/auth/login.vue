@@ -13,11 +13,8 @@
             to BoilerTime
           </h1>
           <p class="mt-4 text-gray-400">
-            Don't have an account?
-            <a href="/auth/signup" class="text-yellow-500">Sign up here →</a>
-          </p>
-          <p class="mt-1 text-black">
-            Use your <b>@purdue.edu</b> email address to sign in.
+            Use your @purdue.edu email address to sign in
+            <a class="text-yellow-500" @click="guest()"><br>or continue as guest →</a>
           </p>
           <form @submit.prevent="() => login()" class="mt-3">
             <!--Email text & input box-->
@@ -80,6 +77,24 @@
       // temp alert
       alert("Incorrect username or password")
       password.value = null
+    }
+  }
+
+  async function guest() {
+    try {
+      await userStore.createGuest()
+      if (!userStore.isLoggedIn) {
+        navigateTo("/auth/login")
+      } else {
+        // start temp fix, this is janky
+        const el = document.getElementById("__nuxt")
+        el.innerHTML = ""
+        // end temp fix
+        navigateTo("/app/home")
+      }
+    } catch (error) {
+      // temp alert
+      alert("Failed to create guest session")
     }
   }
 </script>

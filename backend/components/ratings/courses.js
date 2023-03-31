@@ -146,7 +146,7 @@ async function getCourseRatings(courseName) {
     }
     */
     count+=1;
-  })
+  });
   return jArray;
 }
 
