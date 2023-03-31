@@ -568,7 +568,7 @@ function parseCoursesResponse(data) {
 
   console.log(serverOutput)
   saveOptimizedSchedule(serverOutput)
-  navigateTo('/app/view')
+  navigateTo('/app/view/spring_2023')
 } 
 
 
