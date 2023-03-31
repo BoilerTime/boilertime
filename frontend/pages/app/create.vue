@@ -578,7 +578,19 @@ watch(bookmarked_classes, (newVal, oldVal) => {
   }
 })
 
+var isAGuest = ref(true)
+
+onMounted(async () => {
+  if (userStore.user_id) {
+    isAGuest.value = false
+  }
+})
+
 function submit() {
+  if (isAGuest) {
+    alert('You must be logged in to create a schedule')
+    return
+  }
   console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
