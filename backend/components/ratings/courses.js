@@ -95,7 +95,7 @@ async function getUserRatings(user_id) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
-      "explanation": doc.explanation
+      "explanation": doc.explanation,
     }
     jArray[count] = jsonObj;
     count++;
@@ -123,13 +123,13 @@ async function userAlreadyRated(user_id, course) {
  * @param {string} courseName - Name of the course (ex. CS30700) 
  */
 async function getCourseRatings(courseName) {
-  const courseRating = await courseRatings.where('course', '==', courseName).get(); 
+  const ratings = await courseRatings.where('course', '==', courseName).get(); 
 
   var jsonObj = {};
 
   let count = 0
   jArray = [];
-  courseRating.forEach(async doc => {
+  ratings.forEach(async doc => {
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     json = {}
@@ -137,6 +137,7 @@ async function getCourseRatings(courseName) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
+      "user_id": doc.user_id,
       "explanation": doc.explanation
     }
     jArray[count] = (json);
@@ -147,7 +148,7 @@ async function getCourseRatings(courseName) {
     }
     */
     count+=1;
-  })
+  });
   return jArray;
 }
 

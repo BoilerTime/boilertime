@@ -1,10 +1,10 @@
 <template>
-  <section class="bg-white h-screen overflow-hidden">
+  <section class="h-screen overflow-hidden bg-white">
     <div class="lg:grid lg:grid-cols-12">
       <div
         class="flex items-center justify-center p-8 sm:px-12 lg:col-span-8 lg:p-14 xl:col-span-12"
       >
-        <div class="max-w-xl bg-white p-8 z-50 rounded-lg">
+        <div class="z-50 max-w-xl p-8 bg-white rounded-lg">
           <a href="/">
             <img src="/logo.png" class="h-16 mb-6" />
           </a>
@@ -28,7 +28,7 @@
             <!--Email text & input box-->
             <label
               for="email"
-              class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+              class="block pt-3 mb-2 text-sm font-medium text-gray-900 dark:text-black"
               >Email</label
             >
             <input
@@ -57,12 +57,12 @@
             <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
               <button
                 type="submit"
-                class="inline-block shrink-0 bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 mt-5 rounded"
+                class="inline-block px-10 py-2 mt-5 font-bold text-white bg-black rounded shrink-0 hover:bg-gray-800"
               >
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class="text-md text-gray-400"
+                <a href="/auth/forgotpassword" class="text-gray-400 text-md"
                   >Forgot password?</a
                 >
               </p>
@@ -73,7 +73,7 @@
       <div class="block h-screen lg:col-span-5 lg:h-full">
         <img
           src="https://stories.purdue.edu/app/uploads/2022/07/TopBuildings-ContentHub-Hero.jpg"
-          class="absolute inset-0 h-full w-full object-cover opacity-50"
+          class="absolute inset-0 object-cover w-full h-full opacity-50"
         />
       </div>
     </div>

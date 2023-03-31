@@ -43,6 +43,7 @@ var expectedCourseRating2 = {
   ],
   "timestamp": date.toDateString(),
   "flag_count": 0,
+  "user_id": "20e834b376efa194c62512fde47f3cc02d8fec5cfb241b8d4c7a8388d1059740",
   "explanation": "Test"
 }
 
@@ -75,6 +76,7 @@ var expectedClassroomRating2 = {
   ],
   "timestamp": date.toDateString(),
   "flag_count": 0,
+  "user_id": "20e834b376efa194c62512fde47f3cc02d8fec5cfb241b8d4c7a8388d1059740",
   "explanation": "Test"
 }
 
@@ -108,6 +110,7 @@ var expectedTARating2 = {
   ],
   "timestamp": date.toDateString(),
   "flag_count": 0,
+  "user_id": "20e834b376efa194c62512fde47f3cc02d8fec5cfb241b8d4c7a8388d1059740",
   "explanation": "Test"
 }
 

@@ -121,6 +121,7 @@ async function getTARatings(ta) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
+      "user_id": doc.user_id,
       "explanation": doc.explanation
     }
     jArray[count] = (json);
