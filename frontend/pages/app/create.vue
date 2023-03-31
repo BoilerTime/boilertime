@@ -198,14 +198,25 @@
                 <p class="text-sm text-gray-500">
                   Which Schedule Looks Good to You?
                 </p>
-                
+                <v-card text="..."></v-card>
               </div>
-              <PopoverPanel>
-                <a href="/insights">Insights</a>
-                <a href="/automations">Automations</a>
-                <a href="/reports">Reports</a>
-            </PopoverPanel>
-              
+
+            <!-- Data items -->
+            <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
+              @click="getScheduleView(schedule.term_id)">
+              <div
+                class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
+                <div class="flex items-center justify-left flex-grow" style="margin-left: 5%; margin-top: 5%;">
+                  <div>
+                   <span class="text-sm text-black" 
+                      >{{ schedule }} <br/>
+                    </span><br/>
+                  </div>
+
+
+                </div>
+                </div>
+            </div>
 
             </DialogPanel>
           </TransitionChild>
@@ -228,9 +239,6 @@ import {
   Dialog,
   DialogPanel,
   DialogTitle,
-  Popover, 
-  PopoverButton, 
-  PopoverPanel
 } from '@headlessui/vue'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
@@ -244,7 +252,7 @@ const rmp = ref('')
 const isOpen = ref(false)
 const isResultOpen = ref(false);
 const completed = ref(0)
-
+const schedule = ref('');
 var totalSum;
 
 function closeModal() {
@@ -608,6 +616,36 @@ function sendToOptimizer(data) {
 
 function parseCoursesResponse(data) {
   isResultOpen.value = true; 
+
+  const formatString = "course_name at course_time"
+  var courses = [];
+  console.log(data)
+  for(let i = 0; i < data.length; i++) {
+    
+    //let thisFormat = [];
+    let thisFormat = "";
+    for(let j = 0; j < data[i].length; j++) {
+      let string = "";
+      if(j == data[i].length - 1) {
+        console.log("TWT")
+        string += "and "
+      }
+      let tempForm = new String(formatString);
+      string+= tempForm;
+      console.log(data[i][j]);
+      string = string.replace("course_name", data[i][j].courseID);
+      string = string.replace("course_time", data[i][j].courseStartTime);
+      if(j != data[i].length - 1) {
+        string += ", "
+      }
+      thisFormat += (string)
+    }
+    courses.push(thisFormat)
+  }
+
+  schedule.value = courses;
+  console.log("Temp Form = " + courses);
+  
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let serverOutput = {"schedule": []};
   for(let i = 0; i < data.length; i++) {
