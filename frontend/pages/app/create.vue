@@ -1,7 +1,7 @@
 <template>
   <main>
     <NavBar />
-    <section class="flex p-24 bg-gray-200 dark:bg-neutral-600 h-screen justify-center align-center items-center">
+    <section class="flex items-center justify-center h-screen p-24 bg-gray-200 dark:bg-neutral-600 align-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
         <div class="text-4xl font-bold text-black dark:text-gray-200">
@@ -10,8 +10,8 @@
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="text-lg font-semibold mt-8 mb-4 dark:text-gray-200">What is the difference between these two?</h2>
-        <p class="text-md leading-relaxed dark:text-gray-200">Classes you have to take are your required classes for the semester.
+        <h2 class="mt-8 mb-4 text-lg font-semibold dark:text-gray-200">What is the difference between these two?</h2>
+        <p class="leading-relaxed text-md dark:text-gray-200">Classes you have to take are your required classes for the semester.
           It's classes that are up next on your major's degree plan. We will prioritize this when generating your
           optimized
           schedule.
@@ -21,28 +21,28 @@
           schedule.
         </p>
       </div>
-      <div class="rounded-lg bg-white dark:bg-neutral-700 p-12 shadow-2xl col-span-3">
+      <div class="p-12 bg-white rounded-lg shadow-2xl dark:bg-neutral-700 col-span-3">
         <div class="relative">
           <div class="mb-8">
-            <label class="text-md font-semibold dark:text-gray-200">Select your time of day preference:</label>
+            <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="h-4 w-4" />
-                  <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">{{ time.title }}</label>
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                  <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
                 </div>
               </div>
             </fieldset>
           </div>
-          <label class="text-md font-semibold dark:text-gray-200">Add classes you have to take:</label>
+          <label class="font-semibold text-md dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
-            class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
+            class="w-full px-4 py-2 mt-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 dark:border-black"
             placeholder="Search for classes..." @keyup.enter="addSingleResultToSelected">
           <ul v-if="isSearchActive && filteredResults.length > 0"
-            class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
+            class="absolute z-10 w-full mt-1 overflow-scroll bg-white rounded-lg shadow-lg dark:bg-neutral-600 dark:text-gray-200 outline-black max-h-48">
             <li v-for="result in filteredResults" :key="result"
               class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white" @click="addToSelected(result)">
-              <span class="bg-yellow-500 flex items-center" v-if="bookmarked_classes.includes(result)">
+              <span class="flex items-center bg-yellow-500" v-if="bookmarked_classes.includes(result)">
                 <BookmarkIcon class="w-4 mr-2" />
                 <span>{{ result }}</span>
               </span>
@@ -58,12 +58,12 @@
             </template>
           </draggable>
           <div class="relative mt-8">
-            <label class="text-md font-semibold dark:text-gray-200">Add classes you want to take:</label>
+            <label class="font-semibold text-md dark:text-gray-200">Add classes you want to take:</label>
             <input v-model="optionalSearchTerm"
-              class="w-full px-4 py-2 mt-3 rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 border dark:border-black"
+              class="w-full px-4 py-2 mt-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 dark:border-black"
               placeholder="Search for classes..." @keyup.enter="addSingleOptionalToSelected">
             <ul v-if="isOptionalSearchActive && filteredOptionalResults.length > 0"
-              class="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-600 dark:text-gray-200 outline-black rounded-lg shadow-lg max-h-48 overflow-scroll">
+              class="absolute z-10 w-full mt-1 overflow-scroll bg-white rounded-lg shadow-lg dark:bg-neutral-600 dark:text-gray-200 outline-black max-h-48">
               <li v-for="result in filteredOptionalResults" :key="result"
                 class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white"
                 @click="addToSelectedOptional(result)">
@@ -80,9 +80,9 @@
             </draggable>
           </div>
           <div class="relative mt-8">
-            <label class="text-md font-semibold dark:text-gray-200">Drag classes here to bookmark them for later:</label>
+            <label class="font-semibold text-md dark:text-gray-200">Drag classes here to bookmark them for later:</label>
             <draggable v-model="bookmarked_classes" group="classes" item-key="id"
-              class="relative flex rounded-lg border-2 border-dashed border-gray-300 p-3 mt-3">
+              class="relative flex p-3 mt-3 border-2 border-gray-300 border-dashed rounded-lg">
               <template #item="{ element, index }">
                 <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500"
                   @click="removeFromBookmarked(index)">
@@ -92,7 +92,7 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md">
+            <button @click="submit" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Submit
             </button>
           </div>
@@ -118,7 +118,7 @@
 
       <div class="fixed inset-0 overflow-y-auto">
         <div
-          class="flex min-h-full items-center justify-center p-4 text-center"
+          class="flex items-center justify-center min-h-full p-4 text-center"
         >
           <TransitionChild
             as="template"
@@ -130,11 +130,11 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-700 p-6 text-left align-middle shadow-xl transition-all"
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl dark:bg-neutral-700 transition-all"
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium leading-6 text-gray-900 text-center dark:text-gray-200"
+                class="text-xl font-medium text-center text-gray-900 leading-6 dark:text-gray-200"
               >
                 Optimizing Your Schedule!
               </DialogTitle>
@@ -174,7 +174,7 @@
 
       <div class="fixed inset-0 overflow-y-auto">
         <div
-          class="flex min-h-full items-center justify-center p-4 text-center"
+          class="flex items-center justify-center min-h-full p-4 text-center"
         >
           <TransitionChild
             as="template"
@@ -186,11 +186,11 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium leading-6 text-gray-900 text-center"
+                class="text-xl font-medium text-center text-gray-900 leading-6"
               >
                 We're Done -- Quick Question
               </DialogTitle>
@@ -207,7 +207,7 @@
               @click="getScheduleView(index)">
               <div
                 class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-                <div class="flex items-center justify-left flex-grow" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
+                <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
                   <div>
                    <span class="text-sm text-black" 
                       >{{ schedule }} <br/>
