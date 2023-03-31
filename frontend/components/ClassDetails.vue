@@ -20,18 +20,18 @@
               enter-to="translate-x-0"
               leave-to="translate-x-full"
              >
-              <DialogPanel class="bg-white h-screen w-screen pb-12 max-w-xl flex-col overflow-y-scroll overflow-x-hidden">
+              <DialogPanel class="bg-white dark:bg-neutral-500 h-screen w-screen pb-12 max-w-xl flex-col overflow-y-scroll overflow-x-hidden">
                 <div class="bg-yellow-500 p-6 mb-4">
                   <span class="text-3xl font-semibold text-white">{{ data.subject }} {{ data.number }}</span>
                   <p class="text-xl text-white mt-1">{{ data.name }}</p>
                 </div>
                 <div v-for="(meeting, index) in data.meetings" :key="index" class="relative">
                   <div class="relative px-6 pt-4">
-                    <h1 class="text-2xl font-bold">{{ meeting.type }}</h1>
-                    <h1 class="text-lg font-bold mb-4">{{ meeting.instructorName }}</h1>
-                    <h1 v-for="days in meeting.daysOfWeek" class="text-sm" :key="days">{{ days }}</h1>
-                    <h1 class="text-sm mt-4">{{ begin_times[index] }}-{{ fin_times[index] }}</h1>
-                    <h1 class="text-sm mb-4">{{ meeting.buildingCode }} {{ meeting.roomNumber }}</h1>
+                    <h1 class="text-2xl font-bold dark:text-gray-200">{{ meeting.type }}</h1>
+                    <h1 class="text-lg font-bold mb-4 dark:text-gray-200">{{ meeting.instructorName }}</h1>
+                    <h1 v-for="days in meeting.daysOfWeek" class="text-sm dark:text-gray-200" :key="days">{{ days }}</h1>
+                    <h1 class="text-sm mt-4 dark:text-gray-200">{{ begin_times[index] }}-{{ fin_times[index] }}</h1>
+                    <h1 class="text-sm mb-4 dark:text-gray-200">{{ meeting.buildingCode }} {{ meeting.roomNumber }}</h1>
                   </div>
                   <iframe
                     width="600"
@@ -45,25 +45,25 @@
                   </iframe>
                   <div class="relative px-6 pt-4 pb-6">
                       <div>
-                        <h1 class="text-lg font-bold">Avg GPA</h1>
-                        <h1 class="text-md">For this specific class</h1>
-                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4">{{ class_stats[index] }}</h1>
-                        <h1 v-else class="text-lg mb-4">No data</h1>
-                        <h1 class="text-md">For all the classes taught by this professor</h1>
-                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4">{{ prof_stats[index] }}</h1>
-                        <h1 v-else class="text-lg mb-4">No data</h1>
+                        <h1 class="text-lg font-bold dark:text-gray-200">Avg GPA</h1>
+                        <h1 class="text-md dark:text-gray-200">For this specific class</h1>
+                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ class_stats[index] }}</h1>
+                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
+                        <h1 class="text-md dark:text-gray-200">For all the classes taught by this professor</h1>
+                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ prof_stats[index] }}</h1>
+                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
                       </div>
                       <div>
-                        <h1 class="text-lg font-bold">Rate My Professors</h1>
-                        <h1 class="text-md">Average rating</h1>
-                        <h1 v-if="rmp_rating[index] != undefined" class="text-lg mb-4">{{ rmp_rating[index] }} out of 5</h1>
-                        <h1 v-else class="text-lg mb-4">No data</h1>
-                        <h1 class="text-md">Average difficulty</h1>
-                        <h1 v-if="rmp_difficulty[index] != undefined" class="text-lg mb-4">{{ rmp_difficulty[index] }} out of 5</h1>
-                        <h1 v-else class="text-lg mb-4">No data</h1>
-                        <h1 class="text-md">Would take again</h1>
+                        <h1 class="text-lg font-bold dark:text-gray-200">Rate My Professors</h1>
+                        <h1 class="text-md dark:text-gray-200">Average rating</h1>
+                        <h1 v-if="rmp_rating[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ rmp_rating[index] }} out of 5</h1>
+                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
+                        <h1 class="text-md dark:text-gray-200">Average difficulty</h1>
+                        <h1 v-if="rmp_difficulty[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ rmp_difficulty[index] }} out of 5</h1>
+                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
+                        <h1 class="text-md dark:text-gray-200">Would take again</h1>
                         <h1 v-if="rmp_again[index] != undefined" class="text-lg">{{ rmp_again[index] }}%</h1>
-                        <h1 v-else class="text-lg">No data</h1>
+                        <h1 v-else class="text-lg dark:text-gray-200">No data</h1>
                       </div>
                   </div>
                 </div>

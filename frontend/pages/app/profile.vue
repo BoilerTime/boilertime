@@ -1,6 +1,6 @@
 <template>
   <NavBar />
-  <div class="h-screen overflow-scroll p-16 bg-gray-200 dark:bg-neutral-600">
+  <div class="h-screen overflow-auto p-16 bg-gray-200 dark:bg-neutral-600">
     <!--Transition Container-->
     <TransitionRoot
       :show="isModalVisible"
@@ -366,8 +366,8 @@
       </div>
       <!--Flex grouping for groups-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5">Groups 😎</h1>
-        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">Groups 😎</h1>
+        <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4">
           <ul class="list-inside list-item">
             <li class="divide-y divide-solid">
                 <li v-for="(item, index) in groups" :key="index">
