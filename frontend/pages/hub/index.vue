@@ -394,7 +394,6 @@ async function submitRating() {
         timeout: 5000,
         position: POSITION.TOP_CENTER
       });
-      //alert('You have already submitted a rating for this course.')
       return
     } else {
       alert('Failed to submit rating. Please try again.')
