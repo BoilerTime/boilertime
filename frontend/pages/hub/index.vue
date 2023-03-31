@@ -144,7 +144,7 @@
               </button>
             </div>
           </div>
-          <div v-if="!showTextBox3" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+          <div v-if="!showTextBox3 && !isAGuest" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
             @click="showTextBox3 = true">
             <span class="font-bold text-lg text-gray-700">Add your rating</span>
           </div>
@@ -207,7 +207,7 @@
               </button>
             </div>
           </div>
-          <div v-if="!showTextBox" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
+          <div v-if="!showTextBox && !isAGuest" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
             @click="showTextBox = true">
             <span class="text-lg font-bold text-gray-700">Add your rating</span>
           </div>
@@ -280,7 +280,7 @@
                 </button>
               </div>
             </div>
-            <div v-if="!showTextBox2" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
+            <div v-if="!showTextBox2 && !isAGuest" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
               @click="showTextBox2 = true">
               <span class="text-lg font-bold text-gray-700">Add your rating</span>
             </div>
@@ -338,6 +338,13 @@ var resultType = ref('')
 var resultData = ref([])
 
 var userStore = useUserStore()
+var isAGuest = ref(true)
+
+onMounted(async () => {
+  if (userStore.user_id) {
+    isAGuest.value = false
+  }
+})
 
 var isDataLoaded = ref(false)
 var accessToken = userStore.accessToken;
