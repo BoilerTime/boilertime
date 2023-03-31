@@ -1,11 +1,11 @@
 <template>
-  <TransitionRoot appear :show="isOpen">
+  <TransitionRoot :show="isOpen">
     <Dialog as="div" @close="closeEdit">
       <TransitionChild
-        enter="duration-500"
+        enter="duration-100"
         enter-from="opacity-0"
         enter-to="opacity-100"
-        leave="duration-300"
+        leave="duration-100"
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
@@ -15,15 +15,15 @@
       <div class="fixed inset-0">
         <div class="flex min-h-full items-center justify-center text-center">
           <TransitionChild
-            enter="duration-500"
+            enter="duration-100"
             enter-from="opacity-0"
             enter-to="opacity-100"
-            leave="duration-300"
+            leave="duration-100"
             leave-from="opacity-100"
             leave-to="opacity-0"
           >
-            <DialogPanel class="text-left bg-white p-6 rounded-lg">
-              <DialogTitle class="text-lg font-medium leading-6 text-gray-900">
+            <DialogPanel class="text-left bg-white dark:bg-neutral-700 p-6 rounded-lg">
+              <DialogTitle class="text-lg font-medium leading-6 text-black dark:text-gray-200">
                 Edit rating for {{ title }}
               </DialogTitle>
               <div class="mt-2">
@@ -34,11 +34,13 @@
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
                   <label class="mb-1">Third rating: {{ q3 }}</label><br>
                   <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
+                  <label class="mb-1">Current Review:</label><br>
+                  <textarea type="text" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="expl_edit"></textarea>
                 </form>
               </div>
 
-              <div class="mt-4">
-                <button class="inline-flex justify-center rounded-md border border-transparent bg-yellow-500 px-4 py-2 text-sm font-medium text-white" @click="submit">
+              <div class="mt-4 flex place-content-center">
+                <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="submit">
                   Submit changes
                 </button>
               </div>
@@ -51,16 +53,23 @@
 </template>
 
 <script setup>
-
-
-
 import { defineProps } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import axios from 'axios'
+import { useUserStore } from "../store/user";
 
 var q1_edit = ref('')
 var q2_edit = ref('')
 var q3_edit = ref('')
+var expl_edit = ref('')
+
+var userStore = useUserStore();
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 const props = defineProps({
   isOpen: {
@@ -87,6 +96,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  expl: {
+    type: String,
+    required: true,
+  },
   type: {
     type: String,
     required: true,
@@ -105,12 +118,14 @@ async function submit() {
     const prequisiteStrictness = q1_edit.value;
     const pace = q2_edit.value;
     const depth = q3_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       course: course,
       prequisite_strictness: prequisiteStrictness,
       pace: pace,
       depth: depth,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.prequisite_strictness = props.q1
@@ -121,9 +136,12 @@ async function submit() {
     if (q3_edit.value == "") {
       data.depth = props.q3
     }
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
+    }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/courses", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/courses", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -141,12 +159,14 @@ async function submit() {
     const access_conv = q1_edit.value;
     const seating_quality = q2_edit.value;
     const technology_avail = q3_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       classroom: classroom,
       access_conv: access_conv,
       seating_quality: seating_quality,
       technology_avail: technology_avail,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.access_conv = props.q1
@@ -157,9 +177,12 @@ async function submit() {
     if (q3_edit.value == "") {
       data.technology_avail = props.q3
     }
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
+    }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -177,12 +200,14 @@ async function submit() {
     const grading_fairness = q1_edit.value;
     const question_answering = q2_edit.value;
     const responsiveness = q3_edit.value;
+    const explanation = expl_edit.value;
     const data = {
       user_id: user_id,
       ta: ta,
       grading_fairness: grading_fairness,
       question_answering: question_answering,
       responsiveness: responsiveness,
+      explanation: explanation,
     }
     if (q1_edit.value == "") {
       data.grading_fairness = props.q1
@@ -193,9 +218,12 @@ async function submit() {
     if (q3_edit.value == "") {
       data.responsiveness = props.q3
     }
+    if (expl_edit.value == "") {
+      data.explanation = props.expl
+    }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/tas", data)
+      await axios.post("http://localhost:3001/api/edit/ratings/tas", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
