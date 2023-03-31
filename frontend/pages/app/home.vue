@@ -22,14 +22,12 @@
           </div>
           <div class="flex items-center justify-center flex-grow">
             <div class="text-left -center">
-              Required: <span class="text-sm text-black" v-for="(classes, index) in schedule.required_classes"
-              >{{ classes }}
-              <span v-if="index !== schedule.required_classes.length - 1">, </span>
+              Required: <span class="text-sm text-black" 
+                >{{ schedule.required_classes.join(", ").trim() }}
               </span>
               <br/>
-              Optional: <span class="text-sm text-black" v-for="(classes, index) in schedule.optional_classes"
-              >{{ classes }}
-              <span v-if="index !== schedule.optional_classes.length - 1">, </span>
+              Optional: <span class="text-sm text-black" 
+                >{{ schedule.optional_classes.join(", ").trim() }}
               </span>
             </div>
           </div>
@@ -69,8 +67,9 @@ async function getScheduleView(term_id) {
   navigateTo('/app/view/' + term_id)
 }
 
-function formatTitle(title) {
-  return title.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+function trimClass(classes) {
+  console.log(classes.trim() + 'space?');
+  return classes.trim();
 }
 
 onBeforeMount(async () => {
