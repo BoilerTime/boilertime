@@ -120,8 +120,8 @@ async function getClassroomRatings(classroom) {
       "rating": doc.rating,
       "timestamp": newDate.toDateString(),
       "flag_count": doc.flag_count,
-      "explanation": doc.explanation,
-      "user_id": doc.user_id
+      "user_id": doc.user_id,
+      "explanation": doc.explanation
     }
     jArray[count] = (json);
     /*
