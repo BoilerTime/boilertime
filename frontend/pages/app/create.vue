@@ -232,6 +232,7 @@ import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
+import { POSITION, useToast } from "vue-toastification";
 
 import draggable from 'vuedraggable'
 import {
@@ -254,6 +255,7 @@ const isOpen = ref(false)
 const isResultOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
+const toast = useToast();
 var totalSum;
 
 function closeModal() {
@@ -302,7 +304,6 @@ onBeforeMount(() => {
     bookmarked_classes.value = response.data.bookmarks
   })
 })
-
 const searchTerm = ref('')
 const filteredResults = computed(() => {
   if (!searchTerm.value) {
@@ -588,7 +589,10 @@ onMounted(async () => {
 
 function submit() {
   if (isAGuest) {
-    alert('You must be logged in to create a schedule')
+    toast.error("You must be logged in to use the optimizer!", {
+      timeout: 5000,
+      position: POSITION.TOP_CENTER
+    });
     return
   }
   console.log("time pref = " + time_pref.value);
