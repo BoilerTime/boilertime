@@ -11,16 +11,17 @@ public class Population {
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
-    private final int maxIterations = 10000;
+    private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
-    private final int mutationRate = 3; 
+    private int mutationRate = 3; 
+    private int waitGens; 
     private final int crossOverRate = 90;
     private final NetworkHandler net;
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private Schedule[] options;
-    private final int numOptions = 3;
+    private final int numOptions = 2;
     private int numSatisfied; 
     private QualityAnalyzer q; 
     Random r;
@@ -35,6 +36,7 @@ public class Population {
         this.q = new QualityAnalyzer(preferences, timePreference);
         this.options = new Schedule[numOptions];
         this.numSatisfied = 0;
+        this.waitGens = 0;
     }
 
 
@@ -319,7 +321,14 @@ public class Population {
     }
 
     private boolean shouldContinue(int currentIndex) {
-        System.out.println(currentIndex);
+        if(this.mutationRate == 50) {
+            if(this.waitGens < 5) {
+                waitGens++;
+            } else {
+                waitGens = 0;
+                mutationRate = 3;
+            }
+        }
         if(currentIndex > 0 && currentIndex % QualityAnalyzer.numSimilarForConvergence == 0) {
             //this.sendStatusUpdate(currentIndex);
             double convergneceScore = q.getRMSConvergence();
@@ -336,6 +345,21 @@ public class Population {
             System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
             if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
                 System.out.println("Adding an option!!");
+                if(this.numSatisfied > 0) {
+                    /*if(q.getBestSchedule().equals(this.options[this.options.length - 1])) {
+                        this.mutationRate = 50;
+                        return true; 
+                    }*/
+
+                    Schedule best = q.getBestSchedule();
+                    for(int j = 0; j < this.numSatisfied; j++) {
+                        if(this.options[j].equals(best)) {
+                            this.mutationRate = 50;
+                            this.waitGens = 3;
+                            return true;
+                        }
+                    }
+                }
                 options[this.numSatisfied] = q.getBestSchedule();
                 System.out.println(Arrays.toString(this.options));
                 this.numSatisfied++;

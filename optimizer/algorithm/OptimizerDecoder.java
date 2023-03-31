@@ -1,9 +1,9 @@
 package optimizer.algorithm;
-
+import java.util.*;
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
         String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": [";
-        String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\"},";
+        String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
         String[] courseResults = new String[best.length];
 
         for(int j = 0; j < best.length; j++) {
@@ -23,6 +23,7 @@ public class OptimizerDecoder {
                 finalCourseDetails = finalCourseDetails.replace("course_start_time", Integer.toString(classes[i].getTime()));
                 finalCourseDetails = finalCourseDetails.replace("course_duration", Integer.toString(classes[i].getDuration()));
                 finalCourseDetails = finalCourseDetails.replace("section_id", classes[i].getSectionId());
+                finalCourseDetails = finalCourseDetails.replace("days_of_week", convertDaysToString(classes[i].getWeekDays()));
                 thisResult+=finalCourseDetails;
             }
             courseResults[j] = thisResult.substring(0, thisResult.length()-1) + "]";
@@ -35,6 +36,38 @@ public class OptimizerDecoder {
             }  else {
                 result += courseResults[i] + "]}";
             }
+        }
+        return result;
+    }
+
+    private static String convertDaysToString(WeekDays[] days) {
+        String result = "";
+        System.out.println(Arrays.toString(days));
+        for(int i = 0; i < days.length; i++) {
+            if(i == days.length - 1 && days.length > 1) {
+                result += "and ";
+            } 
+            if(days[i] == WeekDays.monday) {
+                result += "Monday";
+            } else if(days[i] == WeekDays.tuesday) {
+                result += "Tuesday";
+            } else if(days[i] == WeekDays.wednesday) {
+                result += "Wednesday";
+            } 
+            else if(days[i] == WeekDays.thursday) {
+                result += "Thursday";
+            } 
+            else if(days[i] == WeekDays.friday) {
+                result += "Friday";
+            } 
+            else if(days[i] == WeekDays.saturday) {
+                result += "Saturday";
+            } else  {
+                result += "Sunday";
+            }
+            if(i != days.length - 1 && days.length > 1) {
+                result += ", ";
+            } 
         }
         return result;
     }

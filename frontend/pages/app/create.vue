@@ -198,6 +198,7 @@
                 <p class="text-sm text-gray-500">
                   Which Schedule Looks Good to You?
                 </p>
+                <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
                 <v-card text="..."></v-card>
               </div>
 
@@ -206,7 +207,7 @@
               @click="getScheduleView(index)">
               <div
                 class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-                <div class="flex items-center justify-left flex-grow" style="margin-left: 5%; margin-top: 5%;">
+                <div class="flex items-center justify-left flex-grow" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
                   <div>
                    <span class="text-sm text-black" 
                       >{{ schedule }} <br/>
@@ -350,6 +351,14 @@ const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
 function addToSelected(item) {
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
   if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
     && !selectedOptionalCourses.value.includes(item)) {
     selectedRequiredCourses.value.push(item)
@@ -359,8 +368,8 @@ function addToSelected(item) {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time_pref.value,
-      rmp: rmp.value
+      time: timePrefValue,
+      rmp: rmpValue
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -411,6 +420,14 @@ const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
 
 function addToSelectedOptional(item) {
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
   if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
     && !selectedRequiredCourses.value.includes(item)) {
     selectedOptionalCourses.value.push(item)
@@ -420,8 +437,8 @@ function addToSelectedOptional(item) {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time_pref.value,
-      rmp: rmp.value
+      time: timePrefValue,
+      rmp: rmpValue
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -445,14 +462,22 @@ function addToSelectedOptional(item) {
 }
 
 function removeFromSelected(index) {
-  console.log(index)
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
+
   selectedRequiredCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: time_pref.value,
-    rmp: rmp.value
+    time: timePrefValue,
+    rmp: rmpValue
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -467,13 +492,21 @@ function removeFromSelected(index) {
 }
 
 function removeOptional(index) {
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
   selectedOptionalCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: time_pref.value,
-    rmp: rmp.value
+    time: timePrefValue,
+    rmp: rmpValue
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -546,6 +579,15 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 })
 
 function submit() {
+  console.log("time pref = " + time_pref.value);
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
   if (selectedRequiredCourses.value.length > 0) {
     openModal()
     axios.post('http://localhost:3001/api/createschedule', {
@@ -553,8 +595,8 @@ function submit() {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
-      time: time_pref.value,
-      rmp: rmp.value
+      time: timePrefValue,
+      rmp: rmpValue
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule)
       courseList = response.data.schedule;
@@ -580,16 +622,25 @@ function submit() {
 }
 
 function sendToOptimizer(data) {
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
+
   if(!isOpen.value) {
     console.log("Critical Error: WS isn't open ")
   }
   //We first need to send them number of classes we will be optimzing by
   $socket.send(data.length)
   //Next, we send the time of day preferences
-  $socket.send("Afternoon")
+  $socket.send(timePrefValue)
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
-  $socket.send("None");
+  $socket.send(rmpValue);
 
   //Next, we can start iterating over the course list
   for(let i = 0; i < data.length; i++) {
@@ -606,6 +657,7 @@ function sendToOptimizer(data) {
       //Durations
       $socket.send(data[i].durations[j]);
       //Week days 
+      console.log(data[i].daysOfWeek[j]);
       $socket.send(data[i].daysOfWeek[j]);
       //RMP
       $socket.send(data[i].rmp[j]);
@@ -617,8 +669,16 @@ function sendToOptimizer(data) {
 
 function parseCoursesResponse(data) {
   isResultOpen.value = true; 
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "None";
+    rmpValue = "RMP";
+  } else if(timePrefValue = "None") {
+    rmpValue = "RMP";
+  }
 
-  const formatString = "course_name at course_time"
+  const formatString = "course_name at course_time on course_week_days"
   var courses = [];
   console.log(data)
   for(let i = 0; i < data.length; i++) {
@@ -636,6 +696,7 @@ function parseCoursesResponse(data) {
       console.log(data[i][j]);
       string = string.replace("course_name", data[i][j].courseID);
       string = string.replace("course_time", fto2(data[i][j].courseStartTime));
+      string = string.replace("course_week_days", (data[i][j].daysOfWeek));
       if(j != data[i].length - 1) {
         string += ", "
       }
@@ -649,7 +710,7 @@ function parseCoursesResponse(data) {
   
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"schedule": []};
+    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": []};
 
     for(let i = 0; i < data[j].length; i++) {
       let name = data[j][i].courseID;
