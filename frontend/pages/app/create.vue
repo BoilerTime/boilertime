@@ -263,6 +263,7 @@ function openModal() {
 }
 
 var courseList; 
+var resultsList = [];
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -647,27 +648,25 @@ function parseCoursesResponse(data) {
   console.log("Temp Form = " + courses);
   
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
-  let serverOutput = {"schedule": []};
-  for(let i = 0; i < data.length; i++) {
-    let name = data[i].courseID;
-    let thisFormat = JSON.parse(JSON.stringify(serverFormat));
-    let indexForTarget = findCourse(name);
-    //console.log("index = " + indexForTarget)
-    //console.log("Data = " + JSON.stringify(data[i]))
-    let indexIn = findIDIndex(indexForTarget, data[i].sectionId);
-    thisFormat.subject = name.split(' ')[0];
-    thisFormat.number = name.split(' ')[1];
+  for(let j = 0; j < data.length; j++) {
+    let serverOutput = {"schedule": []};
 
-    thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
-    thisFormat.userSections.meetings.push(data[i].sectionId);
-    serverOutput.schedule.push(thisFormat)
-    //console.log("indexIn = " + indexIn)
-    //console.log("The optimal schedule is at: " +  data[i].courseStartTime + " and runs for " + data[i].courseDuration + " and whose professor has " + courseList[indexForTarget].rmp[indexIn]); 
+    for(let i = 0; i < data[j].length; i++) {
+      let name = data[j][i].courseID;
+      let thisFormat = JSON.parse(JSON.stringify(serverFormat));
+      let indexForTarget = findCourse(name);
+      //console.log("index = " + indexForTarget)
+      //console.log("Data = " + JSON.stringify(data[i]))
+      let indexIn = findIDIndex(indexForTarget, data[j][i].sectionId);
+      thisFormat.subject = name.split(' ')[0];
+      thisFormat.number = name.split(' ')[1];
+
+      thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
+      thisFormat.userSections.meetings.push(data[j][i].sectionId);
+      serverOutput.schedule.push(thisFormat)
+    }
+    resultsList.push(serverOutput);
   }
-
-  console.log(serverOutput)
-  saveOptimizedSchedule(serverOutput)
-  navigateTo('/app/view/spring_2023')
 } 
 
 
@@ -715,6 +714,11 @@ function fto2(time) {
     minutes = parseInt(minutes);
     return hours + ":" + minutes;
   }
+}
+
+function getScheduleView(index) {
+  saveOptimizedSchedule(resultsList[index]);
+  navigateTo('/app/view/spring_2023')
 }
 </script>
 
