@@ -8,6 +8,7 @@ chai.use(chaiHttp);
 chai.should();
 
 var auth = {}
+var token = '';
 
 const userLogin = {
   email: "boilertimepurdue@gmail.com",
@@ -20,14 +21,15 @@ before(function (done) {
     .send(userLogin)
     .end((err, res) => {
       res.should.have.status(200);
+      token = res.body.accessToken;
       auth = res.body;
       done();
     });
 });
 
-describe("POST Test Group Sprint 2 User Story 8", () => {
+describe("POST Test Schedule Sprint 2 User Story 8", () => {
 
-  it("API Call Sucess Get Previously Submited Classes", (done) => {
+  it("API Call Success Get Previously Submited Classes", (done) => {
     chai.request(app)
       .post('/api/getclasses')
       .send({...auth})
@@ -46,6 +48,22 @@ describe("POST Test Group Sprint 2 User Story 8", () => {
       .post('/api/getclasses')
       .end((err, res) => {
         res.should.have.status(500);
+        done();
+      });
+  });
+
+  it("API Call To Get All User Schedules", (done) => {
+    chai.request(app)
+      .post('/api/get/user_schedules')
+      .set({ "authorization": `Bearer ${token}` })
+      .send({...auth})
+      .end((err, res) => {
+        res.should.have.status(200);
+        console.log(res.body)
+        expect(res.body[0]).to.have.ownPropertyDescriptor('optional_classes');
+        expect(res.body[0]).to.have.ownPropertyDescriptor('required_classes');
+        expect(res.body[0]).to.have.ownPropertyDescriptor('personal_preferences');
+        expect(res.body[res.body.length - 1]).to.have.ownPropertyDescriptor('num_schedules');
         done();
       });
   });

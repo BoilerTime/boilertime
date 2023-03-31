@@ -7,6 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 const ratingsCollection = db.collection('ratings');
+const schedules = db.collection('generated_schedules')
 
 /**
  * Get the user_id given the email
@@ -55,6 +56,26 @@ async function getProfessorRating(professor) {
   throw new Error("Professor Not Found in RMP")
 }
 
+
+/**
+ * Searches RMP for a professor
+ * @param {string} professor - The name of the professor
+ * @returns {JSON} - A json containing details about the professor
+ */
+async function getProfRatingsNoError(professor) {
+  const purdueid = 'U2Nob29sLTc4Mw=='
+  let split = professor.replace("-", " ").split(" ").filter(item => item);
+  while (split.length > 0) {
+    const teachers = await ratings.searchTeacher(await concat(split), purdueid)
+    if (teachers.length == 0) {
+      split.splice(split.length - 2, 1);
+    } else {
+      const teacher = await ratings.getTeacher(teachers[0].id)
+      return teacher
+    }
+  }
+  return {avgRating: 2.5};
+}
 /**
  * Concatenate Array of String with spaces in between
  * @param {array} split - String to Join together with spaces
@@ -288,6 +309,50 @@ async function getBuildingName(room) {
   return buildings[room];
 }
 
+async function getNumUsers() {
+  const profile = await users.doc('user_count').get();
+  return (num_users = profile.data().num_users);
+}
+
+async function getNumSchedules() {
+  const doc = await schedules.doc('schedules_count').get();
+  return (num_schedules = doc.data().num_schedules);
+}
+
+async function getNumRatings() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  return (num_ratings = doc.data().num_ratings);
+}
+
+async function addUsersCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users + 1});
+}
+
+async function addSchedulesCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules + 1 });
+}
+
+async function addRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings + 1 });
+}
+
+async function decrementUsersCount() {
+  const profile = await users.doc('user_count').get();
+  profile.ref.update({ num_users: profile.data().num_users - 1});
+}
+
+async function decrementSchedulesCount() {
+  const doc = await schedules.doc('schedules_count').get();
+  doc.ref.update({ num_schedules: doc.data().num_schedules - 1 });
+}
+
+async function decrementRatingsCount() {
+  const doc = await ratingsCollection.doc('ratings_count').get();
+  doc.ref.update({ num_ratings: doc.data().num_ratings - 1 });
+}
 async function getDarkMode(user_id) {
   const profile = await users.doc(user_id).get();
   return (darkMode = profile.data().dark_mode);
@@ -299,7 +364,6 @@ async function setDarkMode(user_id, darkMode) {
     console.error(error);
     throw error;
   })
-
 }
 
 module.exports = {
@@ -321,6 +385,16 @@ module.exports = {
   getBuildingName,
   generateBuildings,
   getUserEmail,
+  getProfRatingsNoError,
+  getNumUsers,
+  getNumSchedules,
+  getNumRatings,
+  addUsersCount,
+  addSchedulesCount,
+  addRatingsCount,
+  decrementUsersCount,
+  decrementSchedulesCount,
+  decrementRatingsCount,
   getDarkMode,
   setDarkMode
 };

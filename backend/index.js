@@ -242,7 +242,25 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(418);
   }
   else {
-    await getSchedule.getSchedule(req.body.user_id).then((schedule) => {
+    await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
+      await utils.addSchedulesCount();
+      res.send({...schedule, accessToken: req.user.accessToken});
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(err.error || 500);
+    });
+  }
+})
+
+app.post('/api/get/term/optimizedschedule', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await getSchedule.getScheduleTerm(req.body.user_id, req.body.term_id).then(async (schedule) => {
       res.send({...schedule, accessToken: req.user.accessToken});
     }).catch(err => {
       console.log(err)
@@ -267,15 +285,24 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       res.sendStatus(500);
     });
 
-    await optimizer.optimizeSchedule(java, req.body).then((data)=>{
+    await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
-      res.json({accessToken: req.user.accessToken});
+      res.json({accessToken: req.user.accessToken, schedule: data});
     }).catch((err) => {
       console.log(err)
       res.sendStatus(500);
     });
   }
 });
+
+
+app.post('/api/saveoptimizedschedule', async (req, res) => {
+  console.log("Saving!")
+  console.log(req.body.data)
+  await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
+  res.sendStatus(200);
+})
+
 
 app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
@@ -380,8 +407,9 @@ app.post('/api/getbookmarks', jwt.authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/verifyaccount', (req, res) => {
-  verifyaccount.verifyaccount(req.body.userID).then((user) => {
+app.post('/api/verifyaccount', async (req, res) => {
+  verifyaccount.verifyaccount(req.body.userID).then(async (user) => {
+    await utils.addUsersCount();
     res.json(user);
   }).catch(err => {
     console.error(err);
@@ -450,14 +478,15 @@ app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => 
     const prequisiteStrictness = req.body.prequisite_strictness;
     const pace = req.body.pace;
     const depth = req.body.depth;
-    //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth);
+    const explanation = req.body.explanation;
+    result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation);
     if (!result) {
       //console.log('here sending bad status');
       res.sendStatus(409);
     }
     else {
       //console.log('here sending good status');
+      await utils.addRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }
   }
@@ -485,8 +514,9 @@ app.post('/api/edit/ratings/courses', jwt.authenticateToken, async (req, res) =>
     const prequisiteStrictness = req.body.prequisite_strictness;
     const pace = req.body.pace;
     const depth = req.body.depth;
+    const explanation = req.body.explanation;
     //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth).then(() => {
+    await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -511,7 +541,8 @@ app.post('/api/delete/ratings/courses',jwt.authenticateToken, async (req, res) =
     const course = req.body.course;
     const user_id = req.body.user_id;
     //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
-    await courseRatings.deleteUserRating(user_id, course).then(() => {
+    await courseRatings.deleteUserRating(user_id, course).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -560,8 +591,10 @@ app.post('/api/add/ratings/classrooms', jwt.authenticateToken, async (req, res) 
     const access_conv = req.body.access_conv;
     const seating_quality = req.body.seating_quality;
     const technology_avail = req.body.technology_avail;
-    result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail);
+    const explanation = req.body.explanation;
+    result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation);
     if (result) {
+      await utils.addRatingsCount();
       res.json({accessToken: req.user.accessToken });
     }
     else {
@@ -591,7 +624,8 @@ app.post('/api/edit/ratings/classrooms', jwt.authenticateToken, async (req, res)
     const access_conv = req.body.access_conv;
     const seating_quality = req.body.seating_quality;
     const technology_avail = req.body.technology_avail;
-    await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail).then(() => {
+    const explanation = req.body.explanation;
+    await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation).then(() => {
       res.json({accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -615,7 +649,8 @@ app.post('/api/delete/ratings/classrooms', jwt.authenticateToken, async (req, re
   else {
     const user_id = req.body.user_id;
     const classroom = req.body.classroom;
-    await classroomRatings.deleteClassroomRating(user_id, classroom).then(() => {
+    await classroomRatings.deleteClassroomRating(user_id, classroom).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -676,8 +711,10 @@ app.post('/api/add/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const gradingFairness = req.body.grading_fairness;
     const questionAnswering = req.body.question_answering;
     const responsiveness = req.body.responsiveness;
-    result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness);
+    const explanation = req.body.explanation;
+    result = await taRatings.addUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation);
     if (result) {
+      await utils.addRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }
     else {
@@ -708,7 +745,8 @@ app.post('/api/edit/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const gradingFairness = req.body.grading_fairness;
     const questionAnswering = req.body.question_answering;
     const responsiveness = req.body.responsiveness;
-    await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness).then(() => {
+    const explanation = req.body.explanation;
+    await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -732,7 +770,8 @@ app.post('/api/delete/ratings/tas', jwt.authenticateToken, async (req, res) => {
   else {
     const user_id = req.body.user_id;
     const ta = req.body.ta;
-    await taRatings.deleteUserRating(user_id, ta).then(() => {
+    await taRatings.deleteUserRating(user_id, ta).then(async () => {
+      await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
     }).catch((err)=> {
       console.log(err)
@@ -967,6 +1006,53 @@ app.post('/api/building', async (req, res) => {
   }
 });
 
+app.post('/api/get/num_users', async (req, res) => {
+  res.json({ num_users: await utils.getNumUsers() });
+});
+
+app.post('/api/get/num_schedules', async (req, res) => {
+  res.json({ num_schedules: await utils.getNumSchedules() });
+});
+
+app.post('/api/get/num_ratings', async (req, res) => {
+  res.json({ num_ratings: await utils.getNumRatings() });
+});
+
+app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
+    await utils.addUsersCount();
+    res.sendStatus(200);
+});
+
+app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
+    await utils.addSchedulesCount();
+    res.sendStatus(200);
+});
+
+app.post('/api/add/ratings_count', jwt.authenticateToken, async (req, res) => {
+    await utils.addRatingsCount();
+    res.sendStatus(200);
+});
+
+/*
+ * Call for getting all user_schedules
+ * @param {string} room - The user_id of the user
+ */
+app.post('/api/get/user_schedules', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    var user_id = req.body.user_id;
+    await getSchedule.getAllUserSchedules(user_id).then((jArray) => {
+      res.json(jArray);
+    }).catch((err) => {
+      console.error(err)
+    });
+  }
+});
 /*
  * Call for getting the current theme as dictated by the database
  * @param {string} user_id - The user_id associated with the current session

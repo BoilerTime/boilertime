@@ -232,6 +232,8 @@
             How is the pace of the materials covered? {{ course.rating[1] }}
           </li>
           <li>How in-depth is the material? {{ course.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ course.explanation }}</li>
           <li class="flex gap-2 place-items-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
@@ -241,6 +243,7 @@
                   course.rating[0],
                   course.rating[1],
                   course.rating[2],
+                  course.explanation,
                   'course',
                   userStore.user_id
                 )
@@ -279,6 +282,8 @@
             How is the pace of the materials covered? {{ classroom.rating[1] }}
           </li>
           <li>How in-depth is the material? {{ classroom.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ classroom.explanation }}</li>
           <li class="flex gap-2 place-items-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
@@ -288,6 +293,7 @@
                   classroom.rating[0],
                   classroom.rating[1],
                   classroom.rating[2],
+                  course.explanation,
                   'classroom',
                   userStore.user_id
                 )
@@ -323,11 +329,13 @@
           </li>
           <li>How is the pace of the materials covered? {{ ta.rating[1] }}</li>
           <li>How in-depth is the material? {{ ta.rating[2] }}</li>
+          <li>Your Review:</li>
+          <li>{{ ta.explanation }}</li>
           <li class="flex gap-2 place-item-center">
             <a
               class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
               @click="
-                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], 'ta')
+                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], ta.explanation, 'ta')
               "
               >Edit</a
             ><a class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg" @click="deleteta(ta.ta)"
@@ -339,16 +347,7 @@
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
         </ul>
-        <EditRating
-          :isOpen="isOpen"
-          :closeEdit="closeEdit"
-          :title="editTitle"
-          :q1="editQ1"
-          :q2="editQ2"
-          :q3="editQ3"
-          :type="editType"
-          :id="user_id"
-        />
+        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3" :expl="editExpl" :type="editType" :id="user_id"/>
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
@@ -363,6 +362,27 @@
               {{ item }}
             </li>
           </ul>
+        </div>
+      </div>
+      <!--Flex grouping for groups-->
+      <div class="mt-5">
+        <h1 class="font-bold text-2xl mb-5">Groups 😎</h1>
+        <div class="bg-gray-300 rounded-lg max-w-full mb-5 mt-5 p-4">
+          <ul class="list-inside list-item">
+            <li class="divide-y divide-solid">
+                <li v-for="(item, index) in groups" :key="index">
+                <li class="mb-2 font-bold">Group Name:</li>
+                <li class="mb-2 font-light">{{ item.group_name }}</li>
+                <li class="mb-2 font-bold">Group Members:</li>
+                <li class="font-light mb-2" v-for="(item, index) in groups[index].member_names" :key="index">
+                    {{ item }}
+                </li>
+                <li class="mb-2 font-bold">Invite Link:</li>
+                <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
+                    item.group_id }}</li>
+                </li>
+            </li>
+        </ul>
         </div>
       </div>
       <!--Edit Profile Button-->
@@ -396,12 +416,6 @@ import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
 //import { encrypt } from "iron-webcrypto";
 //import test from "node:test";
 
-/**
- * Call for creating group
- * @param {string} user_id - The user_id associated with the owner of the group
- * @param {string} group_name - The name of the group\
- * @returns {string} group_id - The id of the group
- */
 var userStore = useUserStore();
 var isModalVisible = ref(false);
 var isCourseModalVisible = ref(false);
@@ -413,6 +427,7 @@ var gradMonth = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
+var groups = ref([]);
 
 var user_id = userStore.user_id;
 var accessToken = userStore.accessToken;
@@ -534,19 +549,21 @@ function openModal() {
   isOpen.value = true;
 }
 
-var editTitle = ref("");
-var editQ1 = ref("");
-var editQ2 = ref("");
-var editQ3 = ref("");
-var editType = ref("");
+var editTitle = ref("")
+var editQ1 = ref("")
+var editQ2 = ref("")
+var editQ3 = ref("")
+var editExpl = ref("")
+var editType = ref("")
 
-async function edit(title, q1, q2, q3, type) {
-  editTitle.value = title;
-  editQ1.value = q1;
-  editQ2.value = q2;
-  editQ3.value = q3;
-  editType.value = type;
-  openModal();
+async function edit(title, q1, q2, q3, expl, type) {
+  editTitle.value = title
+  editQ1.value = q1
+  editQ2.value = q2
+  editQ3.value = q3
+  editExpl.value = expl
+  editType.value = type
+  openModal()
 }
 
 /** THE ABOVE IS FOR EDIT MODAL */
@@ -573,6 +590,19 @@ async function getBookmarks() {
     .catch((error) => {
       console.error(error);
     });
+}
+
+async function getGroups() {
+  axios.post('http://localhost:3001/api/groups', {
+    user_id: user_id
+  }, config)
+  .then((res) => {
+    groups.value = res.data.groups;
+  })
+  .catch(function (error) {
+    console.error(error);
+    alert(error);
+  })
 }
 
 async function deletecourses(course) {
@@ -825,6 +855,7 @@ async function submit() {
 onMounted(async () => {
   getUserInfo();
   getBookmarks();
+  getGroups();
   await getratings();
   setTimeout(() => {
     console.log(courses);

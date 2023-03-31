@@ -28,7 +28,7 @@
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                   <label :for="time.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ time.title }}</label>
                 </div>
               </div>
@@ -101,21 +101,100 @@
     </div>
   </section>
   </main>
+
+  <TransitionRoot :show="isOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium leading-6 text-gray-900 text-center"
+              >
+                Optimizing Your Schedule!
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                </p>
+                <br/>
+                <p class="text-sm text-gray-500">
+                  Progress: 
+                </p>
+                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+              </div>
+
+              
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup>
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
+import ProgressBar from "../../components/ProgressBar.vue";
+
 import draggable from 'vuedraggable'
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
+const { $socket } = useNuxtApp()
 
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
+const isOpen = ref(false)
+const completed = ref(0)
+
+var totalSum;
+
+function closeModal() {
+  isOpen.value = false
+}
+function openModal() {
+  isOpen.value = true
+}
+
+var courseList; 
 
 var accessToken = userStore.accessToken;
 const config = {
@@ -152,7 +231,6 @@ onBeforeMount(() => {
   }, config).then((response) => {
     bookmarked_classes.value = response.data.bookmarks
   })
-  console.log(bookmarked_classes.value)
 })
 
 const searchTerm = ref('')
@@ -164,6 +242,39 @@ const filteredResults = computed(() => {
   return data.value.filter((item) => {
     return item.toLowerCase().startsWith(searchTerm.value.toLowerCase())
   })
+})
+
+onMounted(() => {
+  $socket.onopen = () => {
+    console.log("Connected")
+    console.log("Are we open? " + isOpen.value)
+  }
+  $socket.onmessage = ((data) => {
+    console.log("data", JSON.parse(data.data))
+    try {
+      let response = JSON.parse(data.data);
+      if(response?.message == "schedule") {
+        parseCoursesResponse(response.data);
+      } else if (response?.message == "Status Update") {
+        if(completed.value < 100) {
+          //completed.value = (completed.value + response.data)%100;v
+          var temp = completed.value + response.data;
+          if(temp > 99) {
+            completed.value = 99;
+          } else {
+            completed.value = temp;
+          }
+        }
+      }
+    } catch (e) {
+      console.log("Wasnt JSON!!" + e)
+    }
+})
+
+  $socket.onclose = function () {
+    console.log("disconnected")
+  }
+
 })
 
 const selectedRequiredCourses = ref([])
@@ -225,6 +336,7 @@ const filteredOptionalResults = computed(() => {
     return item.toLowerCase().startsWith(optionalSearchTerm.value.toLowerCase())
   })
 })
+
 
 const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
@@ -366,13 +478,19 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 
 function submit() {
   if (selectedRequiredCourses.value.length > 0) {
+    openModal()
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
+      time: time_pref.value,
       rmp: rmp.value
     }, config).then((response) => {
+      sendToOptimizer(response.data.schedule)
+      courseList = response.data.schedule;
+      console.log("TWT")
+      console.log(courseList)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
           accessToken: response.data["accessToken"],
@@ -382,9 +500,104 @@ function submit() {
         accessToken = userStore.accessToken;
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      navigateTo('/app/view')
+      //navigateTo('/app/view')
     })
+  } else {
+    console.log("Error: No classes!")
   }
+  console.log("List: ")
+
+  
+}
+
+function sendToOptimizer(data) {
+  if(!isOpen.value) {
+    console.log("Critical Error: WS isn't open ")
+  }
+  //We first need to send them number of classes we will be optimzing by
+  $socket.send(data.length)
+  //Next, we send the time of day preferences
+  $socket.send("Afternoon")
+  //$socket.send(timePreference[time_pref.value]);
+  //Next, we send the RMP prefernces
+  $socket.send("None");
+
+  //Next, we can start iterating over the course list
+  for(let i = 0; i < data.length; i++) {
+    //First, we can send the name of the course
+    $socket.send(data[i].name)
+    //Next, we can send the number of sections
+    $socket.send(data[i].isRequired)
+
+    $socket.send(data[i].startTimes.length);
+    //Next, we iterate through each of the options and send the parameters of that option
+    for(let j = 0; j < data[i].startTimes.length; j++) {
+      //First, we can send the start time
+      $socket.send(data[i].startTimes[j]);
+      //Durations
+      $socket.send(data[i].durations[j]);
+      //Week days 
+      $socket.send(data[i].daysOfWeek[j]);
+      //RMP
+      $socket.send(data[i].rmp[j]);
+      //Section ID
+      $socket.send(data[i].sectionIDs[j]);
+    }
+  }
+}
+
+function parseCoursesResponse(data) {
+  let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let serverOutput = {"schedule": []};
+  for(let i = 0; i < data.length; i++) {
+    let name = data[i].courseID;
+    let thisFormat = JSON.parse(JSON.stringify(serverFormat));
+    let indexForTarget = findCourse(name);
+    //console.log("index = " + indexForTarget)
+    //console.log("Data = " + JSON.stringify(data[i]))
+    let indexIn = findIDIndex(indexForTarget, data[i].sectionId);
+    thisFormat.subject = name.split(' ')[0];
+    thisFormat.number = name.split(' ')[1];
+
+    thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
+    thisFormat.userSections.meetings.push(data[i].sectionId);
+    serverOutput.schedule.push(thisFormat)
+    //console.log("indexIn = " + indexIn)
+    //console.log("The optimal schedule is at: " +  data[i].courseStartTime + " and runs for " + data[i].courseDuration + " and whose professor has " + courseList[indexForTarget].rmp[indexIn]); 
+  }
+
+  console.log(serverOutput)
+  saveOptimizedSchedule(serverOutput)
+  navigateTo('/app/view/spring_2023')
+} 
+
+
+function findCourse(target) {
+  for(let i = 0; i < courseList.length; i++) {
+    if(courseList[i].name == target) {
+      return i;
+    }
+  }
+}
+
+function findIDIndex(position, target) {
+  for(let i = 0; i < courseList[position].sectionIDs.length; i++) {
+    if(courseList[position].sectionIDs[i] == target) {
+      return i;
+    }
+  }
+}
+
+function saveOptimizedSchedule(schedule) {
+  axios.post('http://localhost:3001/api/saveoptimizedschedule', {
+    data: schedule,
+    user_id: userStore.user_id
+  }).then(() => {
+    console.log("Schedule Saved!");
+  }).catch((exception) => {
+    console.log("Couldn't save schedule because of " + exception);
+  })
+  console.log("Done!")
 }
 </script>
 
