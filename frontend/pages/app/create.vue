@@ -157,6 +157,62 @@
       </div>
     </Dialog>
   </TransitionRoot>
+
+  <TransitionRoot :show="isResultOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium leading-6 text-gray-900 text-center"
+              >
+                We're Done -- Quick Question
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Which Schedule Looks Good to You?
+                </p>
+                
+              </div>
+              <PopoverPanel>
+                <a href="/insights">Insights</a>
+                <a href="/automations">Automations</a>
+                <a href="/reports">Reports</a>
+            </PopoverPanel>
+              
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup>
@@ -172,6 +228,9 @@ import {
   Dialog,
   DialogPanel,
   DialogTitle,
+  Popover, 
+  PopoverButton, 
+  PopoverPanel
 } from '@headlessui/vue'
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
@@ -183,6 +242,7 @@ const userStore = useUserStore()
 const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref(false)
+const isResultOpen = ref(false);
 const completed = ref(0)
 
 var totalSum;
@@ -547,6 +607,7 @@ function sendToOptimizer(data) {
 }
 
 function parseCoursesResponse(data) {
+  isResultOpen.value = true; 
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let serverOutput = {"schedule": []};
   for(let i = 0; i < data.length; i++) {

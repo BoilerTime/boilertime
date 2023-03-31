@@ -19,6 +19,9 @@ public class Population {
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
+    private Schedule[] options;
+    private final int numOptions = 3;
+    private int numSatisfied; 
     private QualityAnalyzer q; 
     Random r;
 
@@ -30,6 +33,8 @@ public class Population {
         this.generateCourseStruct(registeredC);
         this.net = network;
         this.q = new QualityAnalyzer(preferences, timePreference);
+        this.options = new Schedule[numOptions];
+        this.numSatisfied = 0;
     }
 
 
@@ -205,7 +210,7 @@ public class Population {
     }
 
 
-    public Schedule getBestSchedule() {
+    public Schedule[] getBestSchedule() {
         if(!this.isSatisfiable) {
             return null;
         }
@@ -223,7 +228,7 @@ public class Population {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            System.out.println("\nNew Generation = " + iterationCount );
+            //System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             
@@ -263,22 +268,22 @@ public class Population {
             }
 
             q.calculateFitnessScores(thisGen, numRequired);
-            System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
+            //System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
-            System.out.println("Tangent Score: " + q.addScore(thisGen[0]));
+            q.addScore(thisGen[0]);
             //Now, perform a roulette-wheel integration into the overall fitness pool
             Utils.mergeInto(thisGen, fitPool, r);
             Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
 
             //Dump the contents of the current gen out 
-            for(int k = 0; k < fitPool[0].getSections().length; k++) {
+            /*for(int k = 0; k < fitPool[0].getSections().length; k++) {
                 if(fitPool[0].getSections()[k] != null) {
                     System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore() + " " + fitPool[0].getOptionalScore() + " " + fitPool[0].getRequiredScore());
                 } else {
                     System.out.println("NULL!");
                 }
-            }
+            }*/
             iterationCount++;
         }
         System.out.println("\n\n===================");
@@ -310,14 +315,15 @@ public class Population {
         } catch (IOException e) {
 
         }
-        return fitPool[0];
+        return this.options;
     }
 
     private boolean shouldContinue(int currentIndex) {
-        
+        System.out.println(currentIndex);
         if(currentIndex > 0 && currentIndex % QualityAnalyzer.numSimilarForConvergence == 0) {
             //this.sendStatusUpdate(currentIndex);
             double convergneceScore = q.getRMSConvergence();
+            System.out.println("IN IF!");
             if(convergneceScore > .5) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
             } else if (convergneceScore > .1) {
@@ -327,7 +333,22 @@ public class Population {
             } else {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":40}");
             }
-            return !(convergneceScore < 1.0E-4f);
+            System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
+            if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
+                System.out.println("Adding an option!!");
+                options[this.numSatisfied] = q.getBestSchedule();
+                System.out.println(Arrays.toString(this.options));
+                this.numSatisfied++;
+                return true; 
+            } else if (this.numSatisfied == this.numOptions){
+                System.out.println("STOPPING!");
+                System.out.println(this.numRequired);
+                System.out.println(this.numSatisfied);
+                return false; 
+            } else {
+                System.out.println("UWU");
+                return true; 
+            }
         }
         return currentIndex < this.maxIterations; 
     }
