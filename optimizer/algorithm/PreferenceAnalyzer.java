@@ -44,7 +44,7 @@ public class PreferenceAnalyzer {
             weightedPenalty[i] = this.calculateWeightedPenalty(rmpPenalty[i], timePenalty[i]);
             temp.setOptionalScore(weightedPenalty[i]);
         }
-        System.out.println(Arrays.toString(weightedPenalty));
+        //System.out.println(Arrays.toString(weightedPenalty));
     }
 
     private int calculateRMPPenalty(Schedule target) {

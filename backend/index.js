@@ -861,7 +861,6 @@ app.post('/api/getoverall_gpa', async (req, res) => {
  * @param {string} name - THe name of the course, classroom, ta (CS30700, LWSNB160, Chirayu Garg)
  */
 app.post('/api/add/flag', jwt.authenticateToken, async (req, res) => {
-  console.log(req.body)
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {

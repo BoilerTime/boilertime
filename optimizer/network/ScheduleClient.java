@@ -168,7 +168,7 @@ public class ScheduleClient implements Runnable  {
         return null;
     }
 
-    private void writeBestToOutput(Population p, Schedule best, NetworkHandler network) {
+    private void writeBestToOutput(Population p, Schedule[] best, NetworkHandler network) {
         if(best == null) {
             network.sendMessage("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
             return;
@@ -219,7 +219,7 @@ public class ScheduleClient implements Runnable  {
         }
         //System.out.println("Result: " + numOfCourses);
         Population resultPop = new Population(courses, network, timePreference, preferences);
-        Schedule resultsIndividual = resultPop.getBestSchedule();
-        writeBestToOutput(resultPop, resultsIndividual, network);
+        Schedule[] resultOptions = resultPop.getBestSchedule();
+        writeBestToOutput(resultPop, resultOptions, network);
     }
 }

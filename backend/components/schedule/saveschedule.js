@@ -22,7 +22,7 @@ const schedules = db.collection('user_schedules');
 */
 const saveSchedule = async function(user, schedule) {
     let userProfile = await schedules.doc(user).collection("spring_2023").doc('generated_schedule');
-    await userProfile.set({"schedule": schedule.schedule, "timestamp": FieldValue.serverTimestamp()}); //Update the db with the array that is passed to the method
+    await userProfile.set({"time": schedule.time, "rmp": schedule.rmp, "schedule": schedule.schedule, "timestamp": FieldValue.serverTimestamp()}); //Update the db with the array that is passed to the method
 }
 
 module.exports = {saveSchedule};

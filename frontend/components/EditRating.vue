@@ -28,14 +28,14 @@
               </DialogTitle>
               <div class="mt-2">
                 <form>
-                  <label class="mb-1">First rating: {{ q1 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q1_edit"><br>
-                  <label class="mt-1 mb-1">Second rating: {{ q2 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q2_edit"><br>
-                  <label class="mb-1">Third rating: {{ q3 }}</label><br>
-                  <input type="text" class="bg-gray-200 hover:outline-none focus:outline-none p-1 rounded-sm" v-model="q3_edit"><br>
-                  <label class="mb-1">Current Review:</label><br>
-                  <textarea type="text" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Leave a review..." v-model="expl_edit"></textarea>
+                  <label class="mb-1 dark:text-gray-200">First rating: {{ q1 }}</label><br>
+                  <input type="text" class="bg-gray-200 border border-black dark:text-gray-200 dark:bg-neutral-500 hover:outline-none focus:outline-none p-1 rounded-lg" v-model="q1_edit"><br>
+                  <label class="mt-1 mb-1 dark:text-gray-200">Second rating: {{ q2 }}</label><br>
+                  <input type="text" class="bg-gray-200 border border-black dark:bg-neutral-500 dark:text-gray-200 hover:outline-none focus:outline-none p-1 rounded-lg" v-model="q2_edit"><br>
+                  <label class="mb-1 dark:text-gray-200">Third rating: {{ q3 }}</label><br>
+                  <input type="text" class="bg-gray-200 border border-black dark:bg-neutral-500 dark:text-gray-200 hover:outline-none focus:outline-none p-1 rounded-lg" v-model="q3_edit"><br>
+                  <label class="mb-1 dark:text-gray-200">Current Review:</label><br>
+                  <textarea type="text" rows="5" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-neutral-500 dark:text-gray-200 rounded-lg border border-black dark:placeholder-white focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Leave a review..." v-model="expl_edit"></textarea>
                 </form>
               </div>
 

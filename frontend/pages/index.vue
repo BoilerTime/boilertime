@@ -50,7 +50,7 @@
                 <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">{{ ratings }}</span> Ratings Created</h1>
             </div>
             <div>
-                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">{{ schedules }}</span> Schedules Made</h1>
+                <h1 class="font-bold text-2xl"><span class="font=extrabold text-6xl">11</span> Schedules Made</h1>
             </div>
         </div>
         <!--Sign up button-->

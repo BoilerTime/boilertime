@@ -1,16 +1,16 @@
 <template>
-  <main>
+  <main class="dark:bg-neutral-500 h-screen">
     <NavBar />
     <div class="flex flex-col items-center mt-12">
-      <h1 class="text-2xl font-bold mb-6 text-center">Aggregated reviews for your <br>professor, classroom, course, and TA
+      <h1 class="mb-6 text-2xl font-bold text-center dark:text-gray-200">Aggregated reviews for your <br>professor, classroom, course, and TA
       </h1>
-      <div class="w-full max-w-lg flex justify-center">
+      <div class="flex justify-center w-full max-w-lg">
         <div class="relative z-10">
           <input v-model="searchTerm"
-            class="w-96 px-3 py-2 border border-gray-400 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            class="px-3 py-2 border border-gray-400 w-96 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
             type="text" placeholder="Search" @keyup.enter="addSingleResultToSelected">
           <ul v-if="isSearchActive && filteredResults.length > 0"
-            class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-48 overflow-scroll">
+            class="absolute z-10 w-full mt-1 overflow-scroll bg-white shadow-lg rounded-md max-h-48">
             <li v-for="result in filteredResults" :key="result"
               class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white" @click="navigate(result, searchType)">
               <span>{{ result }}</span>
@@ -18,7 +18,7 @@
           </ul>
         </div>
         <div class="relative">
-          <select class="bg-white border border-gray-400 rounded-r-md h-full appearance-none px-3 py-2 pr-6"
+          <select class="h-full px-3 py-2 pr-6 bg-white border border-gray-400 appearance-none rounded-r-md"
             v-model="searchType">
             <option>Professor</option>
             <option>Classroom</option>
@@ -34,8 +34,8 @@
         </div>
       </div>
     </div>
-    <div class="items-center mt-12 px-24" v-if="resultData && isDataLoaded">
-      <h1 class="text-xl font-light mb-6 text-center">Results for {{ result }}</h1>
+    <div class="items-center px-24 mt-12" v-if="resultData && isDataLoaded">
+      <h1 class="mb-6 text-xl font-light text-center">Results for {{ result }}</h1>
       <div class="flex flex-col max-w-lg mx-auto" v-if="resultType == 'Professor'">
         <div class="pr-8">
           <div class="flex justify-between mb-1">
@@ -111,24 +111,24 @@
             referrerpolicy="no-referrer-when-downgrade"
             :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + actual_name + 'Purdue+University,West+Lafayette+IN'">
           </iframe>
-          <h2 class="font-bold text-2xl mb-4 mt-8">Ratings</h2>
+          <h2 class="mt-8 mb-4 text-2xl font-bold">Ratings</h2>
           <div v-for="(group, index) in resultData" :key="index">
             <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
-              class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+              class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
+                <span class="mr-2 font-bold text-gray-700">Timestamp:</span>
                 <span class="text-gray-600">{{ rating.timestamp }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Convenience of access:</span>
+                <span class="mr-2 font-bold text-gray-700">Convenience of access:</span>
                 <span class="text-gray-600">{{ rating.rating[0] }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Quality of seating: </span>
+                <span class="mr-2 font-bold text-gray-700">Quality of seating: </span>
                 <span class="text-gray-600">{{ rating.rating[1] }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Availability of technology:</span>
+                <span class="mr-2 font-bold text-gray-700">Availability of technology:</span>
                 <span class="text-gray-600">{{ rating.rating[2] }}</span>
               </div>
               <div class="flex items-center mb-2">
@@ -174,24 +174,24 @@
       </div>
       <div class="flex flex-col items-center py-6 mb-12" v-if="resultType === 'Course'">
         <div class="w-full max-w-md">
-          <h2 class="font-bold text-2xl mb-4">Ratings</h2>
+          <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
           <div v-for="(group, index) in resultData" :key="index">
             <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
-              class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+              class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
+                <span class="mr-2 font-bold text-gray-700">Timestamp:</span>
                 <span class="text-gray-600">{{ rating.timestamp }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Strictness of prerequisite requirements:</span>
+                <span class="mr-2 font-bold text-gray-700">Strictness of prerequisite requirements:</span>
                 <span class="text-gray-600">{{ rating.rating[0] }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Pace of material covered:</span>
+                <span class="mr-2 font-bold text-gray-700">Pace of material covered:</span>
                 <span class="text-gray-600">{{ rating.rating[1] }}</span>
               </div>
               <div class="flex items-center mb-2">
-                <span class="font-bold mr-2 text-gray-700">Depth of material covered:</span>
+                <span class="mr-2 font-bold text-gray-700">Depth of material covered:</span>
                 <span class="text-gray-600">{{ rating.rating[2] }}</span>
               </div>
               <div class="flex items-center mb-2">
@@ -207,30 +207,30 @@
               </button>
             </div>
           </div>
-          <div v-if="!showTextBox" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+          <div v-if="!showTextBox" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
             @click="showTextBox = true">
-            <span class="font-bold text-lg text-gray-700">Add your rating</span>
+            <span class="text-lg font-bold text-gray-700">Add your rating</span>
           </div>
-          <div v-if="showTextBox" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
-            <h3 class="font-bold text-lg text-gray-700 mb-2">Submit your rating</h3>
+          <div v-if="showTextBox" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
+            <h3 class="mb-2 text-lg font-bold text-gray-700">Submit your rating</h3>
             <form @submit.prevent="submitRating">
               <div class="flex flex-col mb-2">
-                <label for="prereq" class="font-bold text-gray-700 mb-1">Strictness of prerequisite requirements</label>
-                <input type="number" min="1" max="5" v-model="prereq" class="border border-gray-400 p-2 rounded-lg">
+                <label for="prereq" class="mb-1 font-bold text-gray-700">Strictness of prerequisite requirements</label>
+                <input type="number" min="1" max="5" v-model="prereq" class="p-2 border border-gray-400 rounded-lg">
               </div>
               <div class="flex flex-col mb-2">
-                <label for="pace" class="font-bold text-gray-700 mb-1">Pace of material covered</label>
-                <input type="number" min="1" max="5" v-model="pace" class="border border-gray-400 p-2 rounded-lg">
+                <label for="pace" class="mb-1 font-bold text-gray-700">Pace of material covered</label>
+                <input type="number" min="1" max="5" v-model="pace" class="p-2 border border-gray-400 rounded-lg">
               </div>
               <div class="flex flex-col mb-2">
-                <label for="depth" class="font-bold text-gray-700 mb-1">Depth of material covered</label>
-                <input type="number" min="1" max="5" v-model="depth" class="border border-gray-400 p-2 rounded-lg">
+                <label for="depth" class="mb-1 font-bold text-gray-700">Depth of material covered</label>
+                <input type="number" min="1" max="5" v-model="depth" class="p-2 border border-gray-400 rounded-lg">
               </div>
               <div class="flex flex-col mb-2">
-                <label for="explanation" class="font-bold text-gray-700 mb-1">Explanation of rating</label>
-                <textarea type="text" v-model="explanation" class="border border-gray-400 p-2 rounded-lg" />
+                <label for="explanation" class="mb-1 font-bold text-gray-700">Explanation of rating</label>
+                <textarea type="text" v-model="explanation" class="p-2 border border-gray-400 rounded-lg" />
               </div>
-              <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4">Submit</button>
+              <button type="submit" class="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg">Submit</button>
             </form>
           </div>
         </div>
@@ -250,21 +250,21 @@
             <h2 class="font-bold text-2xl mb-4">Ratings</h2>
             <div v-for="(group, index) in resultData" :key="index">
               <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
-                class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
+                class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
                 <div class="flex items-center mb-2">
-                  <span class="font-bold mr-2 text-gray-700">Timestamp:</span>
+                  <span class="mr-2 font-bold text-gray-700">Timestamp:</span>
                   <span class="text-gray-600">{{ rating.timestamp }}</span>
                 </div>
                 <div class="flex items-center mb-2">
-                  <span class="font-bold mr-2 text-gray-700">Helpfulness of answering questions:</span>
+                  <span class="mr-2 font-bold text-gray-700">Helpfulness of answering questions:</span>
                   <span class="text-gray-600">{{ rating.rating[0] }}</span>
                 </div>
                 <div class="flex items-center mb-2">
-                  <span class="font-bold mr-2 text-gray-700">Responsiveness:</span>
+                  <span class="mr-2 font-bold text-gray-700">Responsiveness:</span>
                   <span class="text-gray-600">{{ rating.rating[1] }}</span>
                 </div>
                 <div class="flex items-center mb-2">
-                  <span class="font-bold mr-2 text-gray-700">Fairness of grading:</span>
+                  <span class="mr-2 font-bold text-gray-700">Fairness of grading:</span>
                   <span class="text-gray-600">{{ rating.rating[2] }}</span>
                 </div>
                 <div class="flex items-center mb-2">
@@ -280,36 +280,36 @@
                 </button>
               </div>
             </div>
-            <div v-if="!showTextBox2" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4 cursor-pointer"
+            <div v-if="!showTextBox2" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl cursor-pointer"
               @click="showTextBox2 = true">
-              <span class="font-bold text-lg text-gray-700">Add your rating</span>
+              <span class="text-lg font-bold text-gray-700">Add your rating</span>
             </div>
-            <div v-if="showTextBox2" class="bg-gray-300 rounded-lg shadow-xl p-4 mb-4">
-              <h3 class="font-bold text-lg text-gray-700 mb-2">Submit your rating</h3>
+            <div v-if="showTextBox2" class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
+              <h3 class="mb-2 text-lg font-bold text-gray-700">Submit your rating</h3>
               <form @submit.prevent="submitTaRating">
                 <div class="flex flex-col mb-2">
-                  <label for="helpfulness" class="font-bold text-gray-700 mb-1">Helpfulness of answering questions</label>
-                  <input type="number" min="1" max="5" v-model="helpfulness" class="border border-gray-400 p-2 rounded-lg">
+                  <label for="helpfulness" class="mb-1 font-bold text-gray-700">Helpfulness of answering questions</label>
+                  <input type="number" min="1" max="5" v-model="helpfulness" class="p-2 border border-gray-400 rounded-lg">
                 </div>
                 <div class="flex flex-col mb-2">
-                  <label for="responsiveness" class="font-bold text-gray-700 mb-1">Responsiveness</label>
-                  <input type="number" min="1" max="5" v-model="responsiveness" class="border border-gray-400 p-2 rounded-lg">
+                  <label for="responsiveness" class="mb-1 font-bold text-gray-700">Responsiveness</label>
+                  <input type="number" min="1" max="5" v-model="responsiveness" class="p-2 border border-gray-400 rounded-lg">
                 </div>
                 <div class="flex flex-col mb-2">
-                  <label for="fairness" class="font-bold text-gray-700 mb-1">Fairness of grading</label>
-                  <input type="number" min="1" max="5" v-model="fairness" class="border border-gray-400 p-2 rounded-lg">
+                  <label for="fairness" class="mb-1 font-bold text-gray-700">Fairness of grading</label>
+                  <input type="number" min="1" max="5" v-model="fairness" class="p-2 border border-gray-400 rounded-lg">
                 </div>
                 <div class="flex flex-col mb-2">
-                  <label for="explanation" class="font-bold text-gray-700 mb-1">Explanation of rating</label>
-                  <textarea type="text" v-model="explanation" class="border border-gray-400 p-2 rounded-lg" />
+                  <label for="explanation" class="mb-1 font-bold text-gray-700">Explanation of rating</label>
+                  <textarea type="text" v-model="explanation" class="p-2 border border-gray-400 rounded-lg" />
                 </div>
-                <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4">Submit</button>
+                <button type="submit" class="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg">Submit</button>
               </form>
             </div>
           </div>
         </div>
       </div>
-      <div class="items-center mt-12 px-24" v-else>
+      <div class="items-center px-24 mt-12" v-else>
       </div>
   </main>
 </template>
@@ -319,6 +319,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
+import { POSITION, useToast } from "vue-toastification";
 
 const searchTerm = ref('')
 
@@ -327,6 +328,7 @@ const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
 const tas_inv = ref([])
+const toast = useToast();
 
 var isSearchActive = ref(true)
 var searchType = ref('Professor')
@@ -346,11 +348,12 @@ const config = {
 }
 
 async function flag(id, type) {
+  console.log(id, type, result.value)
   try {
     await axios.post('http://localhost:3001/api/add/flag', {
       user_id: id,
       type: type,
-      name: result.value
+      name: result.value.replace(/ /g, '')
     }, config)
     alert('Successfully flagged!')
   } catch (error) {
@@ -378,9 +381,18 @@ async function submitRating() {
     alert('Successfully submitted rating!')
     console.log(userStore.accessToken)
   } catch (error) {
-    alert('Failed to submit rating. Please try again.')
-    console.log("ERRORED AT " + userStore.accessToken)
-    console.error(error)
+    console.log(error.response.status + ' this is the error resposne');
+    if (error.response.status === 409) {
+      toast.error("You have already submitted a rating for this course.", {
+        timeout: 5000,
+        position: POSITION.TOP_CENTER
+      });
+      //alert('You have already submitted a rating for this course.')
+      return
+    } else {
+      alert('Failed to submit rating. Please try again.')
+      console.error(error)
+    }
   }
   prereq.value = ''
   pace.value = ''
@@ -407,8 +419,13 @@ async function submitTaRating() {
     alert('Successfully submitted rating!')
     location.reload()
   } catch (error) {
+    console.log(error.response.status + ' this is the error resposne');
     if (error.response.status === 409) {
-      alert('You have already submitted a rating for this course.')
+      this.toast.error("You have already submitted a rating for this course.", {
+        timeout: 5000,
+        position: POSITION.TOP_CENTER
+      });
+      //alert('You have already submitted a rating for this course.')
       return
     } else {
       alert('Failed to submit rating. Please try again.')
@@ -440,8 +457,13 @@ async function submitClassroomRating() {
     alert('Successfully submitted rating!')
     location.reload()
   } catch (error) {
+    console.log(error.response.status + ' this is the error resposne');
     if (error.response.status === 409) {
-      alert('You have already submitted a rating for this course.')
+      this.toast.error("You have already submitted a rating for this course.", {
+        timeout: 5000,
+        position: POSITION.TOP_CENTER
+      });
+      //alert('You have already submitted a rating for this course.')
       return
     } else {
       alert('Failed to submit rating. Please try again.')
