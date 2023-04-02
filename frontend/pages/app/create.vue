@@ -600,6 +600,13 @@ onMounted(async () => {
 })
 
 function submit() {
+   if (isAGuest.value) {
+    toast.error("You must be logged in to use the optimizer!", {
+      timeout: 5000,
+      position: POSITION.TOP_CENTER
+    });
+    return
+  }
   console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
