@@ -1,6 +1,7 @@
 # BoilerAlgo
 
-
+## Abstract
+Optimizing class schedules manually is a tedious process that can necessitates checking many different data sources. In this paper, we set out to replace this hassle with an algorithmic solution. Because solution problems to optimization of this format are widely recognized to be NP-hard, and because P vs. NP is an open question in Computer Science, there is known determenistic solution whose runtime is polynomial. Instead, we set out to replace this with a non-determensitic heuristic implemented as a genetic algorithm. We first discuss the components of a generic GA, the fitness function used to evaluate schedules generated, and finally show our solution has a worst-case time complexity of $O(n^2)$.
 
 # Penalty Table 
 
@@ -27,4 +28,4 @@ When working with optional fields such as RateMyProfessor or time of day prefere
 
 
 ## Overall Evaluation
-We apply the formula $\sigma = \frac{1}{1+\omicron + \rho}$, where $\sigma$ is the total score for some generation. Therefore, it follows that as $\rho, \omicron$ tend to zero ($\rho, \omicron \to 0$). Becuase $\rho$ must be $0$ for any solution, a solution is optimized as the total optional penalty $\to 0$, and therefore the score $\to 1$
+We apply the formula $\sigma = \frac{1}{1+\omicron + \rho}$, where $\sigma$ is the total score for some generation. Therefore, it follows that as $\rho, \omicron$ tend to zero ($\rho, \omicron \to 0$). Becuase $\rho$ must be $0$ for any solution, a solution is optimized as $\Delta \omicron \to 0$ (and ideally $\omicron \to 0$) 
