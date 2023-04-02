@@ -147,8 +147,10 @@
                   Progress: 
                 </p>
                 <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
-              </div>
-
+              </div><br/>
+              <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+                Cancel
+              </button>
               
 
             </DialogPanel>
@@ -324,6 +326,7 @@ onMounted(() => {
     console.log("data", JSON.parse(data.data))
     try {
       let response = JSON.parse(data.data);
+      console.log("STATUS" + response.status)
       if(response?.message == "schedule") {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
@@ -336,7 +339,16 @@ onMounted(() => {
             completed.value = temp;
           }
         }
+
       }
+      if(response.status === 404) {
+          console.log("ERROR!!")
+          toast.error("No Schedule Found!! Please try again ", {
+            timeout: 5000,
+            position: POSITION.BOTTOM_RIGHT
+          });
+          
+        }
     } catch (e) {
       console.log("Wasnt JSON!!" + e)
     }
@@ -588,13 +600,6 @@ onMounted(async () => {
 })
 
 function submit() {
-  if (isAGuest) {
-    toast.error("You must be logged in to use the optimizer!", {
-      timeout: 5000,
-      position: POSITION.TOP_CENTER
-    });
-    return
-  }
   console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
@@ -669,7 +674,7 @@ function sendToOptimizer(data) {
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < data[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(data[i].startTimes[j]);
+      $socket.send(fixTime(data[i].startTimes[j]));
       //Durations
       $socket.send(data[i].durations[j]);
       //Week days 
@@ -780,29 +785,45 @@ function fto2(time) {
     let hours = parseInt(time.substring(0, 1));
     let minutes = parseInt(time.substring(1, 3));
     let amPM = " am";
-    if(hours > 12) {
+    if(hours >= 12) {
       amPM = " pm"
     }
     hours = parseInt(hours);
+    hours = ((hours + 11) % 12 + 1);
     minutes = parseInt(minutes);
     return hours + ":" + minutes + amPM;
   } else if (time.length == 4) {
     let hours = parseInt(time.substring(0, 2));
     let minutes = parseInt(time.substring(2, 4));
     let amPM = " am";
-    if(hours > 12) {
+    if(hours >= 12) {
       amPM = " pm"
     }
     console.log(hours + " " + minutes)
-    hours = ((hours + 11) % 12 + 1);
-    minutes = parseInt(minutes);
+    if(hours > 12) {
+      hours = hours - 12;
+    }
+    console.log(hours)
+  
     return hours + ":" + minutes + amPM;
   }
+}
+function cancel() {
+  //$socket.close()
+  console.log("CLOSING!!!")
+  $socket.close();
+  navigateTo('/app/home')
 }
 
 function getScheduleView(index) {
   saveOptimizedSchedule(resultsList[index]);
   navigateTo('/app/view/spring_2023')
+}
+
+function fixTime(time) {
+  let hours = time.substring(0, 2)
+  hours = parseInt(hours - 5);
+  return new String(hours) + time.substring(2, 4);
 }
 </script>
 
