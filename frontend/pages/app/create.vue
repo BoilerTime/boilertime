@@ -247,7 +247,6 @@ import {
 
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
 const { $socket } = useNuxtApp()
-const toast = useToast();
 
 const data = ref([])
 const optionalData = ref([])
@@ -601,13 +600,6 @@ onMounted(async () => {
 })
 
 function submit() {
-  if (isAGuest) {
-    toast.error("You must be logged in to use the optimizer!", {
-      timeout: 5000,
-      position: POSITION.TOP_CENTER
-    });
-    return
-  }
   console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"

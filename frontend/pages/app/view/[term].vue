@@ -125,13 +125,13 @@ onMounted(() => {
 
 function showWarning(time, rmp) {
   console.log(time);
-  if(time.toUpperCase() != "NONE") {
-    toast.warning("Warning: RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+  if(rmp.toUpperCase() != "NONE") {
+    toast.warning("Warning: Time and RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
           timeout: 5000,
           position: POSITION.BOTTOM_RIGHT
         });
   } else {
-    toast.warning("Warning: Time of Day may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+    toast.warning("Warning: Time of Day and RMP may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
           timeout: 5000,
           position: POSITION.BOTTOM_RIGHT
         });
