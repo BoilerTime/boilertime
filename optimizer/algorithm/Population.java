@@ -30,7 +30,7 @@ public class Population {
         this.registerdCourses = new Course[registeredC.length];
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
-        r = new Random();
+        r = new Random(100);
         this.generateCourseStruct(registeredC);
         this.net = network;
         this.q = new QualityAnalyzer(preferences, timePreference);
@@ -321,8 +321,8 @@ public class Population {
     }
 
     private boolean shouldContinue(int currentIndex) {
-        if(this.mutationRate == 50) {
-            if(this.waitGens < 5) {
+        if(this.mutationRate == 90) {
+            if(this.waitGens < 3) {
                 waitGens++;
             } else {
                 waitGens = 0;
@@ -334,13 +334,13 @@ public class Population {
             double convergneceScore = q.getRMSConvergence();
             System.out.println("IN IF!");
             if(convergneceScore > .5) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
             } else if (convergneceScore > .1) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
             } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":30}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":15}");
             } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":40}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
             }
             System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
             if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
@@ -353,9 +353,18 @@ public class Population {
 
                     Schedule best = q.getBestSchedule();
                     for(int j = 0; j < this.numSatisfied; j++) {
-                        if(this.options[j].equals(best)) {
-                            this.mutationRate = 50;
-                            this.waitGens = 3;
+                        System.out.println("LOOPING!");
+                        System.out.println(this.options[0].getSections()[0].getID());
+                        if(this.options[j].getSections()[0].getID().equals(best.getSections()[0].getID())) {
+                            System.out.println("Fatal Error!");
+                            this.mutationRate = 90;
+                            this.waitGens = 0;
+                            return true;
+                        }
+
+                        if(best.getRequiredScore() != 0) {
+                            this.mutationRate = 90;
+                            this.waitGens = 0;
                             return true;
                         }
                     }

@@ -99,14 +99,14 @@ const getScheduleTerm = async function(user, term_id) {
             classInSection = await classInSection.data();
             //console.log(classInSection)
             let sectionInformation = {
-                "instructorName": classInSection.instructor.Name,
-                "startTime": classInSection.starttime,
-                "duration": utils.padTime(classInSection.durations),
-                "daysOfWeek": classInSection.daysOfWeek.split(', '),
-                "type": classInSection.type,
-                "buildingCode": classInSection.room.Building.ShortCode,
-                "buildingName": classInSection.room.Building.Name,
-                "roomNumber": classInSection.room.Number
+                "instructorName": classInSection?.instructor?.Name || "N/A",
+                "startTime": classInSection?.starttime || "12:00",
+                "duration": utils.padTime(classInSection?.durations || "2023-02-21T15:30:00Z") || "12:00",
+                "daysOfWeek": classInSection?.daysOfWeek?.split(', ') || "12:00",
+                "type": classInSection?.type || "12:00",
+                "buildingCode": classInSection?.room?.Building?.ShortCode || "12:00",
+                "buildingName": classInSection?.room?.Building?.Name || "12:00",
+                "roomNumber": classInSection?.room?.Number || "12:00"
             }
             classInformation.meetings.push(sectionInformation);
         }
