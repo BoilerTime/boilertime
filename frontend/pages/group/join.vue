@@ -54,6 +54,9 @@ async function joingroup() {
             if (error.response.status == 409) {
                 alert("You are already in this group. Redirecting you to the home page.");
                 navigateTo('/app/home');
+            } else if (error.response.status == 403) {
+                alert("This group has reached the maximum number of members. Redirecting you to the home page.");
+                navigateTo('/app/home/');
             } else {
                 alert(error);
             }
