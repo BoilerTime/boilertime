@@ -996,6 +996,57 @@ app.post('/api/group', async (req, res) => {
   });
 });
 
+/**
+ * Call for leaving group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/leavegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.leaveGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
+/**
+ * Call for removing group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/removegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.removeGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
+
 /*
  * Call for getting the building name from Short Code
  * @param {string} room - The user_id associated with the rating to flag
