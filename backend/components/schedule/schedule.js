@@ -11,7 +11,8 @@ const schedules = db.collection('user_schedules')
 
 module.exports = {
   addClasses,
-  getClasses
+  getClasses,
+  classCounter
 }
 
 /** 
@@ -49,5 +50,49 @@ async function getClasses(user_id) {
     throw new Error(500);
   } else {
     return doc;
+  }
+}
+
+async function classCounter(classes) {
+  const counter = db.collection('counter');
+  for (var i = 0; i < classes.length; i++) {
+    for (var j = 0; j < classes.length; j++) {
+      if (i != j) {
+        const class1 = classes[i];
+        const class2 = classes[j];
+        const doc = await counter.doc(class1).collection(class2).get().catch((err) => {
+          console.error(err);
+          throw new Error(500);
+        });
+        if (doc.empty) {
+          await counter.doc(class1).collection(class2).doc('count').set({ "count": 1 }).catch((err) => {
+            console.error(err);
+            throw new Error(500);
+          });
+        } else {
+          await counter.doc(class1).collection(class2).doc('count').update({ "count": FieldValue.increment(1) }).catch((err) => {
+            console.error(err);
+            throw new Error(500);
+          });
+        }
+      } else {
+        const class1 = classes[i];
+        const doc = await counter.doc(class1).get().catch((err) => {
+          console.error(err);
+          throw new Error(500);
+        });
+        if (doc.empty) {
+          await counter.doc(class1).set({ "count": 1 }).catch((err) => {
+            console.error(err);
+            throw new Error(500);
+          });
+        } else {
+          await counter.doc(class1).update({ "count": FieldValue.increment(1) }).catch((err) => {
+            console.error(err);
+            throw new Error(500);
+          });
+        }
+      }
+    }
   }
 }
