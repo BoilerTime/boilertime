@@ -303,7 +303,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
     const requiredClasses = req.body.required_classes;
     const optionalClasses = req.body.optional_classes;
     const classes = requiredClasses.concat(optionalClasses);
-    await schedule.classCounter(classes).then((input) => {
+    schedule.classCounter(classes).then((input) => {
       console.log("Class Counter Updated")
     }).catch(err => {
       console.error(err)
