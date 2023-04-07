@@ -13,7 +13,8 @@ module.exports = {
   addClasses,
   getClasses,
   classCounter,
-  hotClasses
+  hotClasses,
+  takenTogether
 }
 
 /** 
@@ -65,6 +66,19 @@ async function hotClasses() {
     throw new Error(500);
   });
   return hotClasses;
+}
+
+async function takenTogether(course) {
+  const takenTogether = []
+  const together = await db.collection('counter').doc(course).orderBy('count', 'desc').limit(5).get().then((res) => {
+    res.forEach((doc) => {
+      takenTogether.push(doc.id);
+    })
+  }).catch((err) => {
+    console.error(err);
+    throw new Error(500);
+  });
+  return takenTogether;
 }
 
 async function classCounter(classes) {
