@@ -53,6 +53,19 @@ async function getClasses(user_id) {
   }
 }
 
+async function hotClasses() {
+  const hotClasses = []
+  const hot = await db.collection('counter').orderBy('count').limit(3).get().then((res) => {
+    res.forEach((doc) => {
+      hotClasses.push(doc.id);
+    })
+  }).catch((err) => {
+    console.error(err);
+    throw new Error(500);
+  });
+  return hotClasses;
+}
+
 async function classCounter(classes) {
   const counter = db.collection('counter');
   for (var i = 0; i < classes.length; i++) {
