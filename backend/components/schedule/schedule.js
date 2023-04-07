@@ -12,7 +12,8 @@ const schedules = db.collection('user_schedules')
 module.exports = {
   addClasses,
   getClasses,
-  classCounter
+  classCounter,
+  hotClasses
 }
 
 /** 
@@ -55,7 +56,7 @@ async function getClasses(user_id) {
 
 async function hotClasses() {
   const hotClasses = []
-  const hot = await db.collection('counter').orderBy('count').limit(3).get().then((res) => {
+  const hot = await db.collection('counter').orderBy('count', 'desc').limit(5).get().then((res) => {
     res.forEach((doc) => {
       hotClasses.push(doc.id);
     })

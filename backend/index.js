@@ -320,6 +320,15 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/hotclasses', async (req, res) => {
+  await schedule.hotClasses().then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
+
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
   console.log("Saving!")
