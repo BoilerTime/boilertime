@@ -330,7 +330,7 @@ app.get('/api/hotclasses', async (req, res) => {
 })
 
 app.post('/api/takentogether', async (req, res) => {
-  await schedule.hotClasses(req.body.class).then((data) => {
+  await schedule.takenTogether(req.body.class).then((data) => {
     res.json(data);
   }).catch(err => {
     console.log(err)

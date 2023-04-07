@@ -70,7 +70,7 @@ async function hotClasses() {
 
 async function takenTogether(course) {
   const takenTogether = []
-  const together = await db.collection('counter').doc(course).orderBy('count', 'desc').limit(5).get().then((res) => {
+  const together = await db.collection('counter').doc(course).collection('pairs').orderBy('count', 'desc').limit(5).get().then((res) => {
     res.forEach((doc) => {
       takenTogether.push(doc.id);
     })
@@ -93,12 +93,12 @@ async function classCounter(classes) {
           throw new Error(500);
         });
         if (doc.empty) {
-          await counter.doc(class1).collection(class2).doc('count').set({ "count": 1 }).catch((err) => {
+          await counter.doc(class1).collection('pairs').doc(class2).set({ "count": 1 }).catch((err) => {
             console.error(err);
             throw new Error(500);
           });
         } else {
-          await counter.doc(class1).collection(class2).doc('count').update({ "count": FieldValue.increment(1) }).catch((err) => {
+          await counter.doc(class1).collection('pairs').doc(class2).update({ "count": FieldValue.increment(1) }).catch((err) => {
             console.error(err);
             throw new Error(500);
           });
