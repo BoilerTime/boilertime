@@ -398,7 +398,7 @@
         <button
           class="w-1/8 bg-indigo-500 hover:bg-indigo-700 font-bold border dark:border-black text-white py-2 px-2 rounded-lg"
         >
-          <a href="/app/home">Home</a>
+          <a href="/app">Home</a>
         </button>
       </div>
     </div>

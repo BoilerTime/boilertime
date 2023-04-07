@@ -819,7 +819,7 @@ function cancel() {
   //$socket.close()
   console.log("CLOSING!!!")
   $socket.close();
-  navigateTo('/app/home')
+  navigateTo('/app')
 }
 
 function getScheduleView(index) {

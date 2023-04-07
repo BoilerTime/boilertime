@@ -47,13 +47,13 @@ async function joingroup() {
     }, config)
         .then(function () {
             alert("Group has been joined! Redirecting you to the home page.");
-            navigateTo('/app/home');
+            navigateTo('/app');
         })
         .catch(function (error) {
             console.error(error);
             if (error.response.status == 409) {
                 alert("You are already in this group. Redirecting you to the home page.");
-                navigateTo('/app/home');
+                navigateTo('/app');
             } else {
                 alert(error);
             }
