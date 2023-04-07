@@ -64,7 +64,7 @@ async function classCounter(classes) {
           console.error(err);
           throw new Error(500);
         });
-        if (doc.empty) {
+        if (!doc.exists) {
           await counter.doc(class1).collection(class2).doc('count').set({ "count": 1 }).catch((err) => {
             console.error(err);
             throw new Error(500);
@@ -81,7 +81,7 @@ async function classCounter(classes) {
           console.error(err);
           throw new Error(500);
         });
-        if (doc.empty) {
+        if (!doc.exists) {
           await counter.doc(class1).set({ "count": 1 }).catch((err) => {
             console.error(err);
             throw new Error(500);
