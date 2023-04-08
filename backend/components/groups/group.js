@@ -98,6 +98,8 @@ async function joinGroup(user_id, group_id) {
 async function leaveGroup(user_id, group_id) {
   if (user_id == undefined || group_id == undefined) {
     throw new Error(400);
+  } else if (await isOwner(user_id, group_id)) {
+    throw new Error(403);
   } else {
     await groups.doc(group_id).update({
       "member_ids": FieldValue.arrayRemove(user_id),
