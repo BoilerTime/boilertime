@@ -7,14 +7,19 @@ import java.util.Arrays;
 
 import optimizer.algorithm.*;
 
-public class ScheduleClient implements Runnable  {
+public class ScheduleClient extends Thread  {
     
     //The socket that is currently being run
     private Socket netSocket;
+    private Scheduler parentScheduler;
+    private Population toBeOptimized;
+    private Object waiter;
 
-    public ScheduleClient(Socket s) {
+    public ScheduleClient(Socket s, Scheduler x, Object waiter) {
         this.netSocket = s;
         System.out.println(s.toString());
+        this.parentScheduler = x;
+        this.waiter = waiter;
     }
 
     @Override
@@ -22,8 +27,22 @@ public class ScheduleClient implements Runnable  {
         System.out.println("Called at new Client!" + netSocket);
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            communicateAndRun(network);
-            network.close();
+            this.toBeOptimized = getClientSchedule(network);
+            if(this.toBeOptimized == null) {
+                network.close();
+                terminate();
+            }
+
+            synchronized(waiter) {
+                System.out.println("Random count: " + parentScheduler.random());
+                try {
+                    waiter.wait();
+                    System.out.println("UWU");
+                } catch (InterruptedException e) {
+                    System.err.println("Got a fatal exception waiting: " + e.toString());
+                }
+            }
+            //currentThread.interrupt(
             System.out.println("Done");
         } catch (IOException e) {
             System.err.println("Issue: " + e);
@@ -176,12 +195,12 @@ public class ScheduleClient implements Runnable  {
         network.sendMessage(OptimizerDecoder.decodeOptimizedSchedule(best));
     }
 
-    private void communicateAndRun(NetworkHandler network) {
+    private Population getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
         int numOfCourses = getCoursesCount(network);
         if(numOfCourses == -1) {
             this.terminate();
-            return;
+            return null;
         }
 
         courses = new CourseOverview[numOfCourses];
@@ -213,13 +232,13 @@ public class ScheduleClient implements Runnable  {
              */
             if(courses[i] == null) {
                 //terminate();
-                return;
+                return null;
             }
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
         //System.out.println("Result: " + numOfCourses);
-        Population resultPop = new Population(courses, network, timePreference, preferences);
-        Schedule[] resultOptions = resultPop.getBestSchedule();
-        writeBestToOutput(resultPop, resultOptions, network);
+        return new Population(courses, network, timePreference, preferences);
+        //Schedule[] resultOptions = resultPop.getBestSchedule();
+        //writeBestToOutput(resultPop, resultOptions, network);
     }
 }
