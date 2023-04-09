@@ -23,7 +23,7 @@
             <!--Email text & input box-->
             <label
               for="email"
-              class="block pt-3 mb-2 text-sm font-medium"
+              class="block pt-3 mb-2 text-sm font-bold"
               >Email</label
             >
             <input
@@ -38,7 +38,7 @@
             <!--Password text & input box-->
             <label
               for="password"
-              class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+              class="pt-5 block mb-2 text-sm font-bold text-gray-900 dark:text-black"
               >Password</label
             >
             <input
@@ -51,12 +51,19 @@
             <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
               <button
                 type="submit"
-                class="inline-block px-10 py-2 mt-5 font-bold text-white bg-black rounded shrink-0 hover:bg-gray-800"
+                class="inline-block p-2 text-md font-bold mt-5 text-white bg-black rounded shrink-0 hover:bg-gray-700"
               >
                 Log in
               </button>
+              <button
+                type="register"
+                @click="() => navigateTo('/auth/register')"
+                class="inline-block p-2 font-bold text-md mt-5 ml-4 md:ml-0 text-white bg-yellow-500 hover:bg-yellow-700 rounded shrink-0 "
+              >
+                Sign up
+              </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class="text-gray-400 text-md hover:text-gray-500"
+                <a href="/auth/forgotpassword" class=" text-gray-400 text-md hover:text-gray-500"
                   >Forgot password?</a
                 >
               </p>
@@ -102,7 +109,10 @@ async function login() {
     }
   } catch (error) {
     // temp alert
-    alert("Incorrect username or password");
+    toast.error("Incorrect username or password", {
+      timeout: 5000,
+      position: POSITION.BOTTOM_LEFT
+    });
     password.value = null;
   }
 }
@@ -125,7 +135,10 @@ async function guest() {
     }
   } catch (error) {
     // temp alert
-    alert("Failed to create guest session");
+    toast.error("Failed to create guest session", {
+      timeout: 5000,
+      position: POSITION.BOTTOM_LEFT
+    });
   }
 }
 </script>
