@@ -5,22 +5,28 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Scheduler implements ScheduleCallback {
-    private Queue<Object> optimizeWaitlist;
+    private Queue<Synchronizer> notifyList;
+    private Queue<ScheduleClient> waitlist;
 
     public Scheduler() {
-        optimizeWaitlist = new LinkedList<Object>();
+        notifyList = new LinkedList<Synchronizer>();
+        waitlist = new LinkedList<ScheduleClient>();
     }
 
     public synchronized void runClient(Socket client) {
         System.out.println("Running a new client!");
-        optimizeWaitlist.add(new Object());
-        Thread random = new Thread(new ScheduleClient(client, this, optimizeWaitlist.peek()));
+        notifyList.add(new Object());
+        ScheduleClient random = new ScheduleClient(client, this, notifyList.peek());
         random.start();
         Scanner s = new Scanner(System.in);
         s.nextLine();
-        s.close();
-        synchronized (optimizeWaitlist.peek()) {
-            optimizeWaitlist.peek().notify();
+        synchronized (notifyList.peek()) {
+            notifyList.peek().notify();
+        }
+        s.nextLine();
+        synchronized (random) {
+            //optimizeWaitlist.peek().notify();
+            random.runOptimizer();
         }
     }
 
@@ -30,8 +36,8 @@ public class Scheduler implements ScheduleCallback {
     }
 
     @Override
-    public void completeOptimization(String x) {
-
+    public synchronized void completeOptimization() {
+        //System.out.println("DONE!!!" + x);
     }
 
     public int random() {

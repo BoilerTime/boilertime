@@ -14,12 +14,14 @@ public class ScheduleClient extends Thread  {
     private Scheduler parentScheduler;
     private Population toBeOptimized;
     private Object waiter;
+    private boolean isWaitingToRun;
 
     public ScheduleClient(Socket s, Scheduler x, Object waiter) {
         this.netSocket = s;
         System.out.println(s.toString());
         this.parentScheduler = x;
         this.waiter = waiter;
+        this.isWaitingToRun = true;
     }
 
     @Override
@@ -35,11 +37,16 @@ public class ScheduleClient extends Thread  {
 
             synchronized(waiter) {
                 System.out.println("Random count: " + parentScheduler.random());
-                try {
-                    waiter.wait();
-                    System.out.println("UWU");
-                } catch (InterruptedException e) {
-                    System.err.println("Got a fatal exception waiting: " + e.toString());
+                while (this.isWaitingToRun) {
+                    try {
+                        waiter.wait();
+                        synchronized (parentScheduler) {
+                            parentScheduler.completeOptimization();
+                        }
+                        //System.out.println("UWU");
+                    } catch (InterruptedException e) {
+                        System.err.println("Got a fatal exception waiting: " + e.toString());
+                    }
                 }
             }
             //currentThread.interrupt(
@@ -240,5 +247,9 @@ public class ScheduleClient extends Thread  {
         return new Population(courses, network, timePreference, preferences);
         //Schedule[] resultOptions = resultPop.getBestSchedule();
         //writeBestToOutput(resultPop, resultOptions, network);
+    }
+
+    public synchronized void runOptimizer() {
+        this.isWaitingToRun = false;
     }
 }
