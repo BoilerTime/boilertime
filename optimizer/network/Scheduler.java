@@ -1,5 +1,7 @@
 package optimizer.network;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -7,32 +9,33 @@ import java.util.Scanner;
 public class Scheduler implements ScheduleCallback {
     private Queue<Synchronizer> notifyList;
     private Queue<ScheduleClient> waitlist;
+    private HashMap<Integer, ScheduleClient> doublewaitlist;
+    private HashMap<Integer, Synchronizer> doublenotifylist;
+    private int globalCount;
 
     public Scheduler() {
-        notifyList = new LinkedList<Synchronizer>();
-        waitlist = new LinkedList<ScheduleClient>();
+        this.notifyList = new LinkedList<Synchronizer>();
+        this.waitlist = new LinkedList<ScheduleClient>();
+        this.doublewaitlist = new HashMap<Integer, ScheduleClient>();
+        this.doublenotifylist = new HashMap<Integer, Synchronizer>();
+        this.globalCount = 0;
     }
 
     public synchronized void runClient(Socket client) {
         System.out.println("Running a new client!");
-        notifyList.add(new Object());
-        ScheduleClient random = new ScheduleClient(client, this, notifyList.peek());
-        random.start();
-        Scanner s = new Scanner(System.in);
-        s.nextLine();
-        synchronized (notifyList.peek()) {
-            notifyList.peek().notify();
-        }
-        s.nextLine();
-        synchronized (random) {
-            //optimizeWaitlist.peek().notify();
-            random.runOptimizer();
-        }
+        //Create the new client objects required to run
+        Synchronizer tempSync = new Synchronizer(waitlist.size(), waitlist.size());
+        ScheduleClient temp = new ScheduleClient(client, this, tempSync, globalCount);
+        temp.run(); //Run the client
+        //Push the new stuff into hashmap to await data
+        doublewaitlist.put(Integer.valueOf(globalCount), temp);
+        doublenotifylist.put(Integer.valueOf(globalCount), tempSync);
     }
 
     @Override
-    public void gotData(String x) {
-
+    public synchronized void gotData(int x) {
+        notifyList.add(doublenotifylist.get(Integer.valueOf(x)));
+        waitlist.add(doublewaitlist.get(Integer.valueOf(x)));
     }
 
     @Override

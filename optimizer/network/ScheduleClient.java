@@ -13,15 +13,17 @@ public class ScheduleClient extends Thread  {
     private Socket netSocket;
     private Scheduler parentScheduler;
     private Population toBeOptimized;
-    private Object waiter;
+    private Synchronizer waiter;
     private boolean isWaitingToRun;
+    private final int key;
 
-    public ScheduleClient(Socket s, Scheduler x, Object waiter) {
+    public ScheduleClient(Socket s, Scheduler x, Synchronizer waiter, int key) {
         this.netSocket = s;
         System.out.println(s.toString());
         this.parentScheduler = x;
         this.waiter = waiter;
         this.isWaitingToRun = true;
+        this.key = key;
     }
 
     @Override
@@ -32,15 +34,15 @@ public class ScheduleClient extends Thread  {
             this.toBeOptimized = getClientSchedule(network);
             if(this.toBeOptimized == null) {
                 network.close();
-                terminate();
+                this.terminate();
             }
 
             synchronized(waiter) {
-                System.out.println("Random count: " + parentScheduler.random());
+                this.notifyParent();
                 while (this.isWaitingToRun) {
                     try {
                         waiter.wait();
-                        synchronized (parentScheduler) {
+                        synchronized (parentScheduler) { 
                             parentScheduler.completeOptimization();
                         }
                         //System.out.println("UWU");
@@ -252,4 +254,9 @@ public class ScheduleClient extends Thread  {
     public synchronized void runOptimizer() {
         this.isWaitingToRun = false;
     }
+
+    public synchronized void notifyParent() {
+        parentScheduler.gotData(key);
+    }
+
 }
