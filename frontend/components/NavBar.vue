@@ -1,16 +1,14 @@
 <template>
-  <header class="bg-white dark:bg-neutral-700">
-    <nav class="flex items-center justify-between px-12 py-8 mx-auto">
+  <header :class="`bg-${bgColor}`">
+    <nav class="flex items-center justify-between py-8">
       <div class="flex">
         <!-- Logo -->
-        <a href="/app/home" class="-m-1.5 p-1.5">
+        <a href="/app" class="-m-1.5 p-1.5">
           <img class="w-auto h-10" src="/logo.png" />
         </a>
       </div>
       <!-- Menu for logged in User -->
-      <div
-        v-if="isLoggedIn"
-        class="flex items-center justify-end dark:text-gray-200"
+      <div v-if="isLoggedIn" class="flex items-center dark:text-gray-200"
       >
         <!-- Dark Mode Toggle -->
         <div>
@@ -97,16 +95,31 @@
           </Menu>
         </div>
         <!-- Profile Button -->
-        <a href="/app/profile" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Your Profile</a>
-        <a href="/app/create" v-if="isVerified" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Create Schedule</a>
-        <a href="/group/view" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">My Groups</a>
-        <a href="/hub" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Search Hub</a>
-        <a href="/group/create" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Create Group</a>
-        <a href="/app/home" @click="logout" class="hidden hover:underline lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900 dark:text-gray-200 lg:mr-8">Log Out</a>
-        <span v-if="isVerified">
-          Logged in as: {{ firstname + ' ' + lastname }}
-        </span>
-        <span v-else>
+        <a href="/app" v-if="isVerified" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Dashboard</a>
+        <a href="/app/profile" v-if="isVerified" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Profile</a>
+        <Menu as="div" class="relative">
+          <div>
+            <MenuButton class="inline-flex rounded-md mr-8 text-sm font-semibold text-black">
+              Groups
+              <ChevronDownIcon class="-mr-1 h-5 w-5 text-black" aria-hidden="true" />
+            </MenuButton>
+          </div>
+
+          <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+            <MenuItems class="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div class="py-1">
+                <MenuItem v-slot="{ active }">
+                  <a href="/group/view" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">My Groups</a>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <a href="/group/create" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Create a Group</a>
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </transition>
+        </Menu>
+        <a href="/app" @click="logout" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Log out</a>
+        <span v-if="!isVerified">
           Logged in as: Guest
         </span>
       </div>
@@ -138,7 +151,9 @@ import {
   SunIcon as sun,
   ComputerDesktopIcon as computer,
 } from "@heroicons/vue/24/outline";
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+import { defineProps } from "vue";
 let isLoggedIn = false;
 let isVerified = false;
 var firstname = ref("")
@@ -154,6 +169,12 @@ try {
 } catch (err) {
   console.log(err);
 }
+const props = defineProps({
+  bgColor: {
+    type: String,
+    required: true
+  }
+})
 isLoggedIn = userStore.user.accessToken != null;
 isVerified = userStore.user_id;
 var accessToken = userStore.accessToken;
