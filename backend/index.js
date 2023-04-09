@@ -12,6 +12,7 @@ const jwt = require('./components/auth/jwt');
 const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
+const deleteuser = require('./components/auth/deleteuser');
 const utils = require('./components/utils/utils.js');
 const verifyaccount = require('./components/auth/verifyaccount');
 const password = require('./components/auth/password');
@@ -247,6 +248,24 @@ app.post('/api/createuser', (req, res) => {
     console.log(err)
     res.sendStatus(err.error || 500);
   });
+})
+
+app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await deleteuser.deleteAccount(req.body.user_id).then(async (user) => {
+      console.log(`Deleted user: ${user.email}`)
+      res.json(user);
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(500);
+    });
+  }
 })
 
 app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
