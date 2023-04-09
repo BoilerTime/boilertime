@@ -267,6 +267,24 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   }
 })
 
+app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await group.getSchedule(req.body.group_id).then(async (schedule) => {
+      await utils.addSchedulesCount();
+      res.send({...schedule, accessToken: req.user.accessToken});
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(err.error || 500);
+    });
+  }
+})
+
 app.post('/api/get/term/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
