@@ -274,9 +274,10 @@ app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
     // if guest send 418
     res.sendStatus(418);
   }
-  else {
-    await group.getSchedule(req.body.group_id).then(async (schedule) => {
-      await utils.addSchedulesCount();
+  else if (!await group.inGroup(req.body.user_id, req.body.group_id, req.body.friend_id)) {
+    res.sendStatus(403);
+  } else {
+    await getSchedule.getSchedule(req.body.friend_id).then(async (schedule) => {
       res.send({...schedule, accessToken: req.user.accessToken});
     }).catch(err => {
       console.log(err)

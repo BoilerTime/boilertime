@@ -100,6 +100,18 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
       });
   });
 
+  it("API Call Get Group Schedule", (done) => {
+    chai.request(app)
+      .post('/api/groupschedules')
+      .set({ "authorization": `Bearer ${token1}` })
+      .send({...auth, ...group_id, friend_id: auth2.user_id})
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body).to.have.ownPropertyDescriptor('schedule');
+        done();
+      });
+  });
+
 
   it("API Call Fails with Duplicate Member from Owner", (done) => {
     chai.request(app)
