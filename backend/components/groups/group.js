@@ -65,10 +65,17 @@ async function getGroup(group_id) {
   return { ...data, "group_id": group.id };
 }
 
+
 async function inGroup(user_id, group_id, friend_id) {
   const group = await groups.doc(group_id).get();
   const data = group.data()
   return data.member_ids.includes(user_id) && data.member_ids.includes(friend_id);
+}
+
+async function checkMax(group_id) {
+  const group = await groups.doc(group_id).get();
+  const data = group.data()
+  return data.member_ids.length >= 5;
 }
 
 async function joinGroup(user_id, group_id) {
@@ -76,6 +83,8 @@ async function joinGroup(user_id, group_id) {
     throw new Error(400);
   } else if (await duplicateGroups(user_id, group_id)) {
     throw new Error(409);
+  } else if (await checkMax(group_id)) {
+    throw new Error(403);
   } else {
     await groups.doc(group_id).update({
       "member_ids": FieldValue.arrayUnion(user_id),
@@ -93,4 +102,52 @@ async function joinGroup(user_id, group_id) {
   }
 }
 
-module.exports = { createGroup, joinGroup, getGroups, getGroup, inGroup }
+async function leaveGroup(user_id, group_id) {
+  if (user_id == undefined || group_id == undefined) {
+    throw new Error(400);
+  } else if (await isOwner(user_id, group_id)) {
+    throw new Error(403);
+  } else {
+    await groups.doc(group_id).update({
+      "member_ids": FieldValue.arrayRemove(user_id),
+      "member_names": FieldValue.arrayRemove(await utils.getUserEmail(user_id)),
+    }).catch((err) => {
+      throw new Error(500);
+    });
+    await profiles.doc(user_id).update({
+      "groups": FieldValue.arrayRemove(group_id)
+    }).catch((err) => {
+      throw new Error(500);
+    });
+  }
+}
+
+async function isOwner(user_id, group_id) {
+  const group = await groups.doc(group_id).get();
+  const data = group.data()
+  return data.owner === user_id;
+}
+
+async function removeGroup(user_id, group_id) {
+  if (user_id == undefined || group_id == undefined) {
+    throw new Error(400);
+  } else if (await isOwner(user_id, group_id)) {
+    const group = await groups.doc(group_id).get();
+    const data = group.data()
+    for (var i = 0; i < data.member_ids.length; i++) {
+      await profiles.doc(data.member_ids[i]).update({
+        "groups": FieldValue.arrayRemove(group_id)
+      }).catch((err) => {
+        throw new Error(500);
+      });
+    }
+    await groups.doc(group_id).delete().catch((err) => {
+      throw new Error(500);
+    });
+  } else {
+    throw new Error(403);
+  }
+}
+
+module.exports = { createGroup, joinGroup, getGroups, getGroup, inGroup, removeGroup, leaveGroup}
+

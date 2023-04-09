@@ -318,6 +318,16 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.error(err)
       res.sendStatus(500);
     });
+    
+    const requiredClasses = req.body.required_classes;
+    const optionalClasses = req.body.optional_classes;
+    const classes = requiredClasses.concat(optionalClasses);
+    schedule.classCounter(classes).then((input) => {
+      console.log("Class Counter Updated")
+    }).catch(err => {
+      console.error(err)
+      res.sendStatus(500);
+    });
 
     await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
@@ -328,6 +338,24 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
     });
   }
 });
+
+app.get('/api/hotclasses', async (req, res) => {
+  await schedule.hotClasses().then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
+
+app.post('/api/takentogether', async (req, res) => {
+  await schedule.takenTogether(req.body.class).then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
 
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
@@ -1014,6 +1042,57 @@ app.post('/api/group', async (req, res) => {
     res.sendStatus(500);
   });
 });
+
+/**
+ * Call for leaving group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/leavegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.leaveGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
+/**
+ * Call for removing group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/removegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.removeGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
 
 /*
  * Call for getting the building name from Short Code
