@@ -8,13 +8,8 @@
           <a href="/">
             <img src="/logo.png" class="h-16 mb-6" />
           </a>
-          <h1 class="text-2xl font-bold text-black sm:text-3xl md:text-4xl">
-            Welcome to
-          </h1>
-          <h1
-            class="text-2xl font-bold text-yellow-500 sm:text-3xl md:text-4xl"
-          >
-            to BoilerTime
+          <h1 class="text-2xl font-bold sm:text-3xl md:text-4xl">
+            Hello again!
           </h1>
           <p class="mt-4 text-gray-400">
             Use your @purdue.edu email address to sign in
@@ -28,14 +23,14 @@
             <!--Email text & input box-->
             <label
               for="email"
-              class="block pt-3 mb-2 text-sm font-medium text-gray-900 dark:text-black"
+              class="block pt-3 mb-2 text-sm font-medium"
               >Email</label
             >
             <input
               type="email"
               id="email"
               aria-describedby="helper-text-explanation"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-yellow-500"
+              class="border text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
               placeholder="pete@purdue.edu"
               v-model="email"
               required
@@ -49,8 +44,7 @@
             <input
               type="password"
               id="password"
-              aria-describedby="helper-text-explanation"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-yellow-500"
+              class="border text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
               v-model="password"
               required
             />
@@ -62,7 +56,7 @@
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class="text-gray-400 text-md"
+                <a href="/auth/forgotpassword" class="text-gray-400 text-md hover:text-gray-500"
                   >Forgot password?</a
                 >
               </p>
@@ -89,7 +83,6 @@ import { POSITION, useToast } from "vue-toastification";
 const email = ref("");
 const password = ref("");
 const toast = useToast();
-
 const userStore = useUserStore();
 
 /**

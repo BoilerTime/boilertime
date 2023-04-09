@@ -193,12 +193,12 @@
           >
             <Disclosure v-slot="{ open }">
               <DisclosureButton
-                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 text-left md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 md:text-left text-center md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
               >
                 <span>How does BoilerTime generate my schedule?</span>
                 <ChevronUpIcon
                   :class="open ? 'rotate-180 transform' : ''"
-                  class="h-5 w-5 text-black"
+                  class="md:h-5 md:w-5 w-0 text-black"
                 />
               </DisclosureButton>
               <DisclosurePanel class="px-4 pt-4 pb-2 md:text-lg text-sm text-center">
@@ -214,12 +214,12 @@
             </Disclosure>
             <Disclosure as="div" class="mt-4" v-slot="{ open }">
               <DisclosureButton
-                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 text-left md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 md:text-left text-center md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
               >
                 <span>When should I use BoilerTime?</span>
                 <ChevronUpIcon
                   :class="open ? 'rotate-180 transform' : ''"
-                  class="h-5 w-5 text-black"
+                  class="md:h-5 md:w-5 w-0 text-black"
                 />
               </DisclosureButton>
               <DisclosurePanel class="px-4 pt-4 pb-2 md:text-lg text-sm text-center">
@@ -232,12 +232,12 @@
             </Disclosure>
             <Disclosure as="div" class="mt-4" v-slot="{ open }">
               <DisclosureButton
-                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 text-left md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 md:text-left text-center md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
               >
                 <span>How often do the schedules get updated?</span>
                 <ChevronUpIcon
                   :class="open ? 'rotate-180 transform' : ''"
-                  class="h-5 w-5 text-black"
+                  class="md:h-5 md:w-5 w-0 text-black"
                 />
               </DisclosureButton>
               <DisclosurePanel class="px-4 pt-4 pb-2 md:text-lg text-sm text-center">
@@ -248,7 +248,7 @@
             </Disclosure>
             <Disclosure as="div" class="mt-4" v-slot="{ open }">
               <DisclosureButton
-                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 text-left md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                class="flex w-full justify-between rounded-lg bg-yellow-100 px-4 py-2 md:text-left text-center md:text-lg text-md font-light hover:bg-yellow-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
               >
                 <span
                   >How should I get in touch with you guys if I have any
@@ -256,7 +256,7 @@
                 >
                 <ChevronUpIcon
                   :class="open ? 'rotate-180 transform' : ''"
-                  class="h-5 w-5 text-black"
+                  class="md:h-5 md:w-5 w-0 text-black"
                 />
               </DisclosureButton>
               <DisclosurePanel class="px-4 pt-4 pb-2 md:text-lg text-sm text-center">
@@ -278,7 +278,7 @@
       ></div>
       <!--Ending section-->
       <div
-        class="flex flex-row items-center justify-center md:gap-72 gap-24 bg-indigo-500 p-14 md:p-36 overflow-hidden"
+        class="flex flex-col items-center justify-center md:gap-14 gap-8 bg-indigo-500 p-14 md:p-36 overflow-hidden"
       >
         <div class="flex flex-col gap-2">
           <p class="md:text-3xl text-lg font-bold text-white text-center">Finished reading?</p>
@@ -287,13 +287,11 @@
             Are you ready to create your perfect schedule?
           </p>
         </div>
-        <div class="flex">
-          <a
+        <a
             href="/auth/register"
-            class="md:text-2xl text-lg font-bold text-black rounded-lg md:px-5 px-4 md:py-4 py-3 bg-white hover:bg-gray-200 text-center"
+            class="text-lg md:text-2xl font-bold text-black rounded-lg md:px-5 md:py-4 px-3 py-2 bg-white hover:bg-gray-200"
             >Sign Up</a
           >
-        </div>
       </div>
     </div>
     <!--End main body, start footer-->
