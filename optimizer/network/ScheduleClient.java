@@ -12,7 +12,6 @@ public class ScheduleClient extends Thread  {
     //The socket that is currently being run
     private Socket netSocket;
     private Scheduler parentScheduler;
-    private Population toBeOptimized;
     private Synchronizer waiter;
     private boolean isWaitingToRun;
     private final int key;
@@ -31,8 +30,8 @@ public class ScheduleClient extends Thread  {
         System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getLocalPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            this.toBeOptimized = getClientSchedule(network);
-            if(this.toBeOptimized == null) {
+            Population toBeOptimized = getClientSchedule(network);
+            if(toBeOptimized == null) {
                 network.close();
                 this.terminate();
             }
@@ -51,6 +50,7 @@ public class ScheduleClient extends Thread  {
                     }
                 }
             }
+            this.optimize(toBeOptimized, network);
             //currentThread.interrupt(
             System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getLocalPort());
         } catch (IOException e) {
@@ -247,6 +247,11 @@ public class ScheduleClient extends Thread  {
 
     public synchronized void notifyParent() {
         parentScheduler.gotData(key);
+    }
+
+    private void optimize(Population p, NetworkHandler net) {
+        Schedule[] best = p.getBestSchedule();
+        this.writeBestToOutput(p, best, net);
     }
 
 }

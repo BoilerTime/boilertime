@@ -1,10 +1,9 @@
 package optimizer.network;
+
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
 
 public class Scheduler implements ScheduleCallback {
     private Queue<Synchronizer> notifyList;
@@ -12,6 +11,7 @@ public class Scheduler implements ScheduleCallback {
     private HashMap<Integer, ScheduleClient> doublewaitlist;
     private HashMap<Integer, Synchronizer> doublenotifylist;
     private int globalCount;
+    private int inProgress;
 
     public Scheduler() {
         this.notifyList = new LinkedList<Synchronizer>();
@@ -19,6 +19,7 @@ public class Scheduler implements ScheduleCallback {
         this.doublewaitlist = new HashMap<Integer, ScheduleClient>();
         this.doublenotifylist = new HashMap<Integer, Synchronizer>();
         this.globalCount = 0;
+        this.inProgress = 0;
     }
 
     public synchronized void runClient(Socket client) {
@@ -38,12 +39,36 @@ public class Scheduler implements ScheduleCallback {
         notifyList.add(doublenotifylist.get(Integer.valueOf(x)));
         System.out.println("Go the notifyList: " + doublenotifylist.get(Integer.valueOf(x)));
         waitlist.add(doublewaitlist.get(Integer.valueOf(x)));
+        this.runOptimizer();
         this.broadcastQueue();
     }
 
     @Override
     public synchronized void completeOptimization() {
-        //System.out.println("DONE!!!" + x);
+        this.inProgress--;
+        runOptimizer();
+        broadcastQueue();
+    }
+
+    public synchronized void runOptimizer() {
+        if(this.inProgress != 0 ) {
+            return;
+        }
+
+        Synchronizer lock = notifyList.remove();
+        ScheduleClient target = waitlist.remove();
+
+        synchronized(target) {
+            target.runOptimizer();
+        }
+
+        synchronized(lock) {
+            lock.setPosInQueue(0);
+            lock.setWaitList(waitlist.size());
+            lock.notify();
+        }
+        this.inProgress++;
+
     }
 
     private synchronized void broadcastQueue() {
