@@ -19,7 +19,7 @@ public class ScheduleClient extends Thread  {
 
     public ScheduleClient(Socket s, Scheduler x, Synchronizer waiter, int key) {
         this.netSocket = s;
-        System.out.println(s.toString());
+        //System.out.println(s.toString());
         this.parentScheduler = x;
         this.waiter = waiter;
         this.isWaitingToRun = true;
@@ -28,7 +28,7 @@ public class ScheduleClient extends Thread  {
 
     @Override
     public void run() {
-        System.out.println("Called at new Client!" + netSocket);
+        System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getLocalPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
             this.toBeOptimized = getClientSchedule(network);
@@ -47,12 +47,12 @@ public class ScheduleClient extends Thread  {
                         }
                         //System.out.println("UWU");
                     } catch (InterruptedException e) {
-                        System.err.println("Got a fatal exception waiting: " + e.toString());
+                        System.err.println("(ScheduleClient.java) Got a fatal exception waiting: " + e.toString());
                     }
                 }
             }
             //currentThread.interrupt(
-            System.out.println("Done");
+            System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getLocalPort());
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;
@@ -62,10 +62,10 @@ public class ScheduleClient extends Thread  {
 
     private void terminate() {
         try {
-            System.out.println("Closing the connection!");
+            System.out.println("(ScheduleClient.java) Closing the connection!");
             netSocket.close();
         } catch (NullPointerException | IOException e) {
-            System.err.println("Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
+            System.err.println("(ScheduleClient.java)Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
         }
     }
 
@@ -73,7 +73,6 @@ public class ScheduleClient extends Thread  {
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
         String rawClasses = network.getIncomingMessage();//nput.readLine();
-        System.out.println("Got raw: " + rawClasses);
         if(rawClasses == null) {
             return -1;
         }
@@ -100,7 +99,6 @@ public class ScheduleClient extends Thread  {
     private TimeOfDay getTODPrefernece(NetworkHandler network) {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
-        System.out.println("Got Raw " + rawTOD);
         while(res == null) { 
             if(rawTOD.equalsIgnoreCase("morning")) {
                 res = TimeOfDay.MORNGING;
@@ -161,7 +159,6 @@ public class ScheduleClient extends Thread  {
             if(t == null) {
                 return null;
             }
-            System.out.println("twt" + t);
             int numOfTimes = Integer.parseInt(t);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
@@ -169,29 +166,24 @@ public class ScheduleClient extends Thread  {
 
             for(int i = 0; i < numOfTimes; i++) {
                 String message = network.getIncomingMessage();
-                System.out.println("OwO" + message);
                 x.addCourseTime(Integer.parseInt(message));
 
                 message = network.getIncomingMessage();
-                System.out.println("TwT" + message);
                 x.addDuration(Integer.parseInt(message));
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addWeekDays(message);
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addRating(Double.parseDouble(message));
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addSectionId(message);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
         } catch (NumberFormatException e) {
-            System.err.println("Issue: " + e);
+            System.err.println("(ScheduleClient.java) Issue: " + e);
         }
         return null;
     }
@@ -232,9 +224,9 @@ public class ScheduleClient extends Thread  {
             //preferences[1] = TimeOfDay.MORNGING;
         }
 
+        System.out.println("Got all client detail for: " + netSocket.getLocalPort());
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
-            System.out.println("UwU" + courses[i]);
             /*
              * There was an error, terminate the thread and give up
              * To-do: Add a better error handling mechanism. 
@@ -247,8 +239,6 @@ public class ScheduleClient extends Thread  {
         }
         //System.out.println("Result: " + numOfCourses);
         return new Population(courses, network, timePreference, preferences);
-        //Schedule[] resultOptions = resultPop.getBestSchedule();
-        //writeBestToOutput(resultPop, resultOptions, network);
     }
 
     public synchronized void runOptimizer() {
