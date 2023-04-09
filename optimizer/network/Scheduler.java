@@ -51,7 +51,7 @@ public class Scheduler implements ScheduleCallback {
     }
 
     public synchronized void runOptimizer() {
-        if(this.inProgress != 0 ) {
+        if(this.inProgress != 0 || notifyList.size() == 0) {
             return;
         }
 

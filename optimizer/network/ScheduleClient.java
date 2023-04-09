@@ -41,9 +41,6 @@ public class ScheduleClient extends Thread  {
                 while (this.isWaitingToRun) {
                     try {
                         waiter.wait();
-                        synchronized (parentScheduler) { 
-                            parentScheduler.completeOptimization();
-                        }
                         //System.out.println("UWU");
                     } catch (InterruptedException e) {
                         System.err.println("(ScheduleClient.java) Got a fatal exception waiting: " + e.toString());
@@ -51,6 +48,7 @@ public class ScheduleClient extends Thread  {
                 }
             }
             this.optimize(toBeOptimized, network);
+            parentScheduler.completeOptimization();
             //currentThread.interrupt(
             System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getLocalPort());
         } catch (IOException e) {
