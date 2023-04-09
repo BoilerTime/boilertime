@@ -299,6 +299,16 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.error(err)
       res.sendStatus(500);
     });
+    
+    const requiredClasses = req.body.required_classes;
+    const optionalClasses = req.body.optional_classes;
+    const classes = requiredClasses.concat(optionalClasses);
+    schedule.classCounter(classes).then((input) => {
+      console.log("Class Counter Updated")
+    }).catch(err => {
+      console.error(err)
+      res.sendStatus(500);
+    });
 
     await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
@@ -309,6 +319,24 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
     });
   }
 });
+
+app.get('/api/hotclasses', async (req, res) => {
+  await schedule.hotClasses().then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
+
+app.post('/api/takentogether', async (req, res) => {
+  await schedule.takenTogether(req.body.class).then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
 
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
