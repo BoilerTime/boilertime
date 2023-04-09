@@ -92,10 +92,6 @@ describe("POST Test Create User", () => {
       });
   });
 
-  //TODO: Verify Account (valid and invalid)
-  
-  //TODO: Login
-
   it("API Call Fails without Valid email", (done) => {
     chai.request(app)
       .post('/api/createuser')
