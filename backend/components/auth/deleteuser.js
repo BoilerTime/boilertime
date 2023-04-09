@@ -20,4 +20,4 @@ async function deleteAccount(user_id) {
   await schedules.doc(user_id).delete()
 }
 
-module.exports = {updatePassword}
+module.exports = {deleteAccount}
