@@ -18,9 +18,11 @@ const groups = db.collection('groups');
  */
 async function deleteAccount(user_id) {
   await users.doc(user_id).get().then((doc) => {
-    doc.data().groups.forEach(async (group_id) => {
-      await group.leaveGroup(user_id, group_id);
-    });
+    if (doc.data().groups !== undefined) {
+      doc.data().groups.forEach(async (group_id) => {
+        await group.leaveGroup(user_id, group_id);
+      });
+    }
   }).catch((err) => {
     throw new Error(500);
   });
