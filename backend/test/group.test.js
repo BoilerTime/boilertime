@@ -100,6 +100,7 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
       });
   });
 
+
   it("API Call Get Group Schedule", (done) => {
     chai.request(app)
       .post('/api/groupschedules')
@@ -124,6 +125,18 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
   });
 
 
+  it("API Call Fails with Duplicate Member from Member", (done) => {
+    chai.request(app)
+      .post('/api/joingroup')
+      .set({ "authorization": `Bearer ${token2}` })
+      .send({...auth2, ...group_id})
+      .end((err, res) => {
+        res.should.have.status(409);
+        done();
+      });
+  });
+
+
   it("API Call Fails with Duplicate Member from Owner", (done) => {
     chai.request(app)
       .post('/api/joingroup')
@@ -135,13 +148,46 @@ describe("POST Test Group Sprint 2 User Story 13", () => {
       });
   });
 
-  it("API Call Fails with Duplicate Member from Member", (done) => {
+  it("API Call Delete Group Fails on Memeber", (done) => {
     chai.request(app)
-      .post('/api/joingroup')
+      .post('/api/removegroup')
       .set({ "authorization": `Bearer ${token2}` })
       .send({...auth2, ...group_id})
       .end((err, res) => {
-        res.should.have.status(409);
+        res.should.have.status(403);
+        done();
+      });
+  });
+
+  it("API Call Leave Group Just Created", (done) => {
+    chai.request(app)
+      .post('/api/leavegroup')
+      .set({ "authorization": `Bearer ${token2}` })
+      .send({...auth2, ...group_id})
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("API Call Leave Group Fails on Owner", (done) => {
+    chai.request(app)
+      .post('/api/leavegroup')
+      .set({ "authorization": `Bearer ${token1}` })
+      .send({...auth, ...group_id})
+      .end((err, res) => {
+        res.should.have.status(403);
+        done();
+      });
+  });
+
+  it("API Call Delete Group Just Created", (done) => {
+    chai.request(app)
+      .post('/api/removegroup')
+      .set({ "authorization": `Bearer ${token1}` })
+      .send({...auth, ...group_id})
+      .end((err, res) => {
+        res.should.have.status(200);
         done();
       });
   });
