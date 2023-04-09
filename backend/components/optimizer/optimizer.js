@@ -7,6 +7,7 @@ const save = require('../schedule/saveschedule');
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
+const purdueio = require('../datasources/purdueios');
 
 
 //client.send("request open");
@@ -68,7 +69,6 @@ const optimizeSchedule = async function(schedule) {
               })
         }
     }
-    console.log("UWU")
 
     //await Promise.all(output).then((data) => {console.log(data)})
     
@@ -83,6 +83,12 @@ const optimizeSchedule = async function(schedule) {
             })
         }
     }
+
+  for (let i = 0; i < output.length; i++) {
+    isFull = await purdueio.isFull(output[i].name.split(' ')[0], output[i].name.split(' ')[1], output[i].sectionIDs);
+    console.log(isFull);
+    output[i].isFull = isFull;
+  }
     console.log(output)
     return output;
 }
