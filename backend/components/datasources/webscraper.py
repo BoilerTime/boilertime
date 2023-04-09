@@ -46,6 +46,8 @@ else:
 
     print(info);
 
+driver.quit()
+
 
 ##soup = BeautifulSoup(page.content, 'html.parser')
 ##print(page)
