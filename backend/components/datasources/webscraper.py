@@ -24,15 +24,15 @@ driver.get(url)
 search_input = driver.find_element(By.ID, 'basicSearchInput')
 search_button = driver.find_element(By.ID, 'glass')
 
-f = open("professors_updated.json", "x")
+f = open("../../professors_updated.json", "x")
 
 jArray = []
 
+counter = 0
 for professor in professors:
-    if professor == 'Zheng, Wei':
-        break
     json_object = {}
-    print(professor)
+    counter = counter + 1
+    print(professor + ' ' + str(counter) + '/6697')
     search_input = driver.find_element(By.ID, 'basicSearchInput')
     search_input.send_keys(professor)
     ##search_input.send_keys('CHIRAYU GARG')
@@ -75,12 +75,12 @@ for professor in professors:
                             key, value = match.groups()
                             json_object[key.lower()] = value
                 jArray.append(json_object)
-                print(jArray)
+                ##print(jArray)
             elif not should_continue and index == len(lists):
                 json_object["name"] = professor
                 jArray.append(json_object)
-                print('this is index ' + str(index) + ' and this is the professor ' + professor)
-                print(jArray)
+                ##print('this is index ' + str(index) + ' and this is the professor ' + professor)
+                ##print(jArray)
 
 
     elif(len(lists) > 0):
@@ -113,20 +113,20 @@ for professor in professors:
                             key, value = match.groups()
                             json_object[key.lower()] = value
                 jArray.append(json_object)
-                print(jArray)
+                ##print(jArray)
             else:
                 json_object["name"] = professor 
                 jArray.append(json_object)
-                print(jArray)
+                ##print(jArray)
         else:
             json_object["name"] = professor 
             jArray.append(json_object)
-            print(jArray)
+            ##print(jArray)
 
     else:
         json_object["name"] = professor 
         jArray.append(json_object)
-        print(jArray)
+        ##print(jArray)
 
     search_input = driver.find_element(By.ID, 'basicSearchInput')
     search_input.clear()
