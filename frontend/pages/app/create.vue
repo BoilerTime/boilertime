@@ -134,19 +134,31 @@
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium text-center text-gray-900 leading-6 dark:text-gray-200"
+                class="text-xl font-large text-center leading-6 dark:text-gray-200"
+                style="font-size: 30px;"
               >
-                Optimizing Your Schedule!
+                <b>{{status}}</b><span class="loader__dot">.</span><span class="loader__dot">.</span><span class="loader__dot">.</span>
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                <p v-if="!inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  We're building your perfect schedule. This might take a bit
                 </p>
+                <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Waiting in line {{posInLine}}
+                </p>
+                <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Progress: 
-                </p>
-                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                <div class="justify-center items-center">
+                  <div class="flex items-center justify-center">
+                    <div class="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
+                    <div class="h-20 w-20 rounded-full bg-white dark:bg-neutral-700"></div>
+                  </div>
+                </div>
+              </div>
+                <div class="mt-2" v-if="algorithmProgress">
+                  <p class="text-sm text-gray-500 dark:text-gray-200">Progress:</p>
+                  <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                </div>
               </div><br/>
               <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
                 Cancel
@@ -229,6 +241,13 @@
 </template>
 
 <script setup>
+/*
+ * Status Possibilities
+ * 1) Getting data for schedule from backend
+ * 2) Sending schedule data to algorithm
+ * 3) Waiting in line for optimization 
+ * 4) Optimizing
+ */
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
@@ -257,6 +276,11 @@ const isResultOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
 const toast = useToast();
+const isAlgoActive = ref(false);
+const status = ref('');
+const algorithmProgress = ref(true)
+const inLine = ref(false)
+const posInLine = ref('');
 var totalSum;
 
 function closeModal() {
@@ -320,6 +344,7 @@ onMounted(() => {
   $socket.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
+    //algorithmProgress.show = true
   }
   $socket.onmessage = ((data) => {
     console.log("data", (data.data))
@@ -329,6 +354,8 @@ onMounted(() => {
       if(response?.message == "schedule") {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
+        //isAlgoActive.value = true;
+        algoStatus.value = "Fuck off"
         if(completed.value < 100) {
           //completed.value = (completed.value + response.data)%100;v
           var temp = completed.value + response.data;
@@ -338,7 +365,6 @@ onMounted(() => {
             completed.value = temp;
           }
         }
-
       }
       if(response.status === 404) {
           console.log("ERROR!!")
@@ -379,7 +405,7 @@ function addToSelected(item) {
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
+      optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
       rmp: rmpValue
     }, config).then((response) => {
@@ -617,6 +643,9 @@ function submit() {
   }
   if (selectedRequiredCourses.value.length > 0) {
     openModal()
+    //status.value = "Getting Course Data"
+    //isAlgoActive.value = false;
+    waitingForData();
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
@@ -627,6 +656,8 @@ function submit() {
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule)
       courseList = response.data.schedule;
+      isAlgoActive.value = false;
+
       console.log("TWT")
       console.log(courseList)
       if (response.data["accessToken"] != undefined) {
@@ -695,7 +726,7 @@ function sendToOptimizer(data) {
 }
 
 function parseCoursesResponse(data) {
-  isResultOpen.value = true; 
+  isResultOpen.value = false; 
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -831,6 +862,16 @@ function fixTime(time) {
   hours = parseInt(hours - 5);
   return new String(hours) + time.substring(2, 4);
 }
+
+function waitingForData() {
+  const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
+  status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  algorithmProgress.value = false;
+}
+
+function randInt(max) {
+    return Math.floor(Math.random() * max) + 1;
+}
 </script>
 
 <style scoped>
@@ -841,4 +882,9 @@ function fixTime(time) {
 .hover\:bg-red-500:hover::after {
   content: ' ✖';
 }
+
+@keyframes blink {50% { color: transparent }}
+.loader__dot { animation: 1s blink infinite }
+.loader__dot:nth-child(2) { animation-delay: 250ms }
+.loader__dot:nth-child(3) { animation-delay: 500ms }
 </style>
