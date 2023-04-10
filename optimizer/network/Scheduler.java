@@ -87,4 +87,9 @@ public class Scheduler implements ScheduleCallback {
             }
         }
     }
+
+    public synchronized void failedToGet(int x) {
+        doublewaitlist.remove(Integer.valueOf(x));
+        doublenotifylist.remove(Integer.valueOf(x));
+    }
 }

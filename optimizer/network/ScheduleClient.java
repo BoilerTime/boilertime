@@ -27,13 +27,14 @@ public class ScheduleClient extends Thread  {
 
     @Override
     public void run() {
-        System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getLocalPort() +  " with name: " + Thread.currentThread().getName() + " done");
+        System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
             Population toBeOptimized = getClientSchedule(network);
             if(toBeOptimized == null) {
-                network.close();
-                this.terminate();
+                System.err.println("(ScheduleClient.java) Failed to get the schedule data for client: " + netSocket.getPort());
+                this.failed(network);
+                return;
             }
             synchronized(waiter) {
                 this.notifyParent();
@@ -48,12 +49,13 @@ public class ScheduleClient extends Thread  {
                 }
             }
             this.optimize(toBeOptimized, network);
-            try {
+            /*try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            */
             parentScheduler.completeOptimization();
             //currentThread.interrupt(
             System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getPort());
@@ -260,5 +262,14 @@ public class ScheduleClient extends Thread  {
 
     private void updateClient(NetworkHandler network) {
         network.sendMessage("{\"status\":102,\"message\":\"Position in Queue Update\",\"data\":{\"currentPos\":" + waiter.getPosInQueue() + ",\"totalWaiting\":" + waiter.getWaitlistSize() + "}}");
+    }
+
+    private void failed(NetworkHandler network) {
+        network.sendMessage("{\"status\":404,\"message\":\"Fatal Error in Schedule Input\",\"data\":\"There was an error in the schedule input sent to the server\"}");
+        network.close();
+        this.terminate();
+        synchronized(this.parentScheduler) {
+            this.parentScheduler.failedToGet(key);
+        }
     }
 }
