@@ -290,11 +290,24 @@
                   How to Use It
                 </p>
                 <ul class="list-disc list-inside text-sm">
-                  <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
-                  <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
+                  <li>It looks like you're already an expert! Congrats on making a schedule</li>
+                  <li>Next time, look at our hub first to discover classes you might want to take and see a bit of info first
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - That way, you can see if the right professors, times of day, or locations are there for you</li>
+                    <li> - You can always bookmark a course to come back later if you're not satisfied</li>
+                  </ul></li>
                   <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - To save everyone time and money, take a look over the class options before optimizing</li>
+                    <li> - Never re-optimize the same schedule unless you don't like any of the results</li>
+                    <li> - If you've inputted optional classes that don't show up in any of the options, remove another class before re-optimizing</li>
+                  </ul>
+                  <li>Be realistic about the number of classes you'd like to take, the number of classes inputted will be filled</li>
                 </ul>
               </div>
+              <button @click="closeTips()" class="float-middle bg-yellow-500 hover:bg-red-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+                Close
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -960,7 +973,21 @@ function optimizing(progress) {
 
 function displayingResults() {
   closeModal();
-  isResultOpen.value = false;
+  if(displayTips.value) {
+    toast.info("Your optimize schedule is ready! Close this to take a look", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  } else {
+    isResultOpen.value = true;
+  }
+}
+
+function closeTips() {
+  displayTips.value = false;
+  if(!isOpen.value) {
+    isResultOpen.value = true;
+  }
 }
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
