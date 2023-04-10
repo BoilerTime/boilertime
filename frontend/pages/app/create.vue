@@ -718,7 +718,8 @@ function sendToOptimizer(data) {
 }
 
 function parseCoursesResponse(data) {
-  isResultOpen.value = false; 
+  console.log("Parsing Response!!!!!");
+  displayingResults();
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -891,7 +892,11 @@ function optimizing(progress) {
       completed.value = temp;
     }
   }
+}
 
+function displayingResults() {
+  closeModal();
+  isResultOpen.value = true;
 }
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
