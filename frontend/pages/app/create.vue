@@ -148,7 +148,7 @@
                 </p>
                 <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
-                <div class="justify-center items-center">
+                <div v-if="multiLoader" class="justify-center items-center">
                   <div class="flex items-center justify-center">
                     <div class="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
                     <div class="h-20 w-20 rounded-full bg-white dark:bg-neutral-700"></div>
@@ -282,6 +282,7 @@ const algorithmProgress = ref(true)
 const inLine = ref(false)
 const posInLine = ref('');
 const totalPos = ref('');
+const multiLoader = ref(false)
 var totalSum;
 
 function closeModal() {
@@ -356,15 +357,7 @@ onMounted(() => {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
         //isAlgoActive.value = true;
-        if(completed.value < 100) {
-          //completed.value = (completed.value + response.data)%100;v
-          var temp = completed.value + response.data;
-          if(temp > 99) {
-            completed.value = 99;
-          } else {
-            completed.value = temp;
-          }
-        }
+        optimizing(response.data);
       } else if (response?.status == 102 && response?.message == "Position in Queue Update") {
         inQueue(response.data.currentPos, response.data.totalWaiting);
       } else if(response.status === 404) {
@@ -867,6 +860,7 @@ function waitingForData() {
   status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
   algorithmProgress.value = false;
   inLine.value = false;
+  multiLoader.value = true;
 }
 
 function inQueue(position, size) {
@@ -877,6 +871,27 @@ function inQueue(position, size) {
   algorithmProgress.value = false;
   posInLine.value = position;
   totalPos.value = size;
+  multiLoader.value = true;
+}
+
+function optimizing(progress) {
+  const messages = ["Optimizing", "Loading Perfection", "Generating Schedule", "Maximizing Schedule"];
+  if(!algorithmProgress.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data" 
+
+  algorithmProgress.value = true;
+  inLine.value = false;
+  multiLoader.value = false;
+  if(completed.value < 100) {
+    //completed.value = (completed.value + response.data)%100;v
+    var temp = completed.value + progress;
+    if(temp > 99) {
+      completed.value = 99;
+    } else {
+      completed.value = temp;
+    }
+  }
+
 }
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
