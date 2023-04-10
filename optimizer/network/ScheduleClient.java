@@ -50,12 +50,12 @@ public class ScheduleClient extends Thread  {
             }
             network.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":0}");
             this.optimize(toBeOptimized, network);
-            try {
+            /*try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
+            }*/
             
             parentScheduler.completeOptimization();
             //currentThread.interrupt(
