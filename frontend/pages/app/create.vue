@@ -144,7 +144,7 @@
                   We're building your perfect schedule. This might take a bit
                 </p>
                 <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
-                  Waiting in line {{posInLine}}
+                  Waiting in line: Position {{posInLine}} of {{totalPos}}
                 </p>
                 <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
@@ -281,6 +281,7 @@ const status = ref('');
 const algorithmProgress = ref(true)
 const inLine = ref(false)
 const posInLine = ref('');
+const totalPos = ref('');
 var totalSum;
 
 function closeModal() {
@@ -355,7 +356,6 @@ onMounted(() => {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
         //isAlgoActive.value = true;
-        algoStatus.value = "Fuck off"
         if(completed.value < 100) {
           //completed.value = (completed.value + response.data)%100;v
           var temp = completed.value + response.data;
@@ -365,8 +365,9 @@ onMounted(() => {
             completed.value = temp;
           }
         }
-      }
-      if(response.status === 404) {
+      } else if (response?.status == 102 && response?.message == "Position in Queue Update") {
+        inQueue(response.data.currentPos, response.data.totalWaiting);
+      } else if(response.status === 404) {
           console.log("ERROR!!")
           toast.error("No Schedule Found!! Please try again ", {
             timeout: 5000,
@@ -642,9 +643,7 @@ function submit() {
     rmpValue = "RMP";
   }
   if (selectedRequiredCourses.value.length > 0) {
-    openModal()
-    //status.value = "Getting Course Data"
-    //isAlgoActive.value = false;
+    openModal();
     waitingForData();
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
@@ -867,8 +866,18 @@ function waitingForData() {
   const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
   status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
   algorithmProgress.value = false;
+  inLine.value = false;
 }
 
+function inQueue(position, size) {
+  const messages = ["Waiting to Optimize", "Optimizing Soon", "Waiting", "Ready to Optimize"];
+  if(!inLine.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  inLine.value = true;
+  algorithmProgress.value = false;
+  posInLine.value = position;
+  totalPos.value = size;
+}
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
 }
