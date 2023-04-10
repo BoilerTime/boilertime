@@ -323,7 +323,7 @@ onMounted(() => {
     console.log("Are we open? " + isOpen.value)
   }
   $socket.onmessage = ((data) => {
-    console.log("data", JSON.parse(data.data))
+    console.log("data", (data.data))
     try {
       let response = JSON.parse(data.data);
       console.log("STATUS" + response.status)

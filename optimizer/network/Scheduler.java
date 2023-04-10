@@ -31,6 +31,7 @@ public class Scheduler implements ScheduleCallback {
         doublewaitlist.put(Integer.valueOf(globalCount), temp);
         doublenotifylist.put(Integer.valueOf(globalCount), tempSync);
         globalCount++;
+        runOptimizer();
     }
 
     @Override
@@ -74,6 +75,7 @@ public class Scheduler implements ScheduleCallback {
     private synchronized void broadcastQueue() {
         int size = notifyList.size();
         //notifyList.forEach(null);
+        System.out.println("BROADCASTING " + size);
         int count = 0;
         for(Synchronizer i: notifyList) {
             //Input the new data

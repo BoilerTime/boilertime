@@ -35,22 +35,28 @@ public class ScheduleClient extends Thread  {
                 network.close();
                 this.terminate();
             }
-
             synchronized(waiter) {
                 this.notifyParent();
                 while (this.isWaitingToRun) {
                     try {
                         waiter.wait();
-                        //System.out.println("UWU");
+                        System.out.println("Just got alerted of a status update! " + netSocket.getPort());
+                        updateClient(network);
                     } catch (InterruptedException e) {
                         System.err.println("(ScheduleClient.java) Got a fatal exception waiting: " + e.toString());
                     }
                 }
             }
             this.optimize(toBeOptimized, network);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             parentScheduler.completeOptimization();
             //currentThread.interrupt(
-            System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getLocalPort());
+            System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getPort());
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;
@@ -252,4 +258,7 @@ public class ScheduleClient extends Thread  {
         this.writeBestToOutput(p, best, net);
     }
 
+    private void updateClient(NetworkHandler network) {
+        network.sendMessage("{\"status\":102,\"message\":\"Position in Queue Update\",\"data\":{\"currentPos\":" + waiter.getPosInQueue() + ",\"totalWaiting\":" + waiter.getWaitlistSize() + "}}");
+    }
 }
