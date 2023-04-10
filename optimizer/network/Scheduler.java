@@ -76,10 +76,10 @@ public class Scheduler implements ScheduleCallback {
         int size = notifyList.size();
         //notifyList.forEach(null);
         System.out.println("BROADCASTING " + size);
-        int count = 0;
+        int count = 1;
         for(Synchronizer i: notifyList) {
             //Input the new data
-            i.setPosInQueue(count);
+            i.setPosInQueue(count++);
             i.setWaitList(size);
             //Tell the thread to let the client know that there's been a status update
             synchronized(i) {

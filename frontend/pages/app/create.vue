@@ -201,7 +201,6 @@
                   Which Schedule Looks Good to You?
                 </p>
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
-                <v-card text="..."></v-card>
               </div>
 
             <!-- Data items -->

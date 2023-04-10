@@ -49,13 +49,13 @@ public class ScheduleClient extends Thread  {
                 }
             }
             this.optimize(toBeOptimized, network);
-            /*try {
-                Thread.sleep(1000);
+            try {
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            */
+            
             parentScheduler.completeOptimization();
             //currentThread.interrupt(
             System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getPort());
