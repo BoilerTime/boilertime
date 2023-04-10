@@ -147,6 +147,10 @@
                 <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
                   Waiting in line: Position {{posInLine}} of {{totalPos}}
                 </p>
+
+                <p v-if="inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Expected wait: {{mins}}
+                </p>
                 <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
                 <div v-if="multiLoader" class="justify-center items-center">
@@ -360,6 +364,7 @@ const posInLine = ref('');
 const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
+const mins = ref('');
 var totalSum;
 
 function closeModal() {
@@ -950,6 +955,7 @@ function inQueue(position, size) {
   posInLine.value = position;
   totalPos.value = size;
   multiLoader.value = true;
+  mins.value = (position / 2).toPrecision(2) + " Minute" + pluralize((position / 2).toPrecision(1))
 }
 
 function optimizing(progress) {
@@ -991,6 +997,13 @@ function closeTips() {
 }
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
+}
+
+function pluralize(value) {
+  if(value == 1) {
+    return ""
+  }
+  return "s";
 }
 </script>
 
