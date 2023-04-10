@@ -130,6 +130,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
+              
               class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl dark:bg-neutral-700 transition-all"
             >
               <DialogTitle
@@ -163,8 +164,9 @@
               <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
                 Cancel
               </button>
-              
-
+              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+                Tips
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -185,7 +187,6 @@
       >
         <div class="fixed inset-0 bg-black bg-opacity-25" />
       </TransitionChild>
-
       <div class="fixed inset-0 overflow-y-auto">
         <div
           class="flex items-center justify-center min-h-full p-4 text-center"
@@ -226,12 +227,74 @@
                       >{{ schedule }} <br/>
                     </span><br/>
                   </div>
-
-
                 </div>
                 </div>
             </div>
 
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <TransitionRoot :show="displayTips" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-l p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-black leading-6"
+                style="font-size: 36px;"
+              >
+                <b>About BoilerTime</b>
+              </DialogTitle>
+              <div>
+                <p class="text-xl">
+                  How it Works
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
+                  <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                </ul>
+              </div>
+              <br/>
+              <div>
+                <p class="text-xl">
+                  How to Use It
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
+                  <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                </ul>
+              </div>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -283,6 +346,7 @@ const inLine = ref(false)
 const posInLine = ref('');
 const totalPos = ref('');
 const multiLoader = ref(false)
+const displayTips = ref(false)
 var totalSum;
 
 function closeModal() {
@@ -896,7 +960,7 @@ function optimizing(progress) {
 
 function displayingResults() {
   closeModal();
-  isResultOpen.value = true;
+  isResultOpen.value = false;
 }
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
