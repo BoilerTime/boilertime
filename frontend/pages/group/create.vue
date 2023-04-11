@@ -51,12 +51,8 @@
             Here is your Invite Link. Send this to others to have them join your
             group.
           </h1>
+          <QRgenerator :value="group_id" />
           <h2 class="pb-4 text-center text-2x1">{{ group_id }}</h2>
-          <!--<div class="flex justify-center">
-                            <button class="w-1/4 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg items-center" @click="copy">
-                                Copy Link
-                                </button>
-                    </div>-->
         </div>
       </div>
       <div
