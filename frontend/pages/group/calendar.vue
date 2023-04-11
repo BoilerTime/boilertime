@@ -74,7 +74,7 @@ const group = route.query.id
  * This function is used to get the information of groups a user is in.
  */
 async function getGroup() {
-  axios.post('http://localhost:3001/api/group', {
+  await axios.post('http://localhost:3001/api/group', {
     user_id: user_id,
     group_id: group
   }, config)
