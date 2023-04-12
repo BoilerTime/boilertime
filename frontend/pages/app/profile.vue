@@ -291,6 +291,12 @@
           @click="showModal">
           Edit Profile
         </button>
+        <!--Get All User Data Button-->
+        <button type="button"
+          class="w-1/8 bg-green-500 hover:bg-green-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
+          @click="history">
+          Get All User Data
+        </button>
         <!--Delete Account-->
         <input type="password" id="password"
           class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -318,6 +324,7 @@ import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
 import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
+import { saveAs } from 'file-saver';
 //import { encrypt } from "iron-webcrypto";
 //import test from "node:test";
 
@@ -351,6 +358,11 @@ function showPasswordChange() {
   } else {
     TestsDiv.value = true;
   }
+}
+
+async function history() {
+  var blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, "hello world.txt");
 }
 
 async function deleteAccount() {
