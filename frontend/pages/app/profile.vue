@@ -361,8 +361,8 @@ function showPasswordChange() {
 }
 
 async function history() {
-  var blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
-  saveAs(blob, "hello world.txt");
+  var blob = new Blob(["Bookmarks\n", JSON.stringify(bookmarkedClasses.value, null, 2), "\nClassroom Ratings\n", JSON.stringify(classrooms, null, 2), "\nTA Ratings\n",JSON.stringify(tas, null, 2), "\nCourse Ratings\n", JSON.stringify(courses, null, 2), "\nGroups\n", JSON.stringify(groups.value, null, 2)], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, "boilergrades.txt");
 }
 
 async function deleteAccount() {
