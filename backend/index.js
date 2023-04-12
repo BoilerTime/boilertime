@@ -258,7 +258,7 @@ app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(418);
   }
   else {
-    await deleteuser.deleteAccount(req.body.user_id).then(async (user) => {
+    await deleteuser.deleteAccount(req.body.user_id, req.body.password).then(async (user) => {
       console.log(`Deleted user: ${req.body.user_id}`)
       res.json(user);
     }).catch(err => {
