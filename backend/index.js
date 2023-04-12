@@ -22,6 +22,7 @@ const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
+const cron = require('./components/cron/cron')
 const optimizer = require('./components/optimizer/optimizer');
 const group = require('./components/groups/group');
 const { JavaCaller } = require("java-caller");
@@ -1206,5 +1207,9 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(200);
   }
 });
+
+app.post('/api/notifyusers', async (req, res) => {
+  cron.runCron();
+})
 
 module.exports = app;
