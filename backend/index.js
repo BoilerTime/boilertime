@@ -1129,6 +1129,7 @@ app.post('/api/get/num_schedules', async (req, res) => {
   res.json({ num_schedules: await utils.getNumSchedules() });
 });
 
+
 app.post('/api/get/num_ratings', async (req, res) => {
   res.json({ num_ratings: await utils.getNumRatings() });
 });
@@ -1211,5 +1212,12 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
 app.post('/api/notifyusers', async (req, res) => {
   cron.runCron();
 })
+
+app.post('/api/optimizer/isfull', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionIDs = req.body.sectionIDs;
+  res.json(await purdueio.isFull(subject, number, sectionIDs));
+});
 
 module.exports = app;
