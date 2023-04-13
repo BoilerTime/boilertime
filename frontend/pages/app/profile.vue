@@ -336,6 +336,7 @@ var isTAModalVisible = ref(false);
 var firstname = ref("");
 var lastname = ref("");
 var gradMonth = ref("");
+var email = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
 var bookmarkedClasses = ref([]);
@@ -361,7 +362,23 @@ function showPasswordChange() {
 }
 
 async function history() {
-  var blob = new Blob(["Bookmarks\n", JSON.stringify(bookmarkedClasses.value, null, 2), "\nClassroom Ratings\n", JSON.stringify(classrooms, null, 2), "\nTA Ratings\n",JSON.stringify(tas, null, 2), "\nCourse Ratings\n", JSON.stringify(courses, null, 2), "\nGroups\n", JSON.stringify(groups.value, null, 2)], {type: "text/plain;charset=utf-8"});
+  var blob = new Blob([
+    "User Info\n", 
+    "User ID: ", user_id,
+    "\nEmail: ", email.value,
+    "\nFirst Name: ", firstname.value,
+    "\nLast Name: ", lastname.value,
+    "\nGrad Month: ", gradMonth.value,
+    "\nGrad Year: ", gradYear.value,
+    "\nIs Grad Student: ", isGradStudent.value,
+    "\nRequired Courses\n", JSON.stringify(selectedRequiredCourses.value, null, 2),
+    "\nOptional Courses\n", JSON.stringify(selectedOptionalCourses.value, null, 2),
+    "\nBookmarks\n", JSON.stringify(bookmarkedClasses.value, null, 2),
+    "\nClassroom Ratings\n", JSON.stringify(classrooms, null, 2),
+    "\nTA Ratings\n", JSON.stringify(tas, null, 2),
+    "\nCourse Ratings\n", JSON.stringify(courses, null, 2),
+    "\nGroups\n", JSON.stringify(groups.value, null, 2)],
+    { type: "text/plain;charset=utf-8" });
   saveAs(blob, "boilergrades.txt");
 }
 
@@ -642,10 +659,26 @@ async function getUserInfo() {
       gradMonth.value = response.data.grad_month;
       gradYear.value = response.data.grad_year;
       isGradStudent.value = response.data.is_grad_student;
+      email.value = response.data.email;
     })
     .catch((error) => {
       console.error(error);
     });
+}
+var selectedRequiredCourses = ref([]);
+var selectedOptionalCourses = ref([]);
+
+async function getSchedule() {
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedRequiredCourses.value = response.data.required_classes
+  })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedOptionalCourses.value = response.data.optional_classes
+  })
 }
 
 let courses = [];
@@ -791,7 +824,8 @@ onMounted(async () => {
   getUserInfo();
   getBookmarks();
   getGroups();
-  await getratings();
+  getratings();
+  getSchedule();
   setTimeout(() => {
     console.log(courses);
     console.log(classrooms);

@@ -190,7 +190,7 @@ async function getBookmarks(user_id) {
 async function getUserProfile(user_id) {
   const profile = await users.doc(user_id).get();
   doc = await profile.data();
-  return {firstname: doc.firstname, lastname: doc.lastname, grad_month: doc.grad_month, grad_year: doc.grad_year, is_grad_student: doc.is_grad_student}
+  return {email: doc.email, firstname: doc.firstname, lastname: doc.lastname, grad_month: doc.grad_month, grad_year: doc.grad_year, is_grad_student: doc.is_grad_student}
 
 }
 
