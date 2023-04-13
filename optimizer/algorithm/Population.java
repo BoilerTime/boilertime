@@ -5,7 +5,7 @@ import java.util.*;
 import optimizer.Utils;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
-import optimizer.algorithm.Events.Section;
+import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.Constants;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
@@ -57,7 +57,7 @@ public class Population {
         this.registerdCourses = new Course[c.length];
         this.blocks = new Block[b.length];
 
-        ArrayList<Section> singleCount = new ArrayList<Section>();
+        ArrayList<Lecture> singleCount = new ArrayList<Lecture>();
         for(int i = 0; i < c.length; i++) {
             //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
@@ -76,7 +76,7 @@ public class Population {
          * Loop through all the sections and generate an appropriate section structure to represent them
          */
         for(int i = 0; i < c.length; i++) {
-            Section[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
+            Lecture[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
             for(int j = 0; j < instSections.length; j++) {
                 idEvent.put(instSections[j].getID(), instSections[j]);
             }
@@ -98,7 +98,7 @@ public class Population {
         }
 
         if(singleCount.size() > 0) {
-            this.isSatisfiable = RequiredAnalyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Section[singleCount.size()]))) == 0;
+            this.isSatisfiable = RequiredAnalyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
             System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;
@@ -120,7 +120,7 @@ public class Population {
      * A protected seed generator that generates a seed with only courses that exist
      * @return A schedule that contains sections that exist, but could contain duplicates or other issues. 
      */
-    private Event generateSeed() {
+    private Schedule generateSeed() {
         Event[] x = new Event[this.scheduleSize];
         Event[] mapValues = idEvent.values().toArray(new Event[idEvent.size()]);
         for(int i = 0; i < x.length; i++) {
@@ -139,23 +139,23 @@ public class Population {
             }
             return s2;
         }
-        boolean[][] gene1 = new boolean[s1.getSections().length][this.sectionLen];
+        boolean[][] gene1 = new boolean[s1.getEvents().length][this.sectionLen];
         boolean[][] gene2 = new boolean[gene1.length][this.sectionLen];
         boolean[][] gener = new boolean[gene1.length][this.sectionLen];
 
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < gene1.length; i++) {
 
-            if(s1.getSections()[i] == null) {
-                gene1[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(s1.getEvents()[i] == null) {
+                gene1[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
-                gene1[i] = Utils.stringToBoolArray(s1.getSections()[i].getID());
+                gene1[i] = Utils.stringToBoolArray(s1.getEvents()[i].getID());
             } 
 
-            if(s2.getSections()[i] == null) {
-                gene2[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(s2.getEvents()[i] == null) {
+                gene2[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
-                gene2[i] = Utils.stringToBoolArray(s2.getSections()[i].getID());
+                gene2[i] = Utils.stringToBoolArray(s2.getEvents()[i].getID());
             } 
 
             for(int j = 0; j < gene1[i].length; j++) {
@@ -207,20 +207,20 @@ public class Population {
         }
 
         //Now, we must make a new Section
-        return new Schedule(idSection, gener);
+        return new Schedule(idEvent, gener);
     }
 
     private Schedule mutateSchedule(Schedule target) {
-        boolean[][] parent = new boolean[target.getSections().length][this.sectionLen];
+        boolean[][] parent = new boolean[target.getEvents().length][this.sectionLen];
         boolean[][] mutated = new boolean[parent.length][this.sectionLen];
         RequiredAnalyzer.calculateIndividualRequiredScore(target, true, scheduleSize);
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < parent.length; i++) {
             
-            if(target.getSections()[i] == null) {
-                parent[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(target.getEvents()[i] == null) {
+                parent[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
-                parent[i] = Utils.stringToBoolArray(target.getSections()[i].getID());
+                parent[i] = Utils.stringToBoolArray(target.getEvents()[i].getID());
             } 
 
             for(int j = 0; j < parent[i].length; j++) {
@@ -233,7 +233,7 @@ public class Population {
                 }
             }
         }
-        return new Schedule(idSection, mutated);
+        return new Schedule(idEvent, mutated);
     }
 
 
@@ -316,14 +316,6 @@ public class Population {
         System.out.println("\n\n===================");
         System.out.println("Found Optimal Solution After " + iterationCount + " Generations");
         System.out.println("Courses:");
-        for(int k = 0; k < fitPool[0].getSections().length; k++) {
-            if(fitPool[0].getSections()[k] != null) {
-                System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getStartTime() + " " + fitPool[0].getSections()[k].getDuration() + Arrays.toString(fitPool[0].getSections()[k].getDaysOfDays()));
-            } else {
-                System.out.println("NULL!");
-            }
-        }
-
         System.out.println(q.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
@@ -364,8 +356,8 @@ public class Population {
                     Schedule best = q.getBestSchedule();
                     for(int j = 0; j < this.numSatisfied; j++) {
                         //System.out.println("LOOPING!");
-                        System.out.println(this.options[0].getSections()[0].getID());
-                        if(this.options[j].getSections()[0].getID().equals(best.getSections()[0].getID())) {
+                        System.out.println(this.options[0].getEvents()[0].getID());
+                        if(this.options[j].getEvents()[0].getID().equals(best.getEvents()[0].getID())) {
                             //System.out.println("Fatal Error!");
                             this.mutationRate = 90;
                             this.waitGens = 0;

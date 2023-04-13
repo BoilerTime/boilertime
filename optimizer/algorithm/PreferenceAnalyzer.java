@@ -2,7 +2,7 @@ package optimizer.algorithm;
 
 import java.util.ArrayList;
 
-import optimizer.algorithm.Events.Section;
+import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
 
@@ -51,12 +51,12 @@ public class PreferenceAnalyzer {
     }
 
     private int calculateRMPPenalty(Schedule target) {
-        Section[] courses = target.getSections();
+        Lecture[] courses = target.getLectures();
         int cummulativePenalty = 0;
         //int[] penaltyArray = new int[courses.length];
         for(int i = 0; i < courses.length; i++) {
             if(courses[i] == null) {
-                cummulativePenalty += target.getSections().length;
+                cummulativePenalty += target.getLectures().length;
                 continue;
             }
             double rating = courses[i].getRating();
@@ -67,7 +67,7 @@ public class PreferenceAnalyzer {
     }
 
     private int calculateTimePenalty(Schedule target) {
-        Section[] courses = target.getSections();
+        Lecture[] courses = target.getLectures();
         int cummulativePenalty = 0;
         for(int i = 0; i < courses.length; i++) {
             if(courses[i] == null) {

@@ -1,8 +1,9 @@
 package optimizer.algorithm;
 import optimizer.Utils;
 import optimizer.algorithm.Events.Event;
-import optimizer.algorithm.Events.Section;
+import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.Constants;
+import optimizer.constants.EventType;
 import optimizer.constants.WeekDays;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class RequiredAnalyzer {
             if(s[i] == null) {
                 continue;
             }
-            String temp = s[i].getParent().getCourseName();
+            String temp = s[i].getAssignedName();
             if(c.containsKey(temp)) {
                 Integer count = c.get(temp);
                 c.put(temp, Integer.valueOf(count.intValue() + 1));
@@ -146,12 +147,12 @@ public class RequiredAnalyzer {
     }
 
     private static int calculateRequiredSatisifability(Schedule target, int num) {
-        Section[] sections = target.getSections();
+        Event[] sections = target.getEvents();
         int total = 0;
         for(int i = 0; i < sections.length; i++) {
             if(sections[i] == null) {
                 continue;
-            } else if(sections[i].isRequired()) {
+            } else if((Utils.getEventType(sections[i].getID())) == EventType.LECTURE && ((Lecture) sections[i]).isRequired()) {
                 total++;
             }
         }

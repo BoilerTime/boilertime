@@ -1,12 +1,15 @@
 package optimizer.algorithm;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import optimizer.Utils;
 import optimizer.algorithm.Events.Event;
-import optimizer.algorithm.Events.Section;
+import optimizer.algorithm.Events.Lecture;
+import optimizer.constants.EventType;
 
 public class Schedule {
     private final Event[] events;
+    private final Lecture[] lectures;
     private int invalidCount; 
     private int requiredFitnessScore;
     private int optionalFitnessScore;
@@ -15,6 +18,7 @@ public class Schedule {
 
     public Schedule(Event[] s) {
         this.events = s;
+        this.lectures = findLectures();
         this.invalidCount = 0;
         this.hasRequiredScore = false;
         this.hasOptionalScore = false;
@@ -22,6 +26,7 @@ public class Schedule {
 
     public Schedule(HashMap<String, Event> idEvent, boolean[][] result) {
         this.events = this.configure(idEvent, result);
+        this.lectures = findLectures();
         this.hasRequiredScore = false; 
         this.hasOptionalScore = false;
     } 
@@ -35,7 +40,7 @@ public class Schedule {
     }
 
     private Event[] configure(HashMap<String, Event> idEvent, boolean[][] result) {
-        Event[] results = new Section[result.length];
+        Event[] results = new Lecture[result.length];
         this.invalidCount = 0;
         for(int i = 0; i < result.length; i++) {
             String s = Utils.boolArrayToString(result[i]);
@@ -81,5 +86,19 @@ public class Schedule {
             return this.requiredFitnessScore + this.optionalFitnessScore;
         }
         return -1;
+    }
+
+    private Lecture[] findLectures() {
+        ArrayList<Lecture> lectures = new ArrayList<Lecture>();
+        for(int i = 0; i < events.length; i++) {
+            if(Utils.getEventType(this.events[i].getID()) == EventType.LECTURE) {
+                lectures.add((Lecture) this.events[i]);
+            }
+        }
+        return lectures.toArray(new Lecture[lectures.size()]);
+    }
+
+    public Lecture[] getLectures() {
+        return this.lectures;
     }
 }

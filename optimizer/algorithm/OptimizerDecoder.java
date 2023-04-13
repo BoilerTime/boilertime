@@ -1,15 +1,15 @@
 package optimizer.algorithm;
 import java.util.*;
 
-import optimizer.algorithm.Events.Section;
+import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.WeekDays;
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
-        String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": [";
+        String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": []";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
         String[] courseResults = new String[best.length];
 
-        for(int j = 0; j < best.length; j++) {
+        /*for(int j = 0; j < best.length; j++) {
             if(best[j] == null) {
                 return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
             } 
@@ -39,7 +39,7 @@ public class OptimizerDecoder {
             }  else {
                 result += courseResults[i] + "]}";
             }
-        }
+        }*/
         return result;
     }
 
