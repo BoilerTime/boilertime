@@ -1237,4 +1237,11 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
+  const user_id = req.body.user_id;
+  const course = req.body.course;
+  names = await schedule.getClassMates(user_id, course);
+  res.json(names);
+});
+
 module.exports = app;
