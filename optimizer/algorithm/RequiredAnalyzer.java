@@ -8,13 +8,7 @@ import java.util.HashMap;
 public class RequiredAnalyzer {
 
     private ArrayList<Integer> requiredScores;
-
-    //Implements the penalty scores found in the documentation for the algorithm. 
-    private static final int nullPenalty = 10000;
-    private static final int timeConflictPenalty = 1000;
-    private static final int nameConflictPenalty = 100;
-    private static final int unfulfilledRequirementPenalty = 10;
-
+    
     public RequiredAnalyzer() {
         this.requiredScores = new ArrayList<Integer>();
     }
@@ -30,7 +24,7 @@ public class RequiredAnalyzer {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(hasWeekDay(sections[j].getWeekDays(), i)) {
+                if(hasWeekDay(sections[j].getDaysOfDays(), i)) {
                     dayCount++;
                 }
             }
@@ -41,9 +35,9 @@ public class RequiredAnalyzer {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(hasWeekDay(sections[j].getWeekDays(), i)) {
+                if(hasWeekDay(sections[j].getDaysOfDays(), i)) {
                     //dayCount++;
-                    dayTimeDuration[i][0][index] = (60 * (sections[j].getTime()/100) + (sections[j].getTime() % 100));;
+                    dayTimeDuration[i][0][index] = (60 * (sections[j].getStartTime()/100) + (sections[j].getStartTime() % 100));;
                     dayTimeDuration[i][1][index] = dayTimeDuration[i][0][index] + sections[j].getDuration();
                     index++;
                 }
@@ -125,10 +119,10 @@ public class RequiredAnalyzer {
         for(int i = 0; i < x.length; i++) {
             //x[i].setFitnessScore(x[i].getInvalidCount());
             int fitnessScore = 0;
-            fitnessScore += x[i].getInvalidCount() * nullPenalty;
-            fitnessScore += calculateTimeConflicts(x[i]) * timeConflictPenalty;
-            fitnessScore += calculateNameConflicts(x[i]) * nameConflictPenalty;
-            fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * unfulfilledRequirementPenalty;
+            fitnessScore += x[i].getInvalidCount() * Constants.nullPenalty;
+            fitnessScore += calculateTimeConflicts(x[i]) * Constants.timeConflictPenalty;
+            fitnessScore += calculateNameConflicts(x[i]) * Constants.nameConflictPenalty;
+            fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * Constants.unfulfilledRequirementPenalty;
             //results[i] = fitnessScore;
             //System.out.println("Fitness Score = " + fitnessScore);
             x[i].setRequiredScore(fitnessScore);
@@ -138,10 +132,10 @@ public class RequiredAnalyzer {
 
     public static int calculateIndividualRequiredScore(Schedule x, boolean mode, int requiredCount) {
         int fitnessScore = 0;
-        fitnessScore += x.getInvalidCount() * nullPenalty;
-        fitnessScore += calculateTimeConflicts(x) * timeConflictPenalty;
-        fitnessScore += calculateNameConflicts(x) * nameConflictPenalty;
-        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * unfulfilledRequirementPenalty;
+        fitnessScore += x.getInvalidCount() * Constants.nullPenalty;
+        fitnessScore += calculateTimeConflicts(x) * Constants.timeConflictPenalty;
+        fitnessScore += calculateNameConflicts(x) * Constants.nameConflictPenalty;
+        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * Constants.unfulfilledRequirementPenalty;
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);

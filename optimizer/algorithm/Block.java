@@ -7,4 +7,8 @@ public class Block extends Event {
         super(binID, overview.getStartTime(), overview.getDuration(), overview.getWeekDays());
         this.humanName = overview.getName();
     }
+
+    public String getHumanName() {
+        return this.humanName;
+    }
 }
