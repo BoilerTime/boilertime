@@ -23,7 +23,6 @@ public class NetworkHandler {
             String handshake = "";
             while(!found) {
                 String s = input.readLine();
-                System.out.println(s);
                 //System.out.println("Message: " + s);
                 handshake+= (s + "\n"); // Build handshake string up
                 //System.out.println("Byte Array of Message: " + Arrays.toString(s.toCharArray()));

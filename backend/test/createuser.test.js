@@ -14,7 +14,7 @@ describe("POST Test Create User", () => {
   const newUser = {
     firstname: "Test",
     lastname: "User",
-    email: "jjyang@purdue.edu",
+    email: "abc@purdue.edu",
     password: "password",
     gradmonth: "March",
     gradyear: "2024",
@@ -43,29 +43,54 @@ describe("POST Test Create User", () => {
 
   var auth = {};
 
-  //Test that all fields are correct
-  /*
-  it("API Call Returns All Requird Fields", (done) => {
+  it("API Create User", (done) => {
     chai.request(app)
       .post('/api/createuser')
       .send(newUser)
       .end((err, res) => {
-        //res.should.have.status(200);
-        //res.text.has(user_id);
+        res.should.have.status(200);
         expect(res.body).to.have.ownPropertyDescriptor('user_id');
         expect(res.body).to.have.ownPropertyDescriptor('firstname');
         expect(res.body).to.have.ownPropertyDescriptor('email');
         expect(res.body.firstname).to.equal('Test');
-        expect(res.body.email).to.equal('jjyang@purdue.edu');
+        expect(res.body.email).to.equal('abc@purdue.edu');
         auth = res.body;
         done();
       });
   });
-  */
 
-  //TODO: Verify Account (valid and invalid)
-  
-  //TODO: Login
+  it("API Verify User", (done) => {
+    chai.request(app)
+      .post('/api/verifyaccount')
+      .send({userID: auth.user_id})
+      .end((err, res) => {
+        console.log(auth)
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("API Login User", (done) => {
+    chai.request(app)
+    .post('/api/login')
+    .send(newUser)
+    .end((err, res) => {
+      res.should.have.status(200);
+      auth = res.body;
+      done();
+    });
+  });
+
+  it("API Delete User", (done) => {
+    chai.request(app)
+      .post('/api/deleteuser')
+      .set({ "authorization": `Bearer ${auth.accessToken}` })
+      .send(auth)
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+  });
 
   it("API Call Fails without Valid email", (done) => {
     chai.request(app)
