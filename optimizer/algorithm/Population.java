@@ -52,7 +52,7 @@ public class Population {
         //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
         ArrayList<Section> singleCount = new ArrayList<Section>();
         for(int i = 0; i < c.length; i++) {
-            System.out.println(c[i]);
+            //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
             if(c[i].isRequired()) {
                 numRequired ++;
@@ -224,7 +224,7 @@ public class Population {
         }
         //Calculate the fitness score of said starting population. 
         q.calculateFitnessScores(fitPool, numRequired);
-        System.out.println("First score  = " + fitPool[0].getFitnessScore());
+        //System.out.println("First score  = " + fitPool[0].getFitnessScore());
 
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
@@ -302,21 +302,6 @@ public class Population {
         System.out.println(q.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
-
-
-        FileWriter out;
-        //Print the scores out to a file
-        try {
-            out = new FileWriter("/Users/henrymayer-school/btime/output.txt");
-            Integer[] res = q.getOverallScores().toArray(new Integer[q.getOverallScores().size()]);
-            for(int i = 0; i < res.length; i++) {
-                out.write(res[i].intValue() + "\n");
-            }
-            out.close();
-
-        } catch (IOException e) {
-
-        }
         return this.options;
     }
 
@@ -332,7 +317,7 @@ public class Population {
         if(currentIndex > 0 && currentIndex % QualityAnalyzer.numSimilarForConvergence == 0) {
             //this.sendStatusUpdate(currentIndex);
             double convergneceScore = q.getRMSConvergence();
-            System.out.println("IN IF!");
+            //System.out.println("IN IF!");
             if(convergneceScore > .5) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
             } else if (convergneceScore > .1) {
@@ -342,9 +327,9 @@ public class Population {
             } else {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
             }
-            System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
+            //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
             if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
-                System.out.println("Adding an option!!");
+                //System.out.println("Adding an option!!");
                 if(this.numSatisfied > 0) {
                     /*if(q.getBestSchedule().equals(this.options[this.options.length - 1])) {
                         this.mutationRate = 50;
@@ -353,10 +338,10 @@ public class Population {
 
                     Schedule best = q.getBestSchedule();
                     for(int j = 0; j < this.numSatisfied; j++) {
-                        System.out.println("LOOPING!");
+                        //System.out.println("LOOPING!");
                         System.out.println(this.options[0].getSections()[0].getID());
                         if(this.options[j].getSections()[0].getID().equals(best.getSections()[0].getID())) {
-                            System.out.println("Fatal Error!");
+                            //System.out.println("Fatal Error!");
                             this.mutationRate = 90;
                             this.waitGens = 0;
                             return true;
@@ -370,16 +355,16 @@ public class Population {
                     }
                 }
                 options[this.numSatisfied] = q.getBestSchedule();
-                System.out.println(Arrays.toString(this.options));
+                //System.out.println(Arrays.toString(this.options));
                 this.numSatisfied++;
                 return true; 
             } else if (this.numSatisfied == this.numOptions){
-                System.out.println("STOPPING!");
-                System.out.println(this.numRequired);
-                System.out.println(this.numSatisfied);
+                //System.out.println("STOPPING!");
+                //System.out.println(this.numRequired);
+                //System.out.println(this.numSatisfied);
                 return false; 
             } else {
-                System.out.println("UWU");
+                //System.out.println("UWU");
                 return true; 
             }
         }

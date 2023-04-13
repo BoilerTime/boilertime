@@ -12,6 +12,7 @@ const jwt = require('./components/auth/jwt');
 const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
+const deleteuser = require('./components/auth/deleteuser');
 const utils = require('./components/utils/utils.js');
 const verifyaccount = require('./components/auth/verifyaccount');
 const password = require('./components/auth/password');
@@ -249,6 +250,24 @@ app.post('/api/createuser', (req, res) => {
   });
 })
 
+app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await deleteuser.deleteAccount(req.body.user_id).then(async (user) => {
+      console.log(`Deleted user: ${req.body.user_id}`)
+      res.json(user);
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(500);
+    });
+  }
+})
+
 app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
@@ -259,6 +278,25 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
       await utils.addSchedulesCount();
+      res.send({...schedule, accessToken: req.user.accessToken});
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(err.error || 500);
+    });
+  }
+})
+
+app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else if (!await group.inGroup(req.body.user_id, req.body.group_id, req.body.friend_id)) {
+    res.sendStatus(403);
+  } else {
+    await getSchedule.getSchedule(req.body.friend_id).then(async (schedule) => {
       res.send({...schedule, accessToken: req.user.accessToken});
     }).catch(err => {
       console.log(err)
@@ -299,6 +337,16 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.error(err)
       res.sendStatus(500);
     });
+    
+    const requiredClasses = req.body.required_classes;
+    const optionalClasses = req.body.optional_classes;
+    const classes = requiredClasses.concat(optionalClasses);
+    schedule.classCounter(classes).then((input) => {
+      console.log("Class Counter Updated")
+    }).catch(err => {
+      console.error(err)
+      res.sendStatus(500);
+    });
 
     await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
@@ -309,6 +357,24 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
     });
   }
 });
+
+app.get('/api/hotclasses', async (req, res) => {
+  await schedule.hotClasses().then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
+
+app.post('/api/takentogether', async (req, res) => {
+  await schedule.takenTogether(req.body.class).then((data) => {
+    res.json(data);
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(500);
+  });
+})
 
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
@@ -995,6 +1061,57 @@ app.post('/api/group', async (req, res) => {
     res.sendStatus(500);
   });
 });
+
+/**
+ * Call for leaving group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/leavegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.leaveGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
+/**
+ * Call for removing group
+ * @param {string} user_id - The user_id associated with the owner of the group
+ * @param {string} group_id - The id of the group
+ * @returns {string} group_name - The name of the group
+ */
+app.post('/api/removegroup', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    const user_id = req.body.user_id;
+    const group_id = req.body.group_id;
+    await group.removeGroup(user_id, group_id).then(() => {
+      res.json({accessToken: req.user.accessToken});
+    }).catch((err) => {
+      console.log(err);
+      res.sendStatus(err.message);
+    });
+  }
+});
+
 
 /*
  * Call for getting the building name from Short Code

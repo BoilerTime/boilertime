@@ -105,7 +105,7 @@ async function login() {
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      navigateTo("/app/home");
+      navigateTo("/app");
     }
   } catch (error) {
     // temp alert
@@ -131,7 +131,7 @@ async function guest() {
         timeout: 5000,
         position: POSITION.BOTTOM_LEFT
       });
-      navigateTo("/app/home");
+      navigateTo("/app");
     }
   } catch (error) {
     // temp alert
