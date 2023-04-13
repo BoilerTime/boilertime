@@ -379,7 +379,10 @@ async function history() {
     "\nCourse Ratings\n", JSON.stringify(courses, null, 2),
     "\nGroups\n", JSON.stringify(groups.value, null, 2)],
     { type: "text/plain;charset=utf-8" });
-  saveAs(blob, "boilergrades.txt");
+  saveAs(blob, "boilergrades.txt").catch((err) => {
+    alert("Error saving file")
+    console.log(err);
+  });
 }
 
 async function deleteAccount() {
