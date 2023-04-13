@@ -9,12 +9,12 @@ public class OptimizerDecoder {
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
         String[] courseResults = new String[best.length];
 
-        /*for(int j = 0; j < best.length; j++) {
+        for(int j = 0; j < best.length; j++) {
             if(best[j] == null) {
                 return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
             } 
             //Pull the string that represents the best individual 
-            Section[] classes = best[j].getSections();
+            Lecture[] classes = best[j].getLectures();
             //String schedule = optIndividual.getIndividual();
             //System.out.println("Schedule = " + schedule);
             int numCourses = classes.length;
@@ -39,7 +39,7 @@ public class OptimizerDecoder {
             }  else {
                 result += courseResults[i] + "]}";
             }
-        }*/
+        }
         return result;
     }
 

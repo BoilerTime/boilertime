@@ -294,8 +294,14 @@ public class ScheduleClient extends Thread  {
     }
 
     private void optimize(Population p, NetworkHandler net) {
-        Schedule[] best = p.getBestSchedule();
-        this.writeBestToOutput(p, best, net);
+        try {
+            Schedule[] best = p.getBestSchedule();
+            this.writeBestToOutput(p, best, net);
+        } catch(Exception e) {
+            System.err.println("(ScheduleClient.java) Fatal error optimizing the schedule for: " + netSocket.getPort() + " because of " + e + " \n");
+            e.printStackTrace();
+            this.failed(net);
+        }
     }
 
     private void updateClient(NetworkHandler network) {

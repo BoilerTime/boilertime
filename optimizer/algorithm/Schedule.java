@@ -91,7 +91,7 @@ public class Schedule {
     private Lecture[] findLectures() {
         ArrayList<Lecture> lectures = new ArrayList<Lecture>();
         for(int i = 0; i < events.length; i++) {
-            if(Utils.getEventType(this.events[i].getID()) == EventType.LECTURE) {
+            if(this.events[i] != null && Utils.getEventType(this.events[i].getID()) == EventType.LECTURE) {
                 lectures.add((Lecture) this.events[i]);
             }
         }
