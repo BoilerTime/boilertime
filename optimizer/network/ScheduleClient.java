@@ -281,7 +281,7 @@ public class ScheduleClient extends Thread  {
         }
         System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
-        return new Population(courses, network, timePreference, preferences);
+        return new Population(courses, blocks, network, timePreference, preferences);
     }
 
     public synchronized void runOptimizer() {

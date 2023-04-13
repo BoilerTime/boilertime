@@ -73,11 +73,11 @@ public class PreferenceAnalyzer {
                 continue;
             }
             if(this.timePreference == TimeOfDay.MORNGING) {
-                if(courses[i].getTime() >= 1300) {
+                if(courses[i].getStartTime() >= 1300) {
                     cummulativePenalty++;
                 }
             } else {
-                if(courses[i].getTime() < 1300) {
+                if(courses[i].getStartTime() < 1300) {
                     cummulativePenalty++;
                 }
             }

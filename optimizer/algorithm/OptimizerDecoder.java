@@ -22,10 +22,10 @@ public class OptimizerDecoder {
             for(int i = 0; i < numCourses; i++) {
                 String finalCourseDetails = courseFormatString;
                 finalCourseDetails = finalCourseDetails.replace("course_id", classes[i].getParent().getCourseName());
-                finalCourseDetails = finalCourseDetails.replace("course_start_time", Integer.toString(classes[i].getTime()));
+                finalCourseDetails = finalCourseDetails.replace("course_start_time", Integer.toString(classes[i].getStartTime()));
                 finalCourseDetails = finalCourseDetails.replace("course_duration", Integer.toString(classes[i].getDuration()));
                 finalCourseDetails = finalCourseDetails.replace("section_id", classes[i].getSectionId());
-                finalCourseDetails = finalCourseDetails.replace("days_of_week", convertDaysToString(classes[i].getWeekDays()));
+                finalCourseDetails = finalCourseDetails.replace("days_of_week", convertDaysToString(classes[i].getDaysOfDays()));
                 thisResult+=finalCourseDetails;
             }
             courseResults[j] = thisResult.substring(0, thisResult.length()-1) + "]";

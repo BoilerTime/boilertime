@@ -9,6 +9,7 @@ import optimizer.network.NetworkHandler;
 public class Population {
 
     private Course[] registerdCourses;
+    private Block[] blocks;
     private HashMap<String, Section> idSection;
     private final int scheduleSize;
     private final int generationSize = 50;
@@ -27,8 +28,9 @@ public class Population {
     private QualityAnalyzer q; 
     Random r;
 
-    public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
+    public Population(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
         this.registerdCourses = new Course[registeredC.length];
+        this.blocks = new Block[blocks.length];
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random(100);
@@ -294,7 +296,7 @@ public class Population {
         System.out.println("Courses:");
         for(int k = 0; k < fitPool[0].getSections().length; k++) {
             if(fitPool[0].getSections()[k] != null) {
-                System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + Arrays.toString(fitPool[0].getSections()[k].getWeekDays()));
+                System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getStartTime() + " " + fitPool[0].getSections()[k].getDuration() + Arrays.toString(fitPool[0].getSections()[k].getDaysOfDays()));
             } else {
                 System.out.println("NULL!");
             }
