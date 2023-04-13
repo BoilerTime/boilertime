@@ -377,14 +377,18 @@ app.post('/api/takentogether', async (req, res) => {
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
   console.log("Saving!")
-  console.log(req.body.data)
-  console.log(req.body.data.schedule)
-  const prev_schedule = schedule.getGeneratedSchedule(req.body.user_id);
+  console.log(req.body);
+  const prev_schedule = await schedule.getGeneratedSchedule(req.body.user_id);
   await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
-  schedule.classCounterDecrement(prev_schedule);
-  schedule.classCounterIncrement(req.body.data.schedule).then((input) => {
-    console.log("Class Counter Updated")
-  }).catch(err => {
+  schedule.classCounterDecrement(req.body.user_id, prev_schedule).then((input) => {
+    console.log("Class Counter Decremented")
+    schedule.classCounterIncrement(req.body.user_id, req.body.data.schedule).then((input) => {
+      console.log("Class Counter Incremented")
+    }).catch(err => {
+      console.error(err)
+      return res.sendStatus(500);
+    });
+  }).catch((err) => {
     console.error(err)
     return res.sendStatus(500);
   });
