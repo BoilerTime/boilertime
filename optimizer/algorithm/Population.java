@@ -29,12 +29,11 @@ public class Population {
     Random r;
 
     public Population(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
-        this.registerdCourses = new Course[registeredC.length];
         this.blocks = new Block[blocks.length];
         this.idSection = new HashMap<String, Section>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random(100);
-        this.generateCourseStruct(registeredC);
+        this.parseEventOverviews(registeredC, blocks);
         this.net = network;
         this.q = new QualityAnalyzer(preferences, timePreference);
         this.options = new Schedule[numOptions];
@@ -47,12 +46,12 @@ public class Population {
      * A helper method that populates the sections hashamp by instanating sections for each course
      * @param c An array of course overviews that should ulimately be converted to Courses and their respective Sections. 
      */
-    private void generateCourseStruct(CourseOverview[] c) {
-        //How long is each course ID suppossed to be?
+    private void parseEventOverviews(CourseOverview[] c, BlockOverview[] b) {
         int totalSections = 0;
-        this.numRequired= 0;
-        //int singleCount = 0;
-        //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
+        int totalBlocks = b.length;
+        this.registerdCourses = new Course[c.length];
+        this.blocks = new Block[b.length];
+
         ArrayList<Section> singleCount = new ArrayList<Section>();
         for(int i = 0; i < c.length; i++) {
             //System.out.println(c[i]);
@@ -62,21 +61,34 @@ public class Population {
             }
             registerdCourses[i] = new Course(c[i]);
         }
-        
-        //Find the total number of bits required to represent based on the log of the total number of sections
-        int repBits = (int) Math.ceil(Utils.LogB(totalSections, 2));
+
+        int repBits = calculateNameBits(totalSections, totalBlocks);
+
         this.sectionLen = repBits;
         int minCount = 0;
+
+        /*
+         * Loop through all the sections and generate an appropriate section structure to represent them
+         */
         for(int i = 0; i < c.length; i++) {
             Section[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
             for(int j = 0; j < instSections.length; j++) {
-                idSection.put(instSections[j].getID(), instSections[j]);
+                idSection.put(Constants.LECTURE + instSections[j].getID(), instSections[j]);
             }
             //Determine if we have courses that only have a single section, as this warrants pre-entry analysis. 
             if(instSections.length == 1) {
                 singleCount.add(instSections[0]);
             }
             minCount+=c[i].getNumberOfSections();
+        }
+
+        /*
+         * Loop through all the blocks and generate an appropriate block structure to represent them 
+         */
+        for(int i = 0; i < totalBlocks; i++) {
+            int[] id = Utils.numToBin(minCount, repBits);
+            String sID = Utils.arrToString(id);
+            this.blocks[i] = new Block(b[i], sID);
         }
 
         if(singleCount.size() > 0) {
@@ -87,6 +99,10 @@ public class Population {
         }
     }
 
+    private int calculateNameBits(int courseLen, int blockLen) {
+        return 2 + (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
+    }
+    
     private int calculateScheduleSize(int size) {
         if(size < this.maxScheduleSize) {
             return size;

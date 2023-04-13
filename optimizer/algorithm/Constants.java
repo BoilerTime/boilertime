@@ -19,6 +19,11 @@ public class Constants {
     public final static String RECITATION = "10";
 
     /**
+     * The number of bits required to represent all of the prefixes that are possible
+     */
+    public final static int NUM_BLOCK_BITS = 2;
+
+    /**
      * The penalty associated with a null element
      */
     public static final int nullPenalty = 10000;
