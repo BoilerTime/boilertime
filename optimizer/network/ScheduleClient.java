@@ -76,31 +76,31 @@ public class ScheduleClient extends Thread  {
         }
     }
 
-    private int getCoursesCount(NetworkHandler network){
+    private int getNumericalCount(NetworkHandler network, int min, int max){
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
-        String rawClasses = network.getIncomingMessage();//nput.readLine();
-        if(rawClasses == null) {
+        String rawCount = network.getIncomingMessage();//nput.readLine();
+        if(rawCount == null) {
             return -1;
         }
-        int numberOfClasses;
+        int count;
         try {
-            numberOfClasses = Integer.parseInt(rawClasses);
+            count = Integer.parseInt(rawCount);
         } catch (NumberFormatException e) {
-            numberOfClasses = -1;
+            count = -1;
         }
         
-        if(numberOfClasses > 0 && numberOfClasses < 11) {
+        if(count >= min && count < max) {
             //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
-            network.sendMessage("{\"status\":200,\"message\":\"Received Number of Classes\",\"data\":null}");
+            network.sendMessage("{\"status\":200,\"message\":\"Received Count\",\"data\":null}");
         } else {
             //System.err.println("Illegal number of classes sent!");
-            network.sendMessage("{\"status\":400,\"message\":\"Illegal\",\"data\":null}");
+            network.sendMessage("{\"status\":400,\"message\":\"Illegal Count\",\"data\":null}");
             //Make it a negative value to allow us to conintue in a defined state
-            numberOfClasses = -1;
+            count = -1;
         }
             //System.out.println("Wrote the initial message!");
-        return numberOfClasses;
+        return count;
     }
 
     private TimeOfDay getTODPrefernece(NetworkHandler network) {
@@ -205,8 +205,10 @@ public class ScheduleClient extends Thread  {
 
     private Population getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
-        int numOfCourses = getCoursesCount(network);
-        if(numOfCourses == -1) {
+        int numOfCourses = getNumericalCount(network, 1, 11);
+        int numOfBlocks = getNumericalCount(network, 0, 10);
+
+        if(numOfCourses == -1 || numOfBlocks == -1) {
             this.terminate();
             return null;
         }

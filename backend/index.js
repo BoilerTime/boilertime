@@ -350,7 +350,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
 
     await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
-      res.json({accessToken: req.user.accessToken, schedule: data, blocks: req?.body?.blocked_times});
+      res.json({accessToken: req.user.accessToken, schedule: data});
     }).catch((err) => {
       console.log(err)
       res.sendStatus(500);

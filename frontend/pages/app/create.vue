@@ -726,7 +726,8 @@ function submit() {
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: [{start_time: 1500, duration: 50, days_of_week: "Monday"}]
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule)
       courseList = response.data.schedule;
@@ -768,6 +769,7 @@ function sendToOptimizer(data) {
   }
   //We first need to send them number of classes we will be optimzing by
   $socket.send(data.length)
+  $socket.send(0);
   //Next, we send the time of day preferences
   $socket.send(timePrefValue)
   //$socket.send(timePreference[time_pref.value]);

@@ -1,7 +1,6 @@
 package optimizer.algorithm;
 
 import java.util.*;
-import java.io.*;
 import optimizer.Utils;
 import optimizer.network.NetworkHandler;
 

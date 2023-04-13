@@ -1,7 +1,6 @@
 package optimizer.algorithm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PreferenceAnalyzer {
 
