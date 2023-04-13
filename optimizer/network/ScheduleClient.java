@@ -5,10 +5,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 
-import optimizer.TimeOfDay;
 import optimizer.Utils;
-import optimizer.WeekDays;
 import optimizer.algorithm.*;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
+import optimizer.constants.WeekDays;
 
 public class ScheduleClient extends Thread  {
     

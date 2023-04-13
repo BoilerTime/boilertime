@@ -1,8 +1,8 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Events;
 
-import optimizer.WeekDays;
+import optimizer.constants.WeekDays;
 
-public abstract class Event {
+public abstract class Event implements EventParams {
     private final int startTime;
     private final int duration;
     private final String ID;
@@ -15,19 +15,24 @@ public abstract class Event {
         this.daysOfWeek = days;
     }
 
+    @Override
     public String getID() {
         return this.ID;
     }
 
+    @Override
     public int getStartTime() {
         return this.startTime;
     }
 
+    @Override
     public int getDuration() {
         return this.duration;
     }
 
+    @Override
     public WeekDays[] getDaysOfDays() {
         return this.daysOfWeek;
     }
+
 }

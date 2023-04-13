@@ -2,15 +2,20 @@ package optimizer.algorithm;
 
 import java.util.*;
 
-import optimizer.TimeOfDay;
 import optimizer.Utils;
+import optimizer.algorithm.Events.Block;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Section;
+import optimizer.constants.Constants;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
 import optimizer.network.NetworkHandler;
 
 public class Population {
 
     private Course[] registerdCourses;
     private Block[] blocks;
-    private HashMap<String, Section> idSection;
+    private HashMap<String, Event> idEvent;
     private final int scheduleSize;
     private final int generationSize = 50;
     private final int maxIterations = 100000;
@@ -30,7 +35,7 @@ public class Population {
 
     public Population(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
         this.blocks = new Block[blocks.length];
-        this.idSection = new HashMap<String, Section>();
+        this.idEvent = new HashMap<String, Event>();
         this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
         r = new Random(100);
         this.parseEventOverviews(registeredC, blocks);
@@ -64,7 +69,7 @@ public class Population {
 
         int repBits = calculateNameBits(totalSections, totalBlocks);
 
-        this.sectionLen = repBits;
+        this.sectionLen = repBits + 2;
         int minCount = 0;
 
         /*
@@ -73,7 +78,7 @@ public class Population {
         for(int i = 0; i < c.length; i++) {
             Section[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
             for(int j = 0; j < instSections.length; j++) {
-                idSection.put(Constants.LECTURE + instSections[j].getID(), instSections[j]);
+                idEvent.put(instSections[j].getID(), instSections[j]);
             }
             //Determine if we have courses that only have a single section, as this warrants pre-entry analysis. 
             if(instSections.length == 1) {
@@ -87,8 +92,9 @@ public class Population {
          */
         for(int i = 0; i < totalBlocks; i++) {
             int[] id = Utils.numToBin(minCount, repBits);
-            String sID = Utils.arrToString(id);
+            String sID = Constants.BLOCK + Utils.arrToString(id);
             this.blocks[i] = new Block(b[i], sID);
+            idEvent.put(sID, this.blocks[i]);
         }
 
         if(singleCount.size() > 0) {
@@ -100,9 +106,9 @@ public class Population {
     }
 
     private int calculateNameBits(int courseLen, int blockLen) {
-        return 2 + (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
+        return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
     }
-    
+
     private int calculateScheduleSize(int size) {
         if(size < this.maxScheduleSize) {
             return size;
@@ -114,9 +120,9 @@ public class Population {
      * A protected seed generator that generates a seed with only courses that exist
      * @return A schedule that contains sections that exist, but could contain duplicates or other issues. 
      */
-    private Schedule generateSeed() {
-        Section[] x = new Section[this.scheduleSize];
-        Section[] mapValues = idSection.values().toArray(new Section[idSection.size()]);
+    private Event generateSeed() {
+        Event[] x = new Event[this.scheduleSize];
+        Event[] mapValues = idEvent.values().toArray(new Event[idEvent.size()]);
         for(int i = 0; i < x.length; i++) {
             //Get a bunch of valid -- but random sections. 
             x[i] = mapValues[Utils.randInRange(r, 0, mapValues.length-1)];

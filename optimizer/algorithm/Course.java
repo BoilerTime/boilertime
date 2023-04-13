@@ -2,6 +2,8 @@ package optimizer.algorithm;
 import java.util.HashMap;
 
 import optimizer.Utils;
+import optimizer.algorithm.Events.Section;
+import optimizer.constants.Constants;
 
 public class Course {
     private final String courseName; 
@@ -42,7 +44,7 @@ public class Course {
         //int length = (int) Utils.LogB(overallSize, 2);
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
-            String sid = Utils.arrToString(id);
+            String sid = Constants.LECTURE + Utils.arrToString(id);
             sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
             idSection.put(sid, sections[i]);
         }

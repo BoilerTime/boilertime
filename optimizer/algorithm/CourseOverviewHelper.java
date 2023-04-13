@@ -1,7 +1,7 @@
 package optimizer.algorithm;
 
 import optimizer.Utils;
-import optimizer.WeekDays;
+import optimizer.constants.WeekDays;
 
 public class CourseOverviewHelper {
     private String courseName;

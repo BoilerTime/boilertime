@@ -2,43 +2,45 @@ package optimizer.algorithm;
 import java.util.HashMap;
 
 import optimizer.Utils;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Section;
 
 public class Schedule {
-    private final Section[] sections;
+    private final Event[] events;
     private int invalidCount; 
     private int requiredFitnessScore;
     private int optionalFitnessScore;
     private boolean hasRequiredScore;
     private boolean hasOptionalScore;
 
-    public Schedule(Section[] s) {
-        this.sections = s;
+    public Schedule(Event[] s) {
+        this.events = s;
         this.invalidCount = 0;
         this.hasRequiredScore = false;
         this.hasOptionalScore = false;
     }
 
-    public Schedule(HashMap<String, Section> idSection, boolean[][] result) {
-        this.sections = this.configure(idSection, result);
+    public Schedule(HashMap<String, Event> idEvent, boolean[][] result) {
+        this.events = this.configure(idEvent, result);
         this.hasRequiredScore = false; 
         this.hasOptionalScore = false;
     } 
 
-    public Section[] getSections() {
-        return this.sections;
+    public Event[] getEvents() {
+        return this.events;
     }
 
     public int getInvalidCount() {
         return this.invalidCount;
     }
 
-    private Section[] configure(HashMap<String, Section> idSection, boolean[][] result) {
-        Section[] results = new Section[result.length];
+    private Event[] configure(HashMap<String, Event> idEvent, boolean[][] result) {
+        Event[] results = new Section[result.length];
         this.invalidCount = 0;
         for(int i = 0; i < result.length; i++) {
             String s = Utils.boolArrayToString(result[i]);
-            if(idSection.containsKey(s)) {
-                results[i] = idSection.get(s);
+            if(idEvent.containsKey(s)) {
+                results[i] = idEvent.get(s);
             } else {
                 results[i] = null;
                 this.invalidCount ++;

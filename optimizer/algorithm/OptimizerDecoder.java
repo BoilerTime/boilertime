@@ -1,7 +1,8 @@
 package optimizer.algorithm;
 import java.util.*;
 
-import optimizer.WeekDays;
+import optimizer.algorithm.Events.Section;
+import optimizer.constants.WeekDays;
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
         String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": [";

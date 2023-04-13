@@ -1,6 +1,7 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Events;
 
-import optimizer.WeekDays;
+import optimizer.algorithm.Course;
+import optimizer.constants.WeekDays;
 
 public class Section extends Event {
     private final Course parentCourse;
@@ -30,6 +31,10 @@ public class Section extends Event {
 
     public String getSectionId() {
         return this.sectionId;
+    }
+
+    public String getAssignedName () {
+        return this.parentCourse.getCourseName();
     }
 
 }

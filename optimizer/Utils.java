@@ -1,6 +1,10 @@
 package optimizer;
 import java.util.*;
 import optimizer.algorithm.*;
+import optimizer.algorithm.Events.Moment;
+import optimizer.constants.Constants;
+import optimizer.constants.EventType;
+import optimizer.constants.WeekDays;
 
 public class Utils {
 
@@ -485,7 +489,7 @@ public class Utils {
     /**
      * A helper method that converts a list of days into an array of enum representations
      * @param target The string in question, with days separate by a coma followed by a space
-     * @return The array result, with none where no day of week was found to be valid
+     * @return The array result, with none where no day of week was found to be
      */
     public static WeekDays[] strListToDayList(String target) {
         String[] aDays = target.split(", ");
@@ -494,5 +498,22 @@ public class Utils {
             res[i] = strToDay(aDays[i]);
         }
         return res;
+    }
+
+    /**
+     * A helper method that gets the type of event associated with some binary string
+     * @param target The target string to be examined for some event type
+     * @return The EventType corresponding with the value in question, or EventType.GENERIC if none such exists. 
+     */
+    public static EventType getEventType(String target) {
+        String strV = target.substring(0, Constants.NUM_BLOCK_BITS);
+        if (strV.equals(Constants.LECTURE)) {
+            return EventType.LECTURE;
+        } else if (strV.equals(Constants.BLOCK)) {
+            return EventType.BLOCK;
+        } else if (strV.equals(Constants.SECONDARY)) {
+            return EventType.SECONDARY;
+        }
+        return EventType.GENERIC;
     }
 }

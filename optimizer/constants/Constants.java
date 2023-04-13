@@ -1,4 +1,4 @@
-package optimizer.algorithm;
+package optimizer.constants;
 
 public class Constants {
     /*
@@ -16,7 +16,7 @@ public class Constants {
     /**
      * The ID code that indicates a certain schedule element is a recitation
      */
-    public final static String RECITATION = "10";
+    public final static String SECONDARY = "10";
 
     /**
      * The number of bits required to represent all of the prefixes that are possible

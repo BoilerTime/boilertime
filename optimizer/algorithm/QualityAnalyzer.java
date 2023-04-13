@@ -1,8 +1,9 @@
 package optimizer.algorithm;
 import java.util.ArrayList;
 
-import optimizer.TimeOfDay;
 import optimizer.Utils;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
 
 public class QualityAnalyzer {
     private ArrayList<Integer> overallScores;

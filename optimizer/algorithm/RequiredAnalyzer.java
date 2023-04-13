@@ -1,6 +1,9 @@
 package optimizer.algorithm;
 import optimizer.Utils;
-import optimizer.WeekDays;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Section;
+import optimizer.constants.Constants;
+import optimizer.constants.WeekDays;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +18,7 @@ public class RequiredAnalyzer {
 
 
     public static int calculateTimeConflicts(Schedule x) {
-        Section[] sections = x.getSections();
+        Event[] sections = x.getEvents();
         int[][][] dayTimeDuration = new int[7][][];
         int conflictCount = 0;
         for(int i = 0; i < dayTimeDuration.length; i++) {
@@ -51,7 +54,7 @@ public class RequiredAnalyzer {
 
     private static int calculateNameConflicts(Schedule x) {
         HashMap<String, Integer> c = new HashMap<String, Integer>();
-        Section[] s = x.getSections();
+        Event[] s = x.getEvents();
         for(int i = 0; i < s.length; i++) {
             if(s[i] == null) {
                 continue;

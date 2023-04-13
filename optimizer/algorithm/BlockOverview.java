@@ -1,6 +1,6 @@
 package optimizer.algorithm;
 
-import optimizer.WeekDays;
+import optimizer.constants.WeekDays;
 
 public class BlockOverview {
     private final String name;
