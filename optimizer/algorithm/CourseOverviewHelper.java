@@ -1,5 +1,8 @@
 package optimizer.algorithm;
 
+import optimizer.Utils;
+import optimizer.WeekDays;
+
 public class CourseOverviewHelper {
     private String courseName;
     private boolean required;
@@ -100,39 +103,7 @@ public class CourseOverviewHelper {
         if(this.weekDaysPtr == -1) {
             return -1; 
         }
-        String[] aDays = days.split(", ");
-        weekDays[weekDaysPtr] = new WeekDays[aDays.length];
-        for(int i = 0; i < aDays.length; i++) {
-            WeekDays temp;
-            switch(aDays[i]) {
-                case "Monday":
-                    temp = (WeekDays.monday);
-                    break;
-                case "Tuesday":
-                    temp = WeekDays.tuesday;
-                    break;
-                case "Wednesday":
-                    temp = WeekDays.wednesday;
-                    break;
-                case "Thursday":
-                    temp = WeekDays.thursday;
-                    break;
-                case "Friday":
-                    temp = WeekDays.friday;
-                    break;
-                case "Saturday":
-                    temp = WeekDays.saturday;
-                    break;
-                case "Sunday":
-                    temp = WeekDays.sunday;
-                    break;
-                default: 
-                    temp = WeekDays.monday;
-                    break;
-            }
-            weekDays[weekDaysPtr][i] = temp;
-        }
-        this.weekDaysPtr++;
+        weekDays[weekDaysPtr++] = Utils.strListToDayList(days);
         return 1;
     }
 

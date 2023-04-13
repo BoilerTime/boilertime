@@ -1,5 +1,7 @@
 package optimizer.algorithm;
 import java.util.ArrayList;
+
+import optimizer.TimeOfDay;
 import optimizer.Utils;
 
 public class QualityAnalyzer {

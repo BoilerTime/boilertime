@@ -1,5 +1,6 @@
 package optimizer.algorithm;
 
+import optimizer.WeekDays;
 
 public class Section {
     private final Course parentCourse;

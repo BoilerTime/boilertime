@@ -1,6 +1,8 @@
 package optimizer.algorithm;
 
 import java.util.*;
+
+import optimizer.TimeOfDay;
 import optimizer.Utils;
 import optimizer.network.NetworkHandler;
 

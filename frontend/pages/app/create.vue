@@ -727,9 +727,9 @@ function submit() {
       time: time_pref.value,
       time: timePrefValue,
       rmp: rmpValue,
-      blocked_times: [{start_time: 1500, duration: 50, days_of_week: "Monday"}]
+      blocked_times: [{start_time: 1500, duration: 50, days_of_week: "Monday", name: "lunch"}]
     }, config).then((response) => {
-      sendToOptimizer(response.data.schedule)
+      sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
       isAlgoActive.value = false;
 
@@ -754,7 +754,7 @@ function submit() {
   
 }
 
-function sendToOptimizer(data) {
+function sendToOptimizer(courses, blocks) {
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -768,36 +768,47 @@ function sendToOptimizer(data) {
     console.log("Critical Error: WS isn't open ")
   }
   //We first need to send them number of classes we will be optimzing by
-  $socket.send(data.length)
-  $socket.send(0);
+  $socket.send(courses.length)
+  $socket.send(blocks.length);
   //Next, we send the time of day preferences
   $socket.send(timePrefValue)
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
   $socket.send(rmpValue);
 
-  //Next, we can start iterating over the course list
-  for(let i = 0; i < data.length; i++) {
+  /*
+    * Take care of the courses that the user has entered
+  */
+  for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
-    $socket.send(data[i].name)
+    $socket.send(courses[i].name)
     //Next, we can send the number of sections
-    $socket.send(data[i].isRequired)
+    $socket.send(courses[i].isRequired)
 
-    $socket.send(data[i].startTimes.length);
+    $socket.send(courses[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
-    for(let j = 0; j < data[i].startTimes.length; j++) {
+    for(let j = 0; j < courses[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(fixTime(data[i].startTimes[j]));
+      $socket.send(fixTime(courses[i].startTimes[j]));
       //Durations
-      $socket.send(data[i].durations[j]);
+      $socket.send(courses[i].durations[j]);
       //Week days 
-      console.log(data[i].daysOfWeek[j]);
-      $socket.send(data[i].daysOfWeek[j]);
+      console.log(courses[i].daysOfWeek[j]);
+      $socket.send(courses[i].daysOfWeek[j]);
       //RMP
-      $socket.send(data[i].rmp[j]);
+      $socket.send(courses[i].rmp[j]);
       //Section ID
-      $socket.send(data[i].sectionIDs[j]);
+      $socket.send(courses[i].sectionIDs[j]);
     }
+  }
+  /*
+    * Take care of the blocks that the user has entered
+  */
+  for(let i = 0; i < blocks.length; i++) {
+    $socket.send(blocks[i].name);
+    $socket.send(blocks[i].start_time);
+    $socket.send(blocks[i].duration);
+    $socket.send(blocks[i].days_of_week);
   }
 }
 

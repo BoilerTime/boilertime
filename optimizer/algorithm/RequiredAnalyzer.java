@@ -1,5 +1,6 @@
 package optimizer.algorithm;
 import optimizer.Utils;
+import optimizer.WeekDays;
 
 import java.util.ArrayList;
 import java.util.HashMap;

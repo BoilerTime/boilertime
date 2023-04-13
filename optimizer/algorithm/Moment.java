@@ -1,5 +1,7 @@
 package optimizer.algorithm;
 
+import optimizer.WeekDays;
+
 public class Moment {
     private final int time;
     private final WeekDays[] days;

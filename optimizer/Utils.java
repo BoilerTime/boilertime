@@ -445,4 +445,54 @@ public class Utils {
         }
         return mean / (double) dataSet.length;
     }
+
+    /**
+     * A helper method that converts a string that contains a week day to a WeekDay enum
+     * @param target The string to be converted
+     * @return The corresponding enum, or WeekDays.none if the day was not valid
+     */
+    public static WeekDays strToDay(String target) {
+        WeekDays res;
+        switch(target) {
+            case "Monday":
+                res = (WeekDays.monday);
+                break;
+            case "Tuesday":
+                res = WeekDays.tuesday;
+                break;
+            case "Wednesday":
+                res = WeekDays.wednesday;
+                break;
+            case "Thursday":
+                res = WeekDays.thursday;
+                break;
+            case "Friday":
+                res = WeekDays.friday;
+                break;
+            case "Saturday":
+                res = WeekDays.saturday;
+                break;
+            case "Sunday":
+            res = WeekDays.sunday;
+                break;
+            default: 
+                res = WeekDays.none;
+                break;
+        }
+        return res;
+    } 
+
+    /**
+     * A helper method that converts a list of days into an array of enum representations
+     * @param target The string in question, with days separate by a coma followed by a space
+     * @return The array result, with none where no day of week was found to be valid
+     */
+    public static WeekDays[] strListToDayList(String target) {
+        String[] aDays = target.split(", ");
+        WeekDays[] res = new WeekDays[aDays.length];
+        for(int i = 0; i < aDays.length; i++) {
+            res[i] = strToDay(aDays[i]);
+        }
+        return res;
+    }
 }

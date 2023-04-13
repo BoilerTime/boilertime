@@ -1,5 +1,7 @@
 package optimizer.algorithm;
 
+import optimizer.WeekDays;
+
 public class BlockOverview {
     private final String name;
     private final int startTime;

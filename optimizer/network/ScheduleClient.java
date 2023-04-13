@@ -5,6 +5,9 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 
+import optimizer.TimeOfDay;
+import optimizer.Utils;
+import optimizer.WeekDays;
 import optimizer.algorithm.*;
 
 public class ScheduleClient extends Thread  {
@@ -195,6 +198,19 @@ public class ScheduleClient extends Thread  {
         return null;
     }
 
+    private BlockOverview getBlockOverview(NetworkHandler network) {
+        try {
+            String name = network.getIncomingMessage();
+            int startTime = Integer.parseInt(network.getIncomingMessage());
+            int duration = Integer.parseInt(network.getIncomingMessage());
+            WeekDays[] days = Utils.strListToDayList(network.getIncomingMessage());
+            return new BlockOverview(name, startTime, duration, days);
+        } catch (NumberFormatException e) {
+            System.err.println("(ScheduleClient.java) Issue: " + e);
+        }
+        return null;
+    }
+
     private void writeBestToOutput(Population p, Schedule[] best, NetworkHandler network) {
         if(best == null) {
             network.sendMessage("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
@@ -205,6 +221,7 @@ public class ScheduleClient extends Thread  {
 
     private Population getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
+        BlockOverview blocks[];
         int numOfCourses = getNumericalCount(network, 1, 11);
         int numOfBlocks = getNumericalCount(network, 0, 10);
 
@@ -214,6 +231,7 @@ public class ScheduleClient extends Thread  {
         }
 
         courses = new CourseOverview[numOfCourses];
+        blocks = new BlockOverview[numOfBlocks];
 
         //Handle the fetching of preferences and generation of a preferences list/
         TimeOfDay timePreference = getTODPrefernece(network);
@@ -233,12 +251,13 @@ public class ScheduleClient extends Thread  {
             //preferences[1] = TimeOfDay.MORNGING;
         }
 
-        System.out.println("Got all client detail for: " + netSocket.getLocalPort());
+        System.out.println("(ScheduleClient.java) Got all client detail for: " + netSocket.getPort());
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
+
             /*
              * There was an error, terminate the thread and give up
-             * To-do: Add a better error handling mechanism. 
+             * TODO: Add a better error handling mechanism. 
              */
             if(courses[i] == null) {
                 //terminate();
@@ -246,6 +265,21 @@ public class ScheduleClient extends Thread  {
             }
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
+        System.out.println("(ScheduleClient.java) Got all course details for: " + netSocket.getPort());
+
+        for(int i = 0; i < blocks.length; i++) {
+            blocks[i] = this.getBlockOverview(network);
+            
+            /*
+             * There was an error, terminate the thread and give up
+             * TODO: Add a better error handling mechanism. 
+             */
+            if(blocks[i] == null) {
+                return null;
+            }
+            System.out.println("Block: " + i + " " + blocks[i].getName() + blocks[i].getStartTime() + blocks[i].getDuration() + Arrays.toString(blocks[i].getWeekDays()));
+        }
+        System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
         return new Population(courses, network, timePreference, preferences);
     }

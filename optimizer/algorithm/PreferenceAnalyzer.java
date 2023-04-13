@@ -2,6 +2,8 @@ package optimizer.algorithm;
 
 import java.util.ArrayList;
 
+import optimizer.TimeOfDay;
+
 public class PreferenceAnalyzer {
 
     /**

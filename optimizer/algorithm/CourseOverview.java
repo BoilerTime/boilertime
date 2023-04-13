@@ -1,5 +1,7 @@
 package optimizer.algorithm;
 
+import optimizer.WeekDays;
+
 public class CourseOverview {
     private String courseName; 
     private int[] courseTimes;
