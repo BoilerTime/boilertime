@@ -3,13 +3,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import optimizer.Utils;
-import optimizer.algorithm.Events.Event;
-import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.*;
 import optimizer.constants.EventType;
 
 public class Schedule {
     private final Event[] events;
     private final Lecture[] lectures;
+    private final Block[] blocks;
     private int invalidCount; 
     private int requiredFitnessScore;
     private int optionalFitnessScore;
@@ -19,6 +19,7 @@ public class Schedule {
     public Schedule(Event[] s) {
         this.events = s;
         this.lectures = findLectures();
+        this.blocks = findBlocks();
         this.invalidCount = 0;
         this.hasRequiredScore = false;
         this.hasOptionalScore = false;
@@ -27,6 +28,7 @@ public class Schedule {
     public Schedule(HashMap<String, Event> idEvent, boolean[][] result) {
         this.events = this.configure(idEvent, result);
         this.lectures = findLectures();
+        this.blocks = findBlocks();
         this.hasRequiredScore = false; 
         this.hasOptionalScore = false;
     } 
@@ -40,7 +42,7 @@ public class Schedule {
     }
 
     private Event[] configure(HashMap<String, Event> idEvent, boolean[][] result) {
-        Event[] results = new Lecture[result.length];
+        Event[] results = new Event[result.length];
         this.invalidCount = 0;
         for(int i = 0; i < result.length; i++) {
             String s = Utils.boolArrayToString(result[i]);
@@ -100,5 +102,19 @@ public class Schedule {
 
     public Lecture[] getLectures() {
         return this.lectures;
+    }
+
+    private Block[] findBlocks() {
+        ArrayList<Block> blocks = new ArrayList<Block>();
+        for(int i = 0; i < events.length; i++) {
+            if(this.events[i] != null && Utils.getEventType(this.events[i].getID()) == EventType.BLOCK) {
+                blocks.add((Block) this.events[i]);
+            }
+        }
+        return blocks.toArray(new Block[blocks.size()]);
+    }
+
+    public Block[] getBlocks() {
+        return this.blocks;
     }
 }

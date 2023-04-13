@@ -1,12 +1,14 @@
 package optimizer.algorithm;
 import java.util.*;
 
+import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.WeekDays;
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
-        String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": []";
+        String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": {\"lectures\": [";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
+        String blockFormatString = "{\"blockName\": \"block_name\", \"blockStarTime\": \"block_start_time\", \"blockDuration\": \"block_duration\", \"daysOfWeek\": \"days_of_week\"},";
         String[] courseResults = new String[best.length];
 
         for(int j = 0; j < best.length; j++) {
@@ -22,7 +24,7 @@ public class OptimizerDecoder {
             //courseTimes.forEach((key, value) -> System.out.printf("Key: %s Value: %s", key, value));
             for(int i = 0; i < numCourses; i++) {
                 String finalCourseDetails = courseFormatString;
-                finalCourseDetails = finalCourseDetails.replace("course_id", classes[i].getParent().getCourseName());
+                finalCourseDetails = finalCourseDetails.replace("course_id", classes[i].getAssignedName());
                 finalCourseDetails = finalCourseDetails.replace("course_start_time", Integer.toString(classes[i].getStartTime()));
                 finalCourseDetails = finalCourseDetails.replace("course_duration", Integer.toString(classes[i].getDuration()));
                 finalCourseDetails = finalCourseDetails.replace("section_id", classes[i].getSectionId());
@@ -33,13 +35,39 @@ public class OptimizerDecoder {
         }
 
         //Now, we can put everything into the big one 
-        for(int i = 0; i < courseResults.length; i++) {
-            if(i != courseResults.length -1) {
-                result += courseResults[i] + ", ";
-            }  else {
-                result += courseResults[i] + "]}";
-            }
+        for(int i = 0; i < courseResults.length - 1; i++) {
+            result += courseResults[i] + ", ";
         }
+        result += courseResults[courseResults.length - 1] + "], \"blocks\": [";
+
+        //Blocks
+        String[] blockResults = new String[best.length];
+        for(int j = 0; j < best.length; j++) {
+            if(best[j] == null) {
+                return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
+            } 
+            //Pull the string that represents the best individual 
+            Block[] blocks = best[j].getBlocks();
+            //String schedule = optIndividual.getIndividual();
+            //System.out.println("Schedule = " + schedule);
+            int numBlocks = blocks.length;
+            String thisResult = "[";
+            //courseTimes.forEach((key, value) -> System.out.printf("Key: %s Value: %s", key, value));
+            for(int i = 0; i < numBlocks; i++) {
+                String finalBlockDetails = blockFormatString;
+                finalBlockDetails = finalBlockDetails.replace("block_name", blocks[i].getAssignedName());
+                finalBlockDetails = finalBlockDetails.replace("block_start_time", Integer.toString(blocks[i].getStartTime()));
+                finalBlockDetails = finalBlockDetails.replace("block_duration", Integer.toString(blocks[i].getDuration()));
+                finalBlockDetails = finalBlockDetails.replace("days_of_week", convertDaysToString(blocks[i].getDaysOfDays()));
+                thisResult+=finalBlockDetails;
+            }
+            blockResults[j] = thisResult.substring(0, thisResult.length()-1) + "]";
+        }
+        for(int i = 0; i < blockResults.length - 1; i++) {
+            result += blockResults[i] + ", ";
+        }
+        result += blockResults[blockResults.length - 1] + "]}}";
+        System.out.println("Result = " + result);
         return result;
     }
 

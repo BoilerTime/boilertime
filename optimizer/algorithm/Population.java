@@ -78,7 +78,7 @@ public class Population {
         for(int i = 0; i < c.length; i++) {
             Lecture[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
             for(int j = 0; j < instSections.length; j++) {
-                idEvent.put(instSections[j].getID(), instSections[j]);
+                idEvent.put(instSections[j].getID(), (Event) instSections[j]);
             }
             //Determine if we have courses that only have a single section, as this warrants pre-entry analysis. 
             if(instSections.length == 1) {
@@ -94,7 +94,7 @@ public class Population {
             int[] id = Utils.numToBin(minCount, repBits);
             String sID = Constants.BLOCK + Utils.arrToString(id);
             this.blocks[i] = new Block(b[i], sID);
-            idEvent.put(sID, this.blocks[i]);
+            idEvent.put(sID, (Event) this.blocks[i]);
         }
 
         if(singleCount.size() > 0) {
