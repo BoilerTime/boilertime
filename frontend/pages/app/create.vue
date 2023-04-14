@@ -300,8 +300,6 @@ const timePreference = [
 onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
     data.value = response.data
-  })
-  axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
     optionalData.value = response.data
   })
   axios.post('http://localhost:3001/api/getclasses', {
