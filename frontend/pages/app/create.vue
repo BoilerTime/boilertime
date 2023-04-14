@@ -1,5 +1,5 @@
 <template>
-  <main>
+<main>
     <NavBar />
     <section class="flex items-center justify-center h-screen p-24 bg-gray-200 dark:bg-neutral-600 align-center">
     <div class="grid grid-cols-5 gap-x-20">
@@ -641,24 +641,37 @@ function removeFromSelected(index) {
     rmpValue = "RMP";
   }
 
-  selectedRequiredCourses.value.splice(index, 1)
-  axios.post('http://localhost:3001/api/saveschedule', {
-    user_id: userStore.user_id,
-    required_classes: selectedRequiredCourses.value,
-    optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
-  }, config).then((response) => {
-    if (response.data["accessToken"] != undefined) {
-      userStore.user = {
-        accessToken: response.data["accessToken"],
-        //refreshToken: response.data["refreshToken"],
-        user_id: user_id
+  if (!isAGuest.value) {
+    selectedRequiredCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      accessToken = userStore.accessToken;
-      config.headers['authorization'] = `Bearer ${accessToken}`;
-    }
-  })
+    })
+  }
+  else {
+    selectedRequiredCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue
+    }, config).then((response) => {
+    })
+  }
 }
 
 function removeOptional(index) {
@@ -670,24 +683,38 @@ function removeOptional(index) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
-  selectedOptionalCourses.value.splice(index, 1)
-  axios.post('http://localhost:3001/api/saveschedule', {
-    user_id: userStore.user_id,
-    required_classes: selectedRequiredCourses.value,
-    optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
-  }, config).then((response) => {
-    if (response.data["accessToken"] != undefined) {
-      userStore.user = {
-        accessToken: response.data["accessToken"],
-        //refreshToken: response.data["refreshToken"],
-        user_id: user_id
+  if (!isAGuest.value) {
+    selectedOptionalCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      accessToken = userStore.accessToken;
-      config.headers['authorization'] = `Bearer ${accessToken}`;
-    }
-  })
+    })
+  } 
+  else {
+    console.log('here in else');
+    selectedOptionalCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue
+    }).then((response) => {
+      })
+  }
 }
 
 function removeFromBookmarked(index) {
