@@ -732,6 +732,9 @@ function addToBookmarked(item) {
   if (!this.bookmarked_classes.includes(item)) {
     this.bookmarked_classes.push(item);
   }
+  if(isAGuest.value) {
+    guestStore.bookmarked_classes = this.bookmarked_classes;
+  }
 }
 
 watchEffect(() => {
