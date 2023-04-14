@@ -404,6 +404,17 @@ app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/saveschedule/guest', async (req, res) =>  {
+  await schedule.addClassesGuest(req.body).then((input) => {
+    console.log("Schedule Added to Guest Cookie")
+    console.log('added this schedule ' + input);
+    res.json({schedule: input});
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500);
+  });
+});
+
 app.post('/api/getclasses', async (req, res) => {
   await schedule.getClasses(req.body.user_id).then((classes) => {
     res.send(classes);
