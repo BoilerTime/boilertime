@@ -417,9 +417,15 @@ onBeforeMount(() => {
     })
   }
   else {
-    selectedRequiredCourses.value = guestStore.guest.schedule.required_classes;
-    selectedOptionalCourses.value = guestStore.guest.schedule.optional_classes;
-    //bookmarked_classes.value = guestStore.guest.schedule.bookmarks;
+    if (guestStore.guest.schedule.required_classes != undefined) {
+      console.log('no undefiend!');
+      selectedRequiredCourses.value = guestStore.guest.schedule.required_classes;
+      selectedOptionalCourses.value = guestStore.guest.schedule.optional_classes;
+      //bookmarked_classes.value = guestStore.guest.schedule.bookmarks;
+    }
+    else {
+      console.log('undefined');
+    }
   }
 });
 const searchTerm = ref('')
@@ -597,10 +603,11 @@ function addToSelectedOptional(item) {
     }
   }
   else {
-    if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
-      && !selectedOptionalCourses.value.includes(item)) {
-      selectedRequiredCourses.value.push(item)
-      isSearchActive.value = false
+    if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
+      && !selectedRequiredCourses.value.includes(item)) {
+      selectedOptionalCourses.value.push(item)
+      isOptionalSearchActive.value = false
+      optionalSearchTerm.value = ''
       searchTerm.value = ''
       axios.post('http://localhost:3001/api/saveschedule/guest', {
         user_id: userStore.user_id,
@@ -609,7 +616,7 @@ function addToSelectedOptional(item) {
         time: timePrefValue,
         rmp: rmpValue
       }).then((response) => {
-        guestStore.schedule = response;
+        guestStore.guest.schedule = response.data.schedule;
       });
     }
   }
@@ -618,6 +625,7 @@ function addToSelectedOptional(item) {
     optionalSearchTerm.value = ''
   }
   if (selectedRequiredCourses.value.includes(item)) {
+    console.log('this is the selected requred courses ' + selectedRequiredCourses.value);
     alert('You cannot select the same course twice')
     optionalSearchTerm.value = ''
   }
