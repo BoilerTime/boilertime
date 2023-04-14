@@ -421,7 +421,7 @@ onBeforeMount(() => {
       console.log('no undefiend!');
       selectedRequiredCourses.value = guestStore.guest.schedule.required_classes;
       selectedOptionalCourses.value = guestStore.guest.schedule.optional_classes;
-      //bookmarked_classes.value = guestStore.guest.schedule.bookmarks;
+      bookmarked_classes.value = guestStore.bookmarked_classes;
     }
     else {
       console.log('undefined');
@@ -756,25 +756,37 @@ watchEffect(() => {
 watch(bookmarked_classes, (newVal, oldVal) => {
   if (newVal.length > oldVal.length) {
     const newBookmark = newVal[newVal.length - 1]
-    console.log(`New bookmark added: ${newBookmark}`)
-    console.log(bookmarked_classes.value)
-    axios.post('http://localhost:3001/api/addbookmark', {
-      user_id: userStore.user_id,
-      class_name: bookmarked_classes.value
-    }, config).then(() => {
-      console.log('Bookmark added')
-    })
+    if (!isAGuest.value) {
+      console.log(`New bookmark added: ${newBookmark}`)
+      console.log(bookmarked_classes.value)
+      axios.post('http://localhost:3001/api/addbookmark', {
+        user_id: userStore.user_id,
+        class_name: bookmarked_classes.value
+      }, config).then(() => {
+        console.log('Bookmark added')
+      })
+    }
+    else {
+      console.log('here in guest else statmeent ' + guestStore.guest.bookmarked_classes);
+      guestStore.guest.bookmarked_classes = newVal; 
+    }
   }
   if (newVal.length < oldVal.length) {
     const removedBookmark = oldVal[oldVal.length - 1]
-    console.log(`Bookmark removed: ${removedBookmark}`)
-    console.log(bookmarked_classes.value)
-    axios.post('http://localhost:3001/api/removebookmark', {
-      user_id: userStore.user_id,
-      class_name: bookmarked_classes.value
-    }, config).then(() => {
-      console.log('Bookmark removed')
-    })
+    if (!isAGuest.value) {
+      console.log(`Bookmark removed: ${removedBookmark}`)
+      console.log(bookmarked_classes.value)
+      axios.post('http://localhost:3001/api/removebookmark', {
+        user_id: userStore.user_id,
+        class_name: bookmarked_classes.value
+      }, config).then(() => {
+        console.log('Bookmark removed')
+      })
+    }
+    else {
+      console.log('here in guest else statmeent ' + guestStore.guest.bookmarked_classes);
+      guestStore.guest.bookmarked_classes.remove(oldVal[oldVal.length - 1]);
+    }
   }
 })
 
