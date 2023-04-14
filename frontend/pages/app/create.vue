@@ -727,7 +727,7 @@ function submit() {
       time: time_pref.value,
       time: timePrefValue,
       rmp: rmpValue,
-      blocked_times: [{start_time: 1500, duration: 50, days_of_week: "Monday", name: "lunch"}]
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
@@ -823,7 +823,7 @@ function parseCoursesResponse(data) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
-
+  data = data.lectures;
   const formatString = "course_name at course_time on course_week_days"
   var courses = [];
   console.log(data)

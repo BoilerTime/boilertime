@@ -5,12 +5,11 @@ import optimizer.Utils;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
 
-public class QualityAnalyzer {
+public class QualityAnalyzer extends RequiredAnalyzer {
     private ArrayList<Integer> overallScores;
     private ArrayList<Double> fft; 
     private ArrayList<Schedule> bestSchedules; 
     private PreferenceAnalyzer pref;
-    private RequiredAnalyzer req;
 
 
     public final static int numSimilarForConvergence = 100; 
@@ -21,24 +20,31 @@ public class QualityAnalyzer {
      * @param t The time of day that is prefered
      */
 
-    public QualityAnalyzer(PreferenceList[] prefs, TimeOfDay t) {
+    public QualityAnalyzer(PreferenceList[] prefs, TimeOfDay t, int numBlocks, int numCourses) {
+        super(numBlocks, numCourses);
         this.overallScores = new ArrayList<Integer>();
         this.fft = new ArrayList<Double>();
         this.bestSchedules = new ArrayList<Schedule>();
         this.pref = new PreferenceAnalyzer(prefs, t);
-        this.req = new RequiredAnalyzer();
+        //this.req = new RequiredAnalyzer(numBlocks, numCourses);
     }
 
-    public void calculateFitnessScores(Schedule[] target, int requiredCount) {
+    public void calculateTotalFitnessScores(Schedule[] target, int requiredCount) {
         //System.out.println("Calculating fitness scores!");
-        RequiredAnalyzer.calculateFitnessScores(target, requiredCount);
+        super.calculateFitnessScores(target, requiredCount);
         this.pref.calculateOptionalScore(target);
+    }
+
+    public void calculateTotalIndividualFitnessScores(Schedule target, int requiredCount) {
+        //System.out.println("Calculating fitness scores!");
+        super.calculateIndividualRequiredScore(target, requiredCount);
+        this.pref.calculateIndividualOptionalScore(target);
     }
 
     public int addScore(Schedule target) {
         //System.out.println("Score = " + target.getRequiredScore());
         //Set the two functions to have their appropriate values 
-        req.addScore(target);
+        super.addScore(target);
         pref.addScore(target);
         bestSchedules.add(target);
         

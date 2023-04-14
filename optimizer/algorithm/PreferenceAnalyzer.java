@@ -37,17 +37,18 @@ public class PreferenceAnalyzer {
     }
 
     public void calculateOptionalScore(Schedule[] target) {
-        int[] rmpPenalty = new int[target.length];
-        int[] timePenalty = new int[target.length];
-        int[] weightedPenalty = new int[target.length];
         for(int i = 0; i < target.length; i++) {
-            Schedule temp = target[i];
-            rmpPenalty[i] = this.calculateRMPPenalty(temp);
-            timePenalty[i] = calculateTimePenalty(temp);
-            weightedPenalty[i] = this.calculateWeightedPenalty(rmpPenalty[i], timePenalty[i]);
-            temp.setOptionalScore(weightedPenalty[i]);
+            calculateIndividualOptionalScore(target[i]);
         }
         //System.out.println(Arrays.toString(weightedPenalty));
+    }
+
+    public void calculateIndividualOptionalScore(Schedule target) {
+        Schedule temp = target;
+        int rmp = this.calculateRMPPenalty(temp);
+        int time = calculateTimePenalty(temp);
+        int totalPenalty = this.calculateWeightedPenalty(rmp, time);
+        temp.setOptionalScore(totalPenalty);
     }
 
     private int calculateRMPPenalty(Schedule target) {

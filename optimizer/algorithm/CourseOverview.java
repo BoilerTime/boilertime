@@ -19,6 +19,7 @@ public class CourseOverview {
         this.required = isRequired;
         this.ratings = ratings;
         this.sectionIds = sectionIds;
+        System.out.println(name + " is required? " + isRequired);
     }
 
     public String getCourseName() {

@@ -159,7 +159,8 @@ public class ScheduleClient extends Thread  {
             x.addCourseName(temp);
             //System.out.println("Added a name to the course!");
             temp = network.getIncomingMessage();
-            if(temp.equals("True")) {
+            System.out.println("Required message: " + temp);
+            if(temp.equalsIgnoreCase("True")) {
                 x.setRequired(true);
             } else {
                 x.setRequired(false);

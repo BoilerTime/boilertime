@@ -71,6 +71,9 @@ public class Utils {
      * @return {int} A psuedo-random value that lies within the range [min, max]
      */
     public static int randInRange(Random r, int min, int max) {
+        if((max - min) + 1 < 0) {
+            return r.nextInt(100);
+        }
 		return r.nextInt((max - min) + 1) + min;
 	}
 

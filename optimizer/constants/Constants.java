@@ -26,22 +26,23 @@ public class Constants {
     /**
      * The penalty associated with a null element
      */
-    public static final int nullPenalty = 10000;
+    public static final int nullPenalty = 100000;
 
     /**
      * The penalty associated with a time conflict between schedule elements
      */
-    public static final int timeConflictPenalty = 1000;
+    public static final int timeConflictPenalty = 10000;
 
     /**
      * The penalty associated with a name conflict between schedule elements
      */
-    public static final int nameConflictPenalty = 100;
+    public static final int nameConflictPenalty = 1000;
 
+    public static final int insufficientBlockPenalty = 1000;
 
     /**
      * The penalty associated with a not fulfilling a schedule requirement
      */
-    public static final int unfulfilledRequirementPenalty = 10;
+    public static final int unfulfilledRequirementPenalty = 100;
 
 }
