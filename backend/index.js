@@ -114,7 +114,7 @@ app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     try {
       resObj = await utils.getUserProfile(user_id);
-      res.json({ firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
+      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
     } catch {
       res.sendStatus(401);
     }
@@ -258,7 +258,7 @@ app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(418);
   }
   else {
-    await deleteuser.deleteAccount(req.body.user_id).then(async (user) => {
+    await deleteuser.deleteAccount(req.body.user_id, req.body.password).then(async (user) => {
       console.log(`Deleted user: ${req.body.user_id}`)
       res.json(user);
     }).catch(err => {

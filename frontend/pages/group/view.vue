@@ -18,7 +18,7 @@
                         {{ item }}
                     </li>
                     <li class="mb-2 font-bold">Invite Link:</li>
-                    <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
+                    <li class="mb-2 font-light divide-y divide-dashed">{{ "http://localhost:3000/group/join/?group_id=" +
                         item.group_id }}</li>
                     <!--Leave Group Button-->
                     <button type="leave" class="w-1/8 bg-green-500 hover:bg-green-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
