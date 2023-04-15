@@ -1,7 +1,8 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Analyzer;
 
 import java.util.ArrayList;
 
+import optimizer.algorithm.Schedule;
 import optimizer.algorithm.Events.Lecture;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;

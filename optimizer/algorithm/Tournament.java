@@ -10,7 +10,9 @@ public class Tournament {
         this.tournamentSize = tournamentSize;
     }
 
-    public Schedule[] tournamentRunner() {
+    public Schedule[] tournament() {
         return 
     }
+
+    private Schedule[] tournamentHelper(Schedule )
 }

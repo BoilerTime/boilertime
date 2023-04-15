@@ -1,5 +1,6 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Analyzer;
 import optimizer.Utils;
+import optimizer.algorithm.Schedule;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;

@@ -1,4 +1,4 @@
-package optimizer.algorithm;
+package optimizer.parameters;
 
 import optimizer.constants.WeekDays;
 

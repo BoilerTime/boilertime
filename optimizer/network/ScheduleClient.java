@@ -10,6 +10,9 @@ import optimizer.algorithm.*;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
 import optimizer.constants.WeekDays;
+import optimizer.parameters.BlockOverview;
+import optimizer.parameters.CourseOverview;
+import optimizer.parameters.CourseOverviewHelper;
 
 public class ScheduleClient extends Thread  {
     
@@ -34,7 +37,7 @@ public class ScheduleClient extends Thread  {
         System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            Population toBeOptimized = getClientSchedule(network);
+            Optimizer toBeOptimized = getClientSchedule(network);
             if(toBeOptimized == null) {
                 System.err.println("(ScheduleClient.java) Failed to get the schedule data for client: " + netSocket.getPort());
                 this.failed(network);
@@ -213,7 +216,7 @@ public class ScheduleClient extends Thread  {
         return null;
     }
 
-    private void writeBestToOutput(Population p, Schedule[] best, NetworkHandler network) {
+    private void writeBestToOutput(Optimizer p, Schedule[] best, NetworkHandler network) {
         if(best == null) {
             network.sendMessage("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
             return;
@@ -221,7 +224,7 @@ public class ScheduleClient extends Thread  {
         network.sendMessage(OptimizerDecoder.decodeOptimizedSchedule(best));
     }
 
-    private Population getClientSchedule(NetworkHandler network) {
+    private Optimizer getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
         BlockOverview blocks[];
         int numOfCourses = getNumericalCount(network, 1, 11);
@@ -283,7 +286,7 @@ public class ScheduleClient extends Thread  {
         }
         System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
-        return new Population(courses, blocks, network, timePreference, preferences);
+        return new Optimizer(courses, blocks, network, timePreference, preferences);
     }
 
     public synchronized void runOptimizer() {
@@ -294,7 +297,7 @@ public class ScheduleClient extends Thread  {
         parentScheduler.gotData(key);
     }
 
-    private void optimize(Population p, NetworkHandler net) {
+    private void optimize(Optimizer p, NetworkHandler net) {
         try {
             Schedule[] best = p.getBestSchedule();
             this.writeBestToOutput(p, best, net);

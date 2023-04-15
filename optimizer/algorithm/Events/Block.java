@@ -1,6 +1,6 @@
 package optimizer.algorithm.Events;
 
-import optimizer.algorithm.BlockOverview;
+import optimizer.parameters.BlockOverview;
 
 public class Block extends Event {
     private final String assignedName;

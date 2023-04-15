@@ -1,7 +1,7 @@
 package optimizer.algorithm.Events;
 
-import optimizer.algorithm.Course;
 import optimizer.constants.WeekDays;
+import optimizer.parameters.Course;
 
 public class Lecture extends Event {
     private final Course parentCourse;
