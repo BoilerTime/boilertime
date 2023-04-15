@@ -519,4 +519,14 @@ public class Utils {
         }
         return EventType.GENERIC;
     }
+
+    public static Schedule[] insertInto(Schedule[] overall, Schedule target) {
+        if(target.getFitnessScore() < overall[0].getFitnessScore()) {
+            overall[]
+        }
+        int index = 1;
+        while(index < overall.length) {
+
+        }
+    }
 }

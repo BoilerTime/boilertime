@@ -273,54 +273,9 @@ public class Optimizer {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            //System.out.println("\nNew Generation = " + iterationCount );
-            //Create a new array
-            Schedule[] thisGen = new Schedule[this.generationSize];
-            
-            //First, let's populate the array with crosses of the best individual
-            for(int i = 0; i < thisGen.length / 2; i++) {
-                int secondPtr = Utils.randInRange(r, 0, fitPool.length - 1);
-                while(secondPtr == i) {
-                    secondPtr = Utils.randInRange(r, 0, fitPool.length - 1);
-                }
-                thisGen[i] = crossOver(fitPool[0], fitPool[secondPtr]);
-            }
-
-            //Now, let's do some random crosses to fill up to the rest of the array
-            for(int i = thisGen.length / 2; i < thisGen.length; i++) {
-                //thisGen[i-1] = this.crossOver(fitPool[0], fitPool[i]); 
-                int rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
-                int rand2 = Utils.randInRange(r, 0, this.generationSize - 1);
-                //We can't cross an individual with itself, keep generating a new pairing until we find a pair to cross
-                while(rand1 == rand2) {
-                    rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
-                }
-                thisGen[i] = this.crossOver(fitPool[rand1], fitPool[rand2]);
-            }
-
-            if(iterationCount >2) {
-                int tangent = analyzer.calculateTangent(iterationCount -2, iterationCount - 1);
-                //System.out.println("Tangent from previous two = " + tangent);
-                if(Math.abs(tangent) < 100) {
-                    for(int i = 0; i < thisGen.length; i++) {
-                        thisGen[i] = this.mutateSchedule(thisGen[i]);
-                    }
-                }
-            } else {
-                for(int i = 0; i < thisGen.length; i++) {
-                    thisGen[i] = this.mutateSchedule(thisGen[i]);
-                }
-            }
-
-            analyzer.calculateTotalFitnessScores(thisGen, numRequired);
-            
-            //System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
-            //Now, sort the array to make it easier to select the fittest and second fittest individual 
-            Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
-            analyzer.addScore(thisGen[0]);
-            //Now, perform a roulette-wheel integration into the overall fitness pool
-            Utils.mergeInto(thisGen, fitPool, r);
-            Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
+            Schedule parent1 = new Tournament(fitPool, r, iterationCount, false).tournament(fitPool);
+            Schedule parent2 = new Tournament(fitPool, r, iterationCount, true).tournament(fitPool);
+            Schedule result = this.crossOver(parent1, parent2);
             //System.out.println("Length = " + fitPool[0].getBlocks().length + " " + analyzer.calculateBlockSufficiency(fitPool[0]));
             //Dump the contents of the current gen out 
             System.out.println("Generation = " + iterationCount);
