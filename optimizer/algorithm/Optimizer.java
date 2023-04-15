@@ -3,6 +3,7 @@ package optimizer.algorithm;
 import java.util.*;
 
 import optimizer.Utils;
+import optimizer.algorithm.Analyzer.QualityAnalyzer;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;
@@ -10,8 +11,11 @@ import optimizer.constants.Constants;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
 import optimizer.network.NetworkHandler;
+import optimizer.parameters.BlockOverview;
+import optimizer.parameters.Course;
+import optimizer.parameters.CourseOverview;
 
-public class Population {
+public class Optimizer {
 
     private Course[] registerdCourses;
     private Block[] blocks;
@@ -34,7 +38,7 @@ public class Population {
     private QualityAnalyzer analyzer; 
     Random r;
 
-    public Population(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
+    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
         this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
 
         this.idEvent = new HashMap<String, Event>();

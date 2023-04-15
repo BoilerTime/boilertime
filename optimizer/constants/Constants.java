@@ -45,4 +45,6 @@ public class Constants {
      */
     public static final int unfulfilledRequirementPenalty = 100;
 
+    public static final int selectionSize = 4;
+
 }
