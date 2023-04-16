@@ -276,6 +276,8 @@ public class Optimizer {
             Schedule parent1 = new Tournament(fitPool, r, iterationCount, false).tournament(fitPool);
             Schedule parent2 = new Tournament(fitPool, r, iterationCount, true).tournament(fitPool);
             Schedule result = this.crossOver(parent1, parent2);
+            analyzer.calculateIndividualTotalFitnessScore(result);
+            fitPool = Utils.insertInto(fitPool, result);
             //System.out.println("Length = " + fitPool[0].getBlocks().length + " " + analyzer.calculateBlockSufficiency(fitPool[0]));
             //Dump the contents of the current gen out 
             System.out.println("Generation = " + iterationCount);
