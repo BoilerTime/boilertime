@@ -1,15 +1,14 @@
 <template>
   <header :class="`bg-${bgColor}`">
-    <nav class="flex items-center justify-between py-8">
+    <nav class="flex items-center justify-between py-8 px-10">
       <div class="flex">
         <!-- Logo -->
-        <a href="/app" class="-m-1.5 p-1.5">
+        <a href="/app" class="">
           <img class="w-auto h-10" src="/logo.png" />
         </a>
       </div>
       <!-- Menu for logged in User -->
-      <div v-if="isLoggedIn" class="flex items-center dark:text-gray-200"
-      >
+      <div v-if="isLoggedIn" class="flex items-center dark:text-gray-200">
         <!-- Dark Mode Toggle -->
         <div>
           <Menu as="div" class="relative inline-block mr-8 text-left">
@@ -95,33 +94,74 @@
           </Menu>
         </div>
         <!-- Profile Button -->
-        <a href="/app" v-if="isVerified" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Dashboard</a>
-        <a href="/app/profile" v-if="isVerified" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Profile</a>
+        <a
+          href="/app"
+          v-if="isVerified"
+          class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5"
+          >Dashboard</a
+        >
+        <a
+          href="/app/profile"
+          v-if="isVerified"
+          class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5"
+          >Profile</a
+        >
         <Menu as="div" class="relative">
           <div>
-            <MenuButton class="inline-flex rounded-md mr-8 text-sm font-semibold text-black">
+            <MenuButton
+              class="inline-flex rounded-md mr-8 text-sm font-semibold text-black"
+            >
               Groups
-              <ChevronDownIcon class="-mr-1 h-5 w-5 text-black" aria-hidden="true" />
+              <ChevronDownIcon
+                class="-mr-1 h-5 w-5 text-black"
+                aria-hidden="true"
+              />
             </MenuButton>
           </div>
 
-          <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-            <MenuItems class="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <transition
+            enter-active-class="transition ease-out duration-100"
+            enter-from-class="transform opacity-0 scale-95"
+            enter-to-class="transform opacity-100 scale-100"
+            leave-active-class="transition ease-in duration-75"
+            leave-from-class="transform opacity-100 scale-100"
+            leave-to-class="transform opacity-0 scale-95"
+          >
+            <MenuItems
+              class="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            >
               <div class="py-1">
                 <MenuItem v-slot="{ active }">
-                  <a href="/group/view" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">My Groups</a>
+                  <a
+                    href="/group/view"
+                    :class="[
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      'block px-4 py-2 text-sm',
+                    ]"
+                    >My Groups</a
+                  >
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
-                  <a href="/group/create" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Create a Group</a>
+                  <a
+                    href="/group/create"
+                    :class="[
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      'block px-4 py-2 text-sm',
+                    ]"
+                    >Create a Group</a
+                  >
                 </MenuItem>
               </div>
             </MenuItems>
           </transition>
         </Menu>
-        <a href="/app" @click="logout" class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5">Log out</a>
-        <span v-if="!isVerified">
-          Logged in as: Guest
-        </span>
+        <a
+          href="/app"
+          @click="logout"
+          class="relative inline-flex rounded-md mr-8 text-sm font-semibold text-black mt-0.5"
+          >Log out</a
+        >
+        <span v-if="!isVerified"> Logged in as: Guest </span>
       </div>
       <!-- Menu for not logged in User -->
       <div v-else class="flex items-center justify-end">
@@ -151,20 +191,20 @@ import {
   SunIcon as sun,
   ComputerDesktopIcon as computer,
 } from "@heroicons/vue/24/outline";
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { defineProps } from "vue";
 let isLoggedIn = false;
 let isVerified = false;
-var firstname = ref("")
-var lastname = ref("")
+var firstname = ref("");
+var lastname = ref("");
 var firstname = ref("");
 var lastname = ref("");
 var isDarkMode = ref();
 const userStore = useUserStore();
 var accessToken = userStore.accessToken;
 const { $isDarkMode } = useNuxtApp();
-var user_id = ref("")
+var user_id = ref("");
 try {
 } catch (err) {
   console.log(err);
@@ -172,21 +212,21 @@ try {
 const props = defineProps({
   bgColor: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 isLoggedIn = userStore.user.accessToken != null;
 isVerified = userStore.user_id;
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
-    'authorization': `Bearer ${accessToken}`
-  }
-}
-async function logout() {
-  console.log("logout")
-  userStore.logOut()
+    authorization: `Bearer ${accessToken}`,
+  },
 };
+async function logout() {
+  console.log("logout");
+  userStore.logOut();
+}
 async function verifyToken() {
   await userStore
     .verifyToken(userStore.accessToken, userStore.user_id)
@@ -204,9 +244,13 @@ async function getUserInfo() {
   }
   user_id.value = userStore.user.user_id;
   axios
-    .post("http://localhost:3001/api/get/profile/", {
-      user_id: userStore.user_id,
-    }, config)
+    .post(
+      "http://localhost:3001/api/get/profile/",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
@@ -235,10 +279,14 @@ async function setTheme(darkMode) {
   userStore.user.dark_mode = darkMode;
   changePageTheme();
   axios
-    .post("http://localhost:3001/api/set/darkmode/", {
-      user_id: userStore.user_id,
-      dark_mode: isDarkMode.value,
-    }, config)
+    .post(
+      "http://localhost:3001/api/set/darkmode/",
+      {
+        user_id: userStore.user_id,
+        dark_mode: isDarkMode.value,
+      },
+      config
+    )
     .catch((error) => {
       console.error(error);
     });
@@ -255,10 +303,14 @@ async function setThemePref() {
   isDarkMode.value = $isDarkMode;
   userStore.user.dark_mode = $isDarkMode;
   axios
-    .post("http://localhost:3001/api/set/darkmode/", {
-      user_id: userStore.user_id,
-      dark_mode: isDarkMode.value,
-    }, config)
+    .post(
+      "http://localhost:3001/api/set/darkmode/",
+      {
+        user_id: userStore.user_id,
+        dark_mode: isDarkMode.value,
+      },
+      config
+    )
     .catch((error) => {
       console.error(error);
     });
