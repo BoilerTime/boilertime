@@ -1,4 +1,4 @@
-package optimizer.algorithm;
+package optimizer.parameters;
 import java.util.HashMap;
 
 import optimizer.Utils;

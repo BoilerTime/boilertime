@@ -22,23 +22,11 @@ public class Tournament {
 
     private Schedule tournamentHelper(Schedule[] target) {
         //Schedule[][] result = new Schedule[target.length - 1][target[0].length / 2];
-        if(target.length == 2) {
-            if(this.select) {
-                return target[1];
-            }
-            return target[0];
-        } else {
-            Schedule[] temp = new Schedule[target.length / 2];
-            for(int i = 0; i < temp.length; i++) {
-                Schedule x = target[i];
-                Schedule y = target[target.length - i];
-                if(Utils.randInRange(r, 1, 100) < prob) {
-                    temp[i] = x;
-                } else {
-                    temp[i] = y;
-                }
-            }
-            return tournamentHelper(temp);
-        }       
+        Schedule[] result = new Schedule[8];
+        for(int i = 0; i < result.length; i++) {
+            result[i] = target[Utils.randInRange(r, 0, target.length - 1)];
+        }  
+        Utils.sortScheduleArray(result, 0, result.length - 1);
+        return result[0];  
     }
 }

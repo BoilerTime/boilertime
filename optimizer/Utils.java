@@ -521,7 +521,7 @@ public class Utils {
     }
 
     public static Schedule[] insertInto(Schedule[] overall, Schedule target) {
-        Schedule[] result = new Schedule[overall.length];
+        
         int index = 0;
         while(index < overall.length) {
             if(overall[index].getFitnessScore()  < target.getFitnessScore()) {
@@ -529,14 +529,31 @@ public class Utils {
             }
             index++;
         }
-        for(int i = 0; i < index; i++) {
-            result[i] = overall[i];
+        System.out.println("Inserting at = " + index);
+        if(index != overall.length) {
+            Schedule[] result = new Schedule[overall.length];
+            for(int i = 0; i < index; i++) {
+                result[i] = overall[i];
+            }
+            result[index] = target;
+            for(int i = index + 1; i < result.length; i++) {
+                result[i] = overall[i - 1];
+            }
+            return result;
+        } else {
+            return overall;
         }
-        result[index++] = target;
-        for(int i = index; i < result.length; i++) {
-            result[i] = overall[i - 1];
-        }
-        return result;
+    }
 
+    public static int getPosInsert(Schedule[] overall, Schedule target) {
+        
+        int index = 0;
+        while(index < overall.length) {
+            if(overall[index].getFitnessScore()  < target.getFitnessScore()) {
+                break;
+            }
+            index++;
+        }
+        return index;
     }
 }
