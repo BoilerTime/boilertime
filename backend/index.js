@@ -305,9 +305,9 @@ app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/api/get/term/optimizedschedule', jwt.authenticateToken, async (req, res) => {
+app.post('/api/get/term/optimizedschedule', async (req, res) => {
   await getSchedule.getScheduleTerm(req.body.user_id, req.body.term_id).then(async (schedule) => {
-    res.send({ ...schedule, accessToken: req.user.accessToken });
+    res.send({ ...schedule });
   }).catch(err => {
     console.log(err)
     res.sendStatus(err.error || 500);

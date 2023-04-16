@@ -1,6 +1,8 @@
 <template>
   <main>
+    <div v-if="friend_id==undefined">
     <NavBar />
+  </div>
     <div class="flex items-stretch h-full p-3 bg-gray-200 dark:bg-neutral-500">
       <div class="p-12" v-if="isDataLoaded">
         <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
@@ -112,9 +114,6 @@ onBeforeMount(async () => {
       user_id: friend_id,
       term_id: route.params.term,
     }, config).then((response) => {
-
-      console.log(response.data + response.data.time);
-      showWarning(response.data.time, response.data.rmp)
       scheduleData.value = response.data.schedule
       convertSchedule(scheduleData.value)
     })
