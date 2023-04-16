@@ -1,6 +1,7 @@
 package optimizer;
 import java.util.*;
 import optimizer.algorithm.*;
+import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Moment;
 import optimizer.constants.Constants;
 import optimizer.constants.EventType;
@@ -555,5 +556,32 @@ public class Utils {
             index++;
         }
         return index;
+    }
+
+    public static Event[] sortSchedule(Schedule target) {
+        HashMap<Integer, Event> result = new HashMap<Integer, Event>();
+       
+        int len = 0;
+        Event[] events = target.getEvents();
+        for(int i = 0; i < events.length; i++) {
+            int temp = Utils.binStringToNum(events[i].getID());
+            len = events[i].getID().length();
+            result.put(Integer.valueOf(temp), events[i]);
+        }
+        Set<Integer> keys = result.keySet();
+        Integer[] array = keys.toArray(new Integer[keys.size()]);
+        int[] results = new int[array.length];
+        for(int i = 0; i < array.length; i++) {
+            results[i] = array[i].intValue();
+        }
+
+        Arrays.sort(results, 0, results.length - 1);
+        Event[] res = new Event[results.length];
+        for(int i = 0; i < res.length; i++) {
+            String temp = Utils.arrToString(Utils.numToBin(array[i], len));
+            res[i] = result.get(Integer.valueOf(Utils.binStringToNum(temp)));
+            
+        }
+        return res;
     }
 }

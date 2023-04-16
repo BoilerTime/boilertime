@@ -9,12 +9,20 @@ public class OptimizerDecoder {
         String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": {\"lectures\": [";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
         String blockFormatString = "{\"blockName\": \"block_name\", \"blockStarTime\": \"block_start_time\", \"blockDuration\": \"block_duration\", \"daysOfWeek\": \"days_of_week\"},";
-        String[] courseResults = new String[best.length];
+        
 
-        for(int j = 0; j < best.length; j++) {
-            if(best[j] == null) {
+        int validLength = 0;
+        while(best[validLength] != null) {
+            validLength++;
+        }
+
+        String[] courseResults = new String[validLength];
+        for(int j = 0; j < validLength; j++) {
+            if(best[j] == null && j > 0) {
+                continue;//return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
+            } else if (best[j] == null) {
                 return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
-            } 
+            }
             //Pull the string that represents the best individual 
             Lecture[] classes = best[j].getLectures();
             //String schedule = optIndividual.getIndividual();
@@ -41,11 +49,13 @@ public class OptimizerDecoder {
         result += courseResults[courseResults.length - 1] + "], \"blocks\": [";
 
         //Blocks
-        String[] blockResults = new String[best.length];
-        for(int j = 0; j < best.length; j++) {
-            if(best[j] == null) {
+        String[] blockResults = new String[validLength];
+        for(int j = 0; j < validLength; j++) {
+            if(best[j] == null && j > 0) {
+                continue;//return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
+            } else if (best[j] == null) {
                 return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
-            } 
+            }
             //Pull the string that represents the best individual 
             Block[] blocks = best[j].getBlocks();
             //String schedule = optIndividual.getIndividual();
