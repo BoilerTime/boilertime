@@ -1,5 +1,12 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Analyzer;
 import optimizer.Utils;
+import optimizer.algorithm.Schedule;
+import optimizer.algorithm.Events.Block;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Lecture;
+import optimizer.constants.Constants;
+import optimizer.constants.EventType;
+import optimizer.constants.WeekDays;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,20 +14,18 @@ import java.util.HashMap;
 public class RequiredAnalyzer {
 
     private ArrayList<Integer> requiredScores;
-
-    //Implements the penalty scores found in the documentation for the algorithm. 
-    private static final int nullPenalty = 10000;
-    private static final int timeConflictPenalty = 1000;
-    private static final int nameConflictPenalty = 100;
-    private static final int unfulfilledRequirementPenalty = 10;
-
-    public RequiredAnalyzer() {
+    private int numBlocks;
+    private int numLectures;
+    
+    public RequiredAnalyzer(int numBlocks, int numLectures) {
         this.requiredScores = new ArrayList<Integer>();
+        this.numBlocks = numBlocks;
+        this.numLectures = numLectures;
     }
 
 
-    public static int calculateTimeConflicts(Schedule x) {
-        Section[] sections = x.getSections();
+    public int calculateTimeConflicts(Schedule x) {
+        Event[] sections = x.getEvents();
         int[][][] dayTimeDuration = new int[7][][];
         int conflictCount = 0;
         for(int i = 0; i < dayTimeDuration.length; i++) {
@@ -29,7 +34,7 @@ public class RequiredAnalyzer {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(hasWeekDay(sections[j].getWeekDays(), i)) {
+                if(hasWeekDay(sections[j].getDaysOfDays(), i)) {
                     dayCount++;
                 }
             }
@@ -40,9 +45,9 @@ public class RequiredAnalyzer {
                 if(sections[j] == null) {
                     continue;
                 }
-                if(hasWeekDay(sections[j].getWeekDays(), i)) {
+                if(hasWeekDay(sections[j].getDaysOfDays(), i)) {
                     //dayCount++;
-                    dayTimeDuration[i][0][index] = (60 * (sections[j].getTime()/100) + (sections[j].getTime() % 100));;
+                    dayTimeDuration[i][0][index] = (60 * (sections[j].getStartTime()/100) + (sections[j].getStartTime() % 100));;
                     dayTimeDuration[i][1][index] = dayTimeDuration[i][0][index] + sections[j].getDuration();
                     index++;
                 }
@@ -54,14 +59,14 @@ public class RequiredAnalyzer {
         return conflictCount;
     }
 
-    private static int calculateNameConflicts(Schedule x) {
+    private int calculateNameConflicts(Schedule x) {
         HashMap<String, Integer> c = new HashMap<String, Integer>();
-        Section[] s = x.getSections();
+        Event[] s = x.getEvents();
         for(int i = 0; i < s.length; i++) {
             if(s[i] == null) {
                 continue;
             }
-            String temp = s[i].getParent().getCourseName();
+            String temp = s[i].getAssignedName();
             if(c.containsKey(temp)) {
                 Integer count = c.get(temp);
                 c.put(temp, Integer.valueOf(count.intValue() + 1));
@@ -72,7 +77,7 @@ public class RequiredAnalyzer {
         return Utils.findNumSConflicts(c);
     }
 
-    private static boolean hasWeekDay(WeekDays[] days, int i) {
+    private boolean hasWeekDay(WeekDays[] days, int i) {
         WeekDays target = WeekDays.values()[i];
         for(int j = 0; j < days.length; j++) {
             if(days[j] == target) {
@@ -83,7 +88,7 @@ public class RequiredAnalyzer {
     }
 
 
-    private static int calculateStartConflicts(int[] times) {
+    private int calculateStartConflicts(int[] times) {
         HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
         for(int i = 0; i < times.length; i++) {
             //If the section contained is a null ptr, then just ignore it. 
@@ -99,7 +104,7 @@ public class RequiredAnalyzer {
         return (Utils.findNumConflicts(count));
     }
 
-    private static int calculateDurationConflicts(int[][] timeDuration) {
+    private int calculateDurationConflicts(int[][] timeDuration) {
         int total = 0; 
         for(int i = 0; i < timeDuration[0].length; i++) {
             for(int j = 0; j < timeDuration[0].length; j++) {
@@ -119,45 +124,44 @@ public class RequiredAnalyzer {
         return total;
     }
 
-    public static int[] calculateFitnessScores(Schedule[] x, int requiredCount) {
+    public int[] calculateFitnessScores(Schedule[] x, int requiredCount) {
         int[] results = new int[x.length];
         for(int i = 0; i < x.length; i++) {
-            //x[i].setFitnessScore(x[i].getInvalidCount());
-            int fitnessScore = 0;
-            fitnessScore += x[i].getInvalidCount() * nullPenalty;
-            fitnessScore += calculateTimeConflicts(x[i]) * timeConflictPenalty;
-            fitnessScore += calculateNameConflicts(x[i]) * nameConflictPenalty;
-            fitnessScore += calculateRequiredSatisifability(x[i], requiredCount) * unfulfilledRequirementPenalty;
-            //results[i] = fitnessScore;
-            //System.out.println("Fitness Score = " + fitnessScore);
-            x[i].setRequiredScore(fitnessScore);
+            calculateIndividualRequiredScore(x[i], requiredCount);
         }
         return results;
     }
 
-    public static int calculateIndividualRequiredScore(Schedule x, boolean mode, int requiredCount) {
+    public int calculateIndividualRequiredScore(Schedule x, int requiredCount) {
         int fitnessScore = 0;
-        fitnessScore += x.getInvalidCount() * nullPenalty;
-        fitnessScore += calculateTimeConflicts(x) * timeConflictPenalty;
-        fitnessScore += calculateNameConflicts(x) * nameConflictPenalty;
-        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * unfulfilledRequirementPenalty;
+        fitnessScore += x.getInvalidCount() * Constants.nullPenalty;
+        fitnessScore += calculateTimeConflicts(x) * Constants.timeConflictPenalty;
+        fitnessScore += calculateNameConflicts(x) * Constants.nameConflictPenalty;
+        fitnessScore += calculateRequiredSatisifability(x, requiredCount) * Constants.unfulfilledRequirementPenalty;
+        fitnessScore += calculateBlockSufficiency(x) * Constants.insufficientBlockPenalty;
+        //System.out.println("Insufficient block penalty =" + calculateBlockSufficiency(x) * Constants.insufficientBlockPenalty);
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
         return fitnessScore;
     }
 
-    private static int calculateRequiredSatisifability(Schedule target, int num) {
-        Section[] sections = target.getSections();
+    private int calculateRequiredSatisifability(Schedule target, int num) {
+        Event[] sections = target.getEvents();
         int total = 0;
         for(int i = 0; i < sections.length; i++) {
             if(sections[i] == null) {
                 continue;
-            } else if(sections[i].isRequired()) {
+            } else if((Utils.getEventType(sections[i].getID())) == EventType.LECTURE && ((Lecture) sections[i]).isRequired()) {
                 total++;
             }
         }
         return Math.abs(num - total);
+    }
+
+    public int calculateBlockSufficiency(Schedule target) {
+        Block[] blocks = target.getBlocks();
+        return Math.abs(blocks.length - this.numBlocks);
     }
 
     public int addScore(Schedule x) {
