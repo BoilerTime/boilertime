@@ -1,9 +1,9 @@
 <template>
   <main>
     <div v-if="friend_id==undefined">
-    <NavBar />
-  </div>
-    <div class="flex items-stretch h-full p-3 bg-gray-200 dark:bg-neutral-500">
+      <NavBar />
+    </div>
+    <div id="capture" class="flex items-stretch h-full p-3 bg-gray-200 dark:bg-neutral-500">
       <div class="p-12" v-if="isDataLoaded">
         <LazyClassList v-for="course in scheduleData" :key="course.name" :data="course" />
       </div>
@@ -11,9 +11,12 @@
         <h1>Loading...</h1>
       </div>
       <div id="calendar" v-if="result.length > 0">
-        <FullCalendar :options="calendarOptions" />
-      </div>
-      <div v-else class="h-screen p-12 bg-gray-200 dark:bg-neutral-500">
+          <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="screenie">
+            Screenie
+          </button>
+          <FullCalendar :options="calendarOptions" />
+        </div>
+        <div v-else class="h-screen p-12 bg-gray-200 dark:bg-neutral-500">
         <h1>Loading...</h1>
       </div>
     </div>
@@ -23,6 +26,8 @@
 <script setup>
 import axios from 'axios';
 import { ref, onBeforeMount } from 'vue';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
@@ -80,6 +85,13 @@ async function addTitle(schedule) {
     }
   }
 }
+
+async function screenie(){
+  html2canvas(document.querySelector("#capture")).then(canvas => {
+    saveAs(canvas.toDataURL(), 'schedule.png');
+  });
+}
+
 let click = ''
 const calendarOptions = ref({
   plugins: [timeGridPlugin],
