@@ -85,9 +85,6 @@ public class OptimizerDecoder {
         String result = "";
         System.out.println(Arrays.toString(days));
         for(int i = 0; i < days.length; i++) {
-            if(i == days.length - 1 && days.length > 1) {
-                result += "and ";
-            } 
             if(days[i] == WeekDays.monday) {
                 result += "Monday";
             } else if(days[i] == WeekDays.tuesday) {
