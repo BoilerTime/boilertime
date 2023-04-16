@@ -101,19 +101,35 @@ const config = {
     'authorization': `Bearer ${accessToken}`
   }
 }
+
+var friend_id = route.query.id;
+
 onBeforeMount(async () => {
 
+  console.log("GroupID:" + friend_id)
+  if (friend_id != undefined) {
+    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+      user_id: friend_id,
+      term_id: route.params.term,
+    }, config).then((response) => {
 
-  await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
-    user_id: userStore.user_id,
-    term_id: route.params.term,
-  }, config).then((response) => {
+      console.log(response.data + response.data.time);
+      showWarning(response.data.time, response.data.rmp)
+      scheduleData.value = response.data.schedule
+      convertSchedule(scheduleData.value)
+    })
+  } else {
+    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+      user_id: userStore.user_id,
+      term_id: route.params.term,
+    }, config).then((response) => {
 
-    console.log(response.data + response.data.time);
-    showWarning(response.data.time, response.data.rmp)
-    scheduleData.value = response.data.schedule
-    convertSchedule(scheduleData.value)
-  })
+      console.log(response.data + response.data.time);
+      showWarning(response.data.time, response.data.rmp)
+      scheduleData.value = response.data.schedule
+      convertSchedule(scheduleData.value)
+    })
+  }
 });
 onMounted(() => {
   nextTick(() => {
