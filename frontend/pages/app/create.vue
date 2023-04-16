@@ -913,7 +913,7 @@ function sendToOptimizer(courses, blocks) {
   }
 }
 
-function parseCoursesResponse(data) {
+function parseCoursesResponse(output) {
   console.log("Parsing Response!!!!!");
   displayingResults();
   let timePrefValue = time_pref.value;
@@ -924,10 +924,13 @@ function parseCoursesResponse(data) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
-  data = data.lectures;
+  let data = output.lectures;
+  let blocks = output.blocks;
   const formatString = "course_name at course_time on course_week_days"
-  var courses = [];
+  const blockFormatString = "block_name at block_time on block_days_of_week for block_duration minutes"
+  var userOutput = [];
   console.log(data)
+  console.log(blocks)
   for(let i = 0; i < data.length; i++) {
     
     //let thisFormat = [];
@@ -949,15 +952,37 @@ function parseCoursesResponse(data) {
       }
       thisFormat += (string)
     }
-    courses.push(thisFormat)
+    if(blocks[i].length > 0) {
+      thisFormat += ". Time off: "
+      for(let j = 0; j < blocks[i].length; j++) {
+        let string = "";
+        if(j == blocks[i].length - 1) {
+          console.log("TWT")
+          string += "and "
+        }
+        let tempForm = new String(blockFormatString);
+        string+= tempForm;
+        console.log(data[i][j]);
+        string = string.replace("block_name", blocks[i][j].blockName);
+        string = string.replace("block_time", fto2(blocks[i][j].blockStarTime));
+        string = string.replace("block_duration", blocks[i][j].blockDuration);
+        string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
+        if(j != blocks[i].length - 1) {
+        string += ", "
+      }
+      thisFormat += (string)
+      }
+    }
+    userOutput.push(thisFormat)
   }
 
-  schedule.value = courses;
-  console.log("Temp Form = " + courses);
+  schedule.value = userOutput;
+  console.log("Temp Form = " + userOutput);
   
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
   for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": []};
+    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": [], "blocked_times": []};
 
     for(let i = 0; i < data[j].length; i++) {
       let name = data[j][i].courseID;
@@ -973,8 +998,19 @@ function parseCoursesResponse(data) {
       thisFormat.userSections.meetings.push(data[j][i].sectionId);
       serverOutput.schedule.push(thisFormat)
     }
+    for(let i = 0; i < blocks[j].length; i++) {
+      let thisFormat = JSON.parse(JSON.stringify(blockFormat));
+      thisFormat.name = blocks[j][i].blockName;
+      thisFormat.start_time = blocks[j][i].blockStarTime;
+      thisFormat.duration = blocks[j][i].blockDuration;
+      thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
+      console.log(thisFormat)
+      serverOutput.blocked_times.push(thisFormat);
+    }
     resultsList.push(serverOutput);
   }
+  console.log("DATA = ")
+  console.log(resultsList);
 } 
 
 

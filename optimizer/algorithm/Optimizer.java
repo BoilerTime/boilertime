@@ -23,18 +23,18 @@ public class Optimizer {
     private final int scheduleSize;
     private final int courseSize;
     private final int generationSize = 32;
-    private final int maxIterations = 1000;
+    private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
     private final int numBlocks;
     private int mutationRate = 10; 
     private int waitGens; 
-    private final int crossOverRate = 70;
+    private final int crossOverRate = 90;
     private final NetworkHandler net;
     private int numRequired;
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private Schedule[] options;
-    private final int numOptions = 2;
+    private final int numOptions = 5;
     private int numSatisfied; 
     private QualityAnalyzer analyzer; 
     Random r;
@@ -325,6 +325,7 @@ public class Optimizer {
         System.out.println(analyzer.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
+        System.out.println(Arrays.toString(options));
         return options;
     }
 
@@ -360,17 +361,25 @@ public class Optimizer {
                     }*/
 
                     Schedule best = analyzer.getBestSchedule();
+                    if(best.getRequiredScore() > 0) {
+                        this.mutationRate = 90;
+                        this.waitGens = 0;
+                        return true;
+                    }
                     for(int j = 0; j < this.numSatisfied; j++) {
                         //System.out.println("LOOPING!");
                         //System.out.println(this.options[0].getEvents()[0].getID());
-                        if(this.options[j].getEvents()[0].getID().equals(best.getEvents()[0].getID())) {
-                            //System.out.println("Fatal Error!");
-                            this.mutationRate = 90;
-                            this.waitGens = 0;
-                            return true;
+                        Event[] optionsJ = Utils.sortSchedule(this.options[j]);
+                        Event[] bestJ = Utils.sortSchedule(best);
+                        boolean found = false;
+                        int index = 0;
+                        while(!found && index < bestJ.length) {
+                            if(!optionsJ[index].getID().equals(bestJ[index].getID())) {
+                                found = true;
+                            }
+                            index++;
                         }
-
-                        if(best.getRequiredScore() != 0) {
+                        if(!found) {
                             this.mutationRate = 90;
                             this.waitGens = 0;
                             return true;
