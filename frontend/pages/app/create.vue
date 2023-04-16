@@ -130,29 +130,47 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
+              
               class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl dark:bg-neutral-700 transition-all"
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium text-center text-gray-900 leading-6 dark:text-gray-200"
+                class="text-xl font-large text-center leading-6 dark:text-gray-200"
+                style="font-size: 30px;"
               >
-                Optimizing Your Schedule!
+                <b>{{status}}</b><span class="loader__dot">.</span><span class="loader__dot">.</span><span class="loader__dot">.</span>
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                <p v-if="!inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  We're building your perfect schedule. This might take a bit
                 </p>
+                <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Waiting in line: Position {{posInLine}} of {{totalPos}}
+                </p>
+
+                <p v-if="inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Expected wait: {{mins}}
+                </p>
+                <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Progress: 
-                </p>
-                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                <div v-if="multiLoader" class="justify-center items-center">
+                  <div class="flex items-center justify-center">
+                    <div class="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
+                    <div class="h-20 w-20 rounded-full bg-white dark:bg-neutral-700"></div>
+                  </div>
+                </div>
+              </div>
+                <div class="mt-2" v-if="algorithmProgress">
+                  <p class="text-sm text-gray-500 dark:text-gray-200">Progress:</p>
+                  <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                </div>
               </div><br/>
               <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
                 Cancel
               </button>
-              
-
+              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+                Tips
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -173,7 +191,6 @@
       >
         <div class="fixed inset-0 bg-black bg-opacity-25" />
       </TransitionChild>
-
       <div class="fixed inset-0 overflow-y-auto">
         <div
           class="flex items-center justify-center min-h-full p-4 text-center"
@@ -201,7 +218,6 @@
                   Which Schedule Looks Good to You?
                 </p>
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
-                <v-card text="..."></v-card>
               </div>
 
             <!-- Data items -->
@@ -215,8 +231,6 @@
                       >{{ schedule }} <br/>
                     </span><br/>
                   </div>
-
-
                 </div>
                 </div>
             </div>
@@ -227,9 +241,93 @@
       </div>
     </Dialog>
   </TransitionRoot>
+
+  <TransitionRoot :show="displayTips" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-l p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-black leading-6"
+                style="font-size: 36px;"
+              >
+                <b>About BoilerTime</b>
+              </DialogTitle>
+              <div>
+                <p class="text-xl">
+                  How it Works
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
+                  <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                </ul>
+              </div>
+              <br/>
+              <div>
+                <p class="text-xl">
+                  How to Use It
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>It looks like you're already an expert! Congrats on making a schedule</li>
+                  <li>Next time, look at our hub first to discover classes you might want to take and see a bit of info first
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - That way, you can see if the right professors, times of day, or locations are there for you</li>
+                    <li> - You can always bookmark a course to come back later if you're not satisfied</li>
+                  </ul></li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - To save everyone time and money, take a look over the class options before optimizing</li>
+                    <li> - Never re-optimize the same schedule unless you don't like any of the results</li>
+                    <li> - If you've inputted optional classes that don't show up in any of the options, remove another class before re-optimizing</li>
+                  </ul>
+                  <li>Be realistic about the number of classes you'd like to take, the number of classes inputted will be filled</li>
+                </ul>
+              </div>
+              <button @click="closeTips()" class="float-middle bg-yellow-500 hover:bg-red-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+                Close
+              </button>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup>
+/*
+ * Status Possibilities
+ * 1) Getting data for schedule from backend
+ * 2) Sending schedule data to algorithm
+ * 3) Waiting in line for optimization 
+ * 4) Optimizing
+ */
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
@@ -258,6 +356,15 @@ const isResultOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
 const toast = useToast();
+const isAlgoActive = ref(false);
+const status = ref('');
+const algorithmProgress = ref(true)
+const inLine = ref(false)
+const posInLine = ref('');
+const totalPos = ref('');
+const multiLoader = ref(false)
+const displayTips = ref(false)
+const mins = ref('');
 var totalSum;
 
 function closeModal() {
@@ -321,27 +428,21 @@ onMounted(() => {
   $socket.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
+    //algorithmProgress.show = true
   }
   $socket.onmessage = ((data) => {
-    console.log("data", JSON.parse(data.data))
+    console.log("data", (data.data))
     try {
       let response = JSON.parse(data.data);
       console.log("STATUS" + response.status)
       if(response?.message == "schedule") {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
-        if(completed.value < 100) {
-          //completed.value = (completed.value + response.data)%100;v
-          var temp = completed.value + response.data;
-          if(temp > 99) {
-            completed.value = 99;
-          } else {
-            completed.value = temp;
-          }
-        }
-
-      }
-      if(response.status === 404) {
+        //isAlgoActive.value = true;
+        optimizing(response.data);
+      } else if (response?.status == 102 && response?.message == "Position in Queue Update") {
+        inQueue(response.data.currentPos, response.data.totalWaiting);
+      } else if(response.status === 404) {
           console.log("ERROR!!")
           toast.error("No Schedule Found!! Please try again ", {
             timeout: 5000,
@@ -380,7 +481,7 @@ function addToSelected(item) {
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
+      optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
       rmp: rmpValue
     }, config).then((response) => {
@@ -617,17 +718,21 @@ function submit() {
     rmpValue = "RMP";
   }
   if (selectedRequiredCourses.value.length > 0) {
-    openModal()
+    openModal();
+    waitingForData();
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
-      sendToOptimizer(response.data.schedule)
+      sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
+      isAlgoActive.value = false;
+
       console.log("TWT")
       console.log(courseList)
       if (response.data["accessToken"] != undefined) {
@@ -649,7 +754,7 @@ function submit() {
   
 }
 
-function sendToOptimizer(data) {
+function sendToOptimizer(courses, blocks) {
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -663,40 +768,53 @@ function sendToOptimizer(data) {
     console.log("Critical Error: WS isn't open ")
   }
   //We first need to send them number of classes we will be optimzing by
-  $socket.send(data.length)
+  $socket.send(courses.length)
+  $socket.send(blocks.length);
   //Next, we send the time of day preferences
   $socket.send(timePrefValue)
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
   $socket.send(rmpValue);
 
-  //Next, we can start iterating over the course list
-  for(let i = 0; i < data.length; i++) {
+  /*
+    * Take care of the courses that the user has entered
+  */
+  for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
-    $socket.send(data[i].name)
+    $socket.send(courses[i].name)
     //Next, we can send the number of sections
-    $socket.send(data[i].isRequired)
+    $socket.send(courses[i].isRequired)
 
-    $socket.send(data[i].startTimes.length);
+    $socket.send(courses[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
-    for(let j = 0; j < data[i].startTimes.length; j++) {
+    for(let j = 0; j < courses[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(fixTime(data[i].startTimes[j]));
+      $socket.send(fixTime(courses[i].startTimes[j]));
       //Durations
-      $socket.send(data[i].durations[j]);
+      $socket.send(courses[i].durations[j]);
       //Week days 
-      console.log(data[i].daysOfWeek[j]);
-      $socket.send(data[i].daysOfWeek[j]);
+      console.log(courses[i].daysOfWeek[j]);
+      $socket.send(courses[i].daysOfWeek[j]);
       //RMP
-      $socket.send(data[i].rmp[j]);
+      $socket.send(courses[i].rmp[j]);
       //Section ID
-      $socket.send(data[i].sectionIDs[j]);
+      $socket.send(courses[i].sectionIDs[j]);
     }
+  }
+  /*
+    * Take care of the blocks that the user has entered
+  */
+  for(let i = 0; i < blocks.length; i++) {
+    $socket.send(blocks[i].name);
+    $socket.send(blocks[i].start_time);
+    $socket.send(blocks[i].duration);
+    $socket.send(blocks[i].days_of_week);
   }
 }
 
-function parseCoursesResponse(data) {
-  isResultOpen.value = true; 
+function parseCoursesResponse(output) {
+  console.log("Parsing Response!!!!!");
+  displayingResults();
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -705,10 +823,13 @@ function parseCoursesResponse(data) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
-
+  let data = output.lectures;
+  let blocks = output.blocks;
   const formatString = "course_name at course_time on course_week_days"
-  var courses = [];
+  const blockFormatString = "block_name at block_time on block_days_of_week for block_duration minutes"
+  var userOutput = [];
   console.log(data)
+  console.log(blocks)
   for(let i = 0; i < data.length; i++) {
     
     //let thisFormat = [];
@@ -730,15 +851,37 @@ function parseCoursesResponse(data) {
       }
       thisFormat += (string)
     }
-    courses.push(thisFormat)
+    if(blocks[i].length > 0) {
+      thisFormat += ". Time off: "
+      for(let j = 0; j < blocks[i].length; j++) {
+        let string = "";
+        if(j == blocks[i].length - 1) {
+          console.log("TWT")
+          string += "and "
+        }
+        let tempForm = new String(blockFormatString);
+        string+= tempForm;
+        console.log(data[i][j]);
+        string = string.replace("block_name", blocks[i][j].blockName);
+        string = string.replace("block_time", fto2(blocks[i][j].blockStarTime));
+        string = string.replace("block_duration", blocks[i][j].blockDuration);
+        string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
+        if(j != blocks[i].length - 1) {
+        string += ", "
+      }
+      thisFormat += (string)
+      }
+    }
+    userOutput.push(thisFormat)
   }
 
-  schedule.value = courses;
-  console.log("Temp Form = " + courses);
+  schedule.value = userOutput;
+  console.log("Temp Form = " + userOutput);
   
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
   for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": []};
+    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": [], "blocked_times": []};
 
     for(let i = 0; i < data[j].length; i++) {
       let name = data[j][i].courseID;
@@ -754,8 +897,19 @@ function parseCoursesResponse(data) {
       thisFormat.userSections.meetings.push(data[j][i].sectionId);
       serverOutput.schedule.push(thisFormat)
     }
+    for(let i = 0; i < blocks[j].length; i++) {
+      let thisFormat = JSON.parse(JSON.stringify(blockFormat));
+      thisFormat.name = blocks[j][i].blockName;
+      thisFormat.start_time = blocks[j][i].blockStarTime;
+      thisFormat.duration = blocks[j][i].blockDuration;
+      thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
+      console.log(thisFormat)
+      serverOutput.blocked_times.push(thisFormat);
+    }
     resultsList.push(serverOutput);
   }
+  console.log("DATA = ")
+  console.log(resultsList);
 } 
 
 
@@ -832,6 +986,74 @@ function fixTime(time) {
   hours = parseInt(hours - 5);
   return new String(hours) + time.substring(2, 4);
 }
+
+function waitingForData() {
+  const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
+  status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  algorithmProgress.value = false;
+  inLine.value = false;
+  multiLoader.value = true;
+}
+
+function inQueue(position, size) {
+  const messages = ["Waiting to Optimize", "Optimizing Soon", "Waiting", "Ready to Optimize"];
+  if(!inLine.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  inLine.value = true;
+  algorithmProgress.value = false;
+  posInLine.value = position;
+  totalPos.value = size;
+  multiLoader.value = true;
+  mins.value = (position / 2).toPrecision(2) + " Minute" + pluralize((position / 2).toPrecision(1))
+}
+
+function optimizing(progress) {
+  const messages = ["Optimizing", "Loading Perfection", "Generating Schedule", "Maximizing Schedule"];
+  if(!algorithmProgress.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data" 
+
+  algorithmProgress.value = true;
+  inLine.value = false;
+  multiLoader.value = false;
+  if(completed.value < 100) {
+    //completed.value = (completed.value + response.data)%100;v
+    var temp = completed.value + progress;
+    if(temp > 99) {
+      completed.value = 99;
+    } else {
+      completed.value = temp;
+    }
+  }
+}
+
+function displayingResults() {
+  closeModal();
+  if(displayTips.value) {
+    toast.info("Your optimize schedule is ready! Close this to take a look", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  } else {
+    isResultOpen.value = true;
+  }
+}
+
+function closeTips() {
+  displayTips.value = false;
+  if(!isOpen.value) {
+    isResultOpen.value = true;
+  }
+}
+function randInt(max) {
+    return Math.floor(Math.random() * max) + 1;
+}
+
+function pluralize(value) {
+  if(value == 1) {
+    return ""
+  }
+  return "s";
+}
 </script>
 
 <style scoped>
@@ -842,4 +1064,9 @@ function fixTime(time) {
 .hover\:bg-red-500:hover::after {
   content: ' ✖';
 }
+
+@keyframes blink {50% { color: transparent }}
+.loader__dot { animation: 1s blink infinite }
+.loader__dot:nth-child(2) { animation-delay: 250ms }
+.loader__dot:nth-child(3) { animation-delay: 500ms }
 </style>
