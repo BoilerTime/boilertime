@@ -34,6 +34,106 @@
               </div>
             </fieldset>
           </div>
+        <div class="relative mb-8">
+          <label class="font-semibold text-md dark:text-gray-200">Add time restrictions:</label>
+          <!--Radio button for selecting day of week-->
+          <div class="mt-2 grid w-[13rem] grid-cols-5 space-x-2 rounded-xl bg-gray-200 p-2" x-data="app">
+            <div>
+              <input type="radio" name="dayofweek" id="Monday" class="peer hidden"/>
+              <label for="Monday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Tuesday" class="peer hidden"/>
+              <label for="Tuesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Wednesday" class="peer hidden"/>
+              <label for="Wednesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Thursday" class="peer hidden"/>
+              <label for="Thursday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Friday" class="peer hidden"/>
+              <label for="Friday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
+            </div>
+          </div>
+          <!--Time of day inputs-->
+          <div class="flex mt-2">
+            <div class="mt-2 p-2 bg-gray-200 rounded-lg">
+                <select name="hours" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <span class="text-x0.5 mr-2">:</span>
+                <select name="minutes" class="bg-transparent text-x0.5 appearance-none outline-none mr-4">
+                  <option value="0">00</option>
+                  <option value="30">30</option>
+                </select>
+                <select name="ampm" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="am">AM</option>
+                  <option value="pm">PM</option>
+                </select>
+            </div>
+            <div class="font-bold mr-4 ml-4 mt-3.5">-</div>
+            <div class="mt-2 p-2 bg-gray-200 rounded-lg">
+                <select name="hours" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <span class="text-x0.5 mr-2">:</span>
+                <select name="minutes" class="bg-transparent text-x0.5 appearance-none outline-none mr-4">
+                  <option value="0">00</option>
+                  <option value="30">30</option>
+                </select>
+                <select name="ampm" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="am">AM</option>
+                  <option value="pm">PM</option>
+                </select>
+            </div>
+          </div>
+          <!--Button for adding time restrictions-->
+            <button type="leave" class="mt-2 w-1/8 bg-gray-300 hover:bg-gray-400 text-black font-bold border dark:border-black py-2 px-2 rounded-lg"
+              @click="addRestriction">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>    
+            </button>
+            <fieldset class="mt-2">
+              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                <div v-for="timeRestr in timeRestrictions" :key="timeRestr.id" class="flex items-center">
+                  <input :id="timeRestr.id" type="checkbox" :checked="timeRestr.id === 'none'" :value="timeRestr.id" v-model="time_restr" class="w-4 h-4" />
+                  <label :for="timeRestr.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ timeRestr }}</label>
+                </div>
+              </div>
+            </fieldset>
+            <!--Below is an example, not for final use-->
+            <li class="font-bold text-lg">
+              <input id="timeRestr-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="timeRest-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">M 1:30-2:30 PM</label>
+            </li>
+          </div>
           <label class="font-semibold text-md dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
             class="w-full px-4 py-2 mt-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 dark:bg-neutral-500 dark:placeholder-neutral-600 focus:ring-indigo-500 focus:border-indigo-500 dark:border-black"
@@ -365,6 +465,7 @@ const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
 const mins = ref('');
+const restrMax = ref(true);
 var totalSum;
 
 function closeModal() {
