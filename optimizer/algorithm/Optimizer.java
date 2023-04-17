@@ -282,7 +282,7 @@ public class Optimizer {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            System.out.println(iterationCount);
+            //System.out.println(iterationCount);
             iterationCount++;
                         //System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
@@ -343,13 +343,13 @@ public class Optimizer {
             double convergneceScore = analyzer.getRMSConvergence();
             //System.out.println("IN IF!");
             if(convergneceScore > .5) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else if (convergneceScore > .1) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":2}");
             } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":15}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":3}");
             } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":4}");
             }
             //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
             if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
