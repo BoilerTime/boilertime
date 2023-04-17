@@ -28,7 +28,7 @@
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                  <input :id="time.id" type="radio" :checked="time.id === 'time_pref.value'" :value="time.id" v-model="time_pref" class="w-4 h-4" @change="updateTimePref(time.id)" />
                   <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
                 </div>
               </div>
@@ -393,6 +393,13 @@ const timePreference = [
 ]
 
 onBeforeMount(() => {
+  if (userStore.user_id) {
+    isAGuest.value = false
+    console.log('is a guest is false' + isAGuest.value);
+  }
+  else {
+    console.log('is a guest is true');
+  }
   axios.get('http://localhost:3001/api/searchnew').then((response) => {
     data.value = response.data
   })
@@ -400,6 +407,7 @@ onBeforeMount(() => {
     optionalData.value = response.data
   })
   if (!isAGuest.value) {
+    console.log('here in not a guest');
     axios.post('http://localhost:3001/api/getclasses', {
       user_id: userStore.user_id,
     }, config).then((response) => {
@@ -409,6 +417,8 @@ onBeforeMount(() => {
       user_id: userStore.user_id,
     }, config).then((response) => {
       selectedOptionalCourses.value = response.data.optional_classes
+      time_pref.value = response.data.time;
+      console.log(response.data.time + ' this is the time');
     })
     axios.post('http://localhost:3001/api/getbookmarks', {
       user_id: userStore.user_id,
@@ -418,10 +428,14 @@ onBeforeMount(() => {
   }
   else {
     if (guestStore.guest.schedule.required_classes != undefined) {
-      console.log('no undefiend!');
-      selectedRequiredCourses.value = guestStore.guest.schedule.required_classes;
-      selectedOptionalCourses.value = guestStore.guest.schedule.optional_classes;
+      console.log('no undefined!');
+      selectedRequiredCourses.value = guestStore.schedule.required_classes;
+      selectedOptionalCourses.value = guestStore.schedule.optional_classes;
       bookmarked_classes.value = guestStore.bookmarked_classes;
+      console.log(guestStore.schedule.time);
+      time_pref.value = guestStore.schedule.time
+      console.log('this is the time pref value ' + time_pref.value);
+      updateTimePref(guestStore.schedule.time);
     }
     else {
       console.log('undefined');
@@ -479,13 +493,63 @@ onMounted(() => {
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
+function updateTimePref(time) {
+  time_pref.value = time;
+  let timePrefValue = time;
+  console.log('this is the timePrefValue ' + timePrefValue);
+  let rmpValue = "none"
+  if(timePrefValue == '' ) {
+    console.log('changed to none')
+    timePrefValue = "none";
+    rmpValue = "RMP";
+  } else if(timePrefValue == "none") {
+    rmpValue = "RMP";
+  }
+  if (!isAGuest.value) {
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value, 
+      time: timePrefValue,
+      rmp: rmpValue
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    });
+  }
+  else {
+  console.log('here in guest else statement');
+    console.log('in guest else ' + timePrefValue);
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value, 
+      time: timePrefValue,
+      rmp: rmpValue
+    }).then((response) => {
+      console.log(response.data.schedule.time + ' schedule time');
+      guestStore.guest.schedule = response.data.schedule;
+    });
+  }
+}
+
 function addToSelected(item) {
   let timePrefValue = time_pref.value;
+  console.log('this is the current time ' + time_pref.value);
   let rmpValue = "none"
   if(timePrefValue == '' ){
-    timePrefValue = "None";
+    console.log('switching');
+    timePrefValue = "none";
     rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
+  } else if(timePrefValue == "none") {
+    console.log('switching2');
     rmpValue = "RMP";
   }
   if (!isAGuest.value) {
@@ -572,9 +636,9 @@ function addToSelectedOptional(item) {
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
-    timePrefValue = "None";
+    timePrefValue = "none";
     rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
+  } else if(timePrefValue = "none") {
     rmpValue = "RMP";
   }
   if (!isAGuest.value) {
@@ -793,9 +857,6 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 var isAGuest = ref(true)
 
 onMounted(async () => {
-  if (userStore.user_id) {
-    isAGuest.value = false
-  }
 })
 
 function submit() {
