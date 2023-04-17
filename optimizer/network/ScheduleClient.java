@@ -5,7 +5,14 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 
+import optimizer.Utils;
 import optimizer.algorithm.*;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
+import optimizer.constants.WeekDays;
+import optimizer.parameters.BlockOverview;
+import optimizer.parameters.CourseOverview;
+import optimizer.parameters.CourseOverviewHelper;
 
 public class ScheduleClient extends Thread  {
     
@@ -30,7 +37,7 @@ public class ScheduleClient extends Thread  {
         System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            Population toBeOptimized = getClientSchedule(network);
+            Optimizer toBeOptimized = getClientSchedule(network);
             if(toBeOptimized == null) {
                 System.err.println("(ScheduleClient.java) Failed to get the schedule data for client: " + netSocket.getPort());
                 this.failed(network);
@@ -76,31 +83,31 @@ public class ScheduleClient extends Thread  {
         }
     }
 
-    private int getCoursesCount(NetworkHandler network){
+    private int getNumericalCount(NetworkHandler network, int min, int max){
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
-        String rawClasses = network.getIncomingMessage();//nput.readLine();
-        if(rawClasses == null) {
+        String rawCount = network.getIncomingMessage();//nput.readLine();
+        if(rawCount == null) {
             return -1;
         }
-        int numberOfClasses;
+        int count;
         try {
-            numberOfClasses = Integer.parseInt(rawClasses);
+            count = Integer.parseInt(rawCount);
         } catch (NumberFormatException e) {
-            numberOfClasses = -1;
+            count = -1;
         }
         
-        if(numberOfClasses > 0 && numberOfClasses < 11) {
+        if(count >= min && count < max) {
             //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
-            network.sendMessage("{\"status\":200,\"message\":\"Received Number of Classes\",\"data\":null}");
+            network.sendMessage("{\"status\":200,\"message\":\"Received Count\",\"data\":null}");
         } else {
             //System.err.println("Illegal number of classes sent!");
-            network.sendMessage("{\"status\":400,\"message\":\"Illegal\",\"data\":null}");
+            network.sendMessage("{\"status\":400,\"message\":\"Illegal Count\",\"data\":null}");
             //Make it a negative value to allow us to conintue in a defined state
-            numberOfClasses = -1;
+            count = -1;
         }
             //System.out.println("Wrote the initial message!");
-        return numberOfClasses;
+        return count;
     }
 
     private TimeOfDay getTODPrefernece(NetworkHandler network) {
@@ -155,7 +162,8 @@ public class ScheduleClient extends Thread  {
             x.addCourseName(temp);
             //System.out.println("Added a name to the course!");
             temp = network.getIncomingMessage();
-            if(temp.equals("True")) {
+            System.out.println("Required message: " + temp);
+            if(temp.equalsIgnoreCase("True")) {
                 x.setRequired(true);
             } else {
                 x.setRequired(false);
@@ -195,7 +203,20 @@ public class ScheduleClient extends Thread  {
         return null;
     }
 
-    private void writeBestToOutput(Population p, Schedule[] best, NetworkHandler network) {
+    private BlockOverview getBlockOverview(NetworkHandler network) {
+        try {
+            String name = network.getIncomingMessage();
+            int startTime = Integer.parseInt(network.getIncomingMessage());
+            int duration = Integer.parseInt(network.getIncomingMessage());
+            WeekDays[] days = Utils.strListToDayList(network.getIncomingMessage());
+            return new BlockOverview(name, startTime, duration, days);
+        } catch (NumberFormatException e) {
+            System.err.println("(ScheduleClient.java) Issue: " + e);
+        }
+        return null;
+    }
+
+    private void writeBestToOutput(Optimizer p, Schedule[] best, NetworkHandler network) {
         if(best == null) {
             network.sendMessage("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
             return;
@@ -203,15 +224,19 @@ public class ScheduleClient extends Thread  {
         network.sendMessage(OptimizerDecoder.decodeOptimizedSchedule(best));
     }
 
-    private Population getClientSchedule(NetworkHandler network) {
+    private Optimizer getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
-        int numOfCourses = getCoursesCount(network);
-        if(numOfCourses == -1) {
+        BlockOverview blocks[];
+        int numOfCourses = getNumericalCount(network, 1, 11);
+        int numOfBlocks = getNumericalCount(network, 0, 10);
+
+        if(numOfCourses == -1 || numOfBlocks == -1) {
             this.terminate();
             return null;
         }
 
         courses = new CourseOverview[numOfCourses];
+        blocks = new BlockOverview[numOfBlocks];
 
         //Handle the fetching of preferences and generation of a preferences list/
         TimeOfDay timePreference = getTODPrefernece(network);
@@ -231,12 +256,13 @@ public class ScheduleClient extends Thread  {
             //preferences[1] = TimeOfDay.MORNGING;
         }
 
-        System.out.println("Got all client detail for: " + netSocket.getLocalPort());
+        System.out.println("(ScheduleClient.java) Got all client detail for: " + netSocket.getPort());
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
+
             /*
              * There was an error, terminate the thread and give up
-             * To-do: Add a better error handling mechanism. 
+             * TODO: Add a better error handling mechanism. 
              */
             if(courses[i] == null) {
                 //terminate();
@@ -244,8 +270,23 @@ public class ScheduleClient extends Thread  {
             }
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
+        System.out.println("(ScheduleClient.java) Got all course details for: " + netSocket.getPort());
+
+        for(int i = 0; i < blocks.length; i++) {
+            blocks[i] = this.getBlockOverview(network);
+            
+            /*
+             * There was an error, terminate the thread and give up
+             * TODO: Add a better error handling mechanism. 
+             */
+            if(blocks[i] == null) {
+                return null;
+            }
+            System.out.println("Block: " + i + " " + blocks[i].getName() + blocks[i].getStartTime() + blocks[i].getDuration() + Arrays.toString(blocks[i].getWeekDays()));
+        }
+        System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
-        return new Population(courses, network, timePreference, preferences);
+        return new Optimizer(courses, blocks, network, timePreference, preferences);
     }
 
     public synchronized void runOptimizer() {
@@ -256,9 +297,15 @@ public class ScheduleClient extends Thread  {
         parentScheduler.gotData(key);
     }
 
-    private void optimize(Population p, NetworkHandler net) {
-        Schedule[] best = p.getBestSchedule();
-        this.writeBestToOutput(p, best, net);
+    private void optimize(Optimizer p, NetworkHandler net) {
+        try {
+            Schedule[] best = p.getBestSchedule();
+            this.writeBestToOutput(p, best, net);
+        } catch(Exception e) {
+            System.err.println("(ScheduleClient.java) Fatal error optimizing the schedule for: " + netSocket.getPort() + " because of " + e + " \n");
+            e.printStackTrace();
+            this.failed(net);
+        }
     }
 
     private void updateClient(NetworkHandler network) {

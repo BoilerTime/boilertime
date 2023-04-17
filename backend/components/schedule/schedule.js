@@ -12,6 +12,7 @@ const schedules = db.collection('user_schedules');
 
 module.exports = {
   addClasses,
+  addClassesGuest,
   getClasses,
   classCounterIncrement,
   classCounterDecrement,
@@ -32,6 +33,7 @@ async function addClasses(user) {
     "personal_preferences": user?.personal_preferences||"",
     "time": user.time,
     "rmp": user.rmp,
+    "blocked_times": user.blocked_times,
     "timestamp": FieldValue.serverTimestamp()
   };
   await db.collection('user_schedules').doc(user.user_id).collection('spring_2023').doc('schedule').set(input).then((res) => {
@@ -40,6 +42,19 @@ async function addClasses(user) {
     console.error(err);
     throw new Error(500);
   })
+}
+
+async function addClassesGuest(guest) {
+  const input = {
+    "required_classes": guest.required_classes,
+    "optional_classes": guest.optional_classes,
+    "personal_preferences": guest?.personal_preferences||"",
+    "time": guest.time,
+    "rmp": guest.rmp,
+    "blocked_times": guest.blocked_times,
+    "timestamp": FieldValue.serverTimestamp()
+  };
+  return input;
 }
 
 /**
