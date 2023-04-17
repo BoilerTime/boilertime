@@ -1,12 +1,12 @@
 <template>
-  <main class="h-screen bg-gray-100 overflow-y-hidden">
-    <div class="bg-yellow-600 pb-24">
-      <div class="mx-auto px-8 max-w-7xl">
+  <main class="h-screen overflow-y-hidden bg-gray-100">
+    <div class="pb-24 bg-yellow-600">
+      <div class="px-8 mx-auto max-w-7xl">
         <div>
           <NavBar bgColor="yellow-600" />
         </div>
-        <div class="border-t border-white border-opacity-20 py-5 block">
-          <div class="grid grid-cols-3 items-center gap-8">
+        <div class="block py-5 border-t border-white border-opacity-20">
+          <div class="items-center grid grid-cols-3 gap-8">
             <div class="col-span-2">
               <p class="text-2xl font-semibold text-white">Welcome, {{ firstname }}</p>
             </div>
@@ -14,7 +14,7 @@
               <div class="flex">
                 <div class="relative z-10">
                   <input v-model="searchTerm"
-                    class="px-3 py-2 border border-gray-400 w-64 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                    class="w-64 px-3 py-2 border border-gray-400 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                     type="text" placeholder="Search" @keyup.enter="addSingleResultToSelected">
                   <ul v-if="isSearchActive && filteredResults.length > 0"
                     class="absolute z-10 w-full mt-1 overflow-scroll bg-white shadow-lg rounded-md max-h-48">
@@ -26,7 +26,7 @@
                   </ul>
                 </div>
                 <div class="relative">
-                  <select class="h-full px-3 py-2 pr-9 bg-white border border-gray-400 appearance-none rounded-r-md"
+                  <select class="h-full px-3 py-2 bg-white border border-gray-400 appearance-none pr-9 rounded-r-md"
                     v-model="searchType">
                     <option>Professor</option>
                     <option>Classroom</option>
@@ -47,12 +47,12 @@
         </div>
       </div>
     </div>
-    <main class="-mt-24 pb-12">
-      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-        <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+    <main class="pb-12 -mt-24">
+      <div class="max-w-3xl px-4 mx-auto sm:px-6 lg:max-w-7xl lg:px-8">
+        <div class="items-start grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
           <div class="grid grid-cols-1 gap-4 lg:col-span-2">
             <section aria-labelledby="section-1-title">
-              <div class="overflow-hidden rounded-xl bg-white shadow-xl h-1/2">
+              <div class="overflow-hidden bg-white shadow-xl rounded-xl h-1/2">
                 <div class="p-6">
                   <div class="flex flex-wrap h-screen dark:bg-neutral-500" v-if="userSchedules.length !== 0">
                     <!-- Add button -->
@@ -107,7 +107,7 @@
 
           <div class="grid grid-cols-1 gap-4 ">
             <section aria-labelledby="section-2-title">
-              <div class="overflow-auto rounded-xl bg-white shadow-xl h-1/2">
+              <div class="overflow-auto bg-white shadow-xl rounded-xl h-1/2">
                 <div class="p-6">
                   <div class="h-screen" v-if="resultData && isDataLoaded">
                     <h1 class="mb-6 text-xl font-semibold text-left">{{ result }}</h1>
@@ -210,15 +210,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'classroom')">
                               Flag
                             </button>
@@ -249,15 +249,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'course')">
                               Flag
                             </button>
@@ -277,7 +277,7 @@
                             </ul>
                           </div>
                         </div>
-                        <h2 class="font-bold text-2xl mb-4">Ratings</h2>
+                        <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
                         <div v-for="(group, index) in resultData" :key="index">
                           <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
                             class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
@@ -298,15 +298,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'ta')">
                               Flag
                             </button>
@@ -348,6 +348,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
+import { useGuestStore } from "../../store/guest";
 import { POSITION, useToast } from "vue-toastification";
 
 import { onUnmounted } from "vue";
@@ -373,16 +374,43 @@ onBeforeMount(async () => {
     user_id: userStore.user_id,
   }, config).then((response) => {
     userSchedules.value = response.data
+    /*
+    for (var i = 0; i < userSchedules.value.length; i++) {
+      console.log(userSchedules.value[i] + " << Value");
+    }
+    */
+    numSchedules = userSchedules.value[userSchedules.value.length - 1].num_schedules;
+    console.log(numSchedules + " this is the num schedules");
+    //userSchedules.splice(userSchedules.value.length - 1, 1);
+    userSchedules.value.pop();
   });
-  /*
-  for (var i = 0; i < userSchedules.value.length; i++) {
-    console.log(userSchedules.value[i] + " << Value");
+  if (!isAGuest.value) {
+    if (numSchedules === 0 && guestStore.schedule) {
+      axios.post('http://localhost:3001/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: guestStore.schedule.required_classes,
+        optional_classes: guestStore.schedule.optional_classes, 
+        time: guestStore.schedule.time,
+        rmp: guestStore.schedule.rmp
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
+        }
+          toast.success("Imported Schedule Created As Guest!", {
+            timeout: 2000
+          });
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // Wait 1 second before showing the toast message
+    }
   }
-  */
-  numSchedules = userSchedules.value[userSchedules.value.length - 1].num_schedules;
-  console.log(numSchedules + " this is the num schedules");
-  //userSchedules.splice(userSchedules.value.length - 1, 1);
-  userSchedules.value.pop();
 })
 
 let interval;
@@ -411,6 +439,7 @@ var resultType = ref('')
 var resultData = ref([])
 
 var userStore = useUserStore()
+var guestStore = useGuestStore()
 var isAGuest = ref(true)
 
 onMounted(async () => {
