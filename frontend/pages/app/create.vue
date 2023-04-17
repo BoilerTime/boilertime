@@ -28,7 +28,7 @@
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'time_pref.value'" :value="time.id" v-model="time_pref" class="w-4 h-4" @change="updateTimePref(time.id)" />
+                  <input :id="time.id" type="radio" :checked="time.id === time_pref" :value="time.id" v-model="time_pref" class="w-4 h-4" @change="updateTimePref(time.id)" />
                   <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
                 </div>
               </div>

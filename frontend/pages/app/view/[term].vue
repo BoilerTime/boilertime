@@ -108,12 +108,20 @@ onBeforeMount(async () => {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
-
     console.log(response.data + response.data.time);
     showWarning(response.data.time, response.data.rmp)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
-  })
+  }).catch((error) => {
+    if (error.response.status == 500) {
+      console.log(error);
+      toast.error("You have not optimized this schedule yet!", {
+          timeout: 5000,
+          position: POSITION.TOP_CENTER
+      });
+      navigateTo('/app/create')
+    }
+  });
 });
 onMounted(() => {
   nextTick(() => {
