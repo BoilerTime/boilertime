@@ -5,16 +5,17 @@ const { initializeApp, applicationDefault, cert } = require('firebase-admin/app'
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
 
 const { collection, query, where, getDocs } = require('firebase/firestore');
-
 const db = getFirestore()
 const schedules = db.collection('user_schedules')
+const classes = db.collection('classes')
 
 module.exports = {
   addClasses,
   getClasses,
   classCounter,
   hotClasses,
-  takenTogether
+  takenTogether,
+  getSections
 }
 
 /** 
@@ -123,4 +124,24 @@ async function classCounter(classes) {
       }
     }
   }
+}
+
+async function getSections(subject, number, sectionID) {
+  console.log(subject + number + sectionID);
+  const docs1 = await classes.doc('spring_2023').get();
+  console.log('docs length ' + docs1.length);
+  const docs = await classes.doc('spring_2023').collection(subject).doc(number).collection(sectionID).get()  
+  console.log('docs length ' + docs.docs.length);
+  var jArray = [];
+  for (var i = 0; i < docs.docs.length; i++) {
+    if (docs.docs[i].data().type != 'Lecture') {
+      jArray.push({
+        "starttime": docs.docs[i].data().starttime,
+        "id": docs.docs[i].id,
+        "durations": docs.docs[i].data().durations,
+        "daysOfWeek": docs.docs[i].data().daysOfWeek
+      })
+    }
+  }
+  return jArray;
 }

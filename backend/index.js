@@ -1196,4 +1196,11 @@ app.post('/api/optimizer/isfull', async (req, res) => {
   res.json(await purdueio.isFull(subject, number, sectionIDs));
 });
 
+app.post('/api/get/sections', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionID = req.body.sectionID;
+  res.json(await schedule.getSections(subject, number, sectionID));
+});
+
 module.exports = app;
