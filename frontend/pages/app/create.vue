@@ -84,7 +84,7 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="isPreferencesOpen = true" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+            <button @click="showPrefMenu()" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Customize Preferences
             </button>
             <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
@@ -488,6 +488,7 @@ onBeforeMount(() => {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
+    courseCount.value = response.data.num_courses;
     console.log(selectedRequiredCourses.value);
   })
   axios.post('http://localhost:3001/api/getclasses', {
@@ -1154,6 +1155,11 @@ function getNumCourses() {
     return 1;
   }
   return courseCount.value;
+}
+
+function showPrefMenu() {
+  courseCount.value = selectedOptionalCourses.value.length + selectedRequiredCourses.value.length;
+  isPreferencesOpen.value = true;
 }
 </script>
 
