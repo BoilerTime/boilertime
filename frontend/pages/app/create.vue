@@ -1124,6 +1124,25 @@ function getPreferenceList() {
 function hidePreferences() {
   console.log(selectedOptionalCourses.value);
   isPreferencesOpen.value = false;
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function getTimePref() {
