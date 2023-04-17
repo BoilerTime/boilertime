@@ -190,11 +190,19 @@ async function getClassMates(user_id, course) {
   const doc = await db.collection('counter').doc(course).get();
   const names = [];
 
-  for (var i = 0; i < doc.data().users.length; i++) {
-    const jsonObj = await utils.getUserProfile(doc.data().users[i]);
-    if (doc.data().users[i] != user_id) {
-      names.push(jsonObj.firstname + ' ' + jsonObj.lastname + ', ' + jsonObj.email);
-    }
-  } 
+
+  if (!doc.exists) {
+    return names;
+  }
+  try {
+    for (var i = 0; i < doc.data().users.length; i++) {
+      const jsonObj = await utils.getUserProfile(doc.data().users[i]);
+      if (doc.data().users[i] != user_id) {
+        names.push(jsonObj.firstname + ' ' + jsonObj.lastname + ', ' + jsonObj.email);
+      }
+    } 
+  } catch(error) {
+    console.error('No Classmates');
+  }
   return names;
 }
