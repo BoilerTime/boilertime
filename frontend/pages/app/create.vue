@@ -584,7 +584,8 @@ function addToSelected(item) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -653,7 +654,8 @@ function addToSelectedOptional(item) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -692,7 +694,8 @@ function removeFromSelected(index) {
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
     time: timePrefValue,
-    rmp: rmpValue
+    rmp: rmpValue,
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -721,7 +724,8 @@ function removeOptional(index) {
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
     time: timePrefValue,
-    rmp: rmpValue
+    rmp: rmpValue,
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
