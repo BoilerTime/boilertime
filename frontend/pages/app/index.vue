@@ -391,7 +391,8 @@ onBeforeMount(async () => {
         required_classes: guestStore.schedule.required_classes,
         optional_classes: guestStore.schedule.optional_classes, 
         time: guestStore.schedule.time,
-        rmp: guestStore.schedule.rmp
+        rmp: guestStore.schedule.rmp,
+        blocked_times: guestStore.schedule.blocked_times
       }, config).then((response) => {
         if (response.data["accessToken"] != undefined) {
           userStore.user = {
