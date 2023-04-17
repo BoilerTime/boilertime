@@ -1004,7 +1004,98 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 })
 
 watch(selectedRequiredCourses, (newVal, oldVal) => {
-  
+  if (!isAGuest.value) {
+    if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
+      && !selectedOptionalCourses.value.includes(item)) {
+      selectedRequiredCourses.value.push(item)
+      isSearchActive.value = false
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value,
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
+        }
+      });
+    }
+  }
+  else {
+    if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
+      && !selectedOptionalCourses.value.includes(item)) {
+      selectedRequiredCourses.value.push(item)
+      isSearchActive.value = false
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule/guest', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value, 
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }).then((response) => {
+        guestStore.guest.schedule = response.data.schedule;
+      });
+    }
+  }
+})
+
+watch(selectedOptionalCourses, (newVal, oldVal) => {
+  if (!isAGuest.value) {
+    if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
+      && !selectedRequiredCourses.value.includes(item)) {
+      selectedOptionalCourses.value.push(item)
+      isOptionalSearchActive.value = false
+      optionalSearchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value,
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
+        }
+      })
+    }
+  }
+  else {
+    if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
+      && !selectedRequiredCourses.value.includes(item)) {
+      selectedOptionalCourses.value.push(item)
+      isOptionalSearchActive.value = false
+      optionalSearchTerm.value = ''
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule/guest', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value, 
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }).then((response) => {
+        guestStore.guest.schedule = response.data.schedule;
+      });
+    }
+  }
 })
 
 var isAGuest = ref(true)
