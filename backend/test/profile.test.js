@@ -58,6 +58,7 @@ describe("POST Test Profile", () => {
   });
 
   const profile = {
+    email: "boilertimepurdue@gmail.com",
     grad_month: "Janurary",
     grad_year: 2024,
     firstname: "Me",

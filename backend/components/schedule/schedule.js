@@ -29,6 +29,7 @@ async function addClasses(user) {
     "personal_preferences": user?.personal_preferences||"",
     "time": user.time,
     "rmp": user.rmp,
+    "blocked_times": user.blocked_times,
     "timestamp": FieldValue.serverTimestamp()
   };
   await db.collection('user_schedules').doc(user.user_id).collection('spring_2023').doc('schedule').set(input).then((res) => {

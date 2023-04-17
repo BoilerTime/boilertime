@@ -78,7 +78,7 @@ async function creategroup() {
       config
     )
     .then((res) => {
-      group_id = "localhost:3000/group/join/?group_id=" + res.data.group_id;
+      group_id = "http://localhost:3000/group/join/?group_id=" + res.data.group_id;
       isModalVisible.value = true;
     })
     .catch(function (error) {

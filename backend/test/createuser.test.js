@@ -85,7 +85,7 @@ describe("POST Test Create User", () => {
     chai.request(app)
       .post('/api/deleteuser')
       .set({ "authorization": `Bearer ${auth.accessToken}` })
-      .send(auth)
+      .send({...auth, ...newUser})
       .end((err, res) => {
         res.should.have.status(200);
         done();
