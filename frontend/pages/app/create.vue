@@ -45,7 +45,7 @@
             <template #item="{ element, index }">
               <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                 @click="removeFromSelected(index)">
-                Apple{{ element }}
+                {{ element }}
               </div>
             </template>
           </draggable>
@@ -268,7 +268,7 @@
               <label class="font-semibold text-md dark:text-gray-200">Select your preference order:</label>
               <div class="flex justify-center">
                 <div class="w-64">
-                  <draggable
+                  <draggable2
                     class="dragArea list-group w-full"
                     :list="state.list"
                     :sort="true"
@@ -280,7 +280,7 @@
                     >
                       {{ (key + 1) + ". " + element.name }}
                     </div>
-                  </draggable>
+                  </draggable2>
                 </div>
               </div>
               <p class="text-sm text-gray-500">
@@ -409,7 +409,8 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
-import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import { VueDraggableNext as draggable2 } from 'vue-draggable-next'
+import draggable from 'vuedraggable'
 
 import {
   TransitionRoot,
