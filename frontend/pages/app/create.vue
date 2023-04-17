@@ -242,6 +242,59 @@
     </Dialog>
   </TransitionRoot>
 
+  <TransitionRoot :show="isPreferencesOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-gray-900 leading-6"
+              >
+                Your Schedule <span class="text-yellow-500">Prerferences</span>
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Let's make a schedule that <span class="text-yellow-500">works for you</span>
+                </p>
+              </div>
+              <draggable v-model="items">
+              </draggable>
+              <div class="mt-2">
+                <p class="text-xs text-gray-500"><i>Note, because optimization relies on Artificial Inteligence, we can't guarentee your preferences will be honored </i></p>
+              </div>
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
   <TransitionRoot :show="displayTips" as="template">
     <Dialog as="div" class="relative z-10">
       <TransitionChild
@@ -333,6 +386,7 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
+import Draggable from "vue3-draggable";
 
 import draggable from 'vuedraggable'
 import {
@@ -353,6 +407,7 @@ const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref(false)
 const isResultOpen = ref(false);
+const isPreferencesOpen = ref(true);
 const completed = ref(0)
 const schedule = ref('');
 const toast = useToast();
@@ -764,8 +819,11 @@ function sendToOptimizer(courses, blocks) {
     rmpValue = "RMP";
   }
 
-  if(!isOpen.value) {
-    console.log("Critical Error: WS isn't open ")
+  if($socket.readyState != $socket.OPEN) {
+    toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
   }
   //We first need to send them number of classes we will be optimzing by
   $socket.send(courses.length)
