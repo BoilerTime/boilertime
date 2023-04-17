@@ -1,7 +1,9 @@
 <template>
-<main>
-    <NavBar />
-    <section class="flex items-center justify-center h-screen p-24 bg-gray-200 dark:bg-neutral-600 align-center">
+  <main>
+    <div class="ml-16 mr-8">
+      <NavBar bgColor="white" />
+    </div>
+    <section class="flex items-center justify-center h-screen p-24 bg-gray-100 dark:bg-neutral-600 align-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
         <div class="text-4xl font-bold text-black dark:text-gray-200">
@@ -10,16 +12,28 @@
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="mt-8 mb-4 text-lg font-semibold dark:text-gray-200">What is the difference between these two?</h2>
-        <p class="leading-relaxed text-md dark:text-gray-200">Classes you have to take are your required classes for the semester.
-          It's classes that are up next on your major's degree plan. We will prioritize this when generating your
-          optimized
-          schedule.
-          <br /><br />
-          Classes you want to take are your optional classes for the semester. It's classes that you are interested
-          in for electives or just for fun. We will fit these classes in where we can in generating your optimized
-          schedule.
-        </p>
+        <div class="relative mt-8">
+          <label class="font-semibold text-lg dark:text-gray-200">📈 Trending classes:</label>
+          <draggable v-model="trending_classes" group="classes" item-key="id"
+            class="relative flex p-3 mt-3 border-2 border-gray-300 border-dashed rounded-lg">
+            <template #item="{ element }">
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500">
+                {{ element }}
+              </div>
+            </template>
+          </draggable>
+        </div>
+        <div class="relative mt-8">
+          <label class="font-semibold text-lg dark:text-gray-200">⭐ Classes usually taken together with {{ lastEntered }}:</label>
+          <draggable v-model="together_classes" group="classes" item-key="id"
+            class="relative flex p-3 mt-3 border-2 border-gray-300 border-dashed rounded-lg">
+            <template #item="{ element }">
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500">
+                {{ element }}
+              </div>
+            </template>
+          </draggable>
+        </div>
       </div>
       <div class="p-12 bg-white rounded-lg shadow-2xl dark:bg-neutral-700 col-span-3">
         <div class="relative">
@@ -507,6 +521,25 @@ onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedRequiredCourses.value = response.data.required_classes
+  })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedOptionalCourses.value = response.data.optional_classes
+  })
+  axios.post('http://localhost:3001/api/getbookmarks', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    bookmarked_classes.value = response.data.bookmarks
+  })
+  axios.get('http://localhost:3001/api/hotclasses').then((response) => {
+    trending_classes.value = response.data
+  })
+
   if (!isAGuest.value) {
     console.log('here in not a guest');
     axios.post('http://localhost:3001/api/getclasses', {
@@ -543,6 +576,7 @@ onBeforeMount(() => {
     }
   }
 });
+
 const searchTerm = ref('')
 const filteredResults = computed(() => {
   if (!searchTerm.value) {
@@ -637,8 +671,13 @@ function updateTimePref(time) {
     });
   }
 }
+var lastEntered = ref('')
 
-function addToSelected(item) {
+var trending_classes = ref([]);
+var together_classes = ref([]);
+
+async function addToSelected(item) {
+  lastEntered.value = item;
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -691,6 +730,11 @@ function addToSelected(item) {
       });
     }
   }
+  await axios.post('http://localhost:3001/api/takentogether', {
+    class: item,
+  }).then((response) => {
+    together_classes.value = response.data;
+  })
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
     searchTerm.value = ''
@@ -728,7 +772,8 @@ const filteredOptionalResults = computed(() => {
 const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
 
-function addToSelectedOptional(item) {
+async function addToSelectedOptional(item) {
+  lastEntered.value = item;
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -782,6 +827,11 @@ function addToSelectedOptional(item) {
       });
     }
   }
+  await axios.post('http://localhost:3001/api/takentogether', {
+    class: item,
+  }).then((response) => {
+    together_classes.value = response.data;
+  })
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
     optionalSearchTerm.value = ''
@@ -951,6 +1001,14 @@ watch(bookmarked_classes, (newVal, oldVal) => {
       guestStore.guest.bookmarked_classes.remove(oldVal[oldVal.length - 1]);
     }
   }
+})
+
+watch(selectedRequiredCourses, (newVal, oldVal) => {
+  
+})
+
+watch(selectedOptionalCourses, (newVal, oldVal) => {
+  
 })
 
 var isAGuest = ref(true)
