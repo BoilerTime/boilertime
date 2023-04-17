@@ -11,6 +11,7 @@ const schedules = db.collection('user_schedules')
 
 module.exports = {
   addClasses,
+  addClassesGuest,
   getClasses,
   classCounter,
   hotClasses,
@@ -37,6 +38,19 @@ async function addClasses(user) {
     console.error(err);
     throw new Error(500);
   })
+}
+
+async function addClassesGuest(guest) {
+  const input = {
+    "required_classes": guest.required_classes,
+    "optional_classes": guest.optional_classes,
+    "personal_preferences": guest?.personal_preferences||"",
+    "time": guest.time,
+    "rmp": guest.rmp,
+    "blocked_times": guest.blocked_times,
+    "timestamp": FieldValue.serverTimestamp()
+  };
+  return input;
 }
 
 /**
