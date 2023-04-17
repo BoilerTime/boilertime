@@ -496,10 +496,8 @@ const isSearchActive = ref(false)
 function updateTimePref(time) {
   time_pref.value = time;
   let timePrefValue = time;
-  console.log('this is the timePrefValue ' + timePrefValue);
   let rmpValue = "none"
   if(timePrefValue == '' ) {
-    console.log('changed to none')
     timePrefValue = "none";
     rmpValue = "RMP";
   } else if(timePrefValue == "none") {
@@ -525,8 +523,6 @@ function updateTimePref(time) {
     });
   }
   else {
-  console.log('here in guest else statement');
-    console.log('in guest else ' + timePrefValue);
     axios.post('http://localhost:3001/api/saveschedule/guest', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
@@ -534,7 +530,6 @@ function updateTimePref(time) {
       time: timePrefValue,
       rmp: rmpValue
     }).then((response) => {
-      console.log(response.data.schedule.time + ' schedule time');
       guestStore.guest.schedule = response.data.schedule;
     });
   }
@@ -542,14 +537,11 @@ function updateTimePref(time) {
 
 function addToSelected(item) {
   let timePrefValue = time_pref.value;
-  console.log('this is the current time ' + time_pref.value);
   let rmpValue = "none"
   if(timePrefValue == '' ){
-    console.log('switching');
     timePrefValue = "none";
     rmpValue = "RMP";
   } else if(timePrefValue == "none") {
-    console.log('switching2');
     rmpValue = "RMP";
   }
   if (!isAGuest.value) {
@@ -578,7 +570,6 @@ function addToSelected(item) {
     }
   }
   else {
-    console.log('here in guest else statement');
     if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
       && !selectedOptionalCourses.value.includes(item)) {
       selectedRequiredCourses.value.push(item)
@@ -689,7 +680,6 @@ function addToSelectedOptional(item) {
     optionalSearchTerm.value = ''
   }
   if (selectedRequiredCourses.value.includes(item)) {
-    console.log('this is the selected requred courses ' + selectedRequiredCourses.value);
     alert('You cannot select the same course twice')
     optionalSearchTerm.value = ''
   }
@@ -768,7 +758,6 @@ function removeOptional(index) {
     })
   } 
   else {
-    console.log('here in else');
     selectedOptionalCourses.value.splice(index, 1)
     axios.post('http://localhost:3001/api/saveschedule/guest', {
       user_id: userStore.user_id,
@@ -831,7 +820,6 @@ watch(bookmarked_classes, (newVal, oldVal) => {
       })
     }
     else {
-      console.log('here in guest else statmeent ' + guestStore.guest.bookmarked_classes);
       guestStore.guest.bookmarked_classes = newVal; 
     }
   }
@@ -839,7 +827,6 @@ watch(bookmarked_classes, (newVal, oldVal) => {
     const removedBookmark = oldVal[oldVal.length - 1]
     if (!isAGuest.value) {
       console.log(`Bookmark removed: ${removedBookmark}`)
-      console.log(bookmarked_classes.value)
       axios.post('http://localhost:3001/api/removebookmark', {
         user_id: userStore.user_id,
         class_name: bookmarked_classes.value
@@ -848,7 +835,6 @@ watch(bookmarked_classes, (newVal, oldVal) => {
       })
     }
     else {
-      console.log('here in guest else statmeent ' + guestStore.guest.bookmarked_classes);
       guestStore.guest.bookmarked_classes.remove(oldVal[oldVal.length - 1]);
     }
   }
@@ -867,7 +853,6 @@ function submit() {
     });
     return
   }
-  console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -891,7 +876,6 @@ function submit() {
       courseList = response.data.schedule;
       isAlgoActive.value = false;
 
-      console.log("TWT")
       console.log(courseList)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
