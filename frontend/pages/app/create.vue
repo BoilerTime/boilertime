@@ -299,17 +299,21 @@
               <br/>
               <label class="font-semibold text-md dark:text-gray-200">How many classes do you want to take?</label>
               <div>
-                <input class="shadow appearance-none border border-yellow-500 rounded w-half py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="courseCount" placeholder="Between 1 and 5 Courses">
+                <input class="shadow appearance-none border border-yellow-500 rounded w-half py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="courseCount" placeholder="Between 1 and 5 Courses" @input="validateInput()">
 
               </div>
               <div class="mt-2">
                 <p class="text-xs text-gray-500"><i>Note, because optimization relies on Artificial Inteligence, we can't guarentee your preferences will be honored </i></p>
               </div>
-
+              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-green-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+                Save
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
+        
       </div>
+      
     </Dialog>
   </TransitionRoot>
 
@@ -1138,6 +1142,18 @@ function pluralize(value) {
     return ""
   }
   return "s";
+}
+
+function validateInput() {
+  if(courseCount.value == "") {
+    console.log("EMPTY")
+  } else if(!(new RegExp(/^[1-5]$/).test(courseCount.value))) {
+    courseCount.value = 1;
+    toast.error("You must enter at least 1 class and at most 5 classes", {
+            timeout: 1000,
+            position: POSITION.BOTTOM_RIGHT
+    });
+  }
 }
 </script>
 
