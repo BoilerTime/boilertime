@@ -45,7 +45,7 @@
             <template #item="{ element, index }">
               <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 mt-3 hover:bg-red-500"
                 @click="removeFromSelected(index)">
-                {{ element }}
+                Apple{{ element }}
               </div>
             </template>
           </draggable>
@@ -84,7 +84,10 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="submit" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+            <button @click="isPreferencesOpen = true" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+              Customize Preferences
+            </button>
+            <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Submit
             </button>
           </div>
@@ -269,8 +272,6 @@
                     class="dragArea list-group w-full"
                     :list="state.list"
                     :sort="true"
-                    @change="log"
-                    :move="checkMove"
                   >
                     <div
                       class="list-group-item bg-gray-300 m-1 p-1 rounded-md text-left cursor-move w-full"
@@ -305,7 +306,7 @@
               <div class="mt-2">
                 <p class="text-xs text-gray-500"><i>Note, because optimization relies on Artificial Inteligence, we can't guarentee your preferences will be honored </i></p>
               </div>
-              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-green-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+              <button @click="hidePreferences()" class="float-right bg-yellow-500 hover:bg-green-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
                 Save
               </button>
             </DialogPanel>
@@ -409,7 +410,6 @@ import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
-import { dropdown } from "vue-filter"
 
 import {
   TransitionRoot,
@@ -429,7 +429,7 @@ const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref(false)
 const isResultOpen = ref(false);
-const isPreferencesOpen = ref(true);
+const isPreferencesOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
 const toast = useToast();
@@ -470,9 +470,9 @@ const timePreference = [
 
 const state = reactive({
       list: [
-        { name: 'Time of Day', id: 1 },
-        { name: 'Professor Ratings', id: 2 },
-        { name: 'TA Ratings', id: 3 }
+        { name: 'Time of Day', id: 1, value: "TOD" },
+        { name: 'Professor Ratings', id: 2, value: "RMP" },
+        { name: 'TA Ratings', id: 3, value: "TAR" }
       ],
     })
 
@@ -487,6 +487,7 @@ onBeforeMount(() => {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
+    console.log(selectedRequiredCourses.value);
   })
   axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
@@ -551,25 +552,20 @@ const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
 function addToSelected(item) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-  if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
-    && !selectedOptionalCourses.value.includes(item)) {
+  console.log(item)
+  if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item) && !selectedOptionalCourses.value.includes(item)) {
     selectedRequiredCourses.value.push(item)
     isSearchActive.value = false
     searchTerm.value = ''
+    console.log(selectedRequiredCourses.value);
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
-      time: timePrefValue,
-      rmp: rmpValue
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -581,8 +577,10 @@ function addToSelected(item) {
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
     })
+  } else {
+    console.log(selectedRequiredCourses.value);
   }
-  if (selectedRequiredCourses.value.length > 5) {
+  if (selectedRequiredCourses.value.length >= 5) {
     alert('You can only select 5 required courses')
     searchTerm.value = ''
   }
@@ -620,14 +618,6 @@ const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
 
 function addToSelectedOptional(item) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
     && !selectedRequiredCourses.value.includes(item)) {
     selectedOptionalCourses.value.push(item)
@@ -637,8 +627,10 @@ function addToSelectedOptional(item) {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: timePrefValue,
-      rmp: rmpValue
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -662,22 +654,15 @@ function addToSelectedOptional(item) {
 }
 
 function removeFromSelected(index) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-
   selectedRequiredCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -692,21 +677,15 @@ function removeFromSelected(index) {
 }
 
 function removeOptional(index) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   selectedOptionalCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -794,15 +773,6 @@ function submit() {
     });
     return
   }
-  console.log("time pref = " + time_pref.value);
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   if (selectedRequiredCourses.value.length > 0) {
     openModal();
     waitingForData();
@@ -811,8 +781,9 @@ function submit() {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
-      time: timePrefValue,
-      rmp: rmpValue,
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule, response.data.blocked_times)
@@ -841,15 +812,6 @@ function submit() {
 }
 
 function sendToOptimizer(courses, blocks) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-
   if($socket.readyState != $socket.OPEN) {
     toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
           timeout: 5000,
@@ -860,7 +822,7 @@ function sendToOptimizer(courses, blocks) {
   $socket.send(courses.length)
   $socket.send(blocks.length);
   //Next, we send the time of day preferences
-  $socket.send(timePrefValue)
+  $socket.send(getTimePref())
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
   $socket.send(rmpValue);
@@ -904,14 +866,7 @@ function sendToOptimizer(courses, blocks) {
 function parseCoursesResponse(output) {
   console.log("Parsing Response!!!!!");
   displayingResults();
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
+  let timePref = getTimePref();
   let data = output.lectures;
   let blocks = output.blocks;
   const formatString = "course_name at course_time on course_week_days"
@@ -1154,6 +1109,31 @@ function validateInput() {
             position: POSITION.BOTTOM_RIGHT
     });
   }
+}
+
+function getPreferenceList() {
+  let result = [];
+  for(let i = 0; i < state.list.length; i++) {
+    result.push(state.list[i].value);
+  }
+
+  return result;
+}
+
+function hidePreferences() {
+  console.log(selectedOptionalCourses.value);
+  isPreferencesOpen.value = false;
+}
+
+function getTimePref() {
+  return time_pref.value;
+}
+
+function getNumCourses() {
+  if(!(new RegExp(/^[1-5]$/).test(courseCount.value))) {
+    return 1;
+  }
+  return courseCount.value;
 }
 </script>
 
