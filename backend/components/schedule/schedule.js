@@ -47,6 +47,7 @@ async function addClassesGuest(guest) {
     "personal_preferences": guest?.personal_preferences||"",
     "time": guest.time,
     "rmp": guest.rmp,
+    "blocked_times": guest.blocked_times,
     "timestamp": FieldValue.serverTimestamp()
   };
   return input;

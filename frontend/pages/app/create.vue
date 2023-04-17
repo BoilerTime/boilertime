@@ -509,7 +509,8 @@ function updateTimePref(time) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -528,7 +529,8 @@ function updateTimePref(time) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }).then((response) => {
       guestStore.guest.schedule = response.data.schedule;
     });
@@ -555,7 +557,8 @@ function addToSelected(item) {
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
         time: timePrefValue,
-        rmp: rmpValue
+        rmp: rmpValue,
+        blocked_times: ""
       }, config).then((response) => {
         if (response.data["accessToken"] != undefined) {
           userStore.user = {
@@ -580,7 +583,8 @@ function addToSelected(item) {
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
         time: timePrefValue,
-        rmp: rmpValue
+        rmp: rmpValue,
+        blocked_times: ""
       }).then((response) => {
         guestStore.guest.schedule = response.data.schedule;
       });
@@ -643,7 +647,8 @@ function addToSelectedOptional(item) {
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value,
         time: timePrefValue,
-        rmp: rmpValue
+        rmp: rmpValue,
+        blocked_times: ""
       }, config).then((response) => {
         if (response.data["accessToken"] != undefined) {
           userStore.user = {
@@ -669,7 +674,8 @@ function addToSelectedOptional(item) {
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
         time: timePrefValue,
-        rmp: rmpValue
+        rmp: rmpValue,
+        blocked_times: ""
       }).then((response) => {
         guestStore.guest.schedule = response.data.schedule;
       });
@@ -702,7 +708,8 @@ function removeFromSelected(index) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -722,7 +729,8 @@ function removeFromSelected(index) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }, config).then((response) => {
     })
   }
@@ -744,7 +752,8 @@ function removeOptional(index) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -764,7 +773,8 @@ function removeOptional(index) {
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
-      rmp: rmpValue
+      rmp: rmpValue,
+      blocked_times: ""
     }).then((response) => {
       })
   }
