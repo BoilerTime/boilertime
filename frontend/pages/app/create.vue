@@ -24,15 +24,7 @@
       <div class="p-12 bg-white rounded-lg shadow-2xl dark:bg-neutral-700 col-span-3">
         <div class="relative">
           <div class="mb-8">
-            <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
-            <fieldset class="mt-2">
-              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
-                  <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
-                </div>
-              </div>
-            </fieldset>
+
           </div>
           <label class="font-semibold text-md dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
@@ -220,20 +212,7 @@
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
               </div>
 
-            <!-- Data items -->
-            <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
-              @click="getScheduleView(index)">
-              <div
-                class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-                <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
-                  <div>
-                   <span class="text-sm text-black" 
-                      >{{ schedule }} <br/>
-                    </span><br/>
-                  </div>
-                </div>
-                </div>
-            </div>
+
 
             </DialogPanel>
           </TransitionChild>
@@ -275,15 +254,54 @@
                 as="h1"
                 class="text-xl font-medium text-center text-gray-900 leading-6"
               >
-                Your Schedule <span class="text-yellow-500">Prerferences</span>
+                Your Schedule <span class="text-yellow-500">Preferences</span>
               </DialogTitle>
               <div class="mt-2">
                 <p class="text-sm text-gray-500">
                   Let's make a schedule that <span class="text-yellow-500">works for you</span>
                 </p>
+                            <!-- Data items -->
+                            <br/>
+              <label class="font-semibold text-md dark:text-gray-200">Select your preference order:</label>
+              <div class="flex justify-center">
+                <div class="w-64">
+                  <draggable
+                    class="dragArea list-group w-full"
+                    :list="state.list"
+                    :sort="true"
+                    @change="log"
+                    :move="checkMove"
+                  >
+                    <div
+                      class="list-group-item bg-gray-300 m-1 p-1 rounded-md text-left cursor-move w-full"
+                      v-for="(element, key) in state.list"
+                      :key="element.name"
+                    >
+                      {{ (key + 1) + ". " + element.name }}
+                    </div>
+                  </draggable>
+                </div>
               </div>
-              <draggable v-model="items">
-              </draggable>
+              <p class="text-sm text-gray-500">
+                  Drag <span class="text-yellow-500">and drop</span> to reorder
+                </p>
+              <br/>
+              <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
+                <fieldset class="mt-2">
+                  <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                    <div v-for="time in timePreference" :key="time.id" class="flex items-center">
+                      <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                      <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+              <br/>
+              <label class="font-semibold text-md dark:text-gray-200">How many classes do you want to take?</label>
+              <div>
+                <input class="shadow appearance-none border border-yellow-500 rounded w-half py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="courseCount" placeholder="Between 1 and 5 Courses">
+
+              </div>
               <div class="mt-2">
                 <p class="text-xs text-gray-500"><i>Note, because optimization relies on Artificial Inteligence, we can't guarentee your preferences will be honored </i></p>
               </div>
@@ -381,14 +399,14 @@
  * 3) Waiting in line for optimization 
  * 4) Optimizing
  */
-import { ref, computed, watchEffect, watch } from 'vue'
+import { ref, computed, watchEffect, watch, reactive } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
-import Draggable from "vue3-draggable";
+import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import { dropdown } from "vue-filter"
 
-import draggable from 'vuedraggable'
 import {
   TransitionRoot,
   TransitionChild,
@@ -420,6 +438,7 @@ const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
 const mins = ref('');
+const courseCount = ref('5');
 var totalSum;
 
 function closeModal() {
@@ -440,10 +459,18 @@ const config = {
 }
 
 const timePreference = [
-  { id: 'none', title: 'No preference' },
-  { id: 'morning', title: 'Before 12 noon' },
-  { id: 'afternoon', title: 'After 12 noon' },
+  { id: 'none', title: 'None' },
+  { id: 'morning', title: 'Morning' },
+  { id: 'afternoon', title: 'Afternoon' },
 ]
+
+const state = reactive({
+      list: [
+        { name: 'Time of Day', id: 1 },
+        { name: 'Professor Ratings', id: 2 },
+        { name: 'TA Ratings', id: 3 }
+      ],
+    })
 
 onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
