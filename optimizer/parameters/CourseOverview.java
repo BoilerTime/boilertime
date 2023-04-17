@@ -1,4 +1,6 @@
-package optimizer.algorithm;
+package optimizer.parameters;
+
+import optimizer.constants.WeekDays;
 
 public class CourseOverview {
     private String courseName; 
@@ -17,6 +19,7 @@ public class CourseOverview {
         this.required = isRequired;
         this.ratings = ratings;
         this.sectionIds = sectionIds;
+        System.out.println(name + " is required? " + isRequired);
     }
 
     public String getCourseName() {

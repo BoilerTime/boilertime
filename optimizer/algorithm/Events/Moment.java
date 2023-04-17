@@ -1,4 +1,6 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Events;
+
+import optimizer.constants.WeekDays;
 
 public class Moment {
     private final int time;

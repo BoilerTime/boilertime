@@ -24,14 +24,14 @@ describe("POST Test RateMyProfessor", () => {
   }
 
   const turkstraExpected = {
-    "avgDifficulty": 4.1,
-    "avgRating": 3.6,
+    "avgDifficulty": 4.3,
+    "avgRating": 3.8,
     "department": "Computer Science",
     "firstName": "Jeff",
     "id": "VGVhY2hlci0yMjMxNDk1",
     "lastName": "Turkstra",
     "legacyId": 2231495,
-    "numRatings": 125,
+    "numRatings": 126,
     "school": {
       "city": "",
       "id": "U2Nob29sLTc4Mw==",
