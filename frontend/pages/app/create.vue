@@ -622,6 +622,31 @@ watch(bookmarked_classes, (newVal, oldVal) => {
   }
 })
 
+watch(selectedRequiredCourses, (newVal, oldVal) => {
+  if (newVal.length > oldVal.length) {
+    const newBookmark = newVal[newVal.length - 1]
+    console.log(`New bookmark added: ${newBookmark}`)
+    console.log(bookmarked_classes.value)
+    axios.post('http://localhost:3001/api/addbookmark', {
+      user_id: userStore.user_id,
+      class_name: bookmarked_classes.value
+    }, config).then(() => {
+      console.log('Bookmark added')
+    })
+  }
+  if (newVal.length < oldVal.length) {
+    const removedBookmark = oldVal[oldVal.length - 1]
+    console.log(`Bookmark removed: ${removedBookmark}`)
+    console.log(bookmarked_classes.value)
+    axios.post('http://localhost:3001/api/removebookmark', {
+      user_id: userStore.user_id,
+      class_name: bookmarked_classes.value
+    }, config).then(() => {
+      console.log('Bookmark removed')
+    })
+  }
+})
+
 var isAGuest = ref(true)
 
 onMounted(async () => {

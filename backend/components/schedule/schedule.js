@@ -57,7 +57,7 @@ async function getClasses(user_id) {
 
 async function hotClasses() {
   const hotClasses = []
-  const hot = await db.collection('counter').orderBy('count', 'desc').limit(5).get().then((res) => {
+  const hot = await db.collection('counter').orderBy('count', 'desc').limit(4).get().then((res) => {
     res.forEach((doc) => {
       hotClasses.push(doc.id);
     })
@@ -70,7 +70,7 @@ async function hotClasses() {
 
 async function takenTogether(course) {
   const takenTogether = []
-  const together = await db.collection('counter').doc(course).collection('pairs').orderBy('count', 'desc').limit(5).get().then((res) => {
+  const together = await db.collection('counter').doc(course).collection('pairs').orderBy('count', 'desc').limit(4).get().then((res) => {
     res.forEach((doc) => {
       takenTogether.push(doc.id);
     })
