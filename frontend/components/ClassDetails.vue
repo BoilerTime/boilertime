@@ -62,8 +62,14 @@
                         <h1 v-if="rmp_difficulty[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ rmp_difficulty[index] }} out of 5</h1>
                         <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
                         <h1 class="text-md dark:text-gray-200">Would take again</h1>
-                        <h1 v-if="rmp_again[index] != undefined" class="text-lg">{{ rmp_again[index] }}%</h1>
-                        <h1 v-else class="text-lg dark:text-gray-200">No data</h1>
+                        <h1 v-if="rmp_again[index] != undefined" class="text-lg mb-4">{{ rmp_again[index] }}%</h1>
+                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
+                      </div>
+                      <div>
+                        <h1 class="text-lg font-bold dark:text-gray-200 mb-1">Your Classmates</h1>
+                        <ul>
+                          <li v-for="classmate in classmates" :key="classmate" class="text-md dark:text-gray-20 mb-1">{{ classmate }}</li>
+                        </ul>
                       </div>
                   </div>
                 </div>
@@ -76,10 +82,10 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-
 import axios from 'axios';
+import { defineProps } from 'vue'
+import { useUserStore } from '../store/user';
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 const props = defineProps({
   header: {
@@ -105,6 +111,16 @@ let rmp_again = []
 
 let begin_times = []
 let fin_times = []
+
+let classmates = ref([])
+
+var userStore = useUserStore()
+var accessToken = userStore.accessToken;
+const config = {
+  headers: {
+    'authorization': `Bearer ${accessToken}`
+  }
+}
 
 async function get_profgpa(prof_name) {
   const response = await axios.post('http://localhost:3001/api/getoverall_gpa', {
@@ -153,6 +169,17 @@ onMounted(() => {
     getrmp(props.data.meetings[i].instructorName)
     converttime(props.data.meetings[i].startTime, props.data.meetings[i].duration)
   }
+  console.log(props.data.subject + " " + props.data.number)
+  axios.post('http://localhost:3001/api/get/classmates', {
+    "user_id": userStore.user_id,
+    "course": props.data.subject + " " + props.data.number
+  }, config)
+    .then(function (response) {
+      classmates.value = response.data
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   nextTick(() => {
   //  document.getElementById('gpa').click()
   })
