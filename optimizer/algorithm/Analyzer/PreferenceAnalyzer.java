@@ -1,7 +1,11 @@
-package optimizer.algorithm;
+package optimizer.algorithm.Analyzer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
+import optimizer.algorithm.Schedule;
+import optimizer.algorithm.Events.Lecture;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
 
 public class PreferenceAnalyzer {
 
@@ -34,26 +38,27 @@ public class PreferenceAnalyzer {
     }
 
     public void calculateOptionalScore(Schedule[] target) {
-        int[] rmpPenalty = new int[target.length];
-        int[] timePenalty = new int[target.length];
-        int[] weightedPenalty = new int[target.length];
         for(int i = 0; i < target.length; i++) {
-            Schedule temp = target[i];
-            rmpPenalty[i] = this.calculateRMPPenalty(temp);
-            timePenalty[i] = calculateTimePenalty(temp);
-            weightedPenalty[i] = this.calculateWeightedPenalty(rmpPenalty[i], timePenalty[i]);
-            temp.setOptionalScore(weightedPenalty[i]);
+            calculateIndividualOptionalScore(target[i]);
         }
         //System.out.println(Arrays.toString(weightedPenalty));
     }
 
+    public void calculateIndividualOptionalScore(Schedule target) {
+        Schedule temp = target;
+        int rmp = this.calculateRMPPenalty(temp);
+        int time = calculateTimePenalty(temp);
+        int totalPenalty = this.calculateWeightedPenalty(rmp, time);
+        temp.setOptionalScore(totalPenalty);
+    }
+
     private int calculateRMPPenalty(Schedule target) {
-        Section[] courses = target.getSections();
+        Lecture[] courses = target.getLectures();
         int cummulativePenalty = 0;
         //int[] penaltyArray = new int[courses.length];
         for(int i = 0; i < courses.length; i++) {
             if(courses[i] == null) {
-                cummulativePenalty += target.getSections().length;
+                cummulativePenalty += target.getLectures().length;
                 continue;
             }
             double rating = courses[i].getRating();
@@ -64,7 +69,7 @@ public class PreferenceAnalyzer {
     }
 
     private int calculateTimePenalty(Schedule target) {
-        Section[] courses = target.getSections();
+        Lecture[] courses = target.getLectures();
         int cummulativePenalty = 0;
         for(int i = 0; i < courses.length; i++) {
             if(courses[i] == null) {
@@ -72,11 +77,11 @@ public class PreferenceAnalyzer {
                 continue;
             }
             if(this.timePreference == TimeOfDay.MORNGING) {
-                if(courses[i].getTime() >= 1300) {
+                if(courses[i].getStartTime() >= 1300) {
                     cummulativePenalty++;
                 }
             } else {
-                if(courses[i].getTime() < 1300) {
+                if(courses[i].getStartTime() < 1300) {
                     cummulativePenalty++;
                 }
             }

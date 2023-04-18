@@ -11,6 +11,7 @@ const schedules = db.collection('user_schedules')
 
 module.exports = {
   addClasses,
+  addClassesGuest,
   getClasses,
   classCounter,
   hotClasses,
@@ -28,6 +29,7 @@ async function addClasses(user) {
     "personal_preferences": user?.personal_preferences||"",
     "time": user.time,
     "rmp": user.rmp,
+    "blocked_times": user.blocked_times,
     "timestamp": FieldValue.serverTimestamp()
   };
   await db.collection('user_schedules').doc(user.user_id).collection('spring_2023').doc('schedule').set(input).then((res) => {
@@ -36,6 +38,19 @@ async function addClasses(user) {
     console.error(err);
     throw new Error(500);
   })
+}
+
+async function addClassesGuest(guest) {
+  const input = {
+    "required_classes": guest.required_classes,
+    "optional_classes": guest.optional_classes,
+    "personal_preferences": guest?.personal_preferences||"",
+    "time": guest.time,
+    "rmp": guest.rmp,
+    "blocked_times": guest.blocked_times,
+    "timestamp": FieldValue.serverTimestamp()
+  };
+  return input;
 }
 
 /**
@@ -57,7 +72,7 @@ async function getClasses(user_id) {
 
 async function hotClasses() {
   const hotClasses = []
-  const hot = await db.collection('counter').orderBy('count', 'desc').limit(5).get().then((res) => {
+  const hot = await db.collection('counter').orderBy('count', 'desc').limit(4).get().then((res) => {
     res.forEach((doc) => {
       hotClasses.push(doc.id);
     })
@@ -70,7 +85,7 @@ async function hotClasses() {
 
 async function takenTogether(course) {
   const takenTogether = []
-  const together = await db.collection('counter').doc(course).collection('pairs').orderBy('count', 'desc').limit(5).get().then((res) => {
+  const together = await db.collection('counter').doc(course).collection('pairs').orderBy('count', 'desc').limit(4).get().then((res) => {
     res.forEach((doc) => {
       takenTogether.push(doc.id);
     })

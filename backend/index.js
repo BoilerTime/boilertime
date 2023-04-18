@@ -1,6 +1,6 @@
 // We are using express. Import the module and configure it to run on port 3001
 var express = require('express');
-require('dotenv').config({path: '../.env'});
+require('dotenv').config({ path: '../.env' });
 const app = express();
 // frontend runs on 3000, backend runs on 3001
 const port = 3001;
@@ -12,6 +12,7 @@ const jwt = require('./components/auth/jwt');
 const sendEmail = require('./components/email/sendEmail')
 const uuid = require('./components/auth/uuid');
 const createuser = require('./components/auth/createuser');
+const deleteuser = require('./components/auth/deleteuser');
 const utils = require('./components/utils/utils.js');
 const verifyaccount = require('./components/auth/verifyaccount');
 const password = require('./components/auth/password');
@@ -39,7 +40,7 @@ app.use(express.json());
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
@@ -66,7 +67,7 @@ app.get('/api', (req, res) => {
  */
 
 app.post('/api/auth/user', jwt.authenticateToken, (req, res) => {
-  res.json({authenticationToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id});
+  res.json({ authenticationToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id });
 });
 /*
  * This function updates a user profile
@@ -113,7 +114,7 @@ app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     try {
       resObj = await utils.getUserProfile(user_id);
-      res.json({ firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
+      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
     } catch {
       res.sendStatus(401);
     }
@@ -175,7 +176,7 @@ app.get('/api/classroomsnew', (req, res) => {
 })
 
 app.get('/api/professorsnew', (req, res) => {
-  res.sendFile(path.join(__dirname, 'professors.json')); 
+  res.sendFile(path.join(__dirname, 'professors.json'));
 })
 
 app.get('/api/tasnew', (req, res) => {
@@ -204,7 +205,7 @@ app.post('/api/encryptuserid', (req, res) => {
 app.post('/api/resetpassword', (req, res) => {
   const user_id = req.body.user_id;
   const new_password = req.body.password;
-  password.updatePassword({ user_id, new_password }).then( (password) => {
+  password.updatePassword({ user_id, new_password }).then((password) => {
     console.log(`Updated password to ${password}`)
     res.json({ password: password });
   }).catch(err => {
@@ -218,7 +219,7 @@ app.post('/api/resetpassword', (req, res) => {
  */
 app.post('/api/ratemyprofessor', (req, res) => {
   const professor = req.body.prof_name
-  utils.getProfessorRating(professor).then( teacher => {
+  utils.getProfessorRating(professor).then(teacher => {
     console.log("Found Teacher in RMP")
     res.json(teacher)
   }).catch(err => {
@@ -231,8 +232,8 @@ app.post('/api/ratemyprofessor', (req, res) => {
  * Search Query
  */
 app.post('/api/search', (req, res) => {
-  utils.getClassesFromDept(req.body.dept).then( array => {
-    res.json({classes: array})
+  utils.getClassesFromDept(req.body.dept).then(array => {
+    res.json({ classes: array })
   }).catch(err => {
     console.log(err)
     res.sendStatus(500);
@@ -242,11 +243,29 @@ app.post('/api/search', (req, res) => {
 app.post('/api/createuser', (req, res) => {
   createuser.createuser(req.body).then((user) => {
     console.log(`Created user: ${req.body.email}`)
-    res.json({"user_id": user.user_id, email: req.body.email, firstname: req.body.firstname});
+    res.json({ "user_id": user.user_id, email: req.body.email, firstname: req.body.firstname });
   }).catch(err => {
     console.log(err)
     res.sendStatus(err.error || 500);
   });
+})
+
+app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
+  const authenticationHeader = req.headers['authorization'];
+  const token = authenticationHeader && authenticationHeader.split(' ')[1];
+  if (await jwt.checkGuest(token)) {
+    // if guest send 418
+    res.sendStatus(418);
+  }
+  else {
+    await deleteuser.deleteAccount(req.body.user_id, req.body.password).then(async (user) => {
+      console.log(`Deleted user: ${req.body.user_id}`)
+      res.json(user);
+    }).catch(err => {
+      console.log(err)
+      res.sendStatus(500);
+    });
+  }
 })
 
 app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
@@ -259,7 +278,7 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
       await utils.addSchedulesCount();
-      res.send({...schedule, accessToken: req.user.accessToken});
+      res.send({ ...schedule, accessToken: req.user.accessToken });
     }).catch(err => {
       console.log(err)
       res.sendStatus(err.error || 500);
@@ -278,7 +297,7 @@ app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(403);
   } else {
     await getSchedule.getSchedule(req.body.friend_id).then(async (schedule) => {
-      res.send({...schedule, accessToken: req.user.accessToken});
+      res.send({ ...schedule, accessToken: req.user.accessToken });
     }).catch(err => {
       console.log(err)
       res.sendStatus(err.error || 500);
@@ -286,21 +305,13 @@ app.post('/api/groupschedules', jwt.authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/api/get/term/optimizedschedule', jwt.authenticateToken, async (req, res) => {
-  const authenticationHeader = req.headers['authorization'];
-  const token = authenticationHeader && authenticationHeader.split(' ')[1];
-  if (await jwt.checkGuest(token)) {
-    // if guest send 418
-    res.sendStatus(418);
-  }
-  else {
-    await getSchedule.getScheduleTerm(req.body.user_id, req.body.term_id).then(async (schedule) => {
-      res.send({...schedule, accessToken: req.user.accessToken});
-    }).catch(err => {
-      console.log(err)
-      res.sendStatus(err.error || 500);
-    });
-  }
+app.post('/api/get/term/optimizedschedule', async (req, res) => {
+  await getSchedule.getScheduleTerm(req.body.user_id, req.body.term_id).then(async (schedule) => {
+    res.send({ ...schedule });
+  }).catch(err => {
+    console.log(err)
+    res.sendStatus(err.error || 500);
+  });
 })
 
 app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
@@ -318,7 +329,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.error(err)
       res.sendStatus(500);
     });
-    
+
     const requiredClasses = req.body.required_classes;
     const optionalClasses = req.body.optional_classes;
     const classes = requiredClasses.concat(optionalClasses);
@@ -329,9 +340,9 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       res.sendStatus(500);
     });
 
-    await optimizer.optimizeSchedule(req.body).then((data)=>{
+    await optimizer.optimizeSchedule(req.body).then((data) => {
       console.log("Saved!");
-      res.json({accessToken: req.user.accessToken, schedule: data});
+      res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
     }).catch((err) => {
       console.log(err)
       res.sendStatus(500);
@@ -377,12 +388,23 @@ app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
     console.log(req.body);
     await schedule.addClasses(req.body).then((input) => {
       console.log("Schedule Added to Database")
-      res.json({accessToken: req.user.accessToken});
+      res.json({ accessToken: req.user.accessToken });
     }).catch(err => {
       console.error(err)
       res.sendStatus(500);
     });
   }
+});
+
+app.post('/api/saveschedule/guest', async (req, res) =>  {
+  await schedule.addClassesGuest(req.body).then((input) => {
+    console.log("Schedule Added to Guest Cookie")
+    console.log('added this schedule ' + input);
+    res.json({schedule: input});
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500);
+  });
 });
 
 app.post('/api/getclasses', async (req, res) => {
@@ -581,7 +603,7 @@ app.post('/api/edit/ratings/courses', jwt.authenticateToken, async (req, res) =>
     //console.log('ADD USER ' + await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth) + ' this is the value of add user');
     await courseRatings.editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
-    }).catch((err)=> {
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     })
@@ -593,7 +615,7 @@ app.post('/api/edit/ratings/courses', jwt.authenticateToken, async (req, res) =>
  * @param {string} user_id - ID of the user who is rating
  * @param {string} course - Name of the course they are rating
  */
-app.post('/api/delete/ratings/courses',jwt.authenticateToken, async (req, res) => {
+app.post('/api/delete/ratings/courses', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
@@ -607,7 +629,7 @@ app.post('/api/delete/ratings/courses',jwt.authenticateToken, async (req, res) =
     await courseRatings.deleteUserRating(user_id, course).then(async () => {
       await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
-    }).catch((err)=> {
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     });
@@ -658,7 +680,7 @@ app.post('/api/add/ratings/classrooms', jwt.authenticateToken, async (req, res) 
     result = await classroomRatings.addClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation);
     if (result) {
       await utils.addRatingsCount();
-      res.json({accessToken: req.user.accessToken });
+      res.json({ accessToken: req.user.accessToken });
     }
     else {
       res.sendStatus(409);
@@ -689,8 +711,8 @@ app.post('/api/edit/ratings/classrooms', jwt.authenticateToken, async (req, res)
     const technology_avail = req.body.technology_avail;
     const explanation = req.body.explanation;
     await classroomRatings.editClassroomRating(user_id, classroom, access_conv, seating_quality, technology_avail, explanation).then(() => {
-      res.json({accessToken: req.user.accessToken });
-    }).catch((err)=> {
+      res.json({ accessToken: req.user.accessToken });
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     })
@@ -714,8 +736,8 @@ app.post('/api/delete/ratings/classrooms', jwt.authenticateToken, async (req, re
     const classroom = req.body.classroom;
     await classroomRatings.deleteClassroomRating(user_id, classroom).then(async () => {
       await utils.decrementRatingsCount();
-      res.json({accessToken: req.user.accessToken });
-    }).catch((err)=> {
+      res.json({ accessToken: req.user.accessToken });
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     });
@@ -811,7 +833,7 @@ app.post('/api/edit/ratings/tas', jwt.authenticateToken, async (req, res) => {
     const explanation = req.body.explanation;
     await taRatings.editUserRating(user_id, ta, gradingFairness, questionAnswering, responsiveness, explanation).then(() => {
       res.json({ accessToken: req.user.accessToken });
-    }).catch((err)=> {
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     })
@@ -836,7 +858,7 @@ app.post('/api/delete/ratings/tas', jwt.authenticateToken, async (req, res) => {
     await taRatings.deleteUserRating(user_id, ta).then(async () => {
       await utils.decrementRatingsCount();
       res.json({ accessToken: req.user.accessToken });
-    }).catch((err)=> {
+    }).catch((err) => {
       console.log(err)
       res.sendStatus(500)
     })
@@ -927,7 +949,7 @@ app.post('/api/add/flag', jwt.authenticateToken, async (req, res) => {
     }
     else {
       await sendEmail.sendEmailWhenFlagged(type, name, user_id, jsonObj.flag_count);
-      res.json({...jsonObj, accessToken: req.user.accessToken});
+      res.json({ ...jsonObj, accessToken: req.user.accessToken });
     }
   }
 });
@@ -959,7 +981,7 @@ app.listen(port, () => {
  * @param {string} group_name - The name of the group\
  * @returns {string} group_id - The id of the group
  */
-app.post('/api/creategroup',jwt.authenticateToken, async (req, res) => {
+app.post('/api/creategroup', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
@@ -971,7 +993,7 @@ app.post('/api/creategroup',jwt.authenticateToken, async (req, res) => {
     const group_name = req.body.group_name;
     await group.createGroup(user_id, group_name).then((group_id) => {
       console.log(group_name + ' created with id ' + group_id)
-      res.json({group_id: group_id, accessToken: req.user.accessToken});
+      res.json({ group_id: group_id, accessToken: req.user.accessToken });
     }).catch((err) => {
       console.log(err);
       res.sendStatus(err.message);
@@ -996,8 +1018,8 @@ app.post('/api/joingroup', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     const group_id = req.body.group_id;
     await group.joinGroup(user_id, group_id).then((group_name) => {
-      console.log(user_id + ' joined ' + group_name );
-      res.json({group_name: group_name, accessToken: req.user.accessToken});
+      console.log(user_id + ' joined ' + group_name);
+      res.json({ group_name: group_name, accessToken: req.user.accessToken });
     }).catch((err) => {
       console.log(err);
       res.sendStatus(err.message);
@@ -1020,7 +1042,7 @@ app.post('/api/groups', jwt.authenticateToken, async (req, res) => {
   else {
     const user_id = req.body.user_id;
     await group.getGroups(user_id).then((groups) => {
-      res.json({groups: groups, accessToken: req.user.accessToken});
+      res.json({ groups: groups, accessToken: req.user.accessToken });
     }).catch((err) => {
       console.log(err);
       res.sendStatus(500);
@@ -1060,7 +1082,7 @@ app.post('/api/leavegroup', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     const group_id = req.body.group_id;
     await group.leaveGroup(user_id, group_id).then(() => {
-      res.json({accessToken: req.user.accessToken});
+      res.json({ accessToken: req.user.accessToken });
     }).catch((err) => {
       console.log(err);
       res.sendStatus(err.message);
@@ -1085,7 +1107,7 @@ app.post('/api/removegroup', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     const group_id = req.body.group_id;
     await group.removeGroup(user_id, group_id).then(() => {
-      res.json({accessToken: req.user.accessToken});
+      res.json({ accessToken: req.user.accessToken });
     }).catch((err) => {
       console.log(err);
       res.sendStatus(err.message);
@@ -1133,18 +1155,18 @@ app.post('/api/get/num_ratings', async (req, res) => {
 });
 
 app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
-    await utils.addUsersCount();
-    res.sendStatus(200);
+  await utils.addUsersCount();
+  res.sendStatus(200);
 });
 
 app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
-    await utils.addSchedulesCount();
-    res.sendStatus(200);
+  await utils.addSchedulesCount();
+  res.sendStatus(200);
 });
 
 app.post('/api/add/ratings_count', jwt.authenticateToken, async (req, res) => {
-    await utils.addRatingsCount();
-    res.sendStatus(200);
+  await utils.addRatingsCount();
+  res.sendStatus(200);
 });
 
 /*

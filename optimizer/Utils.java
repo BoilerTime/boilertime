@@ -1,6 +1,11 @@
 package optimizer;
 import java.util.*;
 import optimizer.algorithm.*;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Moment;
+import optimizer.constants.Constants;
+import optimizer.constants.EventType;
+import optimizer.constants.WeekDays;
 
 public class Utils {
 
@@ -67,6 +72,9 @@ public class Utils {
      * @return {int} A psuedo-random value that lies within the range [min, max]
      */
     public static int randInRange(Random r, int min, int max) {
+        if((max - min) + 1 < 0) {
+            return r.nextInt(100);
+        }
 		return r.nextInt((max - min) + 1) + min;
 	}
 
@@ -444,5 +452,136 @@ public class Utils {
             mean += dataSet[i];
         }
         return mean / (double) dataSet.length;
+    }
+
+    /**
+     * A helper method that converts a string that contains a week day to a WeekDay enum
+     * @param target The string to be converted
+     * @return The corresponding enum, or WeekDays.none if the day was not valid
+     */
+    public static WeekDays strToDay(String target) {
+        WeekDays res;
+        switch(target) {
+            case "Monday":
+                res = (WeekDays.monday);
+                break;
+            case "Tuesday":
+                res = WeekDays.tuesday;
+                break;
+            case "Wednesday":
+                res = WeekDays.wednesday;
+                break;
+            case "Thursday":
+                res = WeekDays.thursday;
+                break;
+            case "Friday":
+                res = WeekDays.friday;
+                break;
+            case "Saturday":
+                res = WeekDays.saturday;
+                break;
+            case "Sunday":
+            res = WeekDays.sunday;
+                break;
+            default: 
+                res = WeekDays.none;
+                break;
+        }
+        return res;
+    } 
+
+    /**
+     * A helper method that converts a list of days into an array of enum representations
+     * @param target The string in question, with days separate by a coma followed by a space
+     * @return The array result, with none where no day of week was found to be
+     */
+    public static WeekDays[] strListToDayList(String target) {
+        String[] aDays = target.split(", ");
+        WeekDays[] res = new WeekDays[aDays.length];
+        for(int i = 0; i < aDays.length; i++) {
+            res[i] = strToDay(aDays[i]);
+        }
+        return res;
+    }
+
+    /**
+     * A helper method that gets the type of event associated with some binary string
+     * @param target The target string to be examined for some event type
+     * @return The EventType corresponding with the value in question, or EventType.GENERIC if none such exists. 
+     */
+    public static EventType getEventType(String target) {
+        String strV = target.substring(0, Constants.NUM_BLOCK_BITS);
+        if (strV.equals(Constants.LECTURE)) {
+            return EventType.LECTURE;
+        } else if (strV.equals(Constants.BLOCK)) {
+            return EventType.BLOCK;
+        } else if (strV.equals(Constants.SECONDARY)) {
+            return EventType.SECONDARY;
+        }
+        return EventType.GENERIC;
+    }
+
+    public static Schedule[] insertInto(Schedule[] overall, Schedule target) {
+        
+        int index = 0;
+        while(index < overall.length) {
+            if(overall[index].getFitnessScore()  < target.getFitnessScore()) {
+                break;
+            }
+            index++;
+        }
+        System.out.println("Inserting at = " + index);
+        if(index != overall.length) {
+            Schedule[] result = new Schedule[overall.length];
+            for(int i = 0; i < index; i++) {
+                result[i] = overall[i];
+            }
+            result[index] = target;
+            for(int i = index + 1; i < result.length; i++) {
+                result[i] = overall[i - 1];
+            }
+            return result;
+        } else {
+            return overall;
+        }
+    }
+
+    public static int getPosInsert(Schedule[] overall, Schedule target) {
+        
+        int index = 0;
+        while(index < overall.length) {
+            if(overall[index].getFitnessScore()  < target.getFitnessScore()) {
+                break;
+            }
+            index++;
+        }
+        return index;
+    }
+
+    public static Event[] sortSchedule(Schedule target) {
+        HashMap<Integer, Event> result = new HashMap<Integer, Event>();
+       
+        int len = 0;
+        Event[] events = target.getEvents();
+        for(int i = 0; i < events.length; i++) {
+            int temp = Utils.binStringToNum(events[i].getID());
+            len = events[i].getID().length();
+            result.put(Integer.valueOf(temp), events[i]);
+        }
+        Set<Integer> keys = result.keySet();
+        Integer[] array = keys.toArray(new Integer[keys.size()]);
+        int[] results = new int[array.length];
+        for(int i = 0; i < array.length; i++) {
+            results[i] = array[i].intValue();
+        }
+
+        Arrays.sort(results, 0, results.length - 1);
+        Event[] res = new Event[results.length];
+        for(int i = 0; i < res.length; i++) {
+            String temp = Utils.arrToString(Utils.numToBin(array[i], len));
+            res[i] = result.get(Integer.valueOf(Utils.binStringToNum(temp)));
+            
+        }
+        return res;
     }
 }
