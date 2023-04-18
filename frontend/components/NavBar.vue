@@ -1,9 +1,9 @@
 <template>
-  <header :class="`bg-${bgColor}`">
+  <header class="'bg-${bgColor}' dark:bg-neutral-700">
     <nav class="flex items-center justify-between py-8 px-10">
       <div class="flex">
         <!-- Logo -->
-        <a href="/app" class="">
+        <a href="/app">
           <img class="w-auto h-10" src="/logo.png" />
         </a>
       </div>
@@ -18,7 +18,7 @@
               >
                 <sun v-if="!isDarkMode" class="h-7 w-7 ml-0.5 text-yellow-500">
                 </sun>
-                <moon v-else class="h-7 w-7 ml-0.5 text-indigo-500"> </moon>
+                <moon v-else class="h-7 w-7 ml-0.5 text-indigo-500"></moon>
               </MenuButton>
             </div>
             <transition
@@ -128,16 +128,18 @@
             leave-to-class="transform opacity-0 scale-95"
           >
             <MenuItems
-              class="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              class="absolute right-0 z-20 mt-2 w-36 p-1 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div class="py-1">
                 <MenuItem v-slot="{ active }">
                   <a
                     href="/group/view"
                     :class="[
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block px-4 py-2 text-sm',
-                    ]"
+                        active
+                          ? 'bg-gray-100 text-gray-900 dark:bg-neutral-500 dark:text-gray-100'
+                          : 'text-gray-900 dark:text-gray-200',
+                        'flex rounded-md px-2 py-2 text-sm',
+                      ]"
                     >My Groups</a
                   >
                 </MenuItem>
@@ -145,9 +147,11 @@
                   <a
                     href="/group/create"
                     :class="[
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block px-4 py-2 text-sm',
-                    ]"
+                        active
+                          ? 'bg-gray-100 text-gray-900 dark:bg-neutral-500 dark:text-gray-100'
+                          : 'text-gray-900 dark:text-gray-200',
+                        'flex rounded-md px-2 py-2 text-sm',
+                      ]"
                     >Create a Group</a
                   >
                 </MenuItem>

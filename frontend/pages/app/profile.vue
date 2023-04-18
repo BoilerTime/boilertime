@@ -1,6 +1,11 @@
 <template>
-  <NavBar />
-  <div class="h-screen overflow-auto p-16 bg-gray-200 dark:bg-neutral-600">
+  <div v-if="isMobile">
+    <NavBarMobile />
+  </div>
+  <div v-else>
+    <NavBar />
+  </div>
+  <div class="h-screen overflow-auto p-16 bg-gray-100 dark:bg-neutral-600">
     <!--Transition Container-->
     <TransitionRoot :show="isModalVisible" enter="transition duration-100" enter-from="opacity-0"
       enter-to="opacity-100 z-index-50" leave="transition duration-100" leave-from="opacity-100" leave-to="opacity-0">
@@ -329,6 +334,7 @@ import { saveAs } from 'file-saver';
 //import test from "node:test";
 
 var userStore = useUserStore();
+var isMobile = ref(false);
 var isModalVisible = ref(false);
 var isCourseModalVisible = ref(false);
 var isClassroomModalVisible = ref(false);
@@ -823,17 +829,27 @@ async function submit() {
     });
 }
 
+async function checkWindowSize() {
+  isMobile = window.innerWidth <= 768;
+}
+
 onMounted(async () => {
   getUserInfo();
   getBookmarks();
   getGroups();
   getratings();
   getSchedule();
+  checkWindowSize();
+  window.addEventListener("resize", checkWindowSize);
   setTimeout(() => {
     console.log(courses);
     console.log(classrooms);
     console.log(tas);
     isDataLoaded.value = true;
   }, 1000);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkWindowSize);
 });
 </script>
