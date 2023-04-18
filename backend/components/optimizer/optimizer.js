@@ -4,6 +4,8 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const iso = require('iso8601-duration');
 const utils = require('../utils/utils')
 const save = require('../schedule/saveschedule');
+//const schedule = require('../schedule/schedule');
+const scheduleSections = require('../schedule/schedule');
 const moment = require('moment')
 const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
@@ -11,7 +13,8 @@ const purdueio = require('../datasources/purdueios');
 
 
 //client.send("request open");
-const optimizeSchedule = async function(schedule) {
+async function optimizeSchedule(schedule) {
+    console.log(schedule + ' this is the schedule');
     let optimizecourses = [];
     
     let requiredLength = schedule.required_classes.length;
@@ -34,6 +37,7 @@ const optimizeSchedule = async function(schedule) {
         "daysOfWeek": [], 
         "sectionIDs": [], 
         "collectionIDs": [], 
+
         "rmp": []
     };
     
@@ -84,14 +88,47 @@ const optimizeSchedule = async function(schedule) {
         }
     }
 
+  collectionIDs = {};
+  jArray = [];
   for (let i = 0; i < output.length; i++) {
     isFull = await purdueio.isFull(output[i].name.split(' ')[0], output[i].name.split(' ')[1], output[i].sectionIDs);
     console.log(isFull);
     output[i].isFull = isFull;
+    jArray = [];
+    for (let j = 0; j < output[i].collectionIDs.length; j++) {
+      sections = await scheduleSections.getSections(output[i].name.split(' ')[0], output[i].name.split(' ')[1], output[i].collectionIDs[j]); 
+      collectionIDs[output[i].collectionIDs[j]] = sections;
+      //console.log(collectionIDs);
+      jArray[output[i].collectionIDs[j]] = ({ collectionIDs })
+      //console.log(jArray[output[i].collectionIDs[j]]);
+      for (var k = 0; k < jArray[output[i].collectionIDs[j]].length; k++) {
+        //console.log('here');
+        //console.log('object ' + jArray[output[i].collectionIDs[j]][k]);
+      }
+      //console.log('jArray\n' + jArray)
+      //output[i].collectionIDs.remove(output[i].collectionIDs[j])
+      //output[i].collectionIDs.splice(j, 1);
+    }
+    //delete output[i].collectionIDs;
+    //output[i].collectionIDs['collectionIDs'] = jArray;
+    output[i].collectionIDs = jArray;
+    /*
+    if (i == 0) 
+      console.log('i is 0');
+      console.log('PROBELM \n\n' + output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6']);
+      for (var l = 0; l < output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6'].length; l++) {
+        console.log(output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6'][l]);
+      }
+      **/
+    //console.log(jArray['collectionIDs']);
+
+    //console.log('\n\n' + jArray + '\n\n')
   }
     console.log(output)
     return output;
 }
 
-module.exports = {optimizeSchedule};
+module.exports = {
+  optimizeSchedule
+};
 

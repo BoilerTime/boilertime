@@ -12,10 +12,10 @@ const classes = db.collection('classes')
 module.exports = {
   addClasses,
   getClasses,
+  getSections,
   classCounter,
   hotClasses,
   takenTogether,
-  getSections
 }
 
 /** 
