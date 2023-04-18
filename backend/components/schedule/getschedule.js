@@ -24,7 +24,7 @@ const getSchedule = async function(user) {
     
     let userSchedule = await userProfile.data();
     //console.log(userSchedule)
-    let response = {"time": userSchedule.time, "rmp" : userSchedule.rmp, "schedule": []};
+    let response = {"time": userSchedule.time, "rmp" : userSchedule.rmp, "schedule": [], "blocked_times": userSchedule.blocked_times};
     //let classDetails = {};
     //Now, we must loop through the schedule that is stored and get the information that corresponds with each ID
     for(let i=0; i<userSchedule.schedule.length; i++) {
@@ -75,7 +75,7 @@ const getScheduleTerm = async function(user, term_id) {
     
     let userSchedule = await userProfile.data();
     //console.log(userSchedule)
-    let response = {"time": userSchedule.time, "rmp" : userSchedule.rmp, "schedule": []};
+    let response = {"time": userSchedule.time, "rmp" : userSchedule.rmp, "schedule": [], "blocked_times": userSchedule.blocked_times};
     //let classDetails = {};
     //Now, we must loop through the schedule that is stored and get the information that corresponds with each ID
     for(let i=0; i<userSchedule.schedule.length; i++) {
@@ -146,6 +146,7 @@ async function getAllUserSchedules(user_id) {
   jScheduleArray.push({ "num_schedules": numSchedules });
   return jScheduleArray;
 }
+
 
 module.exports = {
   getSchedule,

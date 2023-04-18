@@ -24,15 +24,7 @@
       <div class="p-12 bg-white rounded-lg shadow-2xl dark:bg-neutral-700 col-span-3">
         <div class="relative">
           <div class="mb-8">
-            <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
-            <fieldset class="mt-2">
-              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
-                  <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
-                </div>
-              </div>
-            </fieldset>
+
           </div>
           <label class="font-semibold text-md dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
@@ -92,7 +84,10 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="submit" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+            <button @click="isPreferencesOpen = true" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+              Customize Preferences
+            </button>
+            <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Submit
             </button>
           </div>
@@ -130,29 +125,47 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
+              
               class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl dark:bg-neutral-700 transition-all"
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-medium text-center text-gray-900 leading-6 dark:text-gray-200"
+                class="text-xl font-large text-center leading-6 dark:text-gray-200"
+                style="font-size: 30px;"
               >
-                Optimizing Your Schedule!
+                <b>{{status}}</b><span class="loader__dot">.</span><span class="loader__dot">.</span><span class="loader__dot">.</span>
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Hang tight, our algorithm is hard at work finding you the perfect schedule!
+                <p v-if="!inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  We're building your perfect schedule. This might take a bit
                 </p>
+                <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Waiting in line: Position {{posInLine}} of {{totalPos}}
+                </p>
+
+                <p v-if="inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                  Expected wait: {{mins}}
+                </p>
+                <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
                 <br/>
-                <p class="text-sm text-gray-500 dark:text-gray-200">
-                  Progress: 
-                </p>
-                <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                <div v-if="multiLoader" class="justify-center items-center">
+                  <div class="flex items-center justify-center">
+                    <div class="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
+                    <div class="h-20 w-20 rounded-full bg-white dark:bg-neutral-700"></div>
+                  </div>
+                </div>
+              </div>
+                <div class="mt-2" v-if="algorithmProgress">
+                  <p class="text-sm text-gray-500 dark:text-gray-200">Progress:</p>
+                  <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
+                </div>
               </div><br/>
               <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
                 Cancel
               </button>
-              
-
+              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+                Tips
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -173,7 +186,6 @@
       >
         <div class="fixed inset-0 bg-black bg-opacity-25" />
       </TransitionChild>
-
       <div class="fixed inset-0 overflow-y-auto">
         <div
           class="flex items-center justify-center min-h-full p-4 text-center"
@@ -201,26 +213,181 @@
                   Which Schedule Looks Good to You?
                 </p>
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
-                <v-card text="..."></v-card>
               </div>
 
-            <!-- Data items -->
-            <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
-              @click="getScheduleView(index)">
-              <div
-                class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-                <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
-                  <div>
-                   <span class="text-sm text-black" 
-                      >{{ schedule }} <br/>
-                    </span><br/>
+
+
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <TransitionRoot :show="isPreferencesOpen" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-gray-900 leading-6"
+              >
+                Your Schedule <span class="text-yellow-500">Preferences</span>
+              </DialogTitle>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Let's make a schedule that <span class="text-yellow-500">works for you</span>
+                </p>
+                            <!-- Data items -->
+                            <br/>
+              <label class="font-semibold text-md dark:text-gray-200">Select your preference order:</label>
+              <div class="flex justify-center">
+                <div class="w-64">
+                  <draggable2
+                    class="dragArea list-group w-full"
+                    :list="state.list"
+                    :sort="true"
+                  >
+                    <div
+                      class="list-group-item bg-gray-300 m-1 p-1 rounded-md text-left cursor-move w-full"
+                      v-for="(element, key) in state.list"
+                      :key="element.name"
+                    >
+                      {{ (key + 1) + ". " + element.name }}
+                    </div>
+                  </draggable2>
+                </div>
+              </div>
+              <p class="text-sm text-gray-500">
+                  Drag <span class="text-yellow-500">and drop</span> to reorder
+                </p>
+              <br/>
+              <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
+                <fieldset class="mt-2">
+                  <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                    <div v-for="time in timePreference" :key="time.id" class="flex items-center">
+                      <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                      <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
+                    </div>
                   </div>
+                </fieldset>
+              </div>
+              <br/>
+              <label class="font-semibold text-md dark:text-gray-200">How many classes do you want to take?</label>
+              <div>
+                <input class="shadow appearance-none border border-yellow-500 rounded w-half py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="courseCount" placeholder="Between 1 and 5 Courses" @input="validateInput()">
 
+              </div>
+              <div class="mt-2">
+                <p class="text-xs text-gray-500"><i>Note, because optimization relies on Artificial Inteligence, we can't guarentee your preferences will be honored </i></p>
+              </div>
+              <button @click="hidePreferences()" class="float-right bg-yellow-500 hover:bg-green-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+                Save
+              </button>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+        
+      </div>
+      
+    </Dialog>
+  </TransitionRoot>
 
-                </div>
-                </div>
-            </div>
-
+  <TransitionRoot :show="displayTips" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-l p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-black leading-6"
+                style="font-size: 36px;"
+              >
+                <b>About BoilerTime</b>
+              </DialogTitle>
+              <div>
+                <p class="text-xl">
+                  How it Works
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
+                  <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                </ul>
+              </div>
+              <br/>
+              <div>
+                <p class="text-xl">
+                  How to Use It
+                </p>
+                <ul class="list-disc list-inside text-sm">
+                  <li>It looks like you're already an expert! Congrats on making a schedule</li>
+                  <li>Next time, look at our hub first to discover classes you might want to take and see a bit of info first
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - That way, you can see if the right professors, times of day, or locations are there for you</li>
+                    <li> - You can always bookmark a course to come back later if you're not satisfied</li>
+                  </ul></li>
+                  <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
+                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                    <li> - To save everyone time and money, take a look over the class options before optimizing</li>
+                    <li> - Never re-optimize the same schedule unless you don't like any of the results</li>
+                    <li> - If you've inputted optional classes that don't show up in any of the options, remove another class before re-optimizing</li>
+                  </ul>
+                  <li>Be realistic about the number of classes you'd like to take, the number of classes inputted will be filled</li>
+                </ul>
+              </div>
+              <button @click="closeTips()" class="float-middle bg-yellow-500 hover:bg-red-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+                Close
+              </button>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -230,13 +397,21 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch } from 'vue'
+/*
+ * Status Possibilities
+ * 1) Getting data for schedule from backend
+ * 2) Sending schedule data to algorithm
+ * 3) Waiting in line for optimization 
+ * 4) Optimizing
+ */
+import { ref, computed, watchEffect, watch, reactive } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
-
+import { VueDraggableNext as draggable2 } from 'vue-draggable-next'
 import draggable from 'vuedraggable'
+
 import {
   TransitionRoot,
   TransitionChild,
@@ -255,9 +430,20 @@ const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref(false)
 const isResultOpen = ref(false);
+const isPreferencesOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
 const toast = useToast();
+const isAlgoActive = ref(false);
+const status = ref('');
+const algorithmProgress = ref(true)
+const inLine = ref(false)
+const posInLine = ref('');
+const totalPos = ref('');
+const multiLoader = ref(false)
+const displayTips = ref(false)
+const mins = ref('');
+const courseCount = ref('5');
 var totalSum;
 
 function closeModal() {
@@ -278,10 +464,18 @@ const config = {
 }
 
 const timePreference = [
-  { id: 'none', title: 'No preference' },
-  { id: 'morning', title: 'Before 12 noon' },
-  { id: 'afternoon', title: 'After 12 noon' },
+  { id: 'none', title: 'None' },
+  { id: 'morning', title: 'Morning' },
+  { id: 'afternoon', title: 'Afternoon' },
 ]
+
+const state = reactive({
+      list: [
+        { name: 'Time of Day', id: 1, value: "TOD" },
+        { name: 'Professor Ratings', id: 2, value: "RMP" },
+        { name: 'TA Ratings', id: 3, value: "TAR" }
+      ],
+    })
 
 onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
@@ -294,6 +488,7 @@ onBeforeMount(() => {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
+    console.log(selectedRequiredCourses.value);
   })
   axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
@@ -321,27 +516,21 @@ onMounted(() => {
   $socket.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
+    //algorithmProgress.show = true
   }
   $socket.onmessage = ((data) => {
-    console.log("data", JSON.parse(data.data))
+    console.log("data", (data.data))
     try {
       let response = JSON.parse(data.data);
       console.log("STATUS" + response.status)
       if(response?.message == "schedule") {
         parseCoursesResponse(response.data);
       } else if (response?.message == "Status Update") {
-        if(completed.value < 100) {
-          //completed.value = (completed.value + response.data)%100;v
-          var temp = completed.value + response.data;
-          if(temp > 99) {
-            completed.value = 99;
-          } else {
-            completed.value = temp;
-          }
-        }
-
-      }
-      if(response.status === 404) {
+        //isAlgoActive.value = true;
+        optimizing(response.data);
+      } else if (response?.status == 102 && response?.message == "Position in Queue Update") {
+        inQueue(response.data.currentPos, response.data.totalWaiting);
+      } else if(response.status === 404) {
           console.log("ERROR!!")
           toast.error("No Schedule Found!! Please try again ", {
             timeout: 5000,
@@ -364,25 +553,20 @@ const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
 function addToSelected(item) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-  if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
-    && !selectedOptionalCourses.value.includes(item)) {
+  console.log(item)
+  if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item) && !selectedOptionalCourses.value.includes(item)) {
     selectedRequiredCourses.value.push(item)
     isSearchActive.value = false
     searchTerm.value = ''
+    console.log(selectedRequiredCourses.value);
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: timePrefValue,
-      rmp: rmpValue
+      optional_classes: selectedOptionalCourses.value, 
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -394,8 +578,10 @@ function addToSelected(item) {
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
     })
+  } else {
+    console.log(selectedRequiredCourses.value);
   }
-  if (selectedRequiredCourses.value.length > 5) {
+  if (selectedRequiredCourses.value.length >= 5) {
     alert('You can only select 5 required courses')
     searchTerm.value = ''
   }
@@ -433,14 +619,6 @@ const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
 
 function addToSelectedOptional(item) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
     && !selectedRequiredCourses.value.includes(item)) {
     selectedOptionalCourses.value.push(item)
@@ -450,8 +628,10 @@ function addToSelectedOptional(item) {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: timePrefValue,
-      rmp: rmpValue
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -475,22 +655,15 @@ function addToSelectedOptional(item) {
 }
 
 function removeFromSelected(index) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-
   selectedRequiredCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -505,21 +678,15 @@ function removeFromSelected(index) {
 }
 
 function removeOptional(index) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   selectedOptionalCourses.value.splice(index, 1)
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
     optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
       userStore.user = {
@@ -607,27 +774,23 @@ function submit() {
     });
     return
   }
-  console.log("time pref = " + time_pref.value);
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
   if (selectedRequiredCourses.value.length > 0) {
-    openModal()
+    openModal();
+    waitingForData();
     axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
       time: time_pref.value,
-      time: timePrefValue,
-      rmp: rmpValue
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
-      sendToOptimizer(response.data.schedule)
+      sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
+      isAlgoActive.value = false;
+
       console.log("TWT")
       console.log(courseList)
       if (response.data["accessToken"] != undefined) {
@@ -649,66 +812,69 @@ function submit() {
   
 }
 
-function sendToOptimizer(data) {
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-
-  if(!isOpen.value) {
-    console.log("Critical Error: WS isn't open ")
+function sendToOptimizer(courses, blocks) {
+  if($socket.readyState != $socket.OPEN) {
+    toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
   }
   //We first need to send them number of classes we will be optimzing by
-  $socket.send(data.length)
+  $socket.send(courses.length)
+  $socket.send(blocks.length);
   //Next, we send the time of day preferences
-  $socket.send(timePrefValue)
+  $socket.send(getTimePref())
   //$socket.send(timePreference[time_pref.value]);
   //Next, we send the RMP prefernces
   $socket.send(rmpValue);
 
-  //Next, we can start iterating over the course list
-  for(let i = 0; i < data.length; i++) {
+  /*
+    * Take care of the courses that the user has entered
+  */
+  for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
-    $socket.send(data[i].name)
+    $socket.send(courses[i].name)
     //Next, we can send the number of sections
-    $socket.send(data[i].isRequired)
+    $socket.send(courses[i].isRequired)
 
-    $socket.send(data[i].startTimes.length);
+    $socket.send(courses[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
-    for(let j = 0; j < data[i].startTimes.length; j++) {
+    for(let j = 0; j < courses[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(fixTime(data[i].startTimes[j]));
+      $socket.send(fixTime(courses[i].startTimes[j]));
       //Durations
-      $socket.send(data[i].durations[j]);
+      $socket.send(courses[i].durations[j]);
       //Week days 
-      console.log(data[i].daysOfWeek[j]);
-      $socket.send(data[i].daysOfWeek[j]);
+      console.log(courses[i].daysOfWeek[j]);
+      $socket.send(courses[i].daysOfWeek[j]);
       //RMP
-      $socket.send(data[i].rmp[j]);
+      $socket.send(courses[i].rmp[j]);
       //Section ID
-      $socket.send(data[i].sectionIDs[j]);
+      $socket.send(courses[i].sectionIDs[j]);
     }
+  }
+  /*
+    * Take care of the blocks that the user has entered
+  */
+  for(let i = 0; i < blocks.length; i++) {
+    $socket.send(blocks[i].name);
+    $socket.send(blocks[i].start_time);
+    $socket.send(blocks[i].duration);
+    $socket.send(blocks[i].days_of_week);
   }
 }
 
-function parseCoursesResponse(data) {
-  isResultOpen.value = true; 
-  let timePrefValue = time_pref.value;
-  let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
-    rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
-    rmpValue = "RMP";
-  }
-
+function parseCoursesResponse(output) {
+  console.log("Parsing Response!!!!!");
+  displayingResults();
+  let timePref = getTimePref();
+  let data = output.lectures;
+  let blocks = output.blocks;
   const formatString = "course_name at course_time on course_week_days"
-  var courses = [];
+  const blockFormatString = "block_name at block_time on block_days_of_week for block_duration minutes"
+  var userOutput = [];
   console.log(data)
+  console.log(blocks)
   for(let i = 0; i < data.length; i++) {
     
     //let thisFormat = [];
@@ -730,15 +896,37 @@ function parseCoursesResponse(data) {
       }
       thisFormat += (string)
     }
-    courses.push(thisFormat)
+    if(blocks[i].length > 0) {
+      thisFormat += ". Time off: "
+      for(let j = 0; j < blocks[i].length; j++) {
+        let string = "";
+        if(j == blocks[i].length - 1) {
+          console.log("TWT")
+          string += "and "
+        }
+        let tempForm = new String(blockFormatString);
+        string+= tempForm;
+        console.log(data[i][j]);
+        string = string.replace("block_name", blocks[i][j].blockName);
+        string = string.replace("block_time", fto2(blocks[i][j].blockStarTime));
+        string = string.replace("block_duration", blocks[i][j].blockDuration);
+        string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
+        if(j != blocks[i].length - 1) {
+        string += ", "
+      }
+      thisFormat += (string)
+      }
+    }
+    userOutput.push(thisFormat)
   }
 
-  schedule.value = courses;
-  console.log("Temp Form = " + courses);
+  schedule.value = userOutput;
+  console.log("Temp Form = " + userOutput);
   
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+  let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
   for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": []};
+    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": [], "blocked_times": []};
 
     for(let i = 0; i < data[j].length; i++) {
       let name = data[j][i].courseID;
@@ -754,8 +942,19 @@ function parseCoursesResponse(data) {
       thisFormat.userSections.meetings.push(data[j][i].sectionId);
       serverOutput.schedule.push(thisFormat)
     }
+    for(let i = 0; i < blocks[j].length; i++) {
+      let thisFormat = JSON.parse(JSON.stringify(blockFormat));
+      thisFormat.name = blocks[j][i].blockName;
+      thisFormat.start_time = blocks[j][i].blockStarTime;
+      thisFormat.duration = blocks[j][i].blockDuration;
+      thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
+      console.log(thisFormat)
+      serverOutput.blocked_times.push(thisFormat);
+    }
     resultsList.push(serverOutput);
   }
+  console.log("DATA = ")
+  console.log(resultsList);
 } 
 
 
@@ -832,6 +1031,111 @@ function fixTime(time) {
   hours = parseInt(hours - 5);
   return new String(hours) + time.substring(2, 4);
 }
+
+function waitingForData() {
+  const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
+  status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  algorithmProgress.value = false;
+  inLine.value = false;
+  multiLoader.value = true;
+}
+
+function inQueue(position, size) {
+  const messages = ["Waiting to Optimize", "Optimizing Soon", "Waiting", "Ready to Optimize"];
+  if(!inLine.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
+  inLine.value = true;
+  algorithmProgress.value = false;
+  posInLine.value = position;
+  totalPos.value = size;
+  multiLoader.value = true;
+  mins.value = (position / 2).toPrecision(2) + " Minute" + pluralize((position / 2).toPrecision(1))
+}
+
+function optimizing(progress) {
+  const messages = ["Optimizing", "Loading Perfection", "Generating Schedule", "Maximizing Schedule"];
+  if(!algorithmProgress.value)
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data" 
+
+  algorithmProgress.value = true;
+  inLine.value = false;
+  multiLoader.value = false;
+  if(completed.value < 100) {
+    //completed.value = (completed.value + response.data)%100;v
+    var temp = completed.value + progress;
+    if(temp > 99) {
+      completed.value = 99;
+    } else {
+      completed.value = temp;
+    }
+  }
+}
+
+function displayingResults() {
+  closeModal();
+  if(displayTips.value) {
+    toast.info("Your optimize schedule is ready! Close this to take a look", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_RIGHT
+        });
+  } else {
+    isResultOpen.value = true;
+  }
+}
+
+function closeTips() {
+  displayTips.value = false;
+  if(!isOpen.value) {
+    isResultOpen.value = true;
+  }
+}
+function randInt(max) {
+    return Math.floor(Math.random() * max) + 1;
+}
+
+function pluralize(value) {
+  if(value == 1) {
+    return ""
+  }
+  return "s";
+}
+
+function validateInput() {
+  if(courseCount.value == "") {
+    console.log("EMPTY")
+  } else if(!(new RegExp(/^[1-5]$/).test(courseCount.value))) {
+    courseCount.value = 1;
+    toast.error("You must enter at least 1 class and at most 5 classes", {
+            timeout: 1000,
+            position: POSITION.BOTTOM_RIGHT
+    });
+  }
+}
+
+function getPreferenceList() {
+  let result = [];
+  for(let i = 0; i < state.list.length; i++) {
+    result.push(state.list[i].value);
+  }
+
+  return result;
+}
+
+function hidePreferences() {
+  console.log(selectedOptionalCourses.value);
+  isPreferencesOpen.value = false;
+}
+
+function getTimePref() {
+  return time_pref.value;
+}
+
+function getNumCourses() {
+  if(!(new RegExp(/^[1-5]$/).test(courseCount.value))) {
+    return 1;
+  }
+  return courseCount.value;
+}
 </script>
 
 <style scoped>
@@ -842,4 +1146,9 @@ function fixTime(time) {
 .hover\:bg-red-500:hover::after {
   content: ' ✖';
 }
+
+@keyframes blink {50% { color: transparent }}
+.loader__dot { animation: 1s blink infinite }
+.loader__dot:nth-child(2) { animation-delay: 250ms }
+.loader__dot:nth-child(3) { animation-delay: 500ms }
 </style>

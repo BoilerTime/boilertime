@@ -65,6 +65,13 @@ async function getGroup(group_id) {
   return { ...data, "group_id": group.id };
 }
 
+
+async function inGroup(user_id, group_id, friend_id) {
+  const group = await groups.doc(group_id).get();
+  const data = group.data()
+  return data.member_ids.includes(user_id) && data.member_ids.includes(friend_id);
+}
+
 async function checkMax(group_id) {
   const group = await groups.doc(group_id).get();
   const data = group.data()
@@ -142,4 +149,5 @@ async function removeGroup(user_id, group_id) {
   }
 }
 
-module.exports = { createGroup, joinGroup, getGroups, getGroup , removeGroup, leaveGroup}
+module.exports = { createGroup, joinGroup, getGroups, getGroup, inGroup, removeGroup, leaveGroup}
+
