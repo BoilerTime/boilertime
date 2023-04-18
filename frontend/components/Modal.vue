@@ -1,6 +1,6 @@
 <template>
   <div class="absolute modal-backdrop grid grid-flow-row justify-center items-center inset-x-1/2 inset-y-1/4">
-    <div class="modal bg-white dark:bg-neutral-700 rounded-lg p-8 border shadow-lg">
+    <div class="modal bg-white dark:bg-neutral-700 rounded-lg p-8 border shadow-lg max-w-sm md:max-w-lg">
       <header class="modal-header grid grid-flow-col p-5">
         <slot name="header">
         </slot>
@@ -16,7 +16,7 @@
         </slot>
         <button
           type="button"
-          class="btn-close bg-red-500 w-auto rounded-lg font-bold border dark:border-black text-white p-2 hover:bg-red-700"
+          class="btn-close w-auto rounded-lg font-bold text-yellow-700 dark:text-white p-2"
           @click="closeModal"
         >
           Cancel

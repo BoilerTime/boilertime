@@ -18,7 +18,7 @@
         </template>
         <template #body>
           <div class="flex flex-col gap-4">
-            <div class="flex flex-row gap-4">
+            <div class="flex flex-col md:flex-row gap-4">
               <div class="flex flex-col gap-2">
                 <label for="firstname" class="font-bold dark:text-gray-200">First Name</label>
                 <input type="text" id="firstname" v-model="firstname"
@@ -80,13 +80,13 @@
               <div class="flex flex-col gap-4">
                 <label for="isGradStudent" class="font-bold dark:text-gray-200 justify-end">Graduate Student</label>
                 <button id="isGradStudent" @click="isGradStudent = !isGradStudent"
-                  class="border rounded-lg p-2 bg-indigo-500 hover:bg-indigo-700 text-white dark:border-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                  class="rounded-lg p-2 bg-indigo-100 hover:bg-indigo-700 dark:text-white text-indigo-500 dark:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                   {{ isGradStudent ? "Yes" : "No" }}
                 </button>
               </div>
             </div>
             <button @click="showPasswordChange"
-              class="text-black dark:text-gray-200 text-lg font-bold py-2 px-3 hover:underline">
+              class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline">
               Need to change your password?
             </button>
             <div v-if="TestsDiv">
@@ -106,17 +106,31 @@
                 <!--Confirms the password change-->
                 <div class="container py-3 px-5 w-full flex flex-col items-center">
                   <button type="submit"
-                    class="bg-green-500 hover:bg-green-700 border dark:border-black text-white font-bold py-2 px-10 rounded-lg">
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-lg">
                     Confirm
                   </button>
                 </div>
               </form>
             </div>
+            <button @click="showDeleteAccount" class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline">
+              Delete account
+            </button>
+            <div v-if="DeleteAccountDiv" class="flex flex-col items-center gap-4">
+              <!--Delete Account-->
+              <input type="password" id="password"
+                class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Password" v-model="password" required />
+              <button type="button"
+                class="w-1/8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-lg"
+                @click="deleteAccount">
+                  Delete Account
+              </button>
+            </div>
           </div>
         </template>
         <template #footer>
           <button type="button"
-            class="w-1/8 bg-yellow-500 hover:bg-yellow-700 border dark:border-black text-white font-bold py-2 px-2 rounded-lg"
+            class="w-1/8 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-2 rounded-lg"
             @click="submit">
             Submit
           </button>
@@ -268,27 +282,6 @@
           </ul>
         </div>
       </div>
-      <!--Flex grouping for groups-->
-      <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">Groups 😎</h1>
-        <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4">
-          <ul class="list-inside list-item">
-            <li class="divide-y divide-solid">
-            <li v-for="(item, index) in groups" :key="index">
-            <li class="mb-2 font-bold">Group Name:</li>
-            <li class="mb-2 font-light">{{ item.group_name }}</li>
-            <li class="mb-2 font-bold">Group Members:</li>
-            <li class="font-light mb-2" v-for="(item, index) in groups[index].member_names" :key="index">
-              {{ item }}
-            </li>
-            <li class="mb-2 font-bold">Invite Link:</li>
-            <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
-              item.group_id }}</li>
-            </li>
-            </li>
-          </ul>
-        </div>
-      </div>
       <!--Edit Profile Button-->
       <div class="grid grid-flow-col gap-4 justify-end">
         <button type="button"
@@ -301,15 +294,6 @@
           class="w-1/8 bg-green-500 hover:bg-green-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
           @click="history">
           Get All User Data
-        </button>
-        <!--Delete Account-->
-        <input type="password" id="password"
-          class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="Password" v-model="password" required />
-        <button type="button"
-          class="w-1/8 bg-red-500 hover:bg-red-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
-          @click="deleteAccount">
-          Delete Account
         </button>
         <!--Go home-->
         <button
@@ -364,6 +348,15 @@ function showPasswordChange() {
     TestsDiv.value = false;
   } else {
     TestsDiv.value = true;
+  }
+}
+
+var DeleteAccountDiv = ref(false);
+function showDeleteAccount() {
+  if (DeleteAccountDiv.value == true) {
+    DeleteAccountDiv.value = false;
+  } else {
+    DeleteAccountDiv.value = true;
   }
 }
 
