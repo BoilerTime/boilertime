@@ -329,17 +329,15 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.error(err)
       return res.sendStatus(500);
     });
-
+    
+    const requiredClasses = req.body.required_classes;
     const optionalClasses = req.body.optional_classes;
     const user_id = req.body.user_id;
     const classes = requiredClasses.concat(optionalClasses);
 
-    // save previous schedule
-    await optimizer.optimizeSchedule(req.body).then((data)=> {
+    await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
-      // if no error: class counterdecrement using previous schedule (don't need to await)
-      //class counter increment
-      return res.json({accessToken: req.user.accessToken, schedule: data});
+      res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
     }).catch((err) => {
       console.log(err)
       return res.sendStatus(500);
@@ -1240,6 +1238,7 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
 });
 
 app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
+  console.log(req.body)
   const user_id = req.body.user_id;
   const course = req.body.course;
   names = await schedule.getClassMates(user_id, course);
