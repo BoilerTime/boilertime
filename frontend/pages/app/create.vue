@@ -515,46 +515,46 @@ onBeforeMount(() => {
   else {
     console.log('is a guest is true');
   }
-  axios.get('http://localhost:3001/api/searchnew').then((response) => {
+  axios.get('https://api.boilerti.me/api/searchnew').then((response) => {
     data.value = response.data
   })
-  axios.get('http://localhost:3001/api/searchnew').then((response) => {
+  axios.get('https://api.boilerti.me/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
-  axios.post('http://localhost:3001/api/getclasses', {
+  axios.post('https://api.boilerti.me/api/getclasses', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
   })
-  axios.post('http://localhost:3001/api/getclasses', {
+  axios.post('https://api.boilerti.me/api/getclasses', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedOptionalCourses.value = response.data.optional_classes
   })
-  axios.post('http://localhost:3001/api/getbookmarks', {
+  axios.post('https://api.boilerti.me/api/getbookmarks', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     bookmarked_classes.value = response.data.bookmarks
   })
-  axios.get('http://localhost:3001/api/hotclasses').then((response) => {
+  axios.get('https://api.boilerti.me/api/hotclasses').then((response) => {
     trending_classes.value = response.data
   })
 
   if (!isAGuest.value) {
     console.log('here in not a guest');
-    axios.post('http://localhost:3001/api/getclasses', {
+    axios.post('https://api.boilerti.me/api/getclasses', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       selectedRequiredCourses.value = response.data.required_classes
     })
-    axios.post('http://localhost:3001/api/getclasses', {
+    axios.post('https://api.boilerti.me/api/getclasses', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       selectedOptionalCourses.value = response.data.optional_classes
       time_pref.value = response.data.time;
       console.log(response.data.time + ' this is the time');
     })
-    axios.post('http://localhost:3001/api/getbookmarks', {
+    axios.post('https://api.boilerti.me/api/getbookmarks', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       bookmarked_classes.value = response.data.bookmarks
@@ -639,7 +639,7 @@ function updateTimePref(time) {
     rmpValue = "RMP";
   }
   if (!isAGuest.value) {
-    axios.post('http://localhost:3001/api/saveschedule', {
+    axios.post('https://api.boilerti.me/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
@@ -659,7 +659,7 @@ function updateTimePref(time) {
     });
   }
   else {
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
+    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value, 
@@ -692,7 +692,7 @@ async function addToSelected(item) {
       selectedRequiredCourses.value.push(item)
       isSearchActive.value = false
       searchTerm.value = ''
-      axios.post('http://localhost:3001/api/saveschedule', {
+      axios.post('https://api.boilerti.me/api/saveschedule', {
         user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
@@ -718,7 +718,7 @@ async function addToSelected(item) {
       selectedRequiredCourses.value.push(item)
       isSearchActive.value = false
       searchTerm.value = ''
-      axios.post('http://localhost:3001/api/saveschedule/guest', {
+      axios.post('https://api.boilerti.me/api/saveschedule/guest', {
         user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
@@ -730,7 +730,7 @@ async function addToSelected(item) {
       });
     }
   }
-  await axios.post('http://localhost:3001/api/takentogether', {
+  await axios.post('https://api.boilerti.me/api/takentogether', {
     class: item,
   }).then((response) => {
     together_classes.value = response.data;
@@ -788,7 +788,7 @@ async function addToSelectedOptional(item) {
       selectedOptionalCourses.value.push(item)
       isOptionalSearchActive.value = false
       optionalSearchTerm.value = ''
-      axios.post('http://localhost:3001/api/saveschedule', {
+      axios.post('https://api.boilerti.me/api/saveschedule', {
         user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value,
@@ -815,7 +815,7 @@ async function addToSelectedOptional(item) {
       isOptionalSearchActive.value = false
       optionalSearchTerm.value = ''
       searchTerm.value = ''
-      axios.post('http://localhost:3001/api/saveschedule/guest', {
+      axios.post('https://api.boilerti.me/api/saveschedule/guest', {
         user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value, 
@@ -827,7 +827,7 @@ async function addToSelectedOptional(item) {
       });
     }
   }
-  await axios.post('http://localhost:3001/api/takentogether', {
+  await axios.post('https://api.boilerti.me/api/takentogether', {
     class: item,
   }).then((response) => {
     together_classes.value = response.data;
@@ -855,7 +855,7 @@ function removeFromSelected(index) {
 
   if (!isAGuest.value) {
     selectedRequiredCourses.value.splice(index, 1)
-    axios.post('http://localhost:3001/api/saveschedule', {
+    axios.post('https://api.boilerti.me/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -876,7 +876,7 @@ function removeFromSelected(index) {
   }
   else {
     selectedRequiredCourses.value.splice(index, 1)
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
+    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -900,7 +900,7 @@ function removeOptional(index) {
 
   if (!isAGuest.value) {
     selectedOptionalCourses.value.splice(index, 1)
-    axios.post('http://localhost:3001/api/saveschedule', {
+    axios.post('https://api.boilerti.me/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -921,7 +921,7 @@ function removeOptional(index) {
   } 
   else {
     selectedOptionalCourses.value.splice(index, 1)
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
+    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -935,7 +935,7 @@ function removeOptional(index) {
 
 function removeFromBookmarked(index) {
   bookmarked_classes.value.splice(index, 1);
-  axios.post('http://localhost:3001/api/removebookmark', {
+  axios.post('https://api.boilerti.me/api/removebookmark', {
     user_id: userStore.user_id,
     class_name: bookmarked_classes.value
   }, config).then(() => {
@@ -975,7 +975,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
     if (!isAGuest.value) {
       console.log(`New bookmark added: ${newBookmark}`)
       console.log(bookmarked_classes.value)
-      axios.post('http://localhost:3001/api/addbookmark', {
+      axios.post('https://api.boilerti.me/api/addbookmark', {
         user_id: userStore.user_id,
         class_name: bookmarked_classes.value
       }, config).then(() => {
@@ -990,7 +990,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
     const removedBookmark = oldVal[oldVal.length - 1]
     if (!isAGuest.value) {
       console.log(`Bookmark removed: ${removedBookmark}`)
-      axios.post('http://localhost:3001/api/removebookmark', {
+      axios.post('https://api.boilerti.me/api/removebookmark', {
         user_id: userStore.user_id,
         class_name: bookmarked_classes.value
       }, config).then(() => {
@@ -1035,7 +1035,7 @@ function submit() {
   if (selectedRequiredCourses.value.length > 0) {
     openModal();
     waitingForData();
-    axios.post('http://localhost:3001/api/createschedule', {
+    axios.post('https://api.boilerti.me/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -1245,7 +1245,7 @@ function findIDIndex(position, target) {
 }
 
 function saveOptimizedSchedule(schedule) {
-  axios.post('http://localhost:3001/api/saveoptimizedschedule', {
+  axios.post('https://api.boilerti.me/api/saveoptimizedschedule', {
     data: schedule,
     user_id: userStore.user_id
   }).then(() => {

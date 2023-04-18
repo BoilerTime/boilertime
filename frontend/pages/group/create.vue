@@ -70,7 +70,7 @@ var group_id = "";
 async function creategroup() {
   await axios
     .post(
-      "http://localhost:3001/api/creategroup",
+      "https://api.boilerti.me/api/creategroup",
       {
         user_id: user_id,
         group_name: group_name.value,

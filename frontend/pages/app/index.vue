@@ -370,7 +370,7 @@ function formatTitle(title) {
 }
 
 onBeforeMount(async () => {
-  await axios.post('http://localhost:3001/api/get/user_schedules', {
+  await axios.post('https://api.boilerti.me/api/get/user_schedules', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     userSchedules.value = response.data
@@ -386,7 +386,7 @@ onBeforeMount(async () => {
   });
   if (!isAGuest.value) {
     if (numSchedules === 0 && guestStore.schedule) {
-      axios.post('http://localhost:3001/api/saveschedule', {
+      axios.post('https://api.boilerti.me/api/saveschedule', {
         user_id: userStore.user_id,
         required_classes: guestStore.schedule.required_classes,
         optional_classes: guestStore.schedule.optional_classes, 
@@ -460,7 +460,7 @@ const config = {
 async function flag(id, type) {
   console.log(id, type, result.value)
   try {
-    await axios.post('http://localhost:3001/api/add/flag', {
+    await axios.post('https://api.boilerti.me/api/add/flag', {
       user_id: id,
       type: type,
       name: result.value.replace(/ /g, '')
@@ -479,19 +479,19 @@ async function logout() {
 
 async function fetch() {
   try {
-    await axios.get('http://localhost:3001/api/professorsnew')
+    await axios.get('https://api.boilerti.me/api/professorsnew')
       .then(response => {
         professors.value = response.data
       })
-    await axios.get('http://localhost:3001/api/classroomsnew')
+    await axios.get('https://api.boilerti.me/api/classroomsnew')
       .then(response => {
         classrooms.value = response.data.classrooms
       })
-    await axios.get('http://localhost:3001/api/searchnew')
+    await axios.get('https://api.boilerti.me/api/searchnew')
       .then(response => {
         courses.value = response.data
       })
-    await axios.get('http://localhost:3001/api/tasnew')
+    await axios.get('https://api.boilerti.me/api/tasnew')
       .then(response => {
         tas.value = Object.keys(response.data)
         tas_inv.value = response.data
@@ -538,7 +538,7 @@ async function navigate(selected, type) {
     // ratemyprofessor
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
-    axios.post('http://localhost:3001/api/getoverall_gpa', {
+    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
@@ -558,7 +558,7 @@ async function navigate(selected, type) {
         console.log(error)
         resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
       })
-    axios.post('http://localhost:3001/api/ratemyprofessor', {
+    axios.post('https://api.boilerti.me/api/ratemyprofessor', {
       prof_name: result.value
     })
       .then(response => {
@@ -572,7 +572,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
+    axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -581,7 +581,7 @@ async function navigate(selected, type) {
         resultData.value.push(data)
       })
     var search = result.value.split(' ')[0]
-    var lookup = await axios.get('http://localhost:3001/api/buildingsnew');
+    var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
     lookup = lookup.data
     var len = 151
     for (var i = 0; i < len; i++) {
@@ -594,7 +594,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Course') {
     // course_ratings/courses
-    axios.post('http://localhost:3001/api/get/course_ratings/courses', {
+    axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -605,7 +605,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
+    axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
@@ -629,7 +629,7 @@ async function getUserInfo() {
   }
   user_id.value = userStore.user_id;
   axios
-    .post("http://localhost:3001/api/get/profile/", {
+    .post("https://api.boilerti.me/api/get/profile/", {
       user_id: userStore.user_id,
     }, config)
     .then((response) => {
@@ -641,7 +641,7 @@ async function getUserInfo() {
     });
   axios
     .post(
-      "http://localhost:3001/api/get/darkmode/",
+      "https://api.boilerti.me/api/get/darkmode/",
       {
         user_id: userStore.user_id,
       },

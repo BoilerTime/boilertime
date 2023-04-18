@@ -37,7 +37,7 @@ export const useGuestStore = defineStore("guest", {
 
     },
     async saveSchedule() {
-      await axios.post('http://localhost:3001/api/saveschedule/guest', this.guest.schedule)
+      await axios.post('https://api.boilerti.me/api/saveschedule/guest', this.guest.schedule)
       .then(response => {
         this.guest= {
           accessToken: response.data["accessToken"]
