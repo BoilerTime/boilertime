@@ -84,7 +84,7 @@
             </draggable>
           </div>
           <div class="mt-8">
-            <button @click="isPreferencesOpen = true" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+            <button @click="showPrefMenu()" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Customize Preferences
             </button>
             <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
@@ -488,6 +488,7 @@ onBeforeMount(() => {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
+    courseCount.value = response.data.num_courses;
     console.log(selectedRequiredCourses.value);
   })
   axios.post('http://localhost:3001/api/getclasses', {
@@ -1124,6 +1125,25 @@ function getPreferenceList() {
 function hidePreferences() {
   console.log(selectedOptionalCourses.value);
   isPreferencesOpen.value = false;
+  axios.post('http://localhost:3001/api/saveschedule', {
+    user_id: userStore.user_id,
+    required_classes: selectedRequiredCourses.value,
+    optional_classes: selectedOptionalCourses.value,
+    time: getTimePref(),
+    preference_list: getPreferenceList(),
+    num_courses: getNumCourses(),
+    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+  }, config).then((response) => {
+    if (response.data["accessToken"] != undefined) {
+      userStore.user = {
+        accessToken: response.data["accessToken"],
+        //refreshToken: response.data["refreshToken"],
+        user_id: user_id
+      }
+      accessToken = userStore.accessToken;
+      config.headers['authorization'] = `Bearer ${accessToken}`;
+    }
+  })
 }
 
 function getTimePref() {
@@ -1135,6 +1155,11 @@ function getNumCourses() {
     return 1;
   }
   return courseCount.value;
+}
+
+function showPrefMenu() {
+  courseCount.value = selectedOptionalCourses.value.length + selectedRequiredCourses.value.length;
+  isPreferencesOpen.value = true;
 }
 </script>
 
