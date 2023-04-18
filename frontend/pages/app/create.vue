@@ -1044,6 +1044,7 @@ function submit() {
       rmp: rmpValue,
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
+      console.log(response.data);
       sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
       isAlgoActive.value = false;

@@ -319,7 +319,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
     // if guest send 418
-    res.sendStatus(418);
+    return res.sendStatus(418);
   }
   else {
     console.log(req.body);
@@ -327,25 +327,20 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.log("Schedule Added to Database")
     }).catch(err => {
       console.error(err)
-      res.sendStatus(500);
+      return res.sendStatus(500);
     });
-
+    
     const requiredClasses = req.body.required_classes;
     const optionalClasses = req.body.optional_classes;
+    const user_id = req.body.user_id;
     const classes = requiredClasses.concat(optionalClasses);
-    schedule.classCounter(classes).then((input) => {
-      console.log("Class Counter Updated")
-    }).catch(err => {
-      console.error(err)
-      res.sendStatus(500);
-    });
 
-    await optimizer.optimizeSchedule(req.body).then((data) => {
+    await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
       res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
     }).catch((err) => {
       console.log(err)
-      res.sendStatus(500);
+      return res.sendStatus(500);
     });
   }
 });
@@ -371,8 +366,21 @@ app.post('/api/takentogether', async (req, res) => {
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
   console.log("Saving!")
-  console.log(req.body.data)
+  console.log(req.body);
+  const prev_schedule = await schedule.getGeneratedSchedule(req.body.user_id);
   await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
+  schedule.classCounterDecrement(req.body.user_id, prev_schedule).then((input) => {
+    console.log("Class Counter Decremented")
+    schedule.classCounterIncrement(req.body.user_id, req.body.data.schedule).then((input) => {
+      console.log("Class Counter Incremented")
+    }).catch(err => {
+      console.error(err)
+      return res.sendStatus(500);
+    });
+  }).catch((err) => {
+    console.error(err)
+    return res.sendStatus(500);
+  });
   res.sendStatus(200);
 })
 
@@ -1227,6 +1235,14 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
     console.log('Changed Darkmode to ' + darkMode);
     res.sendStatus(200);
   }
+});
+
+app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
+  console.log(req.body)
+  const user_id = req.body.user_id;
+  const course = req.body.course;
+  names = await schedule.getClassMates(user_id, course);
+  res.json(names);
 });
 
 module.exports = app;
