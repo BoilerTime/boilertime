@@ -118,6 +118,21 @@
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
                             resultData[1].department }}</span>
                         </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Position</span>
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
+                            advanced_result["title"] }}</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Email</span>
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
+                            advanced_result["email"] }}</span>
+                        </div>
+                        <div class="flex justify-between mb-6">
+                          <span class="text-base font-medium text-blue-700">Phone</span>
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
+                            advanced_result["office phone"] }}</span>
+                        </div>
                         <div class="flex justify-between mb-4">
                           <span class="text-base font-medium text-blue-700">Averaged from</span>
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
@@ -394,6 +409,7 @@ onUnmounted(() => {
 const searchTerm = ref('')
 
 const professors = ref([])
+const professorsadvanced = ref([])
 const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
@@ -453,6 +469,10 @@ async function fetch() {
       .then(response => {
         professors.value = response.data
       })
+    await axios.get('http://localhost:3001/api/professorsadvanced')
+      .then(response => {
+        professorsadvanced.value = response.data
+      })
     await axios.get('http://localhost:3001/api/classroomsnew')
       .then(response => {
         classrooms.value = response.data.classrooms
@@ -498,6 +518,7 @@ const filteredResults = computed(() => {
 
 var actual_name = ref('')
 var actual_course = ref([])
+var advanced_result = ref([])
 
 async function navigate(selected, type) {
   searchTerm.value = ''
@@ -506,8 +527,15 @@ async function navigate(selected, type) {
   if (type == 'Professor') {
     // getoverall_gpa
     // ratemyprofessor
+    var name = result.value
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
+    const advanced = professorsadvanced.value.find(obj => obj.name === name);
+    if (advanced) {
+      advanced_result.value = advanced
+    } else {
+      advanced_result.value = []
+    }
     axios.post('http://localhost:3001/api/getoverall_gpa', {
       prof_name: result.value
     })

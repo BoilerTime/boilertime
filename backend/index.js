@@ -178,6 +178,10 @@ app.get('/api/professorsnew', (req, res) => {
   res.sendFile(path.join(__dirname, 'professors.json')); 
 })
 
+app.get('/api/professorsadvanced', (req, res) => {
+  res.sendFile(path.join(__dirname, 'professors_updated.json'));
+})
+
 app.get('/api/tasnew', (req, res) => {
   res.sendFile(path.join(__dirname, 'tas.json'));
 })
