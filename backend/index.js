@@ -91,10 +91,12 @@ app.post('/api/update/profile', jwt.authenticateToken, async (req, res) => {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const isGradStudent = req.body.is_grad_student;
+    const privacy = req.body.privacy;
+    const pairs = req.body.pairs;
     const studentClass = utils.getStudentClass(grad_year, grad_month);
     //console.log(user_id + classification_year + firstname + lastname);
     const classification_year = utils.getStudentClass(grad_year, grad_month);
-    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent, privacy, pairs);
     res.json({ accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id });
   }
 });
