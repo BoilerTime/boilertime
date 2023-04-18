@@ -30,7 +30,7 @@ f = open("../../professors_updated.json", "a")
 jArray = []
 
 ##for professor in professors:
-for i in range(28, len(professors)):
+for i in range(len(professors)):
     professor = professors[i];
     json_object = {}
     print(professor + ' ' + str(i) + '/6697')
