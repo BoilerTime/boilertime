@@ -1,7 +1,9 @@
 <template>
-<main>
-    <NavBar />
-    <section class="flex items-center justify-center h-screen p-24 bg-gray-200 dark:bg-neutral-600 align-center">
+  <main>
+    <div class="ml-16 mr-8">
+      <NavBar bgColor="white" />
+    </div>
+    <section class="flex items-center justify-center h-screen p-24 bg-gray-100 dark:bg-neutral-600 align-center">
     <div class="grid grid-cols-5 gap-x-20">
       <div class="col-span-2">
         <div class="text-4xl font-bold text-black dark:text-gray-200">
@@ -10,16 +12,28 @@
         <div class="text-4xl font-bold text-yellow-500">
           building your schedule
         </div>
-        <h2 class="mt-8 mb-4 text-lg font-semibold dark:text-gray-200">What is the difference between these two?</h2>
-        <p class="leading-relaxed text-md dark:text-gray-200">Classes you have to take are your required classes for the semester.
-          It's classes that are up next on your major's degree plan. We will prioritize this when generating your
-          optimized
-          schedule.
-          <br /><br />
-          Classes you want to take are your optional classes for the semester. It's classes that you are interested
-          in for electives or just for fun. We will fit these classes in where we can in generating your optimized
-          schedule.
-        </p>
+        <div class="relative mt-8">
+          <label class="font-semibold text-lg dark:text-gray-200">📈 Trending classes:</label>
+          <draggable v-model="trending_classes" group="classes" item-key="id"
+            class="relative flex p-3 mt-3 border-2 border-gray-300 border-dashed rounded-lg">
+            <template #item="{ element }">
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500">
+                {{ element }}
+              </div>
+            </template>
+          </draggable>
+        </div>
+        <div class="relative mt-8">
+          <label class="font-semibold text-lg dark:text-gray-200">⭐ Classes usually taken together with {{ lastEntered }}:</label>
+          <draggable v-model="together_classes" group="classes" item-key="id"
+            class="relative flex p-3 mt-3 border-2 border-gray-300 border-dashed rounded-lg">
+            <template #item="{ element }">
+              <div class="text-sm font-bold border dark:border-black p-1.5 bg-indigo-500 text-white rounded-md mr-3 hover:bg-red-500">
+                {{ element }}
+              </div>
+            </template>
+          </draggable>
+        </div>
       </div>
       <div class="p-12 bg-white rounded-lg shadow-2xl dark:bg-neutral-700 col-span-3">
         <div class="relative">
@@ -33,6 +47,106 @@
                 </div>
               </div>
             </fieldset>
+          </div>
+        <div class="relative mb-8">
+          <label class="font-semibold text-md dark:text-gray-200">Add time restrictions:</label>
+          <!--Radio button for selecting day of week-->
+          <div class="mt-2 grid w-[13rem] grid-cols-5 space-x-2 rounded-xl bg-gray-200 p-2" x-data="app">
+            <div>
+              <input type="radio" name="dayofweek" id="Monday" class="peer hidden"/>
+              <label for="Monday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Tuesday" class="peer hidden"/>
+              <label for="Tuesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Wednesday" class="peer hidden"/>
+              <label for="Wednesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Thursday" class="peer hidden"/>
+              <label for="Thursday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
+            </div>
+            <div>
+              <input type="radio" name="dayofweek" id="Friday" class="peer hidden"/>
+              <label for="Friday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
+            </div>
+          </div>
+          <!--Time of day inputs-->
+          <div class="flex mt-2">
+            <div class="mt-2 p-2 bg-gray-200 rounded-lg">
+                <select name="hours" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <span class="text-x0.5 mr-2">:</span>
+                <select name="minutes" class="bg-transparent text-x0.5 appearance-none outline-none mr-4">
+                  <option value="0">00</option>
+                  <option value="30">30</option>
+                </select>
+                <select name="ampm" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="am">AM</option>
+                  <option value="pm">PM</option>
+                </select>
+            </div>
+            <div class="font-bold mr-4 ml-4 mt-3.5">-</div>
+            <div class="mt-2 p-2 bg-gray-200 rounded-lg">
+                <select name="hours" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <span class="text-x0.5 mr-2">:</span>
+                <select name="minutes" class="bg-transparent text-x0.5 appearance-none outline-none mr-4">
+                  <option value="0">00</option>
+                  <option value="30">30</option>
+                </select>
+                <select name="ampm" class="bg-transparent text-x0.5 appearance-none outline-none">
+                  <option value="am">AM</option>
+                  <option value="pm">PM</option>
+                </select>
+            </div>
+          </div>
+          <!--Button for adding time restrictions-->
+            <button type="leave" class="mt-2 w-1/8 bg-gray-300 hover:bg-gray-400 text-black font-bold border dark:border-black py-2 px-2 rounded-lg"
+              @click="addRestriction">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>    
+            </button>
+            <fieldset class="mt-2">
+              <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                <div v-for="timeRestr in timeRestrictions" :key="timeRestr.id" class="flex items-center">
+                  <input :id="timeRestr.id" type="checkbox" :checked="timeRestr.id === 'none'" :value="timeRestr.id" v-model="time_restr" class="w-4 h-4" />
+                  <label :for="timeRestr.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ timeRestr }}</label>
+                </div>
+              </div>
+            </fieldset>
+            <!--Below is an example, not for final use-->
+            <li class="font-bold text-lg">
+              <input id="timeRestr-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="timeRest-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">M 1:30-2:30 PM</label>
+            </li>
           </div>
           <label class="font-semibold text-md dark:text-gray-200">Add classes you have to take:</label>
           <input v-model="searchTerm"
@@ -367,6 +481,7 @@ const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
 const mins = ref('');
+const restrMax = ref(true);
 var totalSum;
 
 function closeModal() {
@@ -406,6 +521,25 @@ onBeforeMount(() => {
   axios.get('http://localhost:3001/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedRequiredCourses.value = response.data.required_classes
+  })
+  axios.post('http://localhost:3001/api/getclasses', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    selectedOptionalCourses.value = response.data.optional_classes
+  })
+  axios.post('http://localhost:3001/api/getbookmarks', {
+    user_id: userStore.user_id,
+  }, config).then((response) => {
+    bookmarked_classes.value = response.data.bookmarks
+  })
+  axios.get('http://localhost:3001/api/hotclasses').then((response) => {
+    trending_classes.value = response.data
+  })
+
   if (!isAGuest.value) {
     console.log('here in not a guest');
     axios.post('http://localhost:3001/api/getclasses', {
@@ -442,6 +576,7 @@ onBeforeMount(() => {
     }
   }
 });
+
 const searchTerm = ref('')
 const filteredResults = computed(() => {
   if (!searchTerm.value) {
@@ -510,7 +645,7 @@ function updateTimePref(time) {
       optional_classes: selectedOptionalCourses.value, 
       time: timePrefValue,
       rmp: rmpValue,
-      blocked_times: ""
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -536,8 +671,13 @@ function updateTimePref(time) {
     });
   }
 }
+var lastEntered = ref('')
 
-function addToSelected(item) {
+var trending_classes = ref([]);
+var together_classes = ref([]);
+
+async function addToSelected(item) {
+  lastEntered.value = item;
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -590,6 +730,11 @@ function addToSelected(item) {
       });
     }
   }
+  await axios.post('http://localhost:3001/api/takentogether', {
+    class: item,
+  }).then((response) => {
+    together_classes.value = response.data;
+  })
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
     searchTerm.value = ''
@@ -627,7 +772,8 @@ const filteredOptionalResults = computed(() => {
 const selectedOptionalCourses = ref([])
 const isOptionalSearchActive = ref(false)
 
-function addToSelectedOptional(item) {
+async function addToSelectedOptional(item) {
+  lastEntered.value = item;
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -648,7 +794,7 @@ function addToSelectedOptional(item) {
         optional_classes: selectedOptionalCourses.value,
         time: timePrefValue,
         rmp: rmpValue,
-        blocked_times: ""
+        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
       }, config).then((response) => {
         if (response.data["accessToken"] != undefined) {
           userStore.user = {
@@ -681,6 +827,11 @@ function addToSelectedOptional(item) {
       });
     }
   }
+  await axios.post('http://localhost:3001/api/takentogether', {
+    class: item,
+  }).then((response) => {
+    together_classes.value = response.data;
+  })
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
     optionalSearchTerm.value = ''
@@ -701,6 +852,7 @@ function removeFromSelected(index) {
     rmpValue = "RMP";
   }
 
+
   if (!isAGuest.value) {
     selectedRequiredCourses.value.splice(index, 1)
     axios.post('http://localhost:3001/api/saveschedule', {
@@ -709,7 +861,7 @@ function removeFromSelected(index) {
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
       rmp: rmpValue,
-      blocked_times: ""
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -745,6 +897,7 @@ function removeOptional(index) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
+
   if (!isAGuest.value) {
     selectedOptionalCourses.value.splice(index, 1)
     axios.post('http://localhost:3001/api/saveschedule', {
@@ -753,7 +906,7 @@ function removeOptional(index) {
       optional_classes: selectedOptionalCourses.value,
       time: timePrefValue,
       rmp: rmpValue,
-      blocked_times: ""
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
@@ -850,6 +1003,14 @@ watch(bookmarked_classes, (newVal, oldVal) => {
   }
 })
 
+watch(selectedRequiredCourses, (newVal, oldVal) => {
+  
+})
+
+watch(selectedOptionalCourses, (newVal, oldVal) => {
+  
+})
+
 var isAGuest = ref(true)
 
 onMounted(async () => {
@@ -883,6 +1044,7 @@ function submit() {
       rmp: rmpValue,
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
+      console.log(response.data);
       sendToOptimizer(response.data.schedule, response.data.blocked_times)
       courseList = response.data.schedule;
       isAlgoActive.value = false;
