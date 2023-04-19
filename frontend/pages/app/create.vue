@@ -1316,7 +1316,7 @@ function inQueue(position, size) {
   posInLine.value = position;
   totalPos.value = size;
   multiLoader.value = true;
-  mins.value = (position / 2).toPrecision(2) + " Minute" + pluralize((position / 2).toPrecision(1))
+  mins.value = (position / 2) + " Minute" + pluralize((position / 2))
 }
 
 function optimizing(progress) {

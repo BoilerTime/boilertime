@@ -112,39 +112,39 @@
                   <div class="h-screen" v-if="resultData && isDataLoaded">
                     <h1 class="mb-6 text-xl font-semibold text-left">{{ result }}</h1>
                     <div class="" v-if="resultType == 'Professor'">
-                      <div class="">
+                      <div class="" v-if="resultData.length == 2">
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Department</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            resultData[1].department }}</span>
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].department }}</span>
                         </div>
                         <div class="flex justify-between mb-4">
                           <span class="text-base font-medium text-blue-700">Averaged from</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            resultData[1].numRatings }}
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].numRatings }}
                             ratings</span>
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average GPA</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
-                            resultData[0].overall_gpa }}</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                            resultData[1].overall_gpa }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1]">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
+                            :style="{ width: resultData[1].percentage * 100 + '%' }"></div>
                         </div>
                         <div v-else>
                           No data available
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average difficulty</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            (resultData[1].avgDifficulty / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
                               100).toPrecision(4) + '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgDifficulty / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -152,14 +152,14 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average rating</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            ((resultData[1].avgRating) / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
                               100).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgRating / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -167,18 +167,89 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Would take again</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].wouldTakeAgainPercent + '%' }">
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
                           </div>
                         </div>
                         <div v-else>
                           No data available
                         </div>
+                      </div>
+                      <div class="" v-else-if="resultData.length == 1">
+                        <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
+                          <span class="text-base font-medium text-blue-700">Average GPA</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].overall_gpa }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0].overall_gpa">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1" v-if="resultData[0].department">
+                          <span class="text-base font-medium text-blue-700">Department</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].department }}</span>
+                        </div>
+                        <div class="flex justify-between mb-4"  v-if="resultData[0].numRatings">
+                          <span class="text-base font-medium text-blue-700">Averaged from</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].numRatings }}
+                            ratings</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average difficulty</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
+                              100).toPrecision(4) + '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average rating</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
+                              100).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Would take again</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                      </div>
+                      <div v-else>
+                        No data available
                       </div>
                       <div class="flex justify-between mb-1">
                       </div>
@@ -342,6 +413,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
+import { onUnmounted } from "vue";
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import { ref } from 'vue'
@@ -350,8 +422,6 @@ import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
 import { useGuestStore } from "../../store/guest";
 const { $toast } = useNuxtApp()
-
-import { onUnmounted } from "vue";
 
 const userSchedules = ref([])
 const optimizedSchedule = ref([])
@@ -501,25 +571,31 @@ async function fetch() {
 }
 
 const filteredResults = computed(() => {
-  resultData.value = []
-  actual_course.value = []
   if (!searchTerm.value) {
     return []
   }
   if (searchType.value == 'Professor') {
     return professors.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Classroom') {
     return classrooms.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Course') {
     return courses.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'TA') {
     return tas.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase())
     })
   }
@@ -550,12 +626,10 @@ async function navigate(selected, type) {
           resultData.value.push(gpa)
           isDataLoaded.value = true;
         } catch {
-          resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
         }
       })
       .catch(error => {
         console.log(error)
-        resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
       })
     axios.post('https://api.boilerti.me/api/ratemyprofessor', {
       prof_name: result.value
