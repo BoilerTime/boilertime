@@ -349,7 +349,7 @@ import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
 import { useGuestStore } from "../../store/guest";
-import { POSITION, useToast } from "vue-toastification";
+const { $toast } = useNuxtApp()
 
 import { onUnmounted } from "vue";
 
@@ -403,7 +403,7 @@ onBeforeMount(async () => {
           accessToken = userStore.accessToken;
           config.headers['authorization'] = `Bearer ${accessToken}`;
         }
-          toast.success("Imported Schedule Created As Guest!", {
+          $toast.success("Imported Schedule Created As Guest!", {
             timeout: 2000
           });
       });
@@ -427,7 +427,6 @@ const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
 const tas_inv = ref([])
-const toast = useToast();
 
 var lastname = ref("")
 var firstname = ref("");

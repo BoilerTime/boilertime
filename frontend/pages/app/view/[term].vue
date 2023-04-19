@@ -31,8 +31,7 @@ import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
-import { POSITION, useToast } from "vue-toastification";
-const toast = useToast();
+const { $toast } = useNuxtApp()
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
@@ -139,11 +138,11 @@ onBeforeMount(async () => {
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
   }).catch((error) => {
+    console.log("THIS IS THE ERROR " + error)
     if (error.response.status == 500) {
       console.log(error);
-      toast.error("You have not optimized this schedule yet!", {
+      $toast.error("You have not optimized this schedule yet!", {
           timeout: 5000,
-          position: POSITION.TOP_CENTER
       });
       navigateTo('/app/create')
     }
@@ -161,14 +160,12 @@ onMounted(() => {
 function showWarning(time, rmp) {
   console.log(time);
   if(rmp.toUpperCase() != "NONE") {
-    toast.warning("Warning: Time and RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+    $toast.warning("Warning: Time and RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   } else {
-    toast.warning("Warning: Time of Day and RMP may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+    $toast.warning("Warning: Time of Day and RMP may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   }
 }

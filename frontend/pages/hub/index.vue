@@ -319,7 +319,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
-import { POSITION, useToast } from "vue-toastification";
+const { $toast } = useNuxtApp()
 
 const searchTerm = ref('')
 
@@ -328,7 +328,6 @@ const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
 const tas_inv = ref([])
-const toast = useToast();
 
 var isSearchActive = ref(true)
 var searchType = ref('Professor')
@@ -390,9 +389,8 @@ async function submitRating() {
   } catch (error) {
     console.log(error.response.status + ' this is the error resposne');
     if (error.response.status === 409) {
-      toast.error("You have already submitted a rating for this course.", {
+      $toast.error("You have already submitted a rating for this course.", {
         timeout: 5000,
-        position: POSITION.TOP_CENTER
       });
       return
     } else {
@@ -427,9 +425,8 @@ async function submitTaRating() {
   } catch (error) {
     console.log(error.response.status + ' this is the error resposne');
     if (error.response.status === 409) {
-      this.toast.error("You have already submitted a rating for this course.", {
+      $toast.error("You have already submitted a rating for this course.", {
         timeout: 5000,
-        position: POSITION.TOP_CENTER
       });
       //alert('You have already submitted a rating for this course.')
       return
@@ -465,9 +462,8 @@ async function submitClassroomRating() {
   } catch (error) {
     console.log(error.response.status + ' this is the error resposne');
     if (error.response.status === 409) {
-      this.toast.error("You have already submitted a rating for this course.", {
+      $toast.error("You have already submitted a rating for this course.", {
         timeout: 5000,
-        position: POSITION.TOP_CENTER
       });
       //alert('You have already submitted a rating for this course.')
       return

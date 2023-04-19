@@ -447,7 +447,7 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
 import ProgressBar from "../../components/ProgressBar.vue";
-import { POSITION, useToast } from "vue-toastification";
+const { $toast } = useNuxtApp()
 
 import draggable from 'vuedraggable'
 import {
@@ -471,7 +471,6 @@ const isOpen = ref(false)
 const isResultOpen = ref(false);
 const completed = ref(0)
 const schedule = ref('');
-const toast = useToast();
 const isAlgoActive = ref(false);
 const status = ref('');
 const algorithmProgress = ref(true)
@@ -608,9 +607,8 @@ onMounted(() => {
         inQueue(response.data.currentPos, response.data.totalWaiting);
       } else if(response.status === 404) {
           console.log("ERROR!!")
-          toast.error("No Schedule Found!! Please try again ", {
+          $toast.error("No Schedule Found!! Please try again ", {
             timeout: 5000,
-            position: POSITION.BOTTOM_RIGHT
           });
           
         }
@@ -1018,9 +1016,8 @@ onMounted(async () => {
 
 function submit() {
    if (isAGuest.value) {
-    toast.error("You must be logged in to use the optimizer!", {
+    $toast.error("You must be logged in to use the optimizer!", {
       timeout: 5000,
-      position: POSITION.TOP_CENTER
     });
     return
   }
@@ -1344,9 +1341,8 @@ function optimizing(progress) {
 function displayingResults() {
   closeModal();
   if(displayTips.value) {
-    toast.info("Your optimize schedule is ready! Close this to take a look", {
+    $toast.info("Your optimize schedule is ready! Close this to take a look", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   } else {
     isResultOpen.value = true;
