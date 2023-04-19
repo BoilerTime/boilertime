@@ -112,14 +112,8 @@ async function optimizeSchedule(schedule) {
     //delete output[i].collectionIDs;
     //output[i].collectionIDs['collectionIDs'] = jArray;
     output[i].collectionIDs = jArray;
-    /*
     if (i == 0) 
-      console.log('i is 0');
-      console.log('PROBELM \n\n' + output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6']);
-      for (var l = 0; l < output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6'].length; l++) {
-        console.log(output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6'][l]);
-      }
-      **/
+      console.log('PROBELM \n\n' + JSON.stringify(output[i].collectionIDs['6de004cd-0840-43a6-907a-779d83ec5fd6']));
     //console.log(jArray['collectionIDs']);
 
     //console.log('\n\n' + jArray + '\n\n')
