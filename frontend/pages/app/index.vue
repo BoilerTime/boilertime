@@ -1,12 +1,12 @@
 <template>
-  <main class="h-screen bg-gray-100 overflow-y-hidden">
-    <div class="bg-yellow-600 pb-24">
-      <div class="mx-auto px-8 max-w-7xl">
+  <main class="h-screen overflow-y-hidden bg-gray-100">
+    <div class="pb-24 bg-yellow-600">
+      <div class="px-8 mx-auto max-w-7xl">
         <div>
           <NavBar bgColor="yellow-600" />
         </div>
-        <div class="border-t border-white border-opacity-20 py-5 block">
-          <div class="grid grid-cols-3 items-center gap-8">
+        <div class="block py-5 border-t border-white border-opacity-20">
+          <div class="items-center grid grid-cols-3 gap-8">
             <div class="col-span-2">
               <p class="text-2xl font-semibold text-white">Welcome, {{ firstname }}</p>
             </div>
@@ -14,7 +14,7 @@
               <div class="flex">
                 <div class="relative z-10">
                   <input v-model="searchTerm"
-                    class="px-3 py-2 border border-gray-400 w-64 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                    class="w-64 px-3 py-2 border border-gray-400 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                     type="text" placeholder="Search" @keyup.enter="addSingleResultToSelected">
                   <ul v-if="isSearchActive && filteredResults.length > 0"
                     class="absolute z-10 w-full mt-1 overflow-scroll bg-white shadow-lg rounded-md max-h-48">
@@ -26,7 +26,7 @@
                   </ul>
                 </div>
                 <div class="relative">
-                  <select class="h-full px-3 py-2 pr-9 bg-white border border-gray-400 appearance-none rounded-r-md"
+                  <select class="h-full px-3 py-2 bg-white border border-gray-400 appearance-none pr-9 rounded-r-md"
                     v-model="searchType">
                     <option>Professor</option>
                     <option>Classroom</option>
@@ -47,12 +47,12 @@
         </div>
       </div>
     </div>
-    <main class="-mt-24 pb-12">
-      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-        <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+    <main class="pb-12 -mt-24">
+      <div class="max-w-3xl px-4 mx-auto sm:px-6 lg:max-w-7xl lg:px-8">
+        <div class="items-start grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
           <div class="grid grid-cols-1 gap-4 lg:col-span-2">
             <section aria-labelledby="section-1-title">
-              <div class="overflow-hidden rounded-xl bg-white shadow-xl h-1/2">
+              <div class="overflow-hidden bg-white shadow-xl rounded-xl h-1/2">
                 <div class="p-6">
                   <div class="flex flex-wrap h-screen dark:bg-neutral-500" v-if="userSchedules.length !== 0">
                     <!-- Add button -->
@@ -107,12 +107,12 @@
 
           <div class="grid grid-cols-1 gap-4 ">
             <section aria-labelledby="section-2-title">
-              <div class="overflow-auto rounded-xl bg-white shadow-xl h-1/2">
+              <div class="overflow-auto bg-white shadow-xl rounded-xl h-1/2">
                 <div class="p-6">
                   <div class="h-screen" v-if="resultData && isDataLoaded">
                     <h1 class="mb-6 text-xl font-semibold text-left">{{ result }}</h1>
                     <div class="" v-if="resultType == 'Professor'">
-                      <div class="">
+                      <div class="" v-if="resultData.length == 2">
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Department</span>
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
@@ -135,31 +135,31 @@
                         </div>
                         <div class="flex justify-between mb-4">
                           <span class="text-base font-medium text-blue-700">Averaged from</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            resultData[1].numRatings }}
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].numRatings }}
                             ratings</span>
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average GPA</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
-                            resultData[0].overall_gpa }}</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                            resultData[1].overall_gpa }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1]">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
+                            :style="{ width: resultData[1].percentage * 100 + '%' }"></div>
                         </div>
                         <div v-else>
                           No data available
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average difficulty</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            (resultData[1].avgDifficulty / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
                               100).toPrecision(4) + '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgDifficulty / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -167,14 +167,14 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average rating</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            ((resultData[1].avgRating) / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
                               100).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgRating / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -182,18 +182,89 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Would take again</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].wouldTakeAgainPercent + '%' }">
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
                           </div>
                         </div>
                         <div v-else>
                           No data available
                         </div>
+                      </div>
+                      <div class="" v-else-if="resultData.length == 1">
+                        <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
+                          <span class="text-base font-medium text-blue-700">Average GPA</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].overall_gpa }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0].overall_gpa">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1" v-if="resultData[0].department">
+                          <span class="text-base font-medium text-blue-700">Department</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].department }}</span>
+                        </div>
+                        <div class="flex justify-between mb-4"  v-if="resultData[0].numRatings">
+                          <span class="text-base font-medium text-blue-700">Averaged from</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].numRatings }}
+                            ratings</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average difficulty</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
+                              100).toPrecision(4) + '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average rating</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
+                              100).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Would take again</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                      </div>
+                      <div v-else>
+                        No data available
                       </div>
                       <div class="flex justify-between mb-1">
                       </div>
@@ -225,15 +296,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'classroom')">
                               Flag
                             </button>
@@ -264,15 +335,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'course')">
                               Flag
                             </button>
@@ -292,7 +363,7 @@
                             </ul>
                           </div>
                         </div>
-                        <h2 class="font-bold text-2xl mb-4">Ratings</h2>
+                        <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
                         <div v-for="(group, index) in resultData" :key="index">
                           <div v-for="(rating, ratingIndex) in group" :key="ratingIndex"
                             class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl">
@@ -313,15 +384,15 @@
                               <span class="text-gray-600">{{ rating.rating[2] }}</span>
                             </div>
                             <div class="flex items-center mb-2">
-                              <span class="font-bold mr-2 text-gray-700">Explanation:</span>
+                              <span class="mr-2 font-bold text-gray-700">Explanation:</span>
                               <span class="text-gray-600">{{ rating.explanation }}</span>
                             </div>
                             <div class="flex items-center" v-if="rating.flag_count >= 3">
-                              <span class="font-bold mr-2 text-red-500">Rating was flagged</span>
+                              <span class="mr-2 font-bold text-red-500">Rating was flagged</span>
                               <span class="text-red-500">{{ rating.flag_count }} times</span>
                             </div>
                             <button v-if="rating.user_id != userStore.user_id"
-                              class="bg-red-500 text-white font-bold p-1 mt-3 text-sm rounded"
+                              class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
                               @click="flag(rating.user_id, 'ta')">
                               Flag
                             </button>
@@ -357,15 +428,15 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
+import { onUnmounted } from "vue";
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
-import { POSITION, useToast } from "vue-toastification";
-
-import { onUnmounted } from "vue";
+import { useGuestStore } from "../../store/guest";
+const { $toast } = useNuxtApp()
 
 const userSchedules = ref([])
 const optimizedSchedule = ref([])
@@ -384,20 +455,48 @@ function formatTitle(title) {
 }
 
 onBeforeMount(async () => {
-  await axios.post('http://localhost:3001/api/get/user_schedules', {
+  await axios.post('https://api.boilerti.me/api/get/user_schedules', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     userSchedules.value = response.data
+    /*
+    for (var i = 0; i < userSchedules.value.length; i++) {
+      console.log(userSchedules.value[i] + " << Value");
+    }
+    */
+    numSchedules = userSchedules.value[userSchedules.value.length - 1].num_schedules;
+    console.log(numSchedules + " this is the num schedules");
+    //userSchedules.splice(userSchedules.value.length - 1, 1);
+    userSchedules.value.pop();
   });
-  /*
-  for (var i = 0; i < userSchedules.value.length; i++) {
-    console.log(userSchedules.value[i] + " << Value");
+  if (!isAGuest.value) {
+    if (numSchedules === 0 && guestStore.schedule) {
+      axios.post('https://api.boilerti.me/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: guestStore.schedule.required_classes,
+        optional_classes: guestStore.schedule.optional_classes, 
+        time: guestStore.schedule.time,
+        rmp: guestStore.schedule.rmp,
+        blocked_times: guestStore.schedule.blocked_times
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
+        }
+          $toast.success("Imported Schedule Created As Guest!", {
+            timeout: 2000
+          });
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // Wait 1 second before showing the toast message
+    }
   }
-  */
-  numSchedules = userSchedules.value[userSchedules.value.length - 1].num_schedules;
-  console.log(numSchedules + " this is the num schedules");
-  //userSchedules.splice(userSchedules.value.length - 1, 1);
-  userSchedules.value.pop();
 })
 
 let interval;
@@ -414,7 +513,6 @@ const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
 const tas_inv = ref([])
-const toast = useToast();
 
 var lastname = ref("")
 var firstname = ref("");
@@ -427,6 +525,7 @@ var resultType = ref('')
 var resultData = ref([])
 
 var userStore = useUserStore()
+var guestStore = useGuestStore()
 var isAGuest = ref(true)
 
 onMounted(async () => {
@@ -446,7 +545,7 @@ const config = {
 async function flag(id, type) {
   console.log(id, type, result.value)
   try {
-    await axios.post('http://localhost:3001/api/add/flag', {
+    await axios.post('https://api.boilerti.me/api/add/flag', {
       user_id: id,
       type: type,
       name: result.value.replace(/ /g, '')
@@ -465,7 +564,7 @@ async function logout() {
 
 async function fetch() {
   try {
-    await axios.get('http://localhost:3001/api/professorsnew')
+    await axios.get('https://api.boilerti.me/api/professorsnew')
       .then(response => {
         professors.value = response.data
       })
@@ -477,11 +576,11 @@ async function fetch() {
       .then(response => {
         classrooms.value = response.data.classrooms
       })
-    await axios.get('http://localhost:3001/api/searchnew')
+    await axios.get('https://api.boilerti.me/api/searchnew')
       .then(response => {
         courses.value = response.data
       })
-    await axios.get('http://localhost:3001/api/tasnew')
+    await axios.get('https://api.boilerti.me/api/tasnew')
       .then(response => {
         tas.value = Object.keys(response.data)
         tas_inv.value = response.data
@@ -492,25 +591,31 @@ async function fetch() {
 }
 
 const filteredResults = computed(() => {
-  resultData.value = []
-  actual_course.value = []
   if (!searchTerm.value) {
     return []
   }
   if (searchType.value == 'Professor') {
     return professors.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Classroom') {
     return classrooms.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Course') {
     return courses.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'TA') {
     return tas.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase())
     })
   }
@@ -549,14 +654,12 @@ async function navigate(selected, type) {
           resultData.value.push(gpa)
           isDataLoaded.value = true;
         } catch {
-          resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
         }
       })
       .catch(error => {
         console.log(error)
-        resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
       })
-    axios.post('http://localhost:3001/api/ratemyprofessor', {
+    axios.post('https://api.boilerti.me/api/ratemyprofessor', {
       prof_name: result.value
     })
       .then(response => {
@@ -570,7 +673,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
+    axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -579,7 +682,7 @@ async function navigate(selected, type) {
         resultData.value.push(data)
       })
     var search = result.value.split(' ')[0]
-    var lookup = await axios.get('http://localhost:3001/api/buildingsnew');
+    var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
     lookup = lookup.data
     var len = 151
     for (var i = 0; i < len; i++) {
@@ -592,7 +695,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Course') {
     // course_ratings/courses
-    axios.post('http://localhost:3001/api/get/course_ratings/courses', {
+    axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -603,7 +706,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
+    axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
@@ -627,7 +730,7 @@ async function getUserInfo() {
   }
   user_id.value = userStore.user_id;
   axios
-    .post("http://localhost:3001/api/get/profile/", {
+    .post("https://api.boilerti.me/api/get/profile/", {
       user_id: userStore.user_id,
     }, config)
     .then((response) => {
@@ -639,7 +742,7 @@ async function getUserInfo() {
     });
   axios
     .post(
-      "http://localhost:3001/api/get/darkmode/",
+      "https://api.boilerti.me/api/get/darkmode/",
       {
         user_id: userStore.user_id,
       },
