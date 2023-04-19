@@ -379,33 +379,77 @@
                 as="h1"
                 class="text-xl font-medium text-center text-gray-900 leading-6"
               >
-                Your Schedule <span class="text-yellow-500">Preferences</span>
+                Your <span class="text-yellow-500">Blocked Times</span>
               </DialogTitle>
-
-              <div v-for="entry in blockArray">
-                  <p>{{entry.name}}</p>
-                  <div class="mt-2 grid w-[13rem] grid-cols-5 space-x-2 rounded-xl bg-gray-200 p-2" x-data="app">
-                    <div>
-                      <input type="radio" id="Monday" class="peer hidden" :checked="isContained(entry, 'Monday')" :on-click="clickedDate(entry, 'Monday')"/>
-                      <label for="Monday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+              <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off">
+                <div class="mb-4">
+                  <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
+                    Block Name
+                  </label>
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block_name" type="text" placeholder="Block Name">
+                </div>
+                <div class="mb-4">
+                  <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                    Start Time
+                  </label>
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="start_time" name="Start Time" min="09:00" max="18:00" required>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                    End Time
+                  </label>
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="end_time" name="Start Time" min="09:00" max="18:00" required>
+                </div>
+                <div>
+                  <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Days of Week
+                  </label>
+                <div class="flex items-center justify-center" style="Display: block;">
+                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
+                        <div v-for="(days, index) in daysPref">
+                          <input type="radio" :id="days" class="peer hidden" :checked="dayPrefActive[index]" v-on:click="dayPrefActive[index] = !dayPrefActive[index]"/>
+                          <label :for="days" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">{{days}}</label>
+                        </div>
                     </div>
-                    <div>
-                      <input type="radio" id="Tuesday" class="peer hidden" :checked="isContained(entry, 'Tuesday')"/>
-                      <label for="Tuesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
-                    </div>
-                    <div>
-                      <input type="radio" id="Wednesday" class="peer hidden" :checked="isContained(entry, 'Wednesday')"/>
-                      <label for="Wednesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
-                    </div>
-                    <div>
-                      <input type="radio" id="Thursday" class="peer hidden" :checked="isContained(entry, 'Thursday')"/>
-                      <label for="Thursday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
-                    </div>
-                    <div>
-                      <input type="radio" id="Friday" class="peer hidden" :checked="isContained(entry, 'Friday')"/>
-                      <label for="Friday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
                   </div>
                 </div>
+                <br/>
+                <div class="mb-4">
+                  <button class="float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button"> Save </button>
+                </div>
+              </form>
+              
+
+              <div v-for="(entry, index) in blockArray">
+                  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <label><b>Block {{index + 1 }}: {{entry.name}}</b></label>
+                    <p>{{entry.name}}</p>
+                    <div class="flex items-center justify-center">
+                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
+                        <div>
+                          <input type="radio" :id="'Monday'+index" class="peer hidden" :checked="entry.daysOfWeek[0] == true" v-on:click="entry.daysOfWeek[0] = !entry.daysOfWeek[0]"/>
+                          <label :for="'Monday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Tuesday'+index" class="peer hidden" :checked="entry.daysOfWeek[1] == true" v-on:click="resetArray(index, 1)"/>
+                          <label :for="'Tuesday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Wednesday'+index" class="peer hidden" :checked="entry.daysOfWeek[2] == true" v-on:click="resetArray(index, 2)"/>
+                          <label :for="'Wednesday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Thursday'+index" class="peer hidden" :checked="entry.daysOfWeek[3] == true" v-on:click="resetArray(index, 3)"/>
+                          <label :for="'Thursday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Friday'+index" class="peer hidden" :checked="entry.daysOfWeek[4] == true" v-on:click="resetArray(index, 4)"/>
+                          <label :for="'Friday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br/>
               </div>
               
             </DialogPanel>
@@ -1449,24 +1493,23 @@ const blockArray = ref([
       name: "none",
       start: 9000,
       duration: 9111,
-      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      daysOfWeek: [true, true, true, true, true]
     }, 
-    {
-      name: "none",
-      start: 9000,
-      duration: 9111,
-      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    },
-    {
-      name: "none",
-      start: 9000,
-      duration: 9111,
-      daysOfWeek: ["Monday", "Thursday", "Friday"]
-    }
 ]);
 
-function isContained(event, day) {
-  return event.daysOfWeek.find(element => element == day) != undefined;
+const daysPref = ref(
+  ["M", "T", "W", "R", "F"]
+)
+
+const dayPrefActive = ref(
+  [false, false, false, false, false]
+)
+
+
+function resetArray(index, specIndex) {
+  console.log("Called!!" + index + " " + specIndex);
+  console.log(blockArray.value[index].daysOfWeek);
+  blockArray.value[index].daysOfWeek[specIndex] = !blockArray.value[index].daysOfWeek[specIndex];
 }
 
 </script>
