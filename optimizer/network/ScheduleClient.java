@@ -166,6 +166,19 @@ public class ScheduleClient extends Thread  {
         return preferences;
     }
 
+    private int getCourseSizePref(NetworkHandler network) {
+        int count = -1;
+        while(count <= 0) {
+            try {
+                count = Integer.parseInt(network.getIncomingMessage());
+                network.sendMessage("{\"status\":200,\"message\":\"Received Num Courses\",\"data\":null}");
+            } catch (NumberFormatException e) {
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal Num Courses\",\"data\":null}");
+            }
+        }
+        return count;
+    }
+
     private CourseOverview getCourseInfo(NetworkHandler network) {
         //System.out.println("Called to get course info!");
         CourseOverviewHelper x = new CourseOverviewHelper();
@@ -260,6 +273,7 @@ public class ScheduleClient extends Thread  {
         PreferenceList[] preferences = getPreferenceOrder(network);
         //Get the TOD preference from the client
         TimeOfDay timePreference = getTODPreference(network);
+        int coursePref = getCourseSizePref(network);
 
         System.out.println("(ScheduleClient.java) Got all client detail for: " + netSocket.getPort());
         for(int i = 0; i < courses.length; i++) {
@@ -291,7 +305,7 @@ public class ScheduleClient extends Thread  {
         }
         System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
-        return new Optimizer(courses, blocks, network, timePreference, preferences);
+        return new Optimizer(courses, blocks, network, timePreference, preferences, coursePref);
     }
 
     public synchronized void runOptimizer() {

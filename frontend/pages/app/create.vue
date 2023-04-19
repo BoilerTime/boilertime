@@ -794,6 +794,22 @@ function submit() {
     return
   }
 
+  if (getNumCourses() < selectedRequiredCourses.value.length) {
+    toast.error(("Your settings only contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length) + " required course"  + pluralize((selectedRequiredCourses.value.length))) , {
+      timeout: 5000,
+      position: POSITION.TOP_CENTER
+    });
+    return
+  }
+
+  if (getNumCourses() > selectedRequiredCourses.value.length + selectedOptionalCourses.value.length) {
+    toast.warning(("Your settings contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length + selectedOptionalCourses.value.length) + " course"  + pluralize((selectedRequiredCourses.value.length + selectedOptionalCourses.value.length)) + ". We'll round down for you.") , {
+      timeout: 5000,
+      position: POSITION.TOP_CENTER
+    });
+  }
+
+
   if (!configured) {
     toast.info("Using default settings!", {
       timeout: 5000,
@@ -853,6 +869,7 @@ function sendToOptimizer(courses, blocks, configurations) {
   console.log(getPreferenceList())
   $socket.send(getPreferenceList().toString());
   $socket.send(getTimePref());
+  $socket.send(getNumCourses());
   /*
     * Take care of the courses that the user has entered
   */
@@ -906,7 +923,7 @@ function parseCoursesResponse(output) {
     let thisFormat = "";
     for(let j = 0; j < data[i].length; j++) {
       let string = "";
-      if(j == data[i].length - 1) {
+      if(data[i].length > 1 && j == data[i].length - 1) {
         console.log("TWT")
         string += "and "
       }

@@ -125,7 +125,6 @@ onMounted(() => {
 })
 
 function showWarning(configured) {
-  alert("Is configured? " + configured);
   if(configured) {
     toast.info("We try to fit your preferences, but sometimes it's difficult to find a schedule that satisfies all of them. ", {
           timeout: 5000,
