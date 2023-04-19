@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
-
 import optimizer.constants.Build;
 
 public class Server {
@@ -23,7 +22,7 @@ public class Server {
         this.run = true;
         this.scheduler = new Scheduler();
         Logger.getLogger(getClass().getName()).info("Server is listening on port: " + port);
-        Logger.getLogger(getClass().getName()).info("This version built at: " + Build.getBuildTime());
+        Logger.getLogger(getClass().getName()).info("This version built at: " + Build.buildV);
 
         try {
             while (run) {
