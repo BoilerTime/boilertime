@@ -35,8 +35,7 @@
           BoilerTime is your solution to the quarterly fear of a bad schedule.
         </h2>
         <h2 class="text-2xl font-bold text-white outline-black">
-          Quickly create perfect schedules that fit your preferences and
-          maximize your semester now.
+          Algorithmically generate perfect schedules that fit your preferences from dozens of data points.
         </h2>
         <!--Statistics-->
         <div class="flex flex-row items-center justify-between gap-10 text-white mt-10">
@@ -307,6 +306,16 @@ import {
 var users = ref();
 var schedules = ref();
 var ratings = ref();
+
+useServerSeoMeta({
+  title: 'BoilerTime - Your Purdue GRIT® doesn\'t have to include a poor schedule',
+  ogTitle: 'BoilerTime - Your Purdue GRIT® doesn\'t have to include a poor schedule',
+  description: 'BoilerTime is your solution to the semesteral fear of a bad schedule. Algorithmically generate perfect schedules that fit your preferences from dozens of data points.',
+  ogDescription: 'BoilerTime is your solution to the semestral fear of a bad schedule. Algorithmically generate perfect schedules that fit your preferences from dozens of data points.',
+  ogImage: 'https://boilerti.me/icon.png',
+  twitterCard: 'summary',
+})
+
 
 async function getUsers() {
     await axios
