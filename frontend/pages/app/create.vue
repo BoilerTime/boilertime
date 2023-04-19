@@ -341,9 +341,77 @@
             </DialogPanel>
           </TransitionChild>
         </div>
-        
       </div>
-      
+    </Dialog>
+  </TransitionRoot>
+
+
+  <TransitionRoot :show="blockConfig" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-gray-900 leading-6"
+              >
+                Your Schedule <span class="text-yellow-500">Preferences</span>
+              </DialogTitle>
+
+              <div v-for="entry in blockArray">
+                  <p>{{entry.name}}</p>
+                  <div class="mt-2 grid w-[13rem] grid-cols-5 space-x-2 rounded-xl bg-gray-200 p-2" x-data="app">
+                    <div>
+                      <input type="radio" id="Monday" class="peer hidden" :checked="isContained(entry, 'Monday')" :on-click="clickedDate(entry, 'Monday')"/>
+                      <label for="Monday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+                    </div>
+                    <div>
+                      <input type="radio" id="Tuesday" class="peer hidden" :checked="isContained(entry, 'Tuesday')"/>
+                      <label for="Tuesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
+                    </div>
+                    <div>
+                      <input type="radio" id="Wednesday" class="peer hidden" :checked="isContained(entry, 'Wednesday')"/>
+                      <label for="Wednesday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
+                    </div>
+                    <div>
+                      <input type="radio" id="Thursday" class="peer hidden" :checked="isContained(entry, 'Thursday')"/>
+                      <label for="Thursday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
+                    </div>
+                    <div>
+                      <input type="radio" id="Friday" class="peer hidden" :checked="isContained(entry, 'Friday')"/>
+                      <label for="Friday" class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
+                  </div>
+                </div>
+              </div>
+              
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
     </Dialog>
   </TransitionRoot>
 
@@ -474,6 +542,7 @@ const posInLine = ref('');
 const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
+const blockConfig = ref(true)
 const mins = ref('');
 const courseCount = ref('5');
 var trending_classes = ref([]);
@@ -1371,9 +1440,35 @@ function configureState(data) {
     }
     state.list = temp;
   } catch(e) {
-    
+
   }
 }
+
+const blockArray = ref([
+    {
+      name: "none",
+      start: 9000,
+      duration: 9111,
+      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    }, 
+    {
+      name: "none",
+      start: 9000,
+      duration: 9111,
+      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      name: "none",
+      start: 9000,
+      duration: 9111,
+      daysOfWeek: ["Monday", "Thursday", "Friday"]
+    }
+]);
+
+function isContained(event, day) {
+  return event.daysOfWeek.find(element => element == day) != undefined;
+}
+
 </script>
 
 <style scoped>
