@@ -164,45 +164,42 @@ async function getGeneratedSchedule(user_id) {
 
 async function classCounterDecrement(user_id, generated_schedule) {
   try {
-    classes = generated_schedule
-    const counter = db.collection('counter');
-    for (var i = 0; i < classes.length; i++) {
-      // add names here
-      for (var j = 0; j < classes.length; j++) {
-        if (i != j) {
-          const class1 = classes[i].subject + ' ' + classes[i].number;
-          const class2 = classes[j].subject + ' ' + classes[j].number;
-          const doc = await counter.doc(class1).collection('pairs').doc(class2).get().catch((err) => {
-            console.error(err);
-            throw new Error(500);
-          });
-          if (!doc.exists) {
-            continue;
-          } else {
-            await counter.doc(class1).collection('pairs').doc(class2).update({ "count": FieldValue.increment(-1)}).catch((err) => {
+      classes = generated_schedule
+      const counter = db.collection('counter');
+      for (var i = 0; i < classes.length; i++) {
+        // add names here
+        for (var j = 0; j < classes.length; j++) {
+          if (i != j) {
+            const class1 = classes[i].subject + ' ' + classes[i].number;
+            const class2 = classes[j].subject + ' ' + classes[j].number;
+            const doc = await counter.doc(class1).collection('pairs').doc(class2).get().catch((err) => {
               console.error(err);
               throw new Error(500);
             });
-          }
-        } else {
-          await counter.doc(class1).update({ "count": FieldValue.increment(1), "users": FieldValue.arrayUnion(user_id) }).catch((err) => {
-          const class1 = classes[i].subject + ' ' + classes[i].number;
-          const doc = await counter.doc(class1).get().catch((err) => {
-            console.error(err);
-            throw new Error(500);
-          });
-          if (!doc.exists) {
-            continue;
+            if (doc.exists) {
+                counter.doc(class1).collection('pairs').doc(class2).update({ "count": FieldValue.increment(-1)}).catch((err) => {
+                console.error(err);
+                throw new Error(500);
+              });
+            }
           } else {
-            await counter.doc(class1).update({ "count": FieldValue.increment(-1), "users": FieldValue.arrayRemove(user_id) }).catch((err) => {
-              console.error(err);
-              throw new Error(500);
-            });
+            counter.doc(class1).update({ "count": FieldValue.increment(1), "users": FieldValue.arrayUnion(user_id) }).catch((err) => {
+              const class1 = classes[i].subject + ' ' + classes[i].number;
+              const doc = counter.doc(class1).get().catch((err) => {
+                console.error(err);
+                throw new Error(500);
+              });
+              if (doc.exists) {
+                  counter.doc(class1).update({ "count": FieldValue.increment(-1), "users": FieldValue.arrayRemove(user_id) }).catch((err) => {
+                    console.error(err);
+                    throw new Error(500);
+                  });
+                }
+             });
           }
         }
-      }
-    }
-  } catch (e) {
+     } 
+  }catch (e) {
     console.error(e);
   }
 }

@@ -297,6 +297,7 @@ public class Optimizer {
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
             //System.out.println(iterationCount);
+            //System.out.println(iterationCount);
             iterationCount++;
                         //System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
