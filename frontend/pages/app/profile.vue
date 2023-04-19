@@ -1129,6 +1129,7 @@ async function flagCourse(course) {
 }
 
 async function submit() {
+  console.log(isGradStudent.value + ' this is the value');
   axios
     .post(
       "http://localhost:3001/api/update/profile",
