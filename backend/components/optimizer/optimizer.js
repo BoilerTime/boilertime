@@ -90,8 +90,9 @@ async function optimizeSchedule(schedule) {
 
   collectionIDs = {};
   jArray = [];
-  for (let i = 0; i < output.length; i++) {
+  /*for (let i = 0; i < output.length; i++) {
     isFull = await purdueio.isFull(output[i].name.split(' ')[0], output[i].name.split(' ')[1], output[i].sectionIDs);
+    console.log("UWU")
     console.log(isFull);
     output[i].isFull = isFull;
     jArray = [];
@@ -117,7 +118,7 @@ async function optimizeSchedule(schedule) {
     //console.log(jArray['collectionIDs']);
 
     //console.log('\n\n' + jArray + '\n\n')
-  }
+  }*/
     console.log(output)
     return output;
 }
