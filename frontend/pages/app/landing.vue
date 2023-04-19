@@ -306,7 +306,7 @@ var ratings = ref();
 async function getUsers() {
     await axios
         .post(
-            "http://localhost:3001/api/get/num_users",
+            "https://api.boilerti.me/api/get/num_users",
         {},
         ).then((res) => {
             users.value = res.data.num_users;
@@ -319,7 +319,7 @@ async function getUsers() {
 async function getRatings() {
     await axios
         .post(
-            "http://localhost:3001/api/get/num_ratings",
+            "https://api.boilerti.me/api/get/num_ratings",
         {},
         ).then((res) => {
             ratings.value = res.data.num_ratings;
@@ -331,7 +331,7 @@ async function getRatings() {
 function getSchedules() {
     axios
         .post(
-            "http://localhost:3001/api/get/num_schedules",
+            "https://api.boilerti.me/api/get/num_schedules",
         {},
         ).then((res) => {
             schedules.value = res.data.num_schedules;

@@ -204,7 +204,7 @@ async function getUserInfo() {
   }
   user_id.value = userStore.user.user_id;
   axios
-    .post("http://localhost:3001/api/get/profile/", {
+    .post("https://api.boilerti.me/api/get/profile/", {
       user_id: userStore.user_id,
     }, config)
     .then((response) => {
@@ -216,7 +216,7 @@ async function getUserInfo() {
     });
   axios
     .post(
-      "http://localhost:3001/api/get/darkmode/",
+      "https://api.boilerti.me/api/get/darkmode/",
       {
         user_id: userStore.user_id,
       },
@@ -235,7 +235,7 @@ async function setTheme(darkMode) {
   userStore.user.dark_mode = darkMode;
   changePageTheme();
   axios
-    .post("http://localhost:3001/api/set/darkmode/", {
+    .post("https://api.boilerti.me/api/set/darkmode/", {
       user_id: userStore.user_id,
       dark_mode: isDarkMode.value,
     }, config)
@@ -255,7 +255,7 @@ async function setThemePref() {
   isDarkMode.value = $isDarkMode;
   userStore.user.dark_mode = $isDarkMode;
   axios
-    .post("http://localhost:3001/api/set/darkmode/", {
+    .post("https://api.boilerti.me/api/set/darkmode/", {
       user_id: userStore.user_id,
       dark_mode: isDarkMode.value,
     }, config)

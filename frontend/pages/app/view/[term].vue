@@ -31,8 +31,7 @@ import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
-import { POSITION, useToast } from "vue-toastification";
-const toast = useToast();
+const { $toast } = useNuxtApp()
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
@@ -52,14 +51,14 @@ async function convertSchedule(schedule) {
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
-        const response = await axios.post('http://localhost:3001/api/getgpa', {
+        const response = await axios.post('https://api.boilerti.me/api/getgpa', {
           "prof_name": prof_name,
           "class_name": class_name
         }, config)
         return response?.data?.averageGPA || 0.0
       }
       async function getrmp(prof_name) {
-        const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+        const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
           "prof_name": prof_name
         }, config)
         return response?.data?.avgRating || 0.0
@@ -122,7 +121,7 @@ onBeforeMount(async () => {
 
   console.log("GroupID:" + friend_id)
   if (friend_id != undefined) {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
       user_id: friend_id,
       term_id: route.params.term,
     }, config).then((response) => {
@@ -130,7 +129,7 @@ onBeforeMount(async () => {
       convertSchedule(scheduleData.value)
     })
   } else {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
@@ -140,11 +139,11 @@ onBeforeMount(async () => {
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
   }).catch((error) => {
+    console.log("THIS IS THE ERROR " + error)
     if (error.response.status == 500) {
       console.log(error);
-      toast.error("You have not optimized this schedule yet!", {
+      $toast.error("You have not optimized this schedule yet!", {
           timeout: 5000,
-          position: POSITION.TOP_CENTER
       });
       navigateTo('/app/create')
     }
@@ -161,9 +160,8 @@ onMounted(() => {
 
 function showWarning(configured) {
   if(configured) {
-    toast.info("We try to fit your preferences, but sometimes it's difficult to find a schedule that satisfies all of them. ", {
+    $toast.info("We try to fit your preferences, but sometimes it's difficult to find a schedule that satisfies all of them. ", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   }
 }
