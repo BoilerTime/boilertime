@@ -321,204 +321,257 @@
       </div>
       <!--Flex grouping for user ratings-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl dark:text-gray-200">User Ratings ⭐️</h1>
+        <h1 class="font-bold text-2xl dark:text-gray-200">User Ratings</h1>
       </div>
-      <div
-        class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4"
-      >
-        <h1 class="font-bold text-2xl mb-3">Courses</h1>
-        <ul
-          class="list-inside list-item mb-6"
-          v-for="(course, index) in courses"
-          :key="index"
-          v-if="isDataLoaded"
-        >
-          <li class="font-bold text-lg">{{ course.course }}</li>
-          <li class="font-light italic text-sm mb-2">
-            Submitted at: {{ course.timestamp }}
-          </li>
-          <li
-            class="font-light text-sm mb-2 text-red-500"
-            v-if="course.flag_count >= 3"
-          >
-            This review has been flagged for review by the content moderators
-          </li>
-          <li>
-            How strict are the prerequisite requirements? {{ course.rating[0] }}
-          </li>
-          <li>
-            How is the pace of the materials covered? {{ course.rating[1] }}
-          </li>
-          <li>How in-depth is the material? {{ course.rating[2] }}</li>
-          <li>Your Review:</li>
-          <li>{{ course.explanation }}</li>
-          <li class="flex gap-2 place-items-center">
-            <a
-              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="
-                edit(
-                  course.course,
-                  course.rating[0],
-                  course.rating[1],
-                  course.rating[2],
-                  course.explanation,
-                  'course',
-                  userStore.user_id
-                )
-              "
-              >Edit</a
-            ><a
-              class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="deletecourses(course.course)"
-              >Delete</a
+      <div>
+        <TabGroup>
+          <TabList class="flex space-x-1 rounded-xl bg-neutral-200 dark:bg-neutral-400 p-1 items-cente justify-between gap-4 h-16 mt-4">
+            <Tab :class="[
+              'w-full rounded-lg py-2.5 text-md leading-5 font-bold',
+              'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+              selected
+                ? 'bg-white shadow'
+                : '',
+            ]"> Courses </Tab>
+            <Tab :class="[
+              'w-full rounded-lg py-2.5 text-md font-bold leading-5',
+              'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+              selected
+                ? 'bg-white shadow'
+                : '',
+            ]"> Classrooms </Tab>
+            <Tab :class="[
+              'w-full rounded-lg py-2.5 text-lg font-bold leading-5',
+              'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400 focus:outline-none focus:ring-2',
+              selected
+                ? 'bg-white shadow'
+                : '',
+            ]"> TAs </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel
+              class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4 max-h-96 overflow-y-scroll"
             >
-            <flagicon
-              class="h-14 w-14 p-3 hover:text-neutral-600"
-              @click="flag"
-            ></flagicon>
-          </li>
-        </ul>
-        <h1 class="font-bold text-2xl mt-3 mb-3">Classrooms</h1>
-        <ul
-          class="list-inside list-item mb-6"
-          v-for="classroom in classrooms"
-          v-if="isDataLoaded"
-        >
-          <li class="font-bold text-lg">{{ classroom["classroom"] }}</li>
-          <li class="font-light text-sm mb-2 italic">
-            Submitted at: {{ classroom.timestamp }}
-          </li>
-          <!-- Classroom Reivews, edit content because it does not make sense -->
-          <li
-            class="font-light text-sm mb-2 text-red-500"
-            v-if="classroom.flag_count >= 3"
-          >
-            This review has been flagged for review by the content moderators
-          </li>
-          <li>
-            How strict are the prerequisite requirements?
-            {{ classroom.rating[0] }}
-          </li>
-          <li>
-            How is the pace of the materials covered? {{ classroom.rating[1] }}
-          </li>
-          <li>How in-depth is the material? {{ classroom.rating[2] }}</li>
-          <li>Your Review:</li>
-          <li>{{ classroom.explanation }}</li>
-          <li class="flex gap-2 place-items-center">
-            <a
-              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="
-                edit(
-                  classroom.classroom,
-                  classroom.rating[0],
-                  classroom.rating[1],
-                  classroom.rating[2],
-                  course.explanation,
-                  'classroom',
-                  userStore.user_id
-                )
-              "
-              >Edit</a
-            ><a
-              class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="deleteclassrooms(classroom.classroom)"
-              >Delete</a
+              <ul
+                class="list-inside list-item mb-6"
+                v-for="(course, index) in courses"
+                :key="index"
+                v-if="isDataLoaded"
+              >
+                <li class="font-bold text-lg">{{ course.course }}</li>
+                <li class="font-light italic text-sm mb-2">
+                  Submitted at: {{ course.timestamp }}
+                </li>
+                <li
+                  class="font-bold text-sm mb-2 text-red-600"
+                  v-if="course.flag_count >= 3"
+                >
+                  This review has been flagged for review by the content
+                  moderators
+                </li>
+                <li>
+                  How strict are the prerequisite requirements?
+                  {{ course.rating[0] }}
+                </li>
+                <li>
+                  How is the pace of the materials covered?
+                  {{ course.rating[1] }}
+                </li>
+                <li>How in-depth is the material? {{ course.rating[2] }}</li>
+                <li>Your Review:</li>
+                <li>{{ course.explanation }}</li>
+                <li class="flex gap-2 place-items-center">
+                  <button
+                    class="mr-3 bg-indigo-500 hover:bg-indigo-700 font-bold text-white text-sm p-2.5 rounded-lg"
+                    @click="
+                      edit(
+                        course.course,
+                        course.rating[0],
+                        course.rating[1],
+                        course.rating[2],
+                        course.explanation,
+                        'course',
+                        userStore.user_id
+                      )
+                    "
+                    >Edit</button
+                  ><button
+                    class="font-bold text-indigo-500 dark:text-indigo-100 text-sm p-2.5 rounded-lg"
+                    @click="deletecourses(course.course)"
+                    >Delete</button
+                  >
+                  <flagicon
+                    class="h-14 w-14 p-3 hover:text-neutral-600"
+                    @click="flag"
+                  ></flagicon>
+                </li>
+              </ul>
+              <ul class="list-inside list-item" v-else>
+                <li>No ratings yet!</li>
+              </ul>
+              <EditRating
+                :isOpen="isOpen"
+                :closeEdit="closeEdit"
+                :title="editTitle"
+                :q1="editQ1"
+                :q2="editQ2"
+                :q3="editQ3"
+                :expl="editExpl"
+                :type="editType"
+                :id="user_id"
+              />
+            </TabPanel>
+            <TabPanel
+              class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4 max-h-96 overflow-y-scroll"
             >
-            <flagicon
-              class="h-14 w-14 p-3 hover:text-neutral-600"
-              @click="flag"
-            ></flagicon>
-          </li>
-        </ul>
-        <h1 class="font-bold text-2xl mt-3 mb-3">Teaching Assistants</h1>
-        <ul
-          class="list-inside list-item mb-2"
-          v-for="ta in tas"
-          v-if="isDataLoaded"
-        >
-          <li class="font-bold text-lg">{{ ta["ta"] }}</li>
-          <li class="font-light text-sm mb-2 italic">
-            Submitted at: {{ ta.timestamp }}
-          </li>
-          <!--Flagging Teaching Assistants, review label content (does not make sense)-->
-          <li
-            class="font-light text-sm mb-2 text-red-500"
-            v-if="ta.flag_count >= 3"
-          >
-            This review has been flagged for review by the content moderators
-          </li>
-          <li>
-            How strict are the prerequisite requirements? {{ ta.rating[0] }}
-          </li>
-          <li>How is the pace of the materials covered? {{ ta.rating[1] }}</li>
-          <li>How in-depth is the material? {{ ta.rating[2] }}</li>
-          <li>Your Review:</li>
-          <li>{{ ta.explanation }}</li>
-          <li class="flex gap-2 place-item-center">
-            <a
-              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
-              @click="
-                edit(
-                  ta.ta,
-                  ta.rating[0],
-                  ta.rating[1],
-                  ta.rating[2],
-                  ta.explanation,
-                  'ta'
-                )
-              "
-              >Edit</a
-            ><a
-              class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
-              @click="deleteta(ta.ta)"
-              >Delete</a
+              <ul
+                class="list-inside list-item mb-6"
+                v-for="classroom in classrooms"
+                v-if="isDataLoaded"
+              >
+                <li class="font-bold text-lg">
+                  {{ classroom["classroom"] }}
+                </li>
+                <li class="font-light text-sm mb-2 italic">
+                  Submitted at: {{ classroom.timestamp }}
+                </li>
+                <!-- Classroom Reivews, edit content because it does not make sense -->
+                <li
+                  class="font-bold text-sm mb-2 text-red-600"
+                  v-if="classroom.flag_count >= 3"
+                >
+                  This review has been flagged for review by the content
+                  moderators
+                </li>
+                <li>
+                  How strict are the prerequisite requirements?
+                  {{ classroom.rating[0] }}
+                </li>
+                <li>
+                  How is the pace of the materials covered?
+                  {{ classroom.rating[1] }}
+                </li>
+                <li>How in-depth is the material? {{ classroom.rating[2] }}</li>
+                <li>Your Review:</li>
+                <li>{{ classroom.explanation }}</li>
+                <li class="flex gap-2 place-items-center">
+                  <button
+                    class="mr-3 bg-indigo-500 hover:bg-indigo-700 font-bold text-white text-sm p-2.5 rounded-lg"
+                    @click="
+                      edit(
+                        classroom.classroom,
+                        classroom.rating[0],
+                        classroom.rating[1],
+                        classroom.rating[2],
+                        course.explanation,
+                        'classroom',
+                        userStore.user_id
+                      )
+                    "
+                    >Edit</button
+                  ><button
+                    class="text-indigo-500 dark:text-indigo-100 font-bold text-sm p-2.5 rounded-lg"
+                    @click="deleteclassrooms(classroom.classroom)"
+                    >Delete</button
+                  >
+                  <flagicon
+                    class="h-14 w-14 p-3 hover:text-neutral-600"
+                    @click="flag"
+                  ></flagicon>
+                </li>
+              </ul>
+              <ul class="list-inside list-item" v-else>
+                <li>No ratings yet!</li>
+              </ul>
+              <EditRating
+                :isOpen="isOpen"
+                :closeEdit="closeEdit"
+                :title="editTitle"
+                :q1="editQ1"
+                :q2="editQ2"
+                :q3="editQ3"
+                :expl="editExpl"
+                :type="editType"
+                :id="user_id"
+              />
+            </TabPanel>
+            <TabPanel
+              class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4 max-h-96 overflow-y-scroll"
             >
-            <flagicon
-              class="h-14 w-14 p-3 hover:text-neutral-600"
-              @click="flag"
-            ></flagicon>
-          </li>
-        </ul>
-        <ul class="list-inside list-item" v-else>
-          <li>No ratings yet!</li>
-        </ul>
-        <EditRating
-          :isOpen="isOpen"
-          :closeEdit="closeEdit"
-          :title="editTitle"
-          :q1="editQ1"
-          :q2="editQ2"
-          :q3="editQ3"
-          :expl="editExpl"
-          :type="editType"
-          :id="user_id"
-        />
+              <ul
+                class="list-inside list-item mb-2"
+                v-for="ta in tas"
+                v-if="isDataLoaded"
+              >
+                <li class="font-bold text-lg">{{ ta["ta"] }}</li>
+                <li class="font-light text-sm mb-2 italic">
+                  Submitted at: {{ ta.timestamp }}
+                </li>
+                <!--Flagging Teaching Assistants, review label content (does not make sense)-->
+                <li
+                  class="font-bold text-sm mb-2 text-red-600"
+                  v-if="ta.flag_count >= 3"
+                >
+                  This review has been flagged for review by the content
+                  moderators
+                </li>
+                <li>
+                  How strict are the prerequisite requirements?
+                  {{ ta.rating[0] }}
+                </li>
+                <li>
+                  How is the pace of the materials covered? {{ ta.rating[1] }}
+                </li>
+                <li>How in-depth is the material? {{ ta.rating[2] }}</li>
+                <li>Your Review:</li>
+                <li>{{ ta.explanation }}</li>
+                <li class="flex gap-2 place-item-center">
+                  <button
+                    class="mr-3 bg-indigo-500 hover:bg-indigo-700 font-bold text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
+                    @click="
+                      edit(
+                        ta.ta,
+                        ta.rating[0],
+                        ta.rating[1],
+                        ta.rating[2],
+                        ta.explanation,
+                        'ta'
+                      )
+                    "
+                    >Edit</button
+                  ><button
+                    class="font-bold text-indigo-500 dark:text-indigo-100 text-sm p-2.5 mt-2 mb-2 rounded-lg"
+                    @click="deleteta(ta.ta)"
+                    >Delete</button
+                  >
+                  <flagicon
+                    class="h-14 w-14 p-3 hover:text-neutral-600"
+                    @click="flag"
+                  ></flagicon>
+                </li>
+              </ul>
+              <ul class="list-inside list-item" v-else>
+                <li>No ratings yet!</li>
+              </ul>
+              <EditRating
+                :isOpen="isOpen"
+                :closeEdit="closeEdit"
+                :title="editTitle"
+                :q1="editQ1"
+                :q2="editQ2"
+                :q3="editQ3"
+                :expl="editExpl"
+                :type="editType"
+                :id="user_id"
+              />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </div>
-      <!--Flex grouping for bookmarked classes-->
-      <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">
-          Bookmarked Classes ❗️
-        </h1>
-        <div
-          class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 p-4"
-        >
-          <ul class="list-inside list-item">
-            <li
-              class="mb-2 font-bold text-lg"
-              v-for="(item, index) in bookmarkedClasses"
-              :key="index"
-            >
-              {{ item }}
-            </li>
-          </ul>
-        </div>
-      </div>
-      <!--Edit Profile Button-->
       <div class="grid justify-end">
         <!--Go home-->
         <button
-          class="w-1/8 bg-indigo-500 hover:bg-indigo-700 font-bold border dark:border-black text-white py-2 px-2 rounded-lg"
+          class="w-1/8 font-bold text-yellow-700 dark:text-yellow-200 py-2 px-2 rounded-lg"
         >
           <a href="/app">Home</a>
         </button>
@@ -536,7 +589,14 @@ import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
 import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
 import { saveAs } from "file-saver";
-import { Switch } from "@headlessui/vue";
+import {
+  Switch,
+  TabGroup,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+} from "@headlessui/vue";
 //import { encrypt } from "iron-webcrypto";
 //import test from "node:test";
 
