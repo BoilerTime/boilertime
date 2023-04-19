@@ -64,6 +64,8 @@ describe("POST Test Profile", () => {
     firstname: "Me",
     lastname: "You",
     is_grad_student: false,
+    privacy: false,
+    pairs: true
   }
 
   it("API Call To Update Profile", (done) => {

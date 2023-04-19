@@ -89,6 +89,7 @@ import { POSITION, useToast } from "vue-toastification";
 const email = ref("");
 const password = ref("");
 const toast = useToast();
+const route = useRoute();
 
 const userStore = useUserStore();
 
@@ -99,13 +100,13 @@ async function login() {
   try {
     await userStore.signIn(email.value, sha256(password.value));
     if (!userStore.isLoggedIn) {
-      navigateTo("/auth/login");
+      navigateTo(`/auth/login?verified=${route.query.verified}`);
     } else {
       // start temp fix, this is janky
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      navigateTo("/app");
+      navigateTo(`/app?verified=${route.query.verified}`);
     }
   } catch (error) {
     // temp alert

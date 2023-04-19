@@ -116,7 +116,7 @@ app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     try {
       resObj = await utils.getUserProfile(user_id);
-      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
+      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, pairs: resObj.pairs, privacy: resObj.privacy, accessToken: req.user.accessToken});
     } catch {
       res.sendStatus(401);
     }
