@@ -199,7 +199,7 @@ const config = {
 async function createreview() {
     if (actualval == enterval.value) {
         if (reviewtype.value === "course") {
-            await axios.post('http://localhost:3001/api/add/ratings/courses', {
+            await axios.post('https://api.boilerti.me/api/add/ratings/courses', {
                 user_id: userStore.user_id,
                 course: reviewselection.value,
                 prequisite_strictness: rating1.value,
@@ -216,7 +216,7 @@ async function createreview() {
                     alert("Error:" + error);
                 })
         } else if (reviewtype.value === "classroom") {
-            await axios.post('http://localhost:3001/api/add/ratings/classrooms', {
+            await axios.post('https://api.boilerti.me/api/add/ratings/classrooms', {
                 user_id: userStore.user_id,
                 classroom: reviewselection.value,
                 access_conv: rating1.value,
@@ -233,7 +233,7 @@ async function createreview() {
                     alert("Error:" + error);
                 })
         } else if (reviewtype.value === "ta") {
-            await axios.post('http://localhost:3001/api/add/ratings/tas', {
+            await axios.post('https://api.boilerti.me/api/add/ratings/tas', {
                 user_id: userStore.user_id,
                 ta: reviewselection.value,
                 question_answering: rating1.value,

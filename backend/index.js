@@ -91,10 +91,12 @@ app.post('/api/update/profile', jwt.authenticateToken, async (req, res) => {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const isGradStudent = req.body.is_grad_student;
+    const privacy = req.body.privacy;
+    const pairs = req.body.pairs;
     const studentClass = utils.getStudentClass(grad_year, grad_month);
     //console.log(user_id + classification_year + firstname + lastname);
     const classification_year = utils.getStudentClass(grad_year, grad_month);
-    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent, privacy, pairs);
     res.json({ accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id });
   }
 });
@@ -157,7 +159,7 @@ app.post('/api/forgotpassword', (req, res) => {
       from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
+      html: `<a href="https://boilerti.me/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
     res.sendStatus(200);
@@ -319,7 +321,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   const token = authenticationHeader && authenticationHeader.split(' ')[1];
   if (await jwt.checkGuest(token)) {
     // if guest send 418
-    res.sendStatus(418);
+    return res.sendStatus(418);
   }
   else {
     console.log(req.body);
@@ -327,25 +329,20 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
       console.log("Schedule Added to Database")
     }).catch(err => {
       console.error(err)
-      res.sendStatus(500);
+      return res.sendStatus(500);
     });
-
+    
     const requiredClasses = req.body.required_classes;
     const optionalClasses = req.body.optional_classes;
+    const user_id = req.body.user_id;
     const classes = requiredClasses.concat(optionalClasses);
-    schedule.classCounter(classes).then((input) => {
-      console.log("Class Counter Updated")
-    }).catch(err => {
-      console.error(err)
-      res.sendStatus(500);
-    });
 
-    await optimizer.optimizeSchedule(req.body).then((data) => {
+    await optimizer.optimizeSchedule(req.body).then((data)=>{
       console.log("Saved!");
       res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
     }).catch((err) => {
       console.log(err)
-      res.sendStatus(500);
+      return res.sendStatus(500);
     });
   }
 });
@@ -371,8 +368,21 @@ app.post('/api/takentogether', async (req, res) => {
 
 app.post('/api/saveoptimizedschedule', async (req, res) => {
   console.log("Saving!")
-  console.log(req.body.data)
+  console.log(req.body);
+  const prev_schedule = await schedule.getGeneratedSchedule(req.body.user_id);
   await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
+  schedule.classCounterDecrement(req.body.user_id, prev_schedule).then((input) => {
+    console.log("Class Counter Decremented")
+    schedule.classCounterIncrement(req.body.user_id, req.body.data.schedule).then((input) => {
+      console.log("Class Counter Incremented")
+    }).catch(err => {
+      console.error(err)
+      return res.sendStatus(500);
+    });
+  }).catch((err) => {
+    console.error(err)
+    return res.sendStatus(500);
+  });
   res.sendStatus(200);
 })
 
@@ -394,6 +404,17 @@ app.post('/api/saveschedule', jwt.authenticateToken, async (req, res) => {
       res.sendStatus(500);
     });
   }
+});
+
+app.post('/api/saveschedule/guest', async (req, res) =>  {
+  await schedule.addClassesGuest(req.body).then((input) => {
+    console.log("Schedule Added to Guest Cookie")
+    console.log('added this schedule ' + input);
+    res.json({schedule: input});
+  }).catch(err => {
+    console.error(err)
+    res.sendStatus(500);
+  });
 });
 
 app.post('/api/getclasses', async (req, res) => {
@@ -1139,6 +1160,7 @@ app.post('/api/get/num_schedules', async (req, res) => {
   res.json({ num_schedules: await utils.getNumSchedules() });
 });
 
+
 app.post('/api/get/num_ratings', async (req, res) => {
   res.json({ num_ratings: await utils.getNumRatings() });
 });
@@ -1216,6 +1238,29 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
     console.log('Changed Darkmode to ' + darkMode);
     res.sendStatus(200);
   }
+});
+
+app.post('/api/optimizer/isfull', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionIDs = req.body.sectionIDs;
+  res.json(await purdueio.isFull(subject, number, sectionIDs));
+});
+
+app.post('/api/get/sections', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionID = req.body.sectionID;
+  res.json(await schedule.getSections(subject, number, sectionID));
+});
+
+
+app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
+  console.log(req.body)
+  const user_id = req.body.user_id;
+  const course = req.body.course;
+  names = await schedule.getClassMates(user_id, course);
+  res.json(names);
 });
 
 module.exports = app;
