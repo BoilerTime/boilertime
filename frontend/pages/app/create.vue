@@ -1374,11 +1374,15 @@ function showPrefMenu() {
 }
 
 function configureState(data) {
-  let temp = [];
-  for(let i = 0; i < data.length; i++) {
-    temp.push(state.list.find(entry => entry.value === data[i]));
+  try {
+    let temp = [];
+    for(let i = 0; i < data.length; i++) {
+      temp.push(state.list.find(entry => entry.value === data[i]));
+    }
+    state.list = temp;
+  } catch(e) {
+    
   }
-  state.list = temp;
 }
 </script>
 
