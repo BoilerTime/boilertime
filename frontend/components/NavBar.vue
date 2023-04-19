@@ -1,5 +1,5 @@
 <template>
-  <header class="'bg-${bgColor}' dark:bg-neutral-700">
+  <header class="bg-white dark:bg-neutral-500">
     <nav class="flex items-center justify-between py-8 px-10">
       <div class="flex">
         <!-- Logo -->
@@ -18,7 +18,7 @@
               >
                 <sun v-if="!isDarkMode" class="h-7 w-7 ml-0.5 text-yellow-500">
                 </sun>
-                <moon v-else class="h-7 w-7 ml-0.5 text-indigo-500"></moon>
+                <moon v-else class="h-7 w-7 ml-0.5 text-indigo-500 dark:text-indigo-700"></moon>
               </MenuButton>
             </div>
             <transition
@@ -63,7 +63,7 @@
                     >
                       <moon
                         :active="active"
-                        class="w-5 h-5 mr-2 text-purple-500"
+                        class="w-5 h-5 mr-2 text-indigo-500 dark:text-indigo-700"
                       >
                       </moon>
                       Dark
