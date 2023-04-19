@@ -1,5 +1,5 @@
 <template>
-  <main>
+<main>
     <NavBar />
     <section class="flex items-center justify-center h-screen p-24 bg-gray-200 dark:bg-neutral-600 align-center">
     <div class="grid grid-cols-5 gap-x-20">
@@ -28,7 +28,7 @@
             <fieldset class="mt-2">
               <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                 <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                  <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                  <input :id="time.id" type="radio" :checked="time.id === time_pref" :value="time.id" v-model="time_pref" class="w-4 h-4" @change="updateTimePref(time.id)" />
                   <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
                 </div>
               </div>
@@ -235,28 +235,28 @@
             >
               <DialogTitle
                 as="h1"
-                class="text-xl font-large text-center leading-6 dark:text-gray-200"
+                class="text-xl text-center font-large leading-6 dark:text-gray-200"
                 style="font-size: 30px;"
               >
                 <b>{{status}}</b><span class="loader__dot">.</span><span class="loader__dot">.</span><span class="loader__dot">.</span>
               </DialogTitle>
               <div class="mt-2">
-                <p v-if="!inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                <p v-if="!inLine" class="text-sm text-center text-gray-500 dark:text-gray-200">
                   We're building your perfect schedule. This might take a bit
                 </p>
-                <p v-else class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                <p v-else class="text-sm text-center text-gray-500 dark:text-gray-200">
                   Waiting in line: Position {{posInLine}} of {{totalPos}}
                 </p>
 
-                <p v-if="inLine" class="text-sm text-gray-500 dark:text-gray-200 text-center">
+                <p v-if="inLine" class="text-sm text-center text-gray-500 dark:text-gray-200">
                   Expected wait: {{mins}}
                 </p>
-                <!--div class="content-center animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-600" style="text-align: center;"></div-->
+                <!--div class="content-center w-32 h-32 border-t-2 border-b-2 border-green-600 rounded-full animate-spin" style="text-align: center;"></div-->
                 <br/>
-                <div v-if="multiLoader" class="justify-center items-center">
+                <div v-if="multiLoader" class="items-center justify-center">
                   <div class="flex items-center justify-center">
-                    <div class="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
-                    <div class="h-20 w-20 rounded-full bg-white dark:bg-neutral-700"></div>
+                    <div class="flex items-center justify-center rounded-full h-28 w-28 bg-gradient-to-tr from-yellow-500 to-gray-500 animate-spin">
+                    <div class="w-20 h-20 bg-white rounded-full dark:bg-neutral-700"></div>
                   </div>
                 </div>
               </div>
@@ -265,10 +265,10 @@
                   <ProgressBar :bgcolor="'#6a1b9a'" :completed="completed"  style="width:100%"/>
                 </div>
               </div><br/>
-              <button @click="cancel()" class="bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+              <button @click="cancel()" class="p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md" style="align: text-center;" >
                 Cancel
               </button>
-              <button @click="displayTips = true" class="float-right bg-yellow-500 hover:bg-yellow-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-right;" >
+              <button @click="displayTips = true" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md" style="align: text-right;" >
                 Tips
               </button>
             </DialogPanel>
@@ -369,7 +369,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-l p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+              class="w-full p-6 overflow-hidden text-left align-middle bg-white shadow-xl max-w-l transform rounded-2xl transition-all"
             >
               <DialogTitle
                 as="h1"
@@ -382,7 +382,7 @@
                 <p class="text-xl">
                   How it Works
                 </p>
-                <ul class="list-disc list-inside text-sm">
+                <ul class="text-sm list-disc list-inside">
                   <li>We use an advanced algorithm that uses data like coure times and RMP ratings then combine it with your preferences</li>
                   <li>After generating literally thousands of options, we select the best couple of options and make those your schedules</li>
                   <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
@@ -393,15 +393,15 @@
                 <p class="text-xl">
                   How to Use It
                 </p>
-                <ul class="list-disc list-inside text-sm">
+                <ul class="text-sm list-disc list-inside">
                   <li>It looks like you're already an expert! Congrats on making a schedule</li>
                   <li>Next time, look at our hub first to discover classes you might want to take and see a bit of info first
-                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                  <ul class="text-sm list-none list-inside" style="margin-left: 1%">
                     <li> - That way, you can see if the right professors, times of day, or locations are there for you</li>
                     <li> - You can always bookmark a course to come back later if you're not satisfied</li>
                   </ul></li>
                   <li>Becuase the algorithm uses a lot of processing power, we can only let a limited number of devices use it at once</li>
-                  <ul class="list-none list-inside text-sm" style="margin-left: 1%">
+                  <ul class="text-sm list-none list-inside" style="margin-left: 1%">
                     <li> - To save everyone time and money, take a look over the class options before optimizing</li>
                     <li> - Never re-optimize the same schedule unless you don't like any of the results</li>
                     <li> - If you've inputted optional classes that don't show up in any of the options, remove another class before re-optimizing</li>
@@ -409,7 +409,7 @@
                   <li>Be realistic about the number of classes you'd like to take, the number of classes inputted will be filled</li>
                 </ul>
               </div>
-              <button @click="closeTips()" class="float-middle bg-yellow-500 hover:bg-red-700 text-white p-2 text-md font-bold border dark:border-black rounded-md" style="align: text-center;" >
+              <button @click="closeTips()" class="p-2 font-bold text-white bg-yellow-500 border float-middle hover:bg-red-700 text-md dark:border-black rounded-md" style="align: text-center;" >
                 Close
               </button>
             </DialogPanel>
@@ -431,6 +431,7 @@
 import { ref, computed, watchEffect, watch } from 'vue'
 import axios from 'axios'
 import { useUserStore } from "../../store/user";
+import { useGuestStore } from "../../store/guest";
 import ProgressBar from "../../components/ProgressBar.vue";
 import { POSITION, useToast } from "vue-toastification";
 
@@ -449,6 +450,7 @@ const { $socket } = useNuxtApp()
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
+const guestStore = useGuestStore()
 const time_pref = ref('')
 const rmp = ref('')
 const isOpen = ref(false)
@@ -492,28 +494,55 @@ const timePreference = [
 ]
 
 onBeforeMount(() => {
-  axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
+  if (userStore.user_id) {
+    isAGuest.value = false
+    console.log('is a guest is false' + isAGuest.value);
+  }
+  else {
+    console.log('is a guest is true');
+  }
+  axios.get('http://localhost:3001/api/searchnew').then((response) => {
     data.value = response.data
   })
-  axios.get('http://localhost:3001/api/searchnew', config).then((response) => {
+  axios.get('http://localhost:3001/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
-  axios.post('http://localhost:3001/api/getclasses', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
-    selectedRequiredCourses.value = response.data.required_classes
-  })
-  axios.post('http://localhost:3001/api/getclasses', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
-    selectedOptionalCourses.value = response.data.optional_classes
-  })
-  axios.post('http://localhost:3001/api/getbookmarks', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
-    bookmarked_classes.value = response.data.bookmarks
-  })
-})
+  if (!isAGuest.value) {
+    console.log('here in not a guest');
+    axios.post('http://localhost:3001/api/getclasses', {
+      user_id: userStore.user_id,
+    }, config).then((response) => {
+      selectedRequiredCourses.value = response.data.required_classes
+    })
+    axios.post('http://localhost:3001/api/getclasses', {
+      user_id: userStore.user_id,
+    }, config).then((response) => {
+      selectedOptionalCourses.value = response.data.optional_classes
+      time_pref.value = response.data.time;
+      console.log(response.data.time + ' this is the time');
+    })
+    axios.post('http://localhost:3001/api/getbookmarks', {
+      user_id: userStore.user_id,
+    }, config).then((response) => {
+      bookmarked_classes.value = response.data.bookmarks
+    })
+  }
+  else {
+    if (guestStore.guest.schedule.required_classes != undefined) {
+      console.log('no undefined!');
+      selectedRequiredCourses.value = guestStore.schedule.required_classes;
+      selectedOptionalCourses.value = guestStore.schedule.optional_classes;
+      bookmarked_classes.value = guestStore.bookmarked_classes;
+      console.log(guestStore.schedule.time);
+      time_pref.value = guestStore.schedule.time
+      console.log('this is the time pref value ' + time_pref.value);
+      updateTimePref(guestStore.schedule.time);
+    }
+    else {
+      console.log('undefined');
+    }
+  }
+});
 const searchTerm = ref('')
 const filteredResults = computed(() => {
   if (!searchTerm.value) {
@@ -565,20 +594,17 @@ onMounted(() => {
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
-function addToSelected(item) {
-  let timePrefValue = time_pref.value;
+function updateTimePref(time) {
+  time_pref.value = time;
+  let timePrefValue = time;
   let rmpValue = "none"
-  if(timePrefValue == '' ){
-    timePrefValue = "None";
+  if(timePrefValue == '' ) {
+    timePrefValue = "none";
     rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
+  } else if(timePrefValue == "none") {
     rmpValue = "RMP";
   }
-  if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
-    && !selectedOptionalCourses.value.includes(item)) {
-    selectedRequiredCourses.value.push(item)
-    isSearchActive.value = false
-    searchTerm.value = ''
+  if (!isAGuest.value) {
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
@@ -596,7 +622,74 @@ function addToSelected(item) {
         accessToken = userStore.accessToken;
         config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-    })
+    });
+  }
+  else {
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value, 
+      time: timePrefValue,
+      rmp: rmpValue,
+      blocked_times: ""
+    }).then((response) => {
+      guestStore.guest.schedule = response.data.schedule;
+    });
+  }
+}
+
+function addToSelected(item) {
+  let timePrefValue = time_pref.value;
+  let rmpValue = "none"
+  if(timePrefValue == '' ){
+    timePrefValue = "none";
+    rmpValue = "RMP";
+  } else if(timePrefValue == "none") {
+    rmpValue = "RMP";
+  }
+  if (!isAGuest.value) {
+    if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
+      && !selectedOptionalCourses.value.includes(item)) {
+      selectedRequiredCourses.value.push(item)
+      isSearchActive.value = false
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value, 
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
+        }
+      });
+    }
+  }
+  else {
+    if (selectedRequiredCourses.value.length < 5 && !selectedRequiredCourses.value.includes(item)
+      && !selectedOptionalCourses.value.includes(item)) {
+      selectedRequiredCourses.value.push(item)
+      isSearchActive.value = false
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule/guest', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value, 
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }).then((response) => {
+        guestStore.guest.schedule = response.data.schedule;
+      });
+    }
   }
   if (selectedRequiredCourses.value.length > 5) {
     alert('You can only select 5 required courses')
@@ -639,34 +732,55 @@ function addToSelectedOptional(item) {
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
-    timePrefValue = "None";
+    timePrefValue = "none";
     rmpValue = "RMP";
-  } else if(timePrefValue = "None") {
+  } else if(timePrefValue = "none") {
     rmpValue = "RMP";
   }
-  if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
-    && !selectedRequiredCourses.value.includes(item)) {
-    selectedOptionalCourses.value.push(item)
-    isOptionalSearchActive.value = false
-    optionalSearchTerm.value = ''
-    axios.post('http://localhost:3001/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: timePrefValue,
-      rmp: rmpValue,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
+  if (!isAGuest.value) {
+    if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
+      && !selectedRequiredCourses.value.includes(item)) {
+      selectedOptionalCourses.value.push(item)
+      isOptionalSearchActive.value = false
+      optionalSearchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value,
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+      }, config).then((response) => {
+        if (response.data["accessToken"] != undefined) {
+          userStore.user = {
+            accessToken: response.data["accessToken"],
+            //refreshToken: response.data["refreshToken"],
+            user_id: user_id
+          }
+          accessToken = userStore.accessToken;
+          config.headers['authorization'] = `Bearer ${accessToken}`;
         }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
+      })
+    }
+  }
+  else {
+    if (selectedOptionalCourses.value.length < 5 && !selectedOptionalCourses.value.includes(item)
+      && !selectedRequiredCourses.value.includes(item)) {
+      selectedOptionalCourses.value.push(item)
+      isOptionalSearchActive.value = false
+      optionalSearchTerm.value = ''
+      searchTerm.value = ''
+      axios.post('http://localhost:3001/api/saveschedule/guest', {
+        user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value, 
+        time: timePrefValue,
+        rmp: rmpValue,
+        blocked_times: ""
+      }).then((response) => {
+        guestStore.guest.schedule = response.data.schedule;
+      });
+    }
   }
   if (selectedOptionalCourses.value.length > 5) {
     alert('You can only select 5 optional courses')
@@ -688,25 +802,40 @@ function removeFromSelected(index) {
     rmpValue = "RMP";
   }
 
-  selectedRequiredCourses.value.splice(index, 1)
-  axios.post('http://localhost:3001/api/saveschedule', {
-    user_id: userStore.user_id,
-    required_classes: selectedRequiredCourses.value,
-    optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue,
-    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-  }, config).then((response) => {
-    if (response.data["accessToken"] != undefined) {
-      userStore.user = {
-        accessToken: response.data["accessToken"],
-        //refreshToken: response.data["refreshToken"],
-        user_id: user_id
+
+  if (!isAGuest.value) {
+    selectedRequiredCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue,
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      accessToken = userStore.accessToken;
-      config.headers['authorization'] = `Bearer ${accessToken}`;
-    }
-  })
+    })
+  }
+  else {
+    selectedRequiredCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue,
+      blocked_times: ""
+    }, config).then((response) => {
+    })
+  }
 }
 
 function removeOptional(index) {
@@ -718,25 +847,40 @@ function removeOptional(index) {
   } else if(timePrefValue = "None") {
     rmpValue = "RMP";
   }
-  selectedOptionalCourses.value.splice(index, 1)
-  axios.post('http://localhost:3001/api/saveschedule', {
-    user_id: userStore.user_id,
-    required_classes: selectedRequiredCourses.value,
-    optional_classes: selectedOptionalCourses.value,
-    time: timePrefValue,
-    rmp: rmpValue,
-    blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-  }, config).then((response) => {
-    if (response.data["accessToken"] != undefined) {
-      userStore.user = {
-        accessToken: response.data["accessToken"],
-        //refreshToken: response.data["refreshToken"],
-        user_id: user_id
+
+  if (!isAGuest.value) {
+    selectedOptionalCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue,
+      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
       }
-      accessToken = userStore.accessToken;
-      config.headers['authorization'] = `Bearer ${accessToken}`;
-    }
-  })
+    })
+  } 
+  else {
+    selectedOptionalCourses.value.splice(index, 1)
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: timePrefValue,
+      rmp: rmpValue,
+      blocked_times: ""
+    }).then((response) => {
+      })
+  }
 }
 
 function removeFromBookmarked(index) {
@@ -753,6 +897,9 @@ const bookmarked_classes = ref([])
 function addToBookmarked(item) {
   if (!this.bookmarked_classes.includes(item)) {
     this.bookmarked_classes.push(item);
+  }
+  if(isAGuest.value) {
+    guestStore.bookmarked_classes = this.bookmarked_classes;
   }
 }
 
@@ -775,34 +922,40 @@ watchEffect(() => {
 watch(bookmarked_classes, (newVal, oldVal) => {
   if (newVal.length > oldVal.length) {
     const newBookmark = newVal[newVal.length - 1]
-    console.log(`New bookmark added: ${newBookmark}`)
-    console.log(bookmarked_classes.value)
-    axios.post('http://localhost:3001/api/addbookmark', {
-      user_id: userStore.user_id,
-      class_name: bookmarked_classes.value
-    }, config).then(() => {
-      console.log('Bookmark added')
-    })
+    if (!isAGuest.value) {
+      console.log(`New bookmark added: ${newBookmark}`)
+      console.log(bookmarked_classes.value)
+      axios.post('http://localhost:3001/api/addbookmark', {
+        user_id: userStore.user_id,
+        class_name: bookmarked_classes.value
+      }, config).then(() => {
+        console.log('Bookmark added')
+      })
+    }
+    else {
+      guestStore.guest.bookmarked_classes = newVal; 
+    }
   }
   if (newVal.length < oldVal.length) {
     const removedBookmark = oldVal[oldVal.length - 1]
-    console.log(`Bookmark removed: ${removedBookmark}`)
-    console.log(bookmarked_classes.value)
-    axios.post('http://localhost:3001/api/removebookmark', {
-      user_id: userStore.user_id,
-      class_name: bookmarked_classes.value
-    }, config).then(() => {
-      console.log('Bookmark removed')
-    })
+    if (!isAGuest.value) {
+      console.log(`Bookmark removed: ${removedBookmark}`)
+      axios.post('http://localhost:3001/api/removebookmark', {
+        user_id: userStore.user_id,
+        class_name: bookmarked_classes.value
+      }, config).then(() => {
+        console.log('Bookmark removed')
+      })
+    }
+    else {
+      guestStore.guest.bookmarked_classes.remove(oldVal[oldVal.length - 1]);
+    }
   }
 })
 
 var isAGuest = ref(true)
 
 onMounted(async () => {
-  if (userStore.user_id) {
-    isAGuest.value = false
-  }
 })
 
 function submit() {
@@ -813,7 +966,6 @@ function submit() {
     });
     return
   }
-  console.log("time pref = " + time_pref.value);
   let timePrefValue = time_pref.value;
   let rmpValue = "none"
   if(timePrefValue == '' ){
@@ -838,7 +990,6 @@ function submit() {
       courseList = response.data.schedule;
       isAlgoActive.value = false;
 
-      console.log("TWT")
       console.log(courseList)
       if (response.data["accessToken"] != undefined) {
         userStore.user = {
