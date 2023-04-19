@@ -1,6 +1,6 @@
 <template>
-  <div class="absolute modal-backdrop grid grid-flow-row justify-center items-center inset-x-1/2 inset-y-1/4">
-    <div class="modal bg-white dark:bg-neutral-700 rounded-lg p-8 border shadow-lg max-w-sm md:max-w-lg">
+  <div class="absolute grid grid-flow-row justify-center items-center inset-x-1/4">
+    <div class="modal bg-white dark:bg-neutral-700 rounded-lg p-4 md:p-6 m-16 shadow-lg max-w-sm md:max-w-lg">
       <header class="modal-header grid grid-flow-col p-5">
         <slot name="header">
         </slot>

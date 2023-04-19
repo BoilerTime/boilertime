@@ -5,10 +5,19 @@
   <div v-else>
     <NavBar />
   </div>
-  <div class="h-screen overflow-auto p-16 bg-gray-100 dark:bg-neutral-600">
+  <div
+    class="h-screen overflow-auto p-6 md:p-16 bg-gray-100 dark:bg-neutral-600"
+  >
     <!--Transition Container-->
-    <TransitionRoot :show="isModalVisible" enter="transition duration-100" enter-from="opacity-0"
-      enter-to="opacity-100 z-index-50" leave="transition duration-100" leave-from="opacity-100" leave-to="opacity-0">
+    <TransitionRoot
+      :show="isModalVisible"
+      enter="transition duration-100"
+      enter-from="opacity-0"
+      enter-to="opacity-100 z-index-50"
+      leave="transition duration-100"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
       <!--Edit Profile Modal-->
       <Modal @closed="closeModal">
         <template #header>
@@ -20,38 +29,41 @@
           <div class="flex flex-col gap-4">
             <div class="flex flex-col md:flex-row gap-4">
               <div class="flex flex-col gap-2">
-                <label for="firstname" class="font-bold dark:text-gray-200">First Name</label>
-                <input type="text" id="firstname" v-model="firstname"
+                <label for="firstname" class="font-bold dark:text-gray-200"
+                  >First Name</label
+                >
+                <input
+                  type="text"
+                  id="firstname"
+                  v-model="firstname"
                   class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="First Name" />
+                  placeholder="First Name"
+                />
               </div>
               <div class="flex flex-col gap-2">
-                <label for="lastname" class="font-bold dark:text-gray-200">Last Name</label>
-                <input type="text" id="lastname" v-model="lastname"
+                <label for="lastname" class="font-bold dark:text-gray-200"
+                  >Last Name</label
+                >
+                <input
+                  type="text"
+                  id="lastname"
+                  v-model="lastname"
                   class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Last Name" />
+                  placeholder="Last Name"
+                />
               </div>
-            </div>
-            <div class="flex">
-              <label for="privacy" class="font-bold dark:text-gray-200">Privacy</label>
-              <Switch v-model="privacy" :class="privacy ? 'bg-blue-600' : 'bg-gray-200'"
-                class="relative inline-flex h-6 w-11 items-center rounded-full">
-                <span :class="privacy ? 'translate-x-6' : 'translate-x-1'"
-                  class="inline-block h-4 w-4 transform rounded-full bg-white transition" />
-              </Switch>
-              <label for="pairs" class="font-bold dark:text-gray-200">Share Me</label>
-              <Switch v-model="pairs" :class="pairs ? 'bg-blue-600' : 'bg-gray-200'"
-                class="relative inline-flex h-6 w-11 items-center rounded-full">
-                <span :class="pairs ? 'translate-x-6' : 'translate-x-1'"
-                  class="inline-block h-4 w-4 transform rounded-full bg-white transition" />
-              </Switch>
             </div>
             <div class="flex flex-row gap-4 place-content-center">
               <div class="flex flex-col gap-4">
-                <label for="gradMonth" class="font-bold dark:text-gray-200">Graduation Month</label>
-                <select id="gradMonth" v-model="gradMonth"
+                <label for="gradMonth" class="font-bold dark:text-gray-200"
+                  >Graduation Month</label
+                >
+                <select
+                  id="gradMonth"
+                  v-model="gradMonth"
                   class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Month">
+                  placeholder="Month"
+                >
                   <option value="January">January</option>
                   <option value="February">February</option>
                   <option value="March">March</option>
@@ -67,10 +79,15 @@
                 </select>
               </div>
               <div class="flex flex-col gap-4">
-                <label for="gradYear" class="font-bold dark:text-gray-200">Graduation Year</label>
-                <select id="gradYear" v-model="gradYear"
+                <label for="gradYear" class="font-bold dark:text-gray-200"
+                  >Graduation Year</label
+                >
+                <select
+                  id="gradYear"
+                  v-model="gradYear"
                   class="border rounded-lg p-2 dark:bg-neutral-500 dark:border-black dark:text-gray-200 dark:placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Year">
+                  placeholder="Year"
+                >
                   <option value="2023">2023</option>
                   <option value="2024">2024</option>
                   <option value="2025">2025</option>
@@ -92,99 +109,238 @@
                 </select>
               </div>
               <div class="flex flex-col gap-4">
-                <label for="isGradStudent" class="font-bold dark:text-gray-200 justify-end">Graduate Student</label>
-                <button id="isGradStudent" @click="isGradStudent = !isGradStudent"
-                  class="rounded-lg p-2 bg-indigo-100 hover:bg-indigo-700 dark:text-white text-indigo-500 dark:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label
+                  for="isGradStudent"
+                  class="font-bold dark:text-gray-200 justify-end"
+                  >Graduate Student</label
+                >
+                <button
+                  id="isGradStudent"
+                  @click="isGradStudent = !isGradStudent"
+                  class="rounded-lg p-2 bg-indigo-100 hover:bg-indigo-700 dark:text-white text-indigo-500 dark:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
                   {{ isGradStudent ? "Yes" : "No" }}
                 </button>
               </div>
             </div>
-            <button @click="showPasswordChange"
-              class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline">
+            <button
+              @click="showPasswordChange"
+              class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline"
+            >
               Need to change your password?
             </button>
             <div v-if="TestsDiv">
               <form @submit.prevent="() => changePassword()">
                 <!--Password text & input box-->
-                <label for="password" class="block mb-2 font-bold text-black dark:text-gray-200">New Password</label>
-                <input type="password" id="password"
+                <label
+                  for="password"
+                  class="block mb-2 font-bold text-black dark:text-gray-200"
+                  >New Password</label
+                >
+                <input
+                  type="password"
+                  id="password"
                   class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Password" v-model="password" required />
+                  placeholder="Password"
+                  v-model="password"
+                  required
+                />
                 <!--Confirm Password text & input box-->
-                <label for="confpassword" class="block mb-2 mt-2 font-bold text-black dark:text-gray-200">Confirm
-                  Password</label>
-                <input type="password" id="confpassword"
+                <label
+                  for="confpassword"
+                  class="block mb-2 mt-2 font-bold text-black dark:text-gray-200"
+                  >Confirm Password</label
+                >
+                <input
+                  type="password"
+                  id="confpassword"
                   class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Password" v-model="confpassword" required />
+                  placeholder="Password"
+                  v-model="confpassword"
+                  required
+                />
 
                 <!--Confirms the password change-->
-                <div class="container py-3 px-5 w-full flex flex-col items-center">
-                  <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-lg">
+                <div
+                  class="container py-3 px-5 w-full flex flex-col items-center"
+                >
+                  <button
+                    type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-lg"
+                  >
                     Confirm
                   </button>
                 </div>
               </form>
             </div>
-            <button @click="showDeleteAccount" class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline">
+            <button
+              @click="showDeleteAccount"
+              class="text-indigo-500 dark:text-white text-lg font-bold py-2 px-3 hover:underline"
+            >
               Delete account
             </button>
-            <div v-if="DeleteAccountDiv" class="flex flex-col items-center gap-4">
+            <div
+              v-if="DeleteAccountDiv"
+              class="flex flex-col items-center gap-4"
+            >
               <!--Delete Account-->
-              <input type="password" id="password"
+              <input
+                type="password"
+                id="password"
                 class="w-full dark:bg-neutral-500 border dark:border-black rounded-lg p-2 dark:placeholder-neutral-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Password" v-model="password" required />
-              <button type="button"
+                placeholder="Password"
+                v-model="password"
+                required
+              />
+              <button
+                type="button"
                 class="w-1/8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-lg"
-                @click="deleteAccount">
-                  Delete Account
+                @click="deleteAccount"
+              >
+                Delete Account
               </button>
             </div>
           </div>
         </template>
         <template #footer>
-          <button type="button"
+          <button
+            type="button"
             class="w-1/8 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-2 rounded-lg"
-            @click="submit">
+            @click="submit"
+          >
             Submit
           </button>
         </template>
       </Modal>
     </TransitionRoot>
 
+    <TransitionRoot
+      :show="isEditPrivacyModalVisible"
+      enter="transition duration-100"
+      enter-from="opacity-0"
+      enter-to="opacity-100 z-index-50"
+      leave="transition duration-100"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+    >
+      <Modal @closed="closeEditPrivacyModal">
+        <template #header>
+          <h1 class="font-extrabold text-3xl dark:text-gray-200">
+            Privacy Settings
+          </h1>
+        </template>
+        <template #body>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col items-center gap-2">
+                <label for="privacy" class="font-bold dark:text-gray-200"
+                  >Privacy</label
+                >
+                <Switch
+                  v-model="privacy"
+                  :class="privacy ? 'bg-indigo-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full"
+                >
+                  <span
+                    :class="privacy ? 'translate-x-6' : 'translate-x-1'"
+                    class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                  />
+                </Switch>
+              </div>
+              <div class="flex flex-col items-center gap-2">
+                <label for="pairs" class="font-bold dark:text-gray-200"
+                  >Share Me</label
+                >
+                <Switch
+                  v-model="pairs"
+                  :class="pairs ? 'bg-indigo-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full"
+                >
+                  <span
+                    :class="pairs ? 'translate-x-6' : 'translate-x-1'"
+                    class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                  />
+                </Switch>
+              </div>
+            </div>
+            <!--Get All User Data Button-->
+            <button
+              type="button"
+              class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-2 rounded-lg"
+              @click="history"
+            >
+              Get All User Data
+            </button>
+          </div>
+        </template>
+      </Modal>
+    </TransitionRoot>
+
     <!--Profile Card-->
     <div
-      class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-700 border dark:border-black rounded-lg shadow-lg grid grid-flow-row">
+      class="mx-auto max-w-6xl p-4 md:p-8 bg-white dark:bg-neutral-700 border dark:border-black rounded-lg shadow-lg grid grid-flow-row"
+    >
       <!--Flex grouping for profile info content-->
-      <div class="flex flex-auto gap-4">
+      <div class="flex flex-col md:flex-row gap-4">
         <!--Profile Picture-->
         <div
-          class="rounded-full h-24 w-24 text-white bg-yellow-500 flex items-center justify-center text-4xl font-extrabold">
+          class="rounded-full h-24 w-24 text-white bg-yellow-500 flex items-center justify-center place-self-center md:place-self-start text-4xl font-extrabold"
+        >
           <h1>{{ firstname[0] }}{{ lastname[0] }}</h1>
         </div>
         <!--Profile Info-->
-        <div class="place-self-center">
+        <div
+          class="flex flex-col md:flex-col place-self-center items-center md:items-start"
+        >
           <h1 class="font-extrabold text-4xl dark:text-gray-200">
             {{ firstname }} {{ lastname }}
           </h1>
-          <h1 class="font-light text-md dark:text-gray-200">{{ gradMonth }} {{ gradYear }}</h1>
+          <h1 class="font-light text-md dark:text-gray-200">
+            {{ gradMonth }} {{ gradYear }}
+          </h1>
           <h1 class="font-light text-md dark:text-gray-200 italic">
             {{ isGradStudent ? "Graduate" : "Undergraduate" }}
           </h1>
         </div>
       </div>
+      <div class="flex flex-row gap-4 justify-center md:justify-start mt-4">
+        <button
+          type="button"
+          class="w-1/8 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-2 rounded-lg"
+          @click="showModal"
+        >
+          Edit Profile
+        </button>
+        <button
+          type="button"
+          class="w=1/8 bg-indigo-100 text-indigo-600 hover:text-white hover:bg-indigo-700 font-bold dark:bg-indigo-100 dark:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white py-2 px-2 rounded-lg"
+          @click="showEditPrivacyModal"
+        >
+          Privacy Settings
+        </button>
+      </div>
       <!--Flex grouping for user ratings-->
       <div class="mt-5">
         <h1 class="font-bold text-2xl dark:text-gray-200">User Ratings ⭐️</h1>
       </div>
-      <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4">
+      <div
+        class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4"
+      >
         <h1 class="font-bold text-2xl mb-3">Courses</h1>
-        <ul class="list-inside list-item mb-6" v-for="(course, index) in courses" :key="index" v-if="isDataLoaded">
-          <li class="font-bold text-lg">{{ course.course }} </li>
+        <ul
+          class="list-inside list-item mb-6"
+          v-for="(course, index) in courses"
+          :key="index"
+          v-if="isDataLoaded"
+        >
+          <li class="font-bold text-lg">{{ course.course }}</li>
           <li class="font-light italic text-sm mb-2">
             Submitted at: {{ course.timestamp }}
           </li>
-          <li class="font-light text-sm mb-2 text-red-500" v-if="course.flag_count >= 3">
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="course.flag_count >= 3"
+          >
             This review has been flagged for review by the content moderators
           </li>
           <li>
@@ -197,7 +353,8 @@
           <li>Your Review:</li>
           <li>{{ course.explanation }}</li>
           <li class="flex gap-2 place-items-center">
-            <a class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
               @click="
                 edit(
                   course.course,
@@ -208,20 +365,34 @@
                   'course',
                   userStore.user_id
                 )
-              ">Edit</a><a
+              "
+              >Edit</a
+            ><a
               class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="deletecourses(course.course)">Delete</a>
-            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+              @click="deletecourses(course.course)"
+              >Delete</a
+            >
+            <flagicon
+              class="h-14 w-14 p-3 hover:text-neutral-600"
+              @click="flag"
+            ></flagicon>
           </li>
         </ul>
         <h1 class="font-bold text-2xl mt-3 mb-3">Classrooms</h1>
-        <ul class="list-inside list-item mb-6" v-for="classroom in classrooms" v-if="isDataLoaded">
+        <ul
+          class="list-inside list-item mb-6"
+          v-for="classroom in classrooms"
+          v-if="isDataLoaded"
+        >
           <li class="font-bold text-lg">{{ classroom["classroom"] }}</li>
           <li class="font-light text-sm mb-2 italic">
             Submitted at: {{ classroom.timestamp }}
           </li>
           <!-- Classroom Reivews, edit content because it does not make sense -->
-          <li class="font-light text-sm mb-2 text-red-500" v-if="classroom.flag_count >= 3">
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="classroom.flag_count >= 3"
+          >
             This review has been flagged for review by the content moderators
           </li>
           <li>
@@ -235,7 +406,8 @@
           <li>Your Review:</li>
           <li>{{ classroom.explanation }}</li>
           <li class="flex gap-2 place-items-center">
-            <a class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
               @click="
                 edit(
                   classroom.classroom,
@@ -246,20 +418,34 @@
                   'classroom',
                   userStore.user_id
                 )
-              ">Edit</a><a
+              "
+              >Edit</a
+            ><a
               class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 rounded-lg"
-              @click="deleteclassrooms(classroom.classroom)">Delete</a>
-            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+              @click="deleteclassrooms(classroom.classroom)"
+              >Delete</a
+            >
+            <flagicon
+              class="h-14 w-14 p-3 hover:text-neutral-600"
+              @click="flag"
+            ></flagicon>
           </li>
         </ul>
         <h1 class="font-bold text-2xl mt-3 mb-3">Teaching Assistants</h1>
-        <ul class="list-inside list-item mb-2" v-for="ta in tas" v-if="isDataLoaded">
+        <ul
+          class="list-inside list-item mb-2"
+          v-for="ta in tas"
+          v-if="isDataLoaded"
+        >
           <li class="font-bold text-lg">{{ ta["ta"] }}</li>
           <li class="font-light text-sm mb-2 italic">
             Submitted at: {{ ta.timestamp }}
           </li>
           <!--Flagging Teaching Assistants, review label content (does not make sense)-->
-          <li class="font-light text-sm mb-2 text-red-500" v-if="ta.flag_count >= 3">
+          <li
+            class="font-light text-sm mb-2 text-red-500"
+            v-if="ta.flag_count >= 3"
+          >
             This review has been flagged for review by the content moderators
           </li>
           <li>
@@ -270,48 +456,70 @@
           <li>Your Review:</li>
           <li>{{ ta.explanation }}</li>
           <li class="flex gap-2 place-item-center">
-            <a class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
+            <a
+              class="mr-3 bg-yellow-500 hover:bg-yellow-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
               @click="
-                edit(ta.ta, ta.rating[0], ta.rating[1], ta.rating[2], ta.explanation, 'ta')
-              ">Edit</a><a
+                edit(
+                  ta.ta,
+                  ta.rating[0],
+                  ta.rating[1],
+                  ta.rating[2],
+                  ta.explanation,
+                  'ta'
+                )
+              "
+              >Edit</a
+            ><a
               class="bg-red-500 hover:bg-red-700 font-bold border-black text-white text-sm p-2.5 mt-2 mb-2 rounded-lg"
-              @click="deleteta(ta.ta)">Delete</a>
-            <flagicon class="h-14 w-14 p-3 hover:text-neutral-600" @click="flag"></flagicon>
+              @click="deleteta(ta.ta)"
+              >Delete</a
+            >
+            <flagicon
+              class="h-14 w-14 p-3 hover:text-neutral-600"
+              @click="flag"
+            ></flagicon>
           </li>
         </ul>
         <ul class="list-inside list-item" v-else>
           <li>No ratings yet!</li>
         </ul>
-        <EditRating :isOpen="isOpen" :closeEdit="closeEdit" :title="editTitle" :q1="editQ1" :q2="editQ2" :q3="editQ3"
-          :expl="editExpl" :type="editType" :id="user_id" />
+        <EditRating
+          :isOpen="isOpen"
+          :closeEdit="closeEdit"
+          :title="editTitle"
+          :q1="editQ1"
+          :q2="editQ2"
+          :q3="editQ3"
+          :expl="editExpl"
+          :type="editType"
+          :id="user_id"
+        />
       </div>
       <!--Flex grouping for bookmarked classes-->
       <div class="mt-5">
-        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">Bookmarked Classes ❗️</h1>
-        <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 p-4">
+        <h1 class="font-bold text-2xl mb-5 dark:text-gray-200">
+          Bookmarked Classes ❗️
+        </h1>
+        <div
+          class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 p-4"
+        >
           <ul class="list-inside list-item">
-            <li class="mb-2 font-bold text-lg" v-for="(item, index) in bookmarkedClasses" :key="index">
+            <li
+              class="mb-2 font-bold text-lg"
+              v-for="(item, index) in bookmarkedClasses"
+              :key="index"
+            >
               {{ item }}
             </li>
           </ul>
         </div>
       </div>
       <!--Edit Profile Button-->
-      <div class="grid grid-flow-col gap-4 justify-end">
-        <button type="button"
-          class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
-          @click="showModal">
-          Edit Profile
-        </button>
-        <!--Get All User Data Button-->
-        <button type="button"
-          class="w-1/8 bg-green-500 hover:bg-green-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
-          @click="history">
-          Get All User Data
-        </button>
+      <div class="grid justify-end">
         <!--Go home-->
         <button
-          class="w-1/8 bg-indigo-500 hover:bg-indigo-700 font-bold border dark:border-black text-white py-2 px-2 rounded-lg">
+          class="w-1/8 bg-indigo-500 hover:bg-indigo-700 font-bold border dark:border-black text-white py-2 px-2 rounded-lg"
+        >
           <a href="/app">Home</a>
         </button>
       </div>
@@ -327,14 +535,15 @@ import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
 import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
-import { saveAs } from 'file-saver';
-import { Switch } from '@headlessui/vue'
+import { saveAs } from "file-saver";
+import { Switch } from "@headlessui/vue";
 //import { encrypt } from "iron-webcrypto";
 //import test from "node:test";
 
 var userStore = useUserStore();
 var isMobile = ref(false);
 var isModalVisible = ref(false);
+var isEditPrivacyModalVisible = ref(false);
 var isCourseModalVisible = ref(false);
 var isClassroomModalVisible = ref(false);
 var isTAModalVisible = ref(false);
@@ -378,25 +587,42 @@ function showDeleteAccount() {
 }
 
 async function history() {
-  var blob = new Blob([
-    "User Info\n",
-    "User ID: ", user_id,
-    "\nEmail: ", email.value,
-    "\nFirst Name: ", firstname.value,
-    "\nLast Name: ", lastname.value,
-    "\nGrad Month: ", gradMonth.value,
-    "\nGrad Year: ", gradYear.value,
-    "\nIs Grad Student: ", isGradStudent.value,
-    "\nRequired Courses\n", JSON.stringify(selectedRequiredCourses.value, null, 2),
-    "\nOptional Courses\n", JSON.stringify(selectedOptionalCourses.value, null, 2),
-    "\nBookmarks\n", JSON.stringify(bookmarkedClasses.value, null, 2),
-    "\nClassroom Ratings\n", JSON.stringify(classrooms, null, 2),
-    "\nTA Ratings\n", JSON.stringify(tas, null, 2),
-    "\nCourse Ratings\n", JSON.stringify(courses, null, 2),
-    "\nGroups\n", JSON.stringify(groups.value, null, 2)],
-    { type: "text/plain;charset=utf-8" });
+  var blob = new Blob(
+    [
+      "User Info\n",
+      "User ID: ",
+      user_id,
+      "\nEmail: ",
+      email.value,
+      "\nFirst Name: ",
+      firstname.value,
+      "\nLast Name: ",
+      lastname.value,
+      "\nGrad Month: ",
+      gradMonth.value,
+      "\nGrad Year: ",
+      gradYear.value,
+      "\nIs Grad Student: ",
+      isGradStudent.value,
+      "\nRequired Courses\n",
+      JSON.stringify(selectedRequiredCourses.value, null, 2),
+      "\nOptional Courses\n",
+      JSON.stringify(selectedOptionalCourses.value, null, 2),
+      "\nBookmarks\n",
+      JSON.stringify(bookmarkedClasses.value, null, 2),
+      "\nClassroom Ratings\n",
+      JSON.stringify(classrooms, null, 2),
+      "\nTA Ratings\n",
+      JSON.stringify(tas, null, 2),
+      "\nCourse Ratings\n",
+      JSON.stringify(courses, null, 2),
+      "\nGroups\n",
+      JSON.stringify(groups.value, null, 2),
+    ],
+    { type: "text/plain;charset=utf-8" }
+  );
   saveAs(blob, "boilergrades.txt").catch((err) => {
-    alert("Error saving file")
+    alert("Error saving file");
     console.log(err);
   });
 }
@@ -404,14 +630,20 @@ async function history() {
 async function deleteAccount() {
   try {
     var pwd = sha256(password.value);
-    const res = await axios.post('http://localhost:3001/api/deleteuser', {
-      user_id: user_id,
-      password: pwd
-    }, config).then(() => {
-      userStore.logOut()
-      alert("Account deleted");
-      navigateTo("/");
-    })
+    const res = await axios
+      .post(
+        "http://localhost:3001/api/deleteuser",
+        {
+          user_id: user_id,
+          password: pwd,
+        },
+        config
+      )
+      .then(() => {
+        userStore.logOut();
+        alert("Account deleted");
+        navigateTo("/");
+      });
   } catch (error) {
     // temp alert
     alert("Incorrect username or password");
@@ -485,6 +717,14 @@ function closeModal() {
   isModalVisible.value = false;
 }
 
+function showEditPrivacyModal() {
+  isEditPrivacyModalVisible.value = true;
+}
+
+function closeEditPrivacyModal() {
+  isEditPrivacyModalVisible.value = false;
+}
+
 function showCourseModal() {
   isCourseModalVisible.value = true;
 }
@@ -520,21 +760,21 @@ function openModal() {
   isOpen.value = true;
 }
 
-var editTitle = ref("")
-var editQ1 = ref("")
-var editQ2 = ref("")
-var editQ3 = ref("")
-var editExpl = ref("")
-var editType = ref("")
+var editTitle = ref("");
+var editQ1 = ref("");
+var editQ2 = ref("");
+var editQ3 = ref("");
+var editExpl = ref("");
+var editType = ref("");
 
 async function edit(title, q1, q2, q3, expl, type) {
-  editTitle.value = title
-  editQ1.value = q1
-  editQ2.value = q2
-  editQ3.value = q3
-  editExpl.value = expl
-  editType.value = type
-  openModal()
+  editTitle.value = title;
+  editQ1.value = q1;
+  editQ2.value = q2;
+  editQ3.value = q3;
+  editExpl.value = expl;
+  editType.value = type;
+  openModal();
 }
 
 /** THE ABOVE IS FOR EDIT MODAL */
@@ -564,16 +804,21 @@ async function getBookmarks() {
 }
 
 async function getGroups() {
-  axios.post('http://localhost:3001/api/groups', {
-    user_id: user_id
-  }, config)
+  axios
+    .post(
+      "http://localhost:3001/api/groups",
+      {
+        user_id: user_id,
+      },
+      config
+    )
     .then((res) => {
       groups.value = res.data.groups;
     })
     .catch(function (error) {
       console.error(error);
       alert(error);
-    })
+    });
 }
 
 async function deletecourses(course) {
@@ -690,16 +935,28 @@ var selectedRequiredCourses = ref([]);
 var selectedOptionalCourses = ref([]);
 
 async function getSchedule() {
-  axios.post('http://localhost:3001/api/getclasses', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
-    selectedRequiredCourses.value = response.data.required_classes
-  })
-  axios.post('http://localhost:3001/api/getclasses', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
-    selectedOptionalCourses.value = response.data.optional_classes
-  })
+  axios
+    .post(
+      "http://localhost:3001/api/getclasses",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
+    .then((response) => {
+      selectedRequiredCourses.value = response.data.required_classes;
+    });
+  axios
+    .post(
+      "http://localhost:3001/api/getclasses",
+      {
+        user_id: userStore.user_id,
+      },
+      config
+    )
+    .then((response) => {
+      selectedOptionalCourses.value = response.data.optional_classes;
+    });
 }
 
 let courses = [];
