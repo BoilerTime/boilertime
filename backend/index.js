@@ -1254,6 +1254,7 @@ app.post('/api/get/sections', async (req, res) => {
   res.json(await schedule.getSections(subject, number, sectionID));
 });
 
+
 app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
   console.log(req.body)
   const user_id = req.body.user_id;
