@@ -944,25 +944,22 @@ function submit() {
   }
 
   if (getNumCourses() < selectedRequiredCourses.value.length) {
-    toast.error(("Your settings only contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length) + " required course"  + pluralize((selectedRequiredCourses.value.length))) , {
-      timeout: 5000,
-      position: POSITION.TOP_CENTER
+    $toast.error(("Your settings only contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length) + " required course"  + pluralize((selectedRequiredCourses.value.length))) , {
+      timeout: 5000
     });
     return
   }
 
   if (getNumCourses() > selectedRequiredCourses.value.length + selectedOptionalCourses.value.length) {
-    toast.warning(("Your settings contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length + selectedOptionalCourses.value.length) + " course"  + pluralize((selectedRequiredCourses.value.length + selectedOptionalCourses.value.length)) + ". We'll round down for you.") , {
-      timeout: 5000,
-      position: POSITION.TOP_CENTER
+    $toast.warning(("Your settings contain " + getNumCourses() + " course" + pluralize(getNumCourses()) + ", but you've inputted " + (selectedRequiredCourses.value.length + selectedOptionalCourses.value.length) + " course"  + pluralize((selectedRequiredCourses.value.length + selectedOptionalCourses.value.length)) + ". We'll round down for you.") , {
+      timeout: 5000
     });
   }
 
 
   if (!configured) {
-    toast.info("Using default settings!", {
-      timeout: 5000,
-      position: POSITION.BOTTOM_RIGHT
+   $toast.info("Using default settings!", {
+      timeout: 5000
     });
   }
   if (selectedRequiredCourses.value.length > 0) {
@@ -1004,9 +1001,8 @@ function submit() {
 
 function sendToOptimizer(courses, blocks, configurations) {
   if($socket.readyState != $socket.OPEN) {
-    toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
-          timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
+    $toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
+          timeout: 5000
         });
   }
   //We first need to send them number of classes we will be optimzing by
@@ -1298,9 +1294,8 @@ function validateInput() {
     console.log("EMPTY")
   } else if(!(new RegExp(/^[1-5]$/).test(courseCount.value))) {
     courseCount.value = 1;
-    toast.error("You must enter at least 1 class and at most 5 classes", {
-            timeout: 1000,
-            position: POSITION.BOTTOM_RIGHT
+    $toast.error("You must enter at least 1 class and at most 5 classes", {
+            timeout: 1000
     });
   }
 }
