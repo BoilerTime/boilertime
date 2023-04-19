@@ -605,6 +605,8 @@ var actual_name = ref('')
 var actual_course = ref([])
 
 async function navigate(selected, type) {
+  resultData.value = []
+  actual_course.value = []
   searchTerm.value = ''
   result.value = selected;
   resultType.value = type;
@@ -613,7 +615,7 @@ async function navigate(selected, type) {
     // ratemyprofessor
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
-    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
+    await axios.post('https://api.boilerti.me/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
@@ -625,27 +627,28 @@ async function navigate(selected, type) {
           }
           resultData.value.push(gpa)
           isDataLoaded.value = true;
+          axios.post('https://api.boilerti.me/api/ratemyprofessor', {
+            prof_name: result.value
+          })
+            .then(response => {
+              resultData.value.push(response.data)
+              isDataLoaded.value = true;
+            })
+            .catch(error => {
+              console.log(error)
+              isDataLoaded.value = true;
+            })
         } catch {
         }
       })
       .catch(error => {
         console.log(error)
       })
-    axios.post('https://api.boilerti.me/api/ratemyprofessor', {
-      prof_name: result.value
-    })
-      .then(response => {
-        resultData.value.push(response.data)
-        isDataLoaded.value = true;
-      })
-      .catch(error => {
-        console.log(error)
-        isDataLoaded.value = true;
-      })
+    
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
+    await axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -667,7 +670,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Course') {
     // course_ratings/courses
-    axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
+    await axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -678,7 +681,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
+    await axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
