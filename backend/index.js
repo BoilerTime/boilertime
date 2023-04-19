@@ -279,7 +279,9 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   }
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
-      await utils.addSchedulesCount();
+      if (await utils.getUserProfile(req.body.user_id).privacy) {
+        await utils.addSchedulesCount();
+      }
       res.send({ ...schedule, accessToken: req.user.accessToken });
     }).catch(err => {
       console.log(err)
@@ -1173,7 +1175,9 @@ app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
 });
 
 app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
-  await utils.addSchedulesCount();
+  if (await utils.getUserProfile(req.body.user_id).privacy) {
+    await utils.addSchedulesCount();
+  }
   res.sendStatus(200);
 });
 
