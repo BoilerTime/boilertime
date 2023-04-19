@@ -23,6 +23,9 @@ jobs:
     - name: Push Docker image
       run: docker push mapldx/boilertime:latest
 
+    - name: Add server public key to known hosts
+      run: ssh-keyscan 159.203.177.25 >> ~/.ssh/known_hosts
+
     - name: Deploy and run Docker container
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

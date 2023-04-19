@@ -1,12 +1,9 @@
 #!/bin/bash
 APP_DIR='/root'
-JAR_NAME=$(ls -t $APP_DIR/*.jar | head -1 | xargs basename)
-PID_FILE="$APP_DIR/app.pid"
+IMAGE_NAME='mapldx/boilertime:latest'
+CONTAINER_NAME='boilertime'
 
-if [ -f "$PID_FILE" ]; then
-  kill "$(cat "$PID_FILE")"
-  rm -f "$PID_FILE"
-fi
-
-nohup java -jar "$APP_DIR/$JAR_NAME" > "$APP_DIR/app.log" 2>&1 &
-echo $! > "$PID_FILE"
+docker stop $CONTAINER_NAME || true
+docker rm $CONTAINER_NAME || true
+docker pull $IMAGE_NAME
+docker run -d --name $CONTAINER_NAME -p 3002:3002 $IMAGE_NAME
