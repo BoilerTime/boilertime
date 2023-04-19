@@ -95,10 +95,12 @@ app.post('/api/update/profile', jwt.authenticateToken, async (req, res) => {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const isGradStudent = req.body.is_grad_student;
+    const privacy = req.body.privacy;
+    const pairs = req.body.pairs;
     const studentClass = utils.getStudentClass(grad_year, grad_month);
     //console.log(user_id + classification_year + firstname + lastname);
     const classification_year = utils.getStudentClass(grad_year, grad_month);
-    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent);
+    utils.updateProfile(user_id, grad_month, grad_year, classification_year, firstname, lastname, isGradStudent, privacy, pairs);
     res.json({ accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, user_id: req.user.user_id });
   }
 });
@@ -1162,6 +1164,7 @@ app.post('/api/get/num_schedules', async (req, res) => {
   res.json({ num_schedules: await utils.getNumSchedules() });
 });
 
+
 app.post('/api/get/num_ratings', async (req, res) => {
   res.json({ num_ratings: await utils.getNumRatings() });
 });
@@ -1240,6 +1243,21 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
     res.sendStatus(200);
   }
 });
+
+app.post('/api/optimizer/isfull', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionIDs = req.body.sectionIDs;
+  res.json(await purdueio.isFull(subject, number, sectionIDs));
+});
+
+app.post('/api/get/sections', async (req, res) => {
+  const subject = req.body.subject;
+  const number = req.body.number;
+  const sectionID = req.body.sectionID;
+  res.json(await schedule.getSections(subject, number, sectionID));
+});
+
 
 app.post('/api/get/classmates', jwt.authenticateToken, async (req, res) => {
   console.log(req.body)

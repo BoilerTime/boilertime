@@ -27,6 +27,20 @@
                   placeholder="Last Name" />
               </div>
             </div>
+            <div class="flex">
+              <label for="privacy" class="font-bold dark:text-gray-200">Privacy</label>
+              <Switch v-model="privacy" :class="privacy ? 'bg-blue-600' : 'bg-gray-200'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full">
+                <span :class="privacy ? 'translate-x-6' : 'translate-x-1'"
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition" />
+              </Switch>
+              <label for="pairs" class="font-bold dark:text-gray-200">Share Me</label>
+              <Switch v-model="pairs" :class="pairs ? 'bg-blue-600' : 'bg-gray-200'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full">
+                <span :class="pairs ? 'translate-x-6' : 'translate-x-1'"
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
             <div class="flex flex-row gap-4 place-content-center">
               <div class="flex flex-col gap-4">
                 <label for="gradMonth" class="font-bold dark:text-gray-200">Graduation Month</label>
@@ -325,6 +339,7 @@ import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
 import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
 import { saveAs } from 'file-saver';
+import { Switch } from '@headlessui/vue'
 //import { encrypt } from "iron-webcrypto";
 //import test from "node:test";
 
@@ -339,6 +354,8 @@ var gradMonth = ref("");
 var email = ref("");
 var gradYear = ref();
 var isGradStudent = ref();
+var privacy = ref(false);
+var pairs = ref(false);
 var bookmarkedClasses = ref([]);
 var groups = ref([]);
 
@@ -363,7 +380,7 @@ function showPasswordChange() {
 
 async function history() {
   var blob = new Blob([
-    "User Info\n", 
+    "User Info\n",
     "User ID: ", user_id,
     "\nEmail: ", email.value,
     "\nFirst Name: ", firstname.value,
@@ -663,6 +680,8 @@ async function getUserInfo() {
       gradYear.value = response.data.grad_year;
       isGradStudent.value = response.data.is_grad_student;
       email.value = response.data.email;
+      pairs.value = response.data.pairs;
+      privacy.value = response.data.privacy;
     })
     .catch((error) => {
       console.error(error);
@@ -805,6 +824,8 @@ async function submit() {
         grad_month: gradMonth.value,
         grad_year: gradYear.value,
         is_grad_student: isGradStudent.value,
+        pairs: pairs.value,
+        privacy: privacy.value,
       },
       config
     )
