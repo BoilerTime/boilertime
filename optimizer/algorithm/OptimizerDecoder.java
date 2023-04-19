@@ -12,8 +12,12 @@ public class OptimizerDecoder {
         
 
         int validLength = 0;
-        while(best[validLength] != null) {
+        while(validLength < best.length && best[validLength] != null) {
             validLength++;
+        }
+
+        if(validLength == 0) {
+            return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
         }
 
         String[] courseResults = new String[validLength];
