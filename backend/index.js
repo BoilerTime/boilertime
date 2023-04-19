@@ -52,10 +52,6 @@ app.use(function (req, res, next) {
 /* REMOVE ON PRODUCTION */
 /* REMOVE ON PRODUCTION */
 
-app.get('/', (req, res) => {
-  res.redirect('https://boilerti.me');
-});
-
 //Route for /api. Add new event listeners as needed for new routes.
 /*
  * This function gets a path for /api
