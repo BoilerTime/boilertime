@@ -615,7 +615,7 @@ async function navigate(selected, type) {
     // ratemyprofessor
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
-    await axios.post('http://localhost:3001/api/getoverall_gpa', {
+    await axios.post('https://api.boilerti.me/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
@@ -627,7 +627,7 @@ async function navigate(selected, type) {
           }
           resultData.value.push(gpa)
           isDataLoaded.value = true;
-          axios.post('http://localhost:3001/api/ratemyprofessor', {
+          axios.post('https://api.boilerti.me/api/ratemyprofessor', {
             prof_name: result.value
           })
             .then(response => {
@@ -648,7 +648,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    await axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
+    await axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -670,7 +670,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Course') {
     // course_ratings/courses
-    await axios.post('http://localhost:3001/api/get/course_ratings/courses', {
+    await axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -681,7 +681,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    await axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
+    await axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
