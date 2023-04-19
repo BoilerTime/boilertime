@@ -463,7 +463,7 @@
                         classroom.rating[0],
                         classroom.rating[1],
                         classroom.rating[2],
-                        course.explanation,
+                        classroom.explanation,
                         'classroom',
                         userStore.user_id
                       )
