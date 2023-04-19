@@ -157,7 +157,7 @@
               <input
                 id="isGraduateStudent"
                 type="radio"
-                value="false"
+                value=false
                 name="isGraduateStudent"
                 class="w-4 h-4"
                 v-model="isGraduateStudent"
@@ -175,7 +175,7 @@
               <input
                 id="isGraduateStudent"
                 type="radio"
-                value="true"
+                value=true
                 name="isGraduateStudent"
                 class="w-4 h-4"
                 v-model="isGraduateStudent"
@@ -213,7 +213,7 @@ const firstname = ref("");
 const lastname = ref("");
 const password = ref("");
 const confpassword = ref("");
-const isGraduateStudent = ref("");
+const isGraduateStudent = ref(false);
 const gradmonth = ref("");
 const gradyear = ref("");
 const toast = useToast();

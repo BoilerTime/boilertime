@@ -1,5 +1,5 @@
 <template>
-  <header class="'bg-${bgColor}' dark:bg-neutral-700">
+  <header class="bg-white dark:bg-neutral-500">
     <nav class="flex items-center justify-between mx-auto p-6">
       <div class="flex">
         <!-- Logo -->

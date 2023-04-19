@@ -362,13 +362,6 @@
                 <li class="font-light italic text-sm mb-2">
                   Submitted at: {{ course.timestamp }}
                 </li>
-                <li
-                  class="font-bold text-sm mb-2 text-red-600"
-                  v-if="course.flag_count >= 3"
-                >
-                  This review has been flagged for review by the content
-                  moderators
-                </li>
                 <li>
                   How strict are the prerequisite requirements?
                   {{ course.rating[0] }}
@@ -400,10 +393,6 @@
                     @click="deletecourses(course.course)"
                     >Delete</button
                   >
-                  <flagicon
-                    class="h-14 w-14 p-3 hover:text-neutral-600"
-                    @click="flag"
-                  ></flagicon>
                 </li>
               </ul>
               <ul class="list-inside list-item" v-else>
@@ -434,14 +423,6 @@
                 </li>
                 <li class="font-light text-sm mb-2 italic">
                   Submitted at: {{ classroom.timestamp }}
-                </li>
-                <!-- Classroom Reivews, edit content because it does not make sense -->
-                <li
-                  class="font-bold text-sm mb-2 text-red-600"
-                  v-if="classroom.flag_count >= 3"
-                >
-                  This review has been flagged for review by the content
-                  moderators
                 </li>
                 <li>
                   How strict are the prerequisite requirements?
@@ -474,10 +455,6 @@
                     @click="deleteclassrooms(classroom.classroom)"
                     >Delete</button
                   >
-                  <flagicon
-                    class="h-14 w-14 p-3 hover:text-neutral-600"
-                    @click="flag"
-                  ></flagicon>
                 </li>
               </ul>
               <ul class="list-inside list-item" v-else>
@@ -506,14 +483,6 @@
                 <li class="font-bold text-lg">{{ ta["ta"] }}</li>
                 <li class="font-light text-sm mb-2 italic">
                   Submitted at: {{ ta.timestamp }}
-                </li>
-                <!--Flagging Teaching Assistants, review label content (does not make sense)-->
-                <li
-                  class="font-bold text-sm mb-2 text-red-600"
-                  v-if="ta.flag_count >= 3"
-                >
-                  This review has been flagged for review by the content
-                  moderators
                 </li>
                 <li>
                   How strict are the prerequisite requirements?
@@ -544,10 +513,6 @@
                     @click="deleteta(ta.ta)"
                     >Delete</button
                   >
-                  <flagicon
-                    class="h-14 w-14 p-3 hover:text-neutral-600"
-                    @click="flag"
-                  ></flagicon>
                 </li>
               </ul>
               <ul class="list-inside list-item" v-else>
@@ -587,7 +552,6 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
-import { FlagIcon as flagicon } from "@heroicons/vue/24/outline";
 import { saveAs } from "file-saver";
 import {
   Switch,
@@ -612,7 +576,7 @@ var lastname = ref("");
 var gradMonth = ref("");
 var email = ref("");
 var gradYear = ref();
-var isGradStudent = ref();
+var isGradStudent = ref(false);
 var privacy = ref(false);
 var pairs = ref(false);
 var bookmarkedClasses = ref([]);
@@ -765,10 +729,6 @@ const enterval = ref("");
 
 var isDataLoaded = ref(false);
 
-function flag() {
-  window.prompt("Why are you flagging this?", "");
-}
-
 function showModal() {
   isModalVisible.value = true;
 }
@@ -799,14 +759,6 @@ function showClassroomModal() {
 
 function closeClassroomModal() {
   isClassroomModalVisible.value = false;
-}
-
-function showFlagModal() {
-  isTAModalVisible.value = true;
-}
-
-function closeFlagModal() {
-  isTAModalVisible.value = false;
 }
 
 /** THIS IS FOR EDIT MODAL */
@@ -1094,38 +1046,6 @@ async function getratings() {
           console.error(error);
         });
     });
-}
-
-async function flagCourse(course) {
-  if (actualval == enterval.value) {
-    await axios
-      .post(
-        "http://localhost:3001/api/add/flag",
-        {
-          type: "course",
-          user_id: userStore.user_id,
-          name: course.name.value,
-        },
-        config
-      )
-      .then(function () {
-        if (response.data["accessToken"] != undefined) {
-          userStore.user = {
-            accessToken: response.data["accessToken"],
-            //refreshToken: response.data["refreshToken"],
-            user_id: user_id,
-          };
-        }
-        alert("Review report successfully submitted.");
-        isCourseModalVisible.value = false;
-      })
-      .catch(function (error) {
-        console.error();
-        alert(error);
-      });
-  } else {
-    alert("CAPTCHA entered incorrectly. Please try again.");
-  }
 }
 
 async function submit() {

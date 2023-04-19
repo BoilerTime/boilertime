@@ -91,6 +91,11 @@ const email = ref("");
 const password = ref("");
 const toast = useToast();
 const userStore = useUserStore();
+var isMobile = ref(false);
+
+async function checkWindowSize() {
+  isMobile = window.innerWidth <= 768;
+}
 
 /**
  * A function to call the signIn function in the user store helper
@@ -106,6 +111,12 @@ async function login() {
       el.innerHTML = "";
       // end temp fix
       navigateTo("/app");
+      if (isMobile) {
+        toast.error("Warning: Mobile mode has access to limited functionality", {
+          timeout: 5000,
+          position: POSITION.BOTTOM_CENTER
+        });
+      }
     }
   } catch (error) {
     // temp alert
@@ -141,4 +152,9 @@ async function guest() {
     });
   }
 }
+
+onMounted(async () => {
+  checkWindowSize();
+});
+
 </script>
