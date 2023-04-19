@@ -55,7 +55,9 @@ const createuser = async function (profile) {
     "grad_year": profile.gradyear,
     "grad_month": profile.gradmonth,
     "is_grad_student": profile.isGraduateStudent,
-    "bookmarks": []
+    "bookmarks": [],
+    "privacy": false,
+    "pairs": false
   }
 
   await profiles.doc(userID).set(userProfile).then((res) => {

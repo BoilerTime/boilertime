@@ -145,5 +145,5 @@ public class CourseOverviewHelper {
         this.sectionIds[sectionIdsPtr++] = id;
         return id;
     }
-
+    
 }
