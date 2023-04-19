@@ -72,7 +72,7 @@ var isOwner = ref(false);
  * This function is used to get the information of groups a user is in.
  */
 async function getGroups() {
-    axios.post('http://localhost:3001/api/groups', {
+    axios.post('https://api.boilerti.me/api/groups', {
         user_id: user_id
     }, config)
         .then((res) => {
@@ -89,7 +89,7 @@ async function getGroups() {
  * This function is used to leave a group.
  */
 async function leaveGroup(group_id) {
-    axios.post('http://localhost:3001/api/leavegroup', {
+    axios.post('https://api.boilerti.me/api/leavegroup', {
         user_id: user_id,
         group_id: group_id
     }, config)
@@ -111,7 +111,7 @@ async function leaveGroup(group_id) {
  * This function is used for deleting a group, only if the user is the owner.
  */
 async function deleteGroup(group_id) {
-    axios.post('http://localhost:3001/api/removegroup', {
+    axios.post('https://api.boilerti.me/api/removegroup', {
         user_id: user_id,
         group_id, group_id
     }, config)
