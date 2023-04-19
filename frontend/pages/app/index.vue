@@ -502,8 +502,6 @@ async function fetch() {
 }
 
 const filteredResults = computed(() => {
-  resultData.value = []
-  actual_course.value = []
   if (!searchTerm.value) {
     return []
   }
@@ -530,6 +528,8 @@ var actual_name = ref('')
 var actual_course = ref([])
 
 async function navigate(selected, type) {
+  resultData.value = []
+  actual_course.value = []
   searchTerm.value = ''
   result.value = selected;
   resultType.value = type;
@@ -538,7 +538,7 @@ async function navigate(selected, type) {
     // ratemyprofessor
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
-    axios.post('http://localhost:3001/api/getoverall_gpa', {
+    await axios.post('http://localhost:3001/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
@@ -550,6 +550,17 @@ async function navigate(selected, type) {
           }
           resultData.value.push(gpa)
           isDataLoaded.value = true;
+          axios.post('http://localhost:3001/api/ratemyprofessor', {
+            prof_name: result.value
+          })
+            .then(response => {
+              resultData.value.push(response.data)
+              isDataLoaded.value = true;
+            })
+            .catch(error => {
+              console.log(error)
+              isDataLoaded.value = true;
+            })
         } catch {
           resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
         }
@@ -558,21 +569,11 @@ async function navigate(selected, type) {
         console.log(error)
         resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
       })
-    axios.post('http://localhost:3001/api/ratemyprofessor', {
-      prof_name: result.value
-    })
-      .then(response => {
-        resultData.value.push(response.data)
-        isDataLoaded.value = true;
-      })
-      .catch(error => {
-        console.log(error)
-        isDataLoaded.value = true;
-      })
+    
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
+    await axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -594,7 +595,7 @@ async function navigate(selected, type) {
   }
   if (type == 'Course') {
     // course_ratings/courses
-    axios.post('http://localhost:3001/api/get/course_ratings/courses', {
+    await axios.post('http://localhost:3001/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -605,7 +606,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
+    await axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
