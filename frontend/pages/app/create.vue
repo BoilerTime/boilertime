@@ -214,6 +214,21 @@
                 </p>
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
               </div>
+                          <!-- Data items -->
+            <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
+              @click="getScheduleView(index)">
+              <div
+                class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
+                <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
+                  <div>
+                   <span class="text-sm text-black" 
+                      >{{ schedule }} <br/>
+                    </span><br/>
+                  </div>
+                </div>
+                </div>
+            </div>
+
 
 
 
@@ -290,8 +305,8 @@
               <label class="font-semibold text-md dark:text-gray-200">Select your time of day preference:</label>
                 <fieldset class="mt-2">
                   <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                    <div v-for="time in timePreference" :key="time.id" class="flex items-center">
-                      <input :id="time.id" type="radio" :checked="time.id === 'none'" :value="time.id" v-model="time_pref" class="w-4 h-4" />
+                    <div v-for="(time, index) in timePreference" :key="time.id" class="flex items-center">
+                      <input :id="time.id" type="radio" :checked="time.id === time_pref" :value="time.id" v-model="time_pref" class="w-4 h-4" />
                       <label :for="time.id" class="block ml-3 text-sm font-medium text-gray-900 leading-6 dark:text-gray-200">{{ time.title }}</label>
                     </div>
                   </div>
@@ -426,7 +441,7 @@ const { $socket } = useNuxtApp()
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
-const time_pref = ref('')
+const time_pref = ref('none')
 const rmp = ref('')
 const isOpen = ref(false)
 const isResultOpen = ref(false);
@@ -444,6 +459,7 @@ const multiLoader = ref(false)
 const displayTips = ref(false)
 const mins = ref('');
 const courseCount = ref('5');
+var configured = false; 
 var totalSum;
 
 function closeModal() {
@@ -489,12 +505,10 @@ onBeforeMount(() => {
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
     courseCount.value = response.data.num_courses;
-    console.log(selectedRequiredCourses.value);
-  })
-  axios.post('http://localhost:3001/api/getclasses', {
-    user_id: userStore.user_id,
-  }, config).then((response) => {
     selectedOptionalCourses.value = response.data.optional_classes
+    time_pref.value = response?.data?.time || "none"
+    configured = response?.data?.configured || false;
+    configureState(response.data.preference_list);
   })
   axios.post('http://localhost:3001/api/getbookmarks', {
     user_id: userStore.user_id,
@@ -567,6 +581,7 @@ function addToSelected(item) {
       time: getTimePref(),
       preference_list: getPreferenceList(),
       num_courses: getNumCourses(),
+      configured: configured,
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
@@ -632,6 +647,7 @@ function addToSelectedOptional(item) {
       time: getTimePref(),
       preference_list: getPreferenceList(),
       num_courses: getNumCourses(),
+      configured: configured,
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       if (response.data["accessToken"] != undefined) {
@@ -664,6 +680,7 @@ function removeFromSelected(index) {
     time: getTimePref(),
     preference_list: getPreferenceList(),
     num_courses: getNumCourses(),
+    configured: configured,
     blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
@@ -687,6 +704,7 @@ function removeOptional(index) {
     time: getTimePref(),
     preference_list: getPreferenceList(),
     num_courses: getNumCourses(),
+    configured: configured,
     blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
@@ -775,6 +793,13 @@ function submit() {
     });
     return
   }
+
+  if (!configured) {
+    toast.info("Using default settings!", {
+      timeout: 5000,
+      position: POSITION.BOTTOM_RIGHT
+    });
+  }
   if (selectedRequiredCourses.value.length > 0) {
     openModal();
     waitingForData();
@@ -782,13 +807,13 @@ function submit() {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
-      time: time_pref.value,
       time: getTimePref(),
       preference_list: getPreferenceList(),
       num_courses: getNumCourses(),
+      configured: configured,
       blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
-      sendToOptimizer(response.data.schedule, response.data.blocked_times)
+      sendToOptimizer(response.data.schedule, response.data.blocked_times, response.data);
       courseList = response.data.schedule;
       isAlgoActive.value = false;
 
@@ -813,7 +838,7 @@ function submit() {
   
 }
 
-function sendToOptimizer(courses, blocks) {
+function sendToOptimizer(courses, blocks, configurations) {
   if($socket.readyState != $socket.OPEN) {
     toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
           timeout: 5000,
@@ -824,11 +849,10 @@ function sendToOptimizer(courses, blocks) {
   $socket.send(courses.length)
   $socket.send(blocks.length);
   //Next, we send the time of day preferences
-  $socket.send(getTimePref())
-  //$socket.send(timePreference[time_pref.value]);
-  //Next, we send the RMP prefernces
-  $socket.send(rmpValue);
-
+  
+  console.log(getPreferenceList())
+  $socket.send(getPreferenceList().toString());
+  $socket.send(getTimePref());
   /*
     * Take care of the courses that the user has entered
   */
@@ -927,7 +951,7 @@ function parseCoursesResponse(output) {
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
   for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"rmp": rmpValue, "time": timePrefValue, "schedule": [], "blocked_times": []};
+    let serverOutput = {"configured": configured, "schedule": [], "blocked_times": []};
 
     for(let i = 0; i < data[j].length; i++) {
       let name = data[j][i].courseID;
@@ -1063,11 +1087,15 @@ function optimizing(progress) {
   multiLoader.value = false;
   if(completed.value < 100) {
     //completed.value = (completed.value + response.data)%100;v
+    console.log("Val: " + progress);
     var temp = completed.value + progress;
+    console.log("S " + completed.value);
     if(temp > 99) {
       completed.value = 99;
     } else {
       completed.value = temp;
+      //completed.value = 10;
+      //sleep(5000);
     }
   }
 }
@@ -1124,7 +1152,9 @@ function getPreferenceList() {
 
 function hidePreferences() {
   console.log(selectedOptionalCourses.value);
+  console.log(getTimePref())
   isPreferencesOpen.value = false;
+  configured = true;
   axios.post('http://localhost:3001/api/saveschedule', {
     user_id: userStore.user_id,
     required_classes: selectedRequiredCourses.value,
@@ -1132,6 +1162,7 @@ function hidePreferences() {
     time: getTimePref(),
     preference_list: getPreferenceList(),
     num_courses: getNumCourses(),
+    configured: configured,
     blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
   }, config).then((response) => {
     if (response.data["accessToken"] != undefined) {
@@ -1158,8 +1189,17 @@ function getNumCourses() {
 }
 
 function showPrefMenu() {
-  courseCount.value = selectedOptionalCourses.value.length + selectedRequiredCourses.value.length;
+  console.log(time_pref);
+  console.log(timePreference[time_pref.value]);
   isPreferencesOpen.value = true;
+}
+
+function configureState(data) {
+  let temp = [];
+  for(let i = 0; i < data.length; i++) {
+    temp.push(state.list.find(entry => entry.value === data[i]));
+  }
+  state.list = temp;
 }
 </script>
 

@@ -39,14 +39,14 @@ public class Optimizer {
     private QualityAnalyzer analyzer; 
     Random r;
 
-    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
+    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences, int totalClasses) {
         this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
 
         this.idEvent = new HashMap<String, Event>();
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
 
-        this.courseSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
+        this.courseSize = this.calculateScheduleSize(registeredC.length, totalClasses);// = registeredC.length;
         this.scheduleSize = this.courseSize + this.blocks.length;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
@@ -128,7 +128,7 @@ public class Optimizer {
         return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
     }
 
-    private int calculateScheduleSize(int size) {
+    private int calculateScheduleSize(int size, int prefered) {
         if(size < this.maxScheduleSize) {
             return size;
         }
@@ -325,7 +325,6 @@ public class Optimizer {
         System.out.println(analyzer.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
-        System.out.println(Arrays.toString(options));
         return options;
     }
 
@@ -343,13 +342,13 @@ public class Optimizer {
             double convergneceScore = analyzer.getRMSConvergence();
             //System.out.println("IN IF!");
             if(convergneceScore > .5) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else if (convergneceScore > .1) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":15}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             }
             //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
             if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {

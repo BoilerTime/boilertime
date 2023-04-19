@@ -110,7 +110,7 @@ public class ScheduleClient extends Thread  {
         return count;
     }
 
-    private TimeOfDay getTODPrefernece(NetworkHandler network) {
+    private TimeOfDay getTODPreference(NetworkHandler network) {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
         while(res == null) { 
@@ -132,20 +132,38 @@ public class ScheduleClient extends Thread  {
         return res; 
     }
 
-    private boolean usingRMP(NetworkHandler network) {
-        String rawRMP = network.getIncomingMessage();
-        while(true) {
-            if(rawRMP.equalsIgnoreCase("RMP")) {
-                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
-                return true;
-            } else if(rawRMP.equalsIgnoreCase("None")) {
-                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
-                return false;
+    private PreferenceList[] getPreferenceOrderHelper(NetworkHandler network) {
+        String rawOrder = network.getIncomingMessage();
+        System.out.println("Incoming data:" + rawOrder);
+        String[] options = rawOrder.split(",");
+        PreferenceList[] preferences = new PreferenceList[options.length];
+        for(int i = 0; i < options.length; i++) {
+            if(options[i].equalsIgnoreCase("TOD")) {
+                preferences[i] = PreferenceList.TOD;
+            } else if (options[i].equalsIgnoreCase("RMP")) {
+                preferences[i] = PreferenceList.RMP;
+            } else if (options[i].equalsIgnoreCase("TAR")) {
+                preferences[i] = PreferenceList.TAR;
             } else {
-                rawRMP = network.getIncomingMessage();
-                network.sendMessage("{\"status\":400,\"message\":\"Illegal RMP\",\"data\":null}");
+                System.out.println("Bad data: " + options[i]);
+                System.out.println("Message overall: " + rawOrder);
+                return null;
             }
         }
+        return preferences;
+    }
+
+    private PreferenceList[] getPreferenceOrder(NetworkHandler network) {
+        PreferenceList[] preferences = null;
+        while(preferences == null) {
+            preferences = getPreferenceOrderHelper(network);
+            if(preferences != null) {
+                network.sendMessage("{\"status\":200,\"message\":\"Received Preference Order\",\"data\":null}");
+            } else {
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal Preference Order\",\"data\":null}");
+            }
+        }
+        return preferences;
     }
 
     private CourseOverview getCourseInfo(NetworkHandler network) {
@@ -238,23 +256,10 @@ public class ScheduleClient extends Thread  {
         courses = new CourseOverview[numOfCourses];
         blocks = new BlockOverview[numOfBlocks];
 
-        //Handle the fetching of preferences and generation of a preferences list/
-        TimeOfDay timePreference = getTODPrefernece(network);
-        boolean usingRMP = usingRMP(network);
-        PreferenceList[] preferences = new PreferenceList[2];
-        if(usingRMP) {
-            preferences[0] = PreferenceList.RMP;
-            preferences[1] = PreferenceList.TOD;
-            timePreference = TimeOfDay.AFTERNOON;
-        } else {
-            preferences[1] = PreferenceList.TOD;
-            preferences[0] = PreferenceList.RMP;
-        }
-
-        if(timePreference == TimeOfDay.NONE) {
-            timePreference = TimeOfDay.MORNGING;
-            //preferences[1] = TimeOfDay.MORNGING;
-        }
+        //Get the inputted list of preferences from the client
+        PreferenceList[] preferences = getPreferenceOrder(network);
+        //Get the TOD preference from the client
+        TimeOfDay timePreference = getTODPreference(network);
 
         System.out.println("(ScheduleClient.java) Got all client detail for: " + netSocket.getPort());
         for(int i = 0; i < courses.length; i++) {

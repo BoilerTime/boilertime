@@ -110,7 +110,8 @@ onBeforeMount(async () => {
   }, config).then((response) => {
 
     console.log(response.data + response.data.time);
-    showWarning(response.data.time, response.data.rmp)
+    console.log(response.data)
+    showWarning(response.data.configured)
     scheduleData.value = response.data.schedule
     convertSchedule(scheduleData.value)
   })
@@ -123,15 +124,10 @@ onMounted(() => {
   });
 })
 
-function showWarning(time, rmp) {
-  console.log(time);
-  if(rmp.toUpperCase() != "NONE") {
-    toast.warning("Warning: Time and RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
-          timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
-        });
-  } else {
-    toast.warning("Warning: Time of Day and RMP may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+function showWarning(configured) {
+  alert("Is configured? " + configured);
+  if(configured) {
+    toast.info("We try to fit your preferences, but sometimes it's difficult to find a schedule that satisfies all of them. ", {
           timeout: 5000,
           position: POSITION.BOTTOM_RIGHT
         });

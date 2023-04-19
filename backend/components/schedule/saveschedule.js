@@ -24,7 +24,7 @@ const saveSchedule = async function(user, schedule) {
     console.log("Blocked times = ")
     console.log(schedule.blocked_times)
     let userProfile = await schedules.doc(user).collection("spring_2023").doc('generated_schedule');
-    await userProfile.set({"time": schedule.time, "rmp": schedule.rmp, "schedule": schedule.schedule, "blocked_times": schedule.blocked_times, "timestamp": FieldValue.serverTimestamp()}); //Update the db with the array that is passed to the method
+    await userProfile.set({"configured": schedule.configured, "schedule": schedule.schedule, "blocked_times": schedule.blocked_times, "timestamp": FieldValue.serverTimestamp()}); //Update the db with the array that is passed to the method
 }
 
 module.exports = {saveSchedule};
