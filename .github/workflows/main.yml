@@ -23,15 +23,16 @@ jobs:
     - name: Push Docker image
       run: docker push mapldx/boilertime:latest
 
-    - name: Add server public key to known hosts
-      run: ssh-keyscan 159.203.177.25 >> ~/.ssh/known_hosts
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: {%- raw -%} ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: 'hello-world'
+
+    - name: Adding Known Hosts
+      run: ssh-keyscan -H ${{ secrets.SSH_HOST }}{% endraw%} >> ~/.ssh/known_hosts
 
     - name: Deploy and run Docker container
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        echo "$PRIVATE_KEY" > private_key_rsa
-        chmod 600 private_key_rsa
-        scp -i private_key_rsa ./deploy.sh root@159.203.177.25:/root
-        ssh -i private_key_rsa root@159.203.177.25 'bash -s' < ./deploy.sh
-        rm -f private_key_rsa
+        scp ./deploy.sh root@${{ secrets.SSH_HOST }}:/root
+        ssh root@${{ secrets.SSH_HOST }} 'bash -s' < ./deploy.sh
