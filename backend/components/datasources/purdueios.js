@@ -100,7 +100,6 @@ const saveCourses = async function() {
 	let subjectDocs = [];
 	//let courseStore = db.collection(courseEntry.id);
 	let currentId;
-	//for(let i = 0; i < 2; i++) {
 	let courseCount = 0;
 	for(let i = 0; i<courseList.length; i++) {
 		console.log(courseList[i].subject + " " + i);
@@ -155,6 +154,35 @@ const saveCourses = async function() {
 	}
 }
 
+async function isFull(subject, number, sectionIDs) {
+  var data = await fetch('https://api.purdue.io/odata/Courses?$expand=Classes($filter=Term/Code%20eq%20%27202320%27;$expand=Sections($expand=Meetings))&$filter=Subject/Abbreviation%20eq%20%27' + subject + '%27%20and%20Number%20eq%20%27' + number + '%27');
+  data = await data.json();
+  console.log(data);
+  var res = [];
+  const classes = data.value[0].Classes;
+  for (var i = 0; i < sectionIDs.length; i++) {
+    const section = classes.find(c => c.Sections.some(s => s.Id === sectionIDs[i])).Sections.find(s => s.Id === sectionIDs[i]);;
+    sectionId = sectionIDs[i];
+    if (section.RemainingSpace <= 0) {
+      //res.push = { sectionId: true }
+      res.push(true);
+    }
+    else {
+      //res[i] = { sectionId: false}
+      res.push(false);
+      //res.push({ sectionId: false })
+    }
+    console.log(classes[0].Sections[0].Id);
+    console.log(section)
+  }
+  return res;
+}
 
 
-module.exports = {purdueios, saveCourses, buildingsAndRooms};
+
+module.exports = {
+  purdueios,
+  saveCourses, 
+  buildingsAndRooms,
+  isFull
+};
