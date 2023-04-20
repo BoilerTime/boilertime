@@ -116,7 +116,7 @@ app.post('/api/get/profile', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     try {
       resObj = await utils.getUserProfile(user_id);
-      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, accessToken: req.user.accessToken});
+      res.json({ email: resObj.email, firstname: resObj.firstname, lastname: resObj.lastname, grad_month: resObj.grad_month, grad_year: resObj.grad_year, is_grad_student: resObj.is_grad_student, pairs: resObj.pairs, privacy: resObj.privacy, accessToken: req.user.accessToken});
     } catch {
       res.sendStatus(401);
     }
@@ -279,7 +279,9 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   }
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
-      await utils.addSchedulesCount();
+      if (await utils.getUserProfile(req.body.user_id).privacy) {
+        await utils.addSchedulesCount();
+      }
       res.send({ ...schedule, accessToken: req.user.accessToken });
     }).catch(err => {
       console.log(err)
@@ -371,18 +373,20 @@ app.post('/api/saveoptimizedschedule', async (req, res) => {
   console.log(req.body);
   const prev_schedule = await schedule.getGeneratedSchedule(req.body.user_id);
   await saveSchedule.saveSchedule(req.body.user_id, req.body.data);
-  schedule.classCounterDecrement(req.body.user_id, prev_schedule).then((input) => {
-    console.log("Class Counter Decremented")
-    schedule.classCounterIncrement(req.body.user_id, req.body.data.schedule).then((input) => {
-      console.log("Class Counter Incremented")
-    }).catch(err => {
+  if (await utils.getUserProfile(req.body.user_id).privacy) {
+    schedule.classCounterDecrement(req.body.user_id, prev_schedule).then((input) => {
+      console.log("Class Counter Decremented")
+      schedule.classCounterIncrement(req.body.user_id, req.body.data.schedule).then((input) => {
+        console.log("Class Counter Incremented")
+      }).catch(err => {
+        console.error(err)
+        return res.sendStatus(500);
+      });
+    }).catch((err) => {
       console.error(err)
       return res.sendStatus(500);
     });
-  }).catch((err) => {
-    console.error(err)
-    return res.sendStatus(500);
-  });
+  }
   res.sendStatus(200);
 })
 
@@ -1171,7 +1175,9 @@ app.post('/api/add/user_count', jwt.authenticateToken, async (req, res) => {
 });
 
 app.post('/api/add/schedule_count', jwt.authenticateToken, async (req, res) => {
-  await utils.addSchedulesCount();
+  if (await utils.getUserProfile(req.body.user_id).privacy) {
+    await utils.addSchedulesCount();
+  }
   res.sendStatus(200);
 });
 
