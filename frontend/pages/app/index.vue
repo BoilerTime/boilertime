@@ -118,48 +118,33 @@
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
                             resultData[1].department }}</span>
                         </div>
-                        <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Position</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            advanced_result["title"] }}</span>
-                        </div>
-                        <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Email</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            advanced_result["email"] }}</span>
-                        </div>
-                        <div class="flex justify-between mb-6">
-                          <span class="text-base font-medium text-blue-700">Phone</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
-                            advanced_result["office phone"] }}</span>
-                        </div>
                         <div class="flex justify-between mb-4">
                           <span class="text-base font-medium text-blue-700">Averaged from</span>
-                          <span class="text-base font-medium text-blue-700" v-if="resultData[0]">{{
-                            resultData[0].numRatings }}
+                          <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
+                            resultData[1].numRatings }}
                             ratings</span>
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average GPA</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
-                            resultData[1].overall_gpa }}</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].overall_gpa }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].percentage * 100 + '%' }"></div>
+                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
                         </div>
                         <div v-else>
                           No data available
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average difficulty</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
-                            (resultData[0].avgDifficulty / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgDifficulty > 0">{{
+                            (resultData[1].avgDifficulty / 5.0 *
                               100).toPrecision(4) + '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgDifficulty > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[1].avgDifficulty / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -167,14 +152,14 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average rating</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
-                            ((resultData[0].avgRating) / 5.0 *
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgRating > 0">{{
+                            ((resultData[1].avgRating) / 5.0 *
                               100).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgRating > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
+                            :style="{ width: resultData[1].avgRating / 5.0 * 100 + '%' }">
                           </div>
                         </div>
                         <div v-else>
@@ -182,13 +167,13 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Would take again</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
-                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">{{
+                            (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
+                            :style="{ width: resultData[1].wouldTakeAgainPercent + '%' }">
                           </div>
                         </div>
                         <div v-else>
