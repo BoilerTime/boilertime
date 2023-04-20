@@ -63,9 +63,9 @@
                 Sign up
               </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class=" text-gray-400 text-md hover:text-gray-500"
-                  >Forgot password?</a
-                >
+                <button class=" text-gray-400 text-md hover:text-gray-500" @click.prevent="addCounterToFGPassword()">
+                  Forgot password?
+                </button>
               </p>
             </div>
           </form>
@@ -124,6 +124,10 @@ async function login() {
     });
     password.value = null;
   }
+}
+
+async function addCounterToFGPassword() {
+  navigateTo('/auth/forgotpassword');
 }
 
 async function guest() {

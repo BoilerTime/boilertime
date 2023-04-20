@@ -1,0 +1,37 @@
+<!doctypehtml>
+<html lang=en>
+<meta charset=UTF-8>
+<meta content="width=device-width,initial-scale=1" name=viewport>
+<title>BoilerTime – {{ course }} is now open for registration</title>
+<link href=https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css rel=stylesheet>
+<style>
+  @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap);
+</style>
+
+<body class="antialiased bg-gray-100 font-sans">
+  <div class="py-8 w-full">
+    <div class="mx-auto bg-white max-w-xl p-6 rounded-lg shadow-lg">
+      <div class=text-center><img alt="BoilerTime Logo" class="mb-4 mx-auto w-64" src=https://i.imgur.com/AfmagMS.png>
+        <p class="mb-6 text-gray-700 text-xl">Open slots found for {{ course }}
+      </div>
+      <div class=text-gray-600>
+        <p class=mb-4>Hi <b>{{ email }}</b>,
+        <p class=mb-4>Your optimized schedule included <b>{{ course }}</b> that did not have open slots at the time.
+        <p class="mb-4">We have now found open slots for you in the class. For your convenience, we have included the link to register below:
+          <div class="flex justify-center"><a
+          class="font-semibold bg-yellow-500 duration-200 hover:bg-opacity-90 px-6 py-2 rounded-lg text-white transition"
+          href="https://timetable.mypurdue.purdue.edu/Timetabling/main.action">Open myPurdue</a></div>
+        <p class=mb-4>Best regards,<br><span class="mb-4 font-semibold">BoilerTime Data Integrity</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="text-center text-gray-500 text-xs">
+      <p class=mb-2>This email was sent to {{ email }} because you are a registered user of BoilerTime.
+      <p class=mb-2>If you believe this email was sent in error, feel free to reach out to us by replying to this email.
+      <p>© 2023 BoilerTime. All rights reserved.
+    </div>
+  </footer>
+</body>
+
+</html>

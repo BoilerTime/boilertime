@@ -42,28 +42,36 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { useUserStore } from "../../store/user";
 const email = ref("");
-const { $toast } = useNuxtApp();
-
+const userStore = useUserStore();
+const { $toast } = useNuxtApp()
 /**
  * A function to call the resetPassword function
  */
 async function sendemail() {
-  await axios
+  userStore.user.num_fg_clicks = userStore.num_fg_clicks + 1;
+  if (userStore.num_fg_clicks <= 3) {
+    await axios
     .post("https://api.boilerti.me/api/forgotpassword", {
-      email: email.value,
-    })
-    .then(function () {
-      //alert("Email has been sent")
+        email: email.value,
+      })
+      .then(function  () {
+      //  $toast.info("Email has been sent")
       $toast.success("Email has been sent", {
       });
       navigateTo("/auth/login");
-    })
-    .catch(function (error) {
-      //console.error(error);
-      //alert("User does not exist.")
+      })
+      .catch(function (error) {
+        //console.error(error);
+        //$toast.error("User does not exist.")
       $toast.error("User does not exist.", {
       });
+      });
+  } else {
+    $toast.error("You have exceeded the amount of times you can reset passwrod! Please try again later.", {
+      timeout: 5000,
     });
+  }
 }
 </script>
