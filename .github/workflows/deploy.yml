@@ -15,7 +15,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "alpinemail@zsy.sh"
+          git config --local user.name "Zachary Will Sy"
           git commit --allow-empty -m "Trigger deployment for pull request #${{ github.event.number }}"
           git push origin main
