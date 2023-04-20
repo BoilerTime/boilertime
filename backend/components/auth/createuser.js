@@ -14,6 +14,15 @@ const db = getFirestore()
 const profiles = db.collection('user_profile');
 const schedules = db.collection('user_schedules');
 
+const API_KEY = process.env.MAILGUN_API_KEY;
+const DOMAIN = process.env.MAILGUN_DOMAIN;
+
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
+const mailgun = new Mailgun(formData);
+
+const mg = mailgun.client({username: 'api', key: process.env.MAILGUN_API_KEY});
+
 /**
   * Create User creates a new user to enter into the database matching the parameters passed to it.
   * @param {JSON} profile - A JSON representation of the user profile. Must include the user's first name, last name, and email address.
@@ -67,7 +76,7 @@ const createuser = async function (profile) {
   })
 
   await sendVerificationEmail(userProfile).then(() => {
-    //Do smth
+
   }).catch((err) => {
     throw new Error().error = 500;
   })
@@ -83,18 +92,24 @@ const findExistingUsers = async function (email) {
 
 const sendVerificationEmail = async function (profile) {
 
-  const mailOptions = {
-    from: 'BoilerTime',
-    to: `${profile.email}`,
-    subject: 'Verify BoilerTime Account',
-    html: `
-	  <h1 style="font-size: 14px; font-weight: normal;">Hi, ${profile.firstname}!</h1>
-	  <p> Welcome to BoilerTime! We're excited to help create your perfect class schedule! Please <a href="https://boilerti.me/auth/verifyaccount?id=${profile.user_id}">Click Here</a> to verify your account!</p>`
-  }
+  const verifyaccount = {
+    from: 'BoilerTime <donotreply@boilerti.me>',
+    to: profile.email,
+    subject: 'BoilerTime – Verify your account, ' + profile.firstname,
+    template: 'verifyaccount',
+    'h:X-Mailgun-Variables': JSON.stringify({
+      name: profile.firstname,
+      link: 'https://boilerti.me/auth/verifyaccount?id=' + profile.user_id,
+      email: profile.email,
+    }),
+    'h:Reply-To': 'boilertimepurdue@gmail.com',
+  };
+
   try {
-    await sendEmail.sendEmail({ mailOptions });
-  } catch (e) {
-    throw new Error().error = 500;
+    const response = await mg.messages.create("mg.boilerti.me", verifyaccount);
+    console.log(response);
+  } catch (err) {
+    console.log(err);
   }
 
 }
