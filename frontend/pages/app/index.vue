@@ -74,47 +74,37 @@
         </div>
       </div>
     </div>
-    <main class="pb-12 -mt-24">
-      <div class="max-w-3xl px-4 mx-auto sm:px-6 lg:max-w-7xl lg:px-8">
-        <div class="items-start grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-          <div class="grid grid-cols-1 gap-4 lg:col-span-2">
-            <section aria-labelledby="section-1-title">
-              <div class="overflow-hidden bg-white shadow-xl rounded-xl h-1/2">
-                <div class="p-6">
+    <main class="-mt-24">
+      <div class="px-4 mx-auto max-w-7xl md:px-8">
+        <div class="grid lg:grid-cols-3 md:gap-8">
+          <div class="grid gap-4 lg:col-span-2">
+            <section>
+              <div class="flex flex-col items-center justify-center bg-white shadow-lg rounded-lg">
+                <div>
                   <div
-                    class="flex flex-wrap h-screen dark:bg-neutral-500"
+                    class="flex flex-col items-center justify-center md:justify-start md:flex-row dark:bg-neutral-500"
                     v-if="userSchedules.length !== 0"
                   >
                     <!-- Add button -->
                     <div
-                      class="w-1/4 p-4 cursor-pointer"
+                      class="w-1/4 p-6"
                       @click="navigateToCreateSchedule()"
                     >
                       <div
-                        class="flex items-center justify-center w-full text-gray-400 bg-white border-2 border-gray-400 border-dashed rounded-lg h-80 dark:bg-neutral-700 hover:text-gray-500 hover:bg-gray-100 transition duration-300"
+                        class="flex items-center justify-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-full dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                       >
-                        <svg
-                          class="w-8 h-8"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            d="M10 3a1 1 0 0 1 1 1v4h4a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H6a1 1 0 0 1 0-2h4V4a1 1 0 0 1 1-1z"
-                          />
-                        </svg>
+                        <PlusIcon class="w-12 h-12" />
                       </div>
                     </div>
-
                     <!-- Data items -->
                     <div
                       v-for="(schedule, index) in userSchedules"
                       :key="index"
-                      class="w-1/4 p-4 cursor-pointer h-96"
+                      class="w-1/4 p-6 cursor-pointer h-full"
                       @click="getScheduleView(schedule.term_id)"
                     >
                       <div
-                        class="flex flex-col justify-between w-full overflow-hidden bg-white border-2 border-gray-400 rounded-lg h-80 dark:bg-neutral-700 dark:border-black transition duration-300 dark:text-white"
+                        class="flex flex-col justify-between w-64 overflow-hidden bg-white border-2 border-gray-400 rounded-lg h-64 dark:bg-neutral-700 dark:border-black transition duration-300 dark:text-white"
                       >
                         <div class="px-4 py-2 bg-yellow-500">
                           <h2 class="text-lg font-bold text-black">
@@ -176,15 +166,15 @@
                         {{ result }}
                       </h1>
                       <div class="" v-if="resultType == 'Professor'">
-                        <div class="">
+                        <div class="" v-if="resultData.length == 2">
                           <div class="flex justify-between mb-1">
                             <span class="text-base font-medium text-blue-700"
                               >Department</span
                             >
                             <span
                               class="text-base font-medium text-blue-700"
-                              v-if="resultData[1]"
-                              >{{ resultData[1].department }}</span
+                              v-if="resultData[0]"
+                              >{{ resultData[0].department }}</span
                             >
                           </div>
                           <div class="flex justify-between mb-4">
@@ -193,11 +183,68 @@
                             >
                             <span
                               class="text-base font-medium text-blue-700"
-                              v-if="resultData[1]"
-                              >{{ resultData[1].numRatings }} ratings</span
+                              v-if="resultData[0]"
+                              >{{ resultData[0].numRatings }} ratings</span
                             >
                           </div>
                           <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average GPA</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                            resultData[1].overall_gpa }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1]">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[1].percentage * 100 + '%' }"></div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average difficulty</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
+                              100).toPrecision(4) + '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average rating</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
+                              100).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Would take again</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                      </div>
+                      <div class="" v-else-if="resultData.length == 1">
+                        <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
                             <span class="text-base font-medium text-blue-700"
                               >Average GPA</span
                             >
@@ -209,7 +256,7 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0]"
+                            v-if="resultData[0].overall_gpa"
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
@@ -219,16 +266,27 @@
                             ></div>
                           </div>
                           <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
+                          <div class="flex justify-between mb-1" v-if="resultData[0].department">
+                          <span class="text-base font-medium text-blue-700">Department</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].department }}</span>
+                        </div>
+                        <div class="flex justify-between mb-4"  v-if="resultData[0].numRatings">
+                          <span class="text-base font-medium text-blue-700">Averaged from</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].numRatings }}
+                            ratings</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
                             <span class="text-base font-medium text-blue-700"
                               >Average difficulty</span
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[1]"
+                              v-if="resultData[0] && resultData[0].avgDifficulty > 0"
                               >{{
                                 (
-                                  (resultData[1].avgDifficulty / 5.0) *
+                                  (resultData[0].avgDifficulty / 5.0) *
                                   100
                                 ).toPrecision(4) + "%"
                               }}</span
@@ -236,13 +294,13 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0]"
+                            v-if="resultData[0] && resultData[0].avgDifficulty > 0"
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
                               :style="{
                                 width:
-                                  (resultData[1].avgDifficulty / 5.0) * 100 +
+                                  (resultData[0].avgDifficulty / 5.0) * 100 +
                                   '%',
                               }"
                             ></div>
@@ -254,10 +312,10 @@
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[1]"
+                              v-if="resultData[0] && resultData[0].avgRating > 0"
                               >{{
                                 (
-                                  (resultData[1].avgRating / 5.0) *
+                                  (resultData[0].avgRating / 5.0) *
                                   100
                                 ).toPrecision(4) + "%"
                               }}</span
@@ -265,13 +323,13 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0]"
+                            v-if="resultData[0] && resultData[0].avgRating > 0"
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
                               :style="{
                                 width:
-                                  (resultData[1].avgRating / 5.0) * 100 + '%',
+                                  (resultData[0].avgRating / 5.0) * 100 + '%',
                               }"
                             ></div>
                           </div>
@@ -282,9 +340,9 @@
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[1]"
+                              v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0"
                               >{{
-                                resultData[1].wouldTakeAgainPercent.toPrecision(
+                                resultData[0].wouldTakeAgainPercent.toPrecision(
                                   4
                                 ) + "%"
                               }}</span
@@ -292,19 +350,22 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                            v-if="resultData[0]"
+                            v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0"
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
                               :style="{
                                 width:
-                                  resultData[1].wouldTakeAgainPercent + '%',
+                                  resultData[0].wouldTakeAgainPercent + '%',
                               }"
                             ></div>
                           </div>
                           <div v-else>No data available</div>
                         </div>
                         <div class="flex justify-between mb-1"></div>
+                      </div>
+                      <div v-else>
+                        No data available
                       </div>
                       <div
                         class="flex flex-col items-center mb-12"
@@ -584,6 +645,7 @@
             </div>
           </div>
         </div>
+        
       </div>
     </main>
   </main>
@@ -602,16 +664,15 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
+import { onUnmounted } from "vue";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
+import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { ref } from "vue";
 import axios from "axios";
 import { onMounted } from "vue";
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
-import { POSITION, useToast } from "vue-toastification";
-
-import { onUnmounted } from "vue";
+const { $toast } = useNuxtApp()
 
 const userSchedules = ref([]);
 const optimizedSchedule = ref([]);
@@ -637,7 +698,7 @@ function formatTitle(title) {
 onBeforeMount(async () => {
   await axios
     .post(
-      "http://localhost:3001/api/get/user_schedules",
+      "https://api.boilerti.me/api/get/user_schedules",
       {
         user_id: userStore.user_id,
       },
@@ -660,7 +721,7 @@ onBeforeMount(async () => {
     if (numSchedules === 0 && guestStore.schedule) {
       axios
         .post(
-          "http://localhost:3001/api/saveschedule",
+          "https://api.boilerti.me/api/saveschedule",
           {
             user_id: userStore.user_id,
             required_classes: guestStore.schedule.required_classes,
@@ -681,7 +742,7 @@ onBeforeMount(async () => {
             accessToken = userStore.accessToken;
             config.headers["authorization"] = `Bearer ${accessToken}`;
           }
-          toast.success("Imported Schedule Created As Guest!", {
+          $toast.success("Imported Schedule Created As Guest!", {
             timeout: 2000,
           });
         });
@@ -705,7 +766,6 @@ const classrooms = ref([]);
 const courses = ref([]);
 const tas = ref([]);
 const tas_inv = ref([]);
-const toast = useToast();
 
 var lastname = ref("");
 var firstname = ref("");
@@ -739,7 +799,7 @@ async function flag(id, type) {
   console.log(id, type, result.value);
   try {
     await axios.post(
-      "http://localhost:3001/api/add/flag",
+      "https://api.boilerti.me/api/add/flag",
       {
         user_id: id,
         type: type,
@@ -762,19 +822,19 @@ async function logout() {
 async function fetch() {
   try {
     await axios
-      .get("http://localhost:3001/api/professorsnew")
+      .get("https://api.boilerti.me/api/professorsnew")
       .then((response) => {
         professors.value = response.data;
       });
     await axios
-      .get("http://localhost:3001/api/classroomsnew")
+      .get("https://api.boilerti.me/api/classroomsnew")
       .then((response) => {
         classrooms.value = response.data.classrooms;
       });
-    await axios.get("http://localhost:3001/api/searchnew").then((response) => {
+    await axios.get("https://api.boilerti.me/api/searchnew").then((response) => {
       courses.value = response.data;
     });
-    await axios.get("http://localhost:3001/api/tasnew").then((response) => {
+    await axios.get("https://api.boilerti.me/api/tasnew").then((response) => {
       tas.value = Object.keys(response.data);
       tas_inv.value = response.data;
     });
@@ -791,18 +851,26 @@ const filteredResults = computed(() => {
   }
   if (searchType.value == "Professor") {
     return professors.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "Classroom") {
     return classrooms.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "Course") {
     return courses.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "TA") {
     return tas.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase());
     });
   }
@@ -812,6 +880,8 @@ var actual_name = ref("");
 var actual_course = ref([]);
 
 async function navigate(selected, type) {
+  resultData.value = []
+  actual_course.value = []
   searchTerm.value = "";
   result.value = selected;
   resultType.value = type;
@@ -820,8 +890,8 @@ async function navigate(selected, type) {
     // ratemyprofessor
     result.value = result.value.split(",");
     result.value = result.value[1].trim() + " " + result.value[0];
-    axios
-      .post("http://localhost:3001/api/getoverall_gpa", {
+    await axios
+      .post("https://api.boilerti.me/api/getoverall_gpa", {
         prof_name: result.value,
       })
       .then((response) => {
@@ -856,8 +926,8 @@ async function navigate(selected, type) {
   }
   if (type == "Classroom") {
     // clasroom_ratings/classrooms
-    axios
-      .post("http://localhost:3001/api/get/classroom_ratings/classrooms", {
+    await axios
+      .post("https://api.boilerti.me/api/get/classroom_ratings/classrooms", {
         classroom: result.value.replace(/ /g, ""),
       })
       .then((response) => {
@@ -866,7 +936,7 @@ async function navigate(selected, type) {
         resultData.value.push(data);
       });
     var search = result.value.split(" ")[0];
-    var lookup = await axios.get("http://localhost:3001/api/buildingsnew");
+    var lookup = await axios.get("https://api.boilerti.me/api/buildingsnew");
     lookup = lookup.data;
     var len = 151;
     for (var i = 0; i < len; i++) {
@@ -879,8 +949,8 @@ async function navigate(selected, type) {
   }
   if (type == "Course") {
     // course_ratings/courses
-    axios
-      .post("http://localhost:3001/api/get/course_ratings/courses", {
+    await axios
+      .post("https://api.boilerti.me/api/get/course_ratings/courses", {
         course_name: result.value.replace(/ /g, ""),
       })
       .then((response) => {
@@ -891,8 +961,8 @@ async function navigate(selected, type) {
   }
   if (type == "TA") {
     // ta_ratings/tas
-    axios
-      .post("http://localhost:3001/api/get/ta_ratings/tas", {
+    await axios
+      .post("https://api.boilerti.me/api/get/ta_ratings/tas", {
         ta: result.value,
       })
       .then((response) => {
@@ -917,7 +987,7 @@ async function getUserInfo() {
   user_id.value = userStore.user_id;
   axios
     .post(
-      "http://localhost:3001/api/get/profile/",
+      "https://api.boilerti.me/api/get/profile/",
       {
         user_id: userStore.user_id,
       },
@@ -932,7 +1002,7 @@ async function getUserInfo() {
     });
   axios
     .post(
-      "http://localhost:3001/api/get/darkmode/",
+      "https://api.boilerti.me/api/get/darkmode/",
       {
         user_id: userStore.user_id,
       },
@@ -950,6 +1020,6 @@ async function getUserInfo() {
 onBeforeMount(async () => {
   await getUserInfo();
   await fetch();
-  checkWindowSize();
+  await checkWindowSize();
 });
 </script>

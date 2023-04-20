@@ -54,13 +54,11 @@
 import { ref } from "vue";
 import axios from "axios";
 import sha256 from "js-sha256";
-import { POSITION, useToast } from "vue-toastification";
-
 const route = useRoute();
 const user_id = route.query.user_id;
 const password = ref("");
 const confpassword = ref("");
-const toast = useToast();
+const { $toast } = useNuxtApp();
 
 /**
  * A function that will make sure the user_id is correct and will then
@@ -71,28 +69,25 @@ async function resetpassword() {
   var newconfpassword = sha256(confpassword.value);
   if (newpassword === newconfpassword) {
     await axios
-      .post("http://localhost:3001/api/resetpassword", {
+      .post("https://api.boilerti.me/api/resetpassword", {
         user_id: user_id,
         password: newpassword,
       })
       .then(function () {
         //alert("Password has been reset.")
-        toast.success("Password has been reset.", {
-          position: POSITION.BOTTOM_LEFT,
+        $toast.success("Password has been reset.", {
         });
         navigateTo("/auth/login");
       })
       .catch(function (error) {
         //console.error(error)
         //alert("Email does not exist. Please re-enter.")
-        toast.error("Email does not exist. Please re-enter.", {
-          position: POSITION.BOTTOM_LEFT,
+        $toast.error("Email does not exist. Please re-enter.", {
         });
       });
   } else {
     //alert("Passwords do not match")
-    toast.error("Passwords do not match", {
-      position: POSITION.BOTTOM_LEFT,
+    $toast.error("Passwords do not match", {
     });
   }
 }

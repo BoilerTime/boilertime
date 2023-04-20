@@ -206,7 +206,6 @@
 import { ref } from "vue";
 import axios from "axios";
 import sha256 from "js-sha256";
-import { POSITION, useToast } from "vue-toastification";
 import { useUserStore } from "../../store/user";
 const email = ref("");
 const firstname = ref("");
@@ -216,7 +215,7 @@ const confpassword = ref("");
 const isGraduateStudent = ref(false);
 const gradmonth = ref("");
 const gradyear = ref("");
-const toast = useToast();
+const { $toast } = useNuxtApp();
 const userStore = useUserStore();
 
 /**
@@ -228,7 +227,7 @@ async function signup() {
   var newconfpassword = sha256(confpassword.value);
   if (newpassword === newconfpassword) {
     await axios
-      .post("http://localhost:3001/api/createuser", {
+      .post("https://api.boilerti.me/api/createuser", {
         firstname: firstname.value,
         lastname: lastname.value,
         email: email.value,
@@ -238,21 +237,18 @@ async function signup() {
         isGraduateStudent: isGraduateStudent.value,
       })
       .then(function () {
-        toast.info("Please check your email to verify your account!", {
+        $toast.info("Please check your email to verify your account!", {
           timeout: 5000,
-          position: POSITION.BOTTOM_LEFT,
         });
       })
       .catch(function (error) {
-        toast.error("Email Invalid or it already exists!", {
+        $toast.error("Email Invalid or it already exists!", {
           timeout: 5000,
-          position: POSITION.BOTTOM_LEFT,
         });
       });
   } else {
-    toast.error("Passwords do not match!", {
+    $toast.error("Passwords do not match!", {
       timeout: 5000,
-      position: POSITION.BOTTOM_LEFT,
     });
   }
 }
@@ -267,11 +263,10 @@ async function guest() {
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      this.toast.error(
+        $toast.error(
         "Warning: Guest mode has access to limited functionality!",
         {
           timeout: 5000,
-          position: POSITION.BOTTOM_LEFT,
         }
       );
       navigateTo("/app/home");

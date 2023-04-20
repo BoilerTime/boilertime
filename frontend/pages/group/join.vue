@@ -41,7 +41,7 @@ var group_name = ref("");
  * a group, as well as adding the user to a group if they confirm.
  */
 async function joingroup() {
-    await axios.post('http://localhost:3001/api/joingroup', {
+    await axios.post('https://api.boilerti.me/api/joingroup', {
         user_id: user_id,
         group_id: group_id
     }, config)
@@ -68,7 +68,7 @@ async function joingroup() {
  * invite link.
  */
 async function getname() {
-    await axios.post('http://localhost:3001/api/group', {
+    await axios.post('https://api.boilerti.me/api/group', {
         group_id: group_id
     })
     .then((res) => {

@@ -85,11 +85,10 @@
 import { ref } from "vue";
 import { useUserStore } from "../../store/user";
 import sha256 from "js-sha256";
-import { POSITION, useToast } from "vue-toastification";
+const { $toast } = useNuxtApp()
 
 const email = ref("");
 const password = ref("");
-const toast = useToast();
 const userStore = useUserStore();
 var isMobile = ref(false);
 
@@ -112,17 +111,15 @@ async function login() {
       // end temp fix
       navigateTo("/app");
       if (isMobile) {
-        toast.error("Warning: Mobile mode has access to limited functionality", {
+        $toast.error("Warning: Mobile mode has access to limited functionality", {
           timeout: 5000,
-          position: POSITION.BOTTOM_CENTER
         });
       }
     }
   } catch (error) {
     // temp alert
-    toast.error("Incorrect username or password", {
+    $toast.error("Incorrect username or password", {
       timeout: 5000,
-      position: POSITION.BOTTOM_LEFT
     });
     password.value = null;
   }
@@ -138,17 +135,15 @@ async function guest() {
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      this.toast.error("Warning: Guest mode has access to limited functionality!", {
+      $toast.error("Warning: Guest mode has access to limited functionality!", {
         timeout: 5000,
-        position: POSITION.BOTTOM_LEFT
       });
       navigateTo("/app");
     }
   } catch (error) {
     // temp alert
-    toast.error("Failed to create guest session", {
+    $toast.error("Failed to create guest session", {
       timeout: 5000,
-      position: POSITION.BOTTOM_LEFT
     });
   }
 }

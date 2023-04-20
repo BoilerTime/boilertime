@@ -36,7 +36,7 @@
   })
 
   async function getgpa(prof_name, class_name) {
-    const response = await axios.post('http://localhost:3001/api/getgpa', {
+    const response = await axios.post('https://api.boilerti.me/api/getgpa', {
       "prof_name": prof_name,
       "class_name": class_name
     })
@@ -44,7 +44,7 @@
   }
 
   async function getrmp(prof_name) {
-    const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+    const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
       "prof_name": prof_name
     })
     rmp.push(response.data.avgRating)

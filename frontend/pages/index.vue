@@ -35,8 +35,7 @@
           BoilerTime is your solution to the quarterly fear of a bad schedule.
         </h2>
         <h2 class="md:text-2xl text-lg font-bold text-white">
-          Quickly create perfect schedules that fit your preferences and
-          maximize your semester now.
+          Algorithmically generate perfect schedules that fit your preferences from dozens of data points.
         </h2>
         <!--Statistics-->
         <div
@@ -324,9 +323,19 @@ var users = ref();
 var schedules = ref();
 var ratings = ref();
 
+useServerSeoMeta({
+  title: 'BoilerTime - Purdue GRIT® without sacrificing a good schedule',
+  ogTitle: 'BoilerTime - Purdue GRIT® without sacrificing a good schedule',
+  description: 'BoilerTime is your solution to the semesteral fear of a bad schedule. Algorithmically generate perfect schedules that fit your preferences from dozens of data points.',
+  ogDescription: 'BoilerTime is your solution to the semestral fear of a bad schedule. Algorithmically generate perfect schedules that fit your preferences from dozens of data points.',
+  ogImage: 'https://boilerti.me/icon.png',
+  twitterCard: 'summary',
+})
+
+
 async function getUsers() {
   await axios
-    .post("http://localhost:3001/api/get/num_users", {})
+    .post("https://api.boilerti.me/api/get/num_users", {})
     .then((res) => {
       users.value = res.data.num_users;
     })
@@ -337,7 +346,7 @@ async function getUsers() {
 
 async function getRatings() {
   await axios
-    .post("http://localhost:3001/api/get/num_ratings", {})
+    .post("https://api.boilerti.me/api/get/num_ratings", {})
     .then((res) => {
       ratings.value = res.data.num_ratings;
     })
@@ -347,7 +356,7 @@ async function getRatings() {
 }
 function getSchedules() {
   axios
-    .post("http://localhost:3001/api/get/num_schedules", {})
+    .post("https://api.boilerti.me/api/get/num_schedules", {})
     .then((res) => {
       schedules.value = res.data.num_schedules;
     })

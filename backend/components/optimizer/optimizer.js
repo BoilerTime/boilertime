@@ -47,7 +47,7 @@ async function optimizeSchedule(schedule) {
         let collectionResults = [];
         await courses.collection(optimizecourses[i].split(" ")[0]).doc(optimizecourses[i].split(" ")[1]).listCollections().then((querySnapshot) => {
             querySnapshot.forEach((collection) => {
-                results.push(collection.where("type", "==", "Lecture").get());
+                results.push(collection.where("type", "in", ["Lecture", "Distance Learning"]).get());
                 collectionResults.push(collection.id);
                 //console.log(await collection.where("type", "==", "Lecture").get());
                 });
