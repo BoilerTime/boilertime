@@ -748,7 +748,7 @@ const filteredResults = computed(() => {
 
 onMounted(() => {
 
-  connection = new WebSocket("wss://ws.boilerti.me");
+  connection = new WebSocket("ws://localhost:8443");
   connection.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
@@ -978,7 +978,7 @@ function submit() {
   if (selectedRequiredCourses.value.length > 0) {
     openModal();
     waitingForData();
-    axios.post('https://api.boilerti.me/api/createschedule', {
+    axios.post('http://localhost:3001/api/createschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -1013,6 +1013,7 @@ function submit() {
 }
 
 function sendToOptimizer(courses, blocks, configurations) {
+  console.log(courses)
   if(connection.readyState != connection.OPEN) {
     $toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
           timeout: 5000,
@@ -1036,20 +1037,20 @@ function sendToOptimizer(courses, blocks, configurations) {
     //Next, we can send the number of sections
     connection.send(courses[i].isRequired)
 
-    connection.send(courses[i].startTimes.length);
+    connection.send(courses[i].sections.length);
     //Next, we iterate through each of the options and send the parameters of that option
-    for(let j = 0; j < courses[i].startTimes.length; j++) {
+    for(let j = 0; j < courses[i].sections.length; j++) {
       //First, we can send the start time
-      connection.send(fixTime(courses[i].startTimes[j]));
+      connection.send(fixTime(courses[i].sections[j].primary.startTime));
       //Durations
-      connection.send(courses[i].durations[j]);
+      connection.send(courses[i].sections[j].primary.duration);
       //Week days
-      console.log(courses[i].daysOfWeek[j]);
-      connection.send(courses[i].daysOfWeek[j]);
+      console.log(courses[i].sections[j].primary.daysOfWeek);
+      connection.send(courses[i].sections[j].primary.daysOfWeek);
       //RMP
-      connection.send(courses[i].rmp[j]);
+      connection.send(courses[i].sections[j].primary.rating);
       //Section ID
-      connection.send(courses[i].sectionIDs[j]);
+      connection.send(courses[i].sections[j].primary.ID);
     }
   }
   /*
@@ -1223,7 +1224,7 @@ function fto2(time) {
 function cancel() {
   //$socket.close()
   console.log("CLOSING!!!")
-  $socket.close();
+  connection.close();
   navigateTo('/app')
 }
 
