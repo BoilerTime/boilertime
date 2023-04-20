@@ -111,17 +111,15 @@ async function login() {
       // end temp fix
       navigateTo("/app");
       if (isMobile) {
-        toast.error("Warning: Mobile mode has access to limited functionality", {
+        $toast.error("Warning: Mobile mode has access to limited functionality", {
           timeout: 5000,
-          position: POSITION.BOTTOM_CENTER
         });
       }
     }
   } catch (error) {
     // temp alert
-    toast.error("Incorrect username or password", {
+    $toast.error("Incorrect username or password", {
       timeout: 5000,
-      position: POSITION.BOTTOM_LEFT
     });
     password.value = null;
   }
@@ -144,9 +142,8 @@ async function guest() {
     }
   } catch (error) {
     // temp alert
-    toast.error("Failed to create guest session", {
+    $toast.error("Failed to create guest session", {
       timeout: 5000,
-      position: POSITION.BOTTOM_LEFT
     });
   }
 }

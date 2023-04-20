@@ -42,9 +42,8 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
-import { POSITION, useToast } from "vue-toastification";
 const email = ref("");
-const toast = useToast();
+const { $toast } = useNuxtApp();
 
 /**
  * A function to call the resetPassword function
@@ -56,16 +55,14 @@ async function sendemail() {
     })
     .then(function () {
       //alert("Email has been sent")
-      toast.success("Email has been sent", {
-        position: POSITION.BOTTOM_LEFT,
+      $toast.success("Email has been sent", {
       });
       navigateTo("/auth/login");
     })
     .catch(function (error) {
       //console.error(error);
       //alert("User does not exist.")
-      toast.error("User does not exist.", {
-        position: POSITION.BOTTOM_LEFT,
+      $toast.error("User does not exist.", {
       });
     });
 }

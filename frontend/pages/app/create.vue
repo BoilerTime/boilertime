@@ -438,7 +438,6 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
 import ProgressBar from "../../components/ProgressBar.vue";
-const { $toast } = useNuxtApp()
 import { VueDraggableNext as draggable2 } from 'vue-draggable-next'
 import draggable from 'vuedraggable'
 
@@ -453,7 +452,7 @@ import {
 import { BookmarkIcon } from "@heroicons/vue/24/outline"
 import { use } from 'h3';
 const { $socket } = useNuxtApp()
-
+const { $toast } = useNuxtApp()
 const data = ref([])
 const optionalData = ref([])
 const userStore = useUserStore()
