@@ -40,11 +40,12 @@
 import axios from 'axios';
 import { ref, onBeforeMount } from 'vue';
 import html2canvas from 'html2canvas';
-import html2pdf from 'html2pdf.js';
+//import html2pdf from 'html2pdf.js';
 import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
+import { jsPDF } from "jspdf";
 const { $toast } = useNuxtApp()
 
 const scheduleData = ref([]);
@@ -112,11 +113,20 @@ async function screenie(){
  * This function is used to save a schedule in a PDF format
  */
 async function exportToPDF() {
+  /*
   html2pdf(document.getElementById('capture'), {
     margin: 0,
     filename: "schedule.pdf",
     html2canvas: { scale: 2, letterRendering: true },
     jsPDF: { format: 'A2', orientation: "landscape" }
+  });
+  */
+  html2canvas(document.querySelector("#capture")).then(canvas => {
+    var imgData = canvas.toDataURL(
+      'image/png');
+    var doc = new jsPDF('p', 'mm');
+    doc.addImage(imgData, 'PNG', 1000, 1000);
+    doc.save('schedule.pdf');
   });
 }
 
