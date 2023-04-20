@@ -7,7 +7,7 @@ const db = getFirestore();
 const users = db.collection('user_profile');
 const classes = db.collection('classes').doc('spring_2023');
 const ratingsCollection = db.collection('ratings');
-const schedules = db.collection('generated_schedules')
+const schedules = db.collection('user_schedules')
 
 /**
  * Get the user_id given the email

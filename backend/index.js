@@ -284,8 +284,7 @@ app.post('/api/optimizedschedule', jwt.authenticateToken, async (req, res) => {
   else {
     await getSchedule.getSchedule(req.body.user_id).then(async (schedule) => {
       if (await utils.getUserProfile(req.body.user_id).privacy) {
-        await utils.addSchedulesCount();
-      }
+        }
       res.send({ ...schedule, accessToken: req.user.accessToken });
     }).catch(err => {
       console.log(err)
@@ -332,7 +331,7 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   else {
     console.log(req.body);
     await schedule.addClasses(req.body).then((input) => {
-      console.log("Schedule Added to Database")
+      console.log("Schedule Added to Database");
     }).catch(err => {
       console.error(err)
       return res.sendStatus(500);
@@ -343,8 +342,9 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
     const user_id = req.body.user_id;
     const classes = requiredClasses.concat(optionalClasses);
 
-    await optimizer.optimizeSchedule(req.body).then((data)=>{
+    await optimizer.optimizeSchedule(req.body).then( async (data) => {
       console.log("Saved!");
+      await utils.addSchedulesCount();
       res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
     }).catch((err) => {
       console.log(err)

@@ -1050,6 +1050,7 @@ async function getratings() {
 }
 
 async function submit() {
+  console.log(isGradStudent.value + ' this is the value');
   axios
     .post(
       "https://api.boilerti.me/api/update/profile",
