@@ -125,7 +125,7 @@ async function exportToPDF() {
     var imgData = canvas.toDataURL(
       'image/png');
     var doc = new jsPDF('p', 'mm');
-    doc.addImage(imgData, 'PNG', 10, 10);
+    doc.addImage(imgData, 'PNG', 0, -215, 315, 210, 'a', 'NONE', 270);
     doc.save('schedule.pdf');
   });
 }
