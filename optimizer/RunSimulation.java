@@ -9,7 +9,7 @@ public class RunSimulation {
 
         // the response:
         try {
-            new Server(3002).start();
+            new Server(8443).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

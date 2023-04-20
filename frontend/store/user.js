@@ -33,7 +33,7 @@ export const useUserStore = defineStore("user", {
     * @param {string} password - a SHA-256 hashed password.
     */
     async signIn(email, password) {
-      const res = await axios.post('http://localhost:3001/api/login', {
+      const res = await axios.post('https://api.boilerti.me/api/login', {
         email: email,
         password: password
       })
@@ -65,7 +65,7 @@ export const useUserStore = defineStore("user", {
       const data = {
         user_id: user_id
       }
-      await axios.post('http://localhost:3001/api/auth/user', data, config)
+      await axios.post('https://api.boilerti.me/api/auth/user', data, config)
       .then(response => {
         if (response.data["authenticationToken"] != undefined) {
           this.user = {
@@ -80,7 +80,7 @@ export const useUserStore = defineStore("user", {
       });
     },
     async createGuest() {
-      await axios.post('http://localhost:3001/api/guest')
+      await axios.post('https://api.boilerti.me/api/guest')
       .then(response => {
         this.user = {
           accessToken: response.data["accessToken"]

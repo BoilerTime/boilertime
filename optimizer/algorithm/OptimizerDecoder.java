@@ -8,12 +8,16 @@ public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
         String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": {\"lectures\": [";
         String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
-        String blockFormatString = "{\"blockName\": \"block_name\", \"blockStarTime\": \"block_start_time\", \"blockDuration\": \"block_duration\", \"daysOfWeek\": \"days_of_week\"},";
+        String blockFormatString = "{\"blockName\": \"block_name\", \"blockStartTime\": \"block_start_time\", \"blockDuration\": \"block_duration\", \"daysOfWeek\": \"days_of_week\"},";
         
 
         int validLength = 0;
-        while(best[validLength] != null) {
+        while(validLength < best.length && best[validLength] != null) {
             validLength++;
+        }
+
+        if(validLength == 0) {
+            return "{\"status\": 404, \"message\": \"No Schedule\", \"data\": \"null\"}";
         }
 
         String[] courseResults = new String[validLength];
@@ -47,6 +51,11 @@ public class OptimizerDecoder {
             result += courseResults[i] + ", ";
         }
         result += courseResults[courseResults.length - 1] + "], \"blocks\": [";
+        if(best[0].getBlocks().length == 0 ) {
+            result += "]}}";
+            return result;
+            //return (result + "]}}");
+        }
 
         //Blocks
         String[] blockResults = new String[validLength];

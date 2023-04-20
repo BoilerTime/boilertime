@@ -11,9 +11,22 @@
         <h1>Loading...</h1>
       </div>
       <div id="calendar" v-if="result.length > 0">
-          <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="screenie">
-            Screenie
-          </button>
+            <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="screenie">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+              </svg>
+            </button>
+            <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="exportToPDF">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>            
+            </button>
+            <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="copyLink">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+              </svg>                    
+            </button>
           <FullCalendar :options="calendarOptions" />
         </div>
         <div v-else class="h-screen p-12 bg-gray-200 dark:bg-neutral-500">
@@ -31,18 +44,20 @@ import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useUserStore } from '../../../store/user'
-import { POSITION, useToast } from "vue-toastification";
-const toast = useToast();
+import { jsPDF } from "jspdf";
+const { $toast } = useNuxtApp()
 
 const scheduleData = ref([]);
 const isDataLoaded = ref(false);
 const userStore = useUserStore();
 const route = useRoute()
 let result = [];
-async function convertSchedule(schedule) {
+async function convertSchedule(schedule, blocks) {
   console.log(schedule)
+  console.log(blocks)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
+      console.log(meeting.startTime)
       const startDateTime = new Date(meeting.startTime);
       const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const duration = meeting.duration.slice(2).toLowerCase();
@@ -52,14 +67,14 @@ async function convertSchedule(schedule) {
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
-        const response = await axios.post('http://localhost:3001/api/getgpa', {
+        const response = await axios.post('https://api.boilerti.me/api/getgpa', {
           "prof_name": prof_name,
           "class_name": class_name
         }, config)
         return response?.data?.averageGPA || 0.0
       }
       async function getrmp(prof_name) {
-        const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+        const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
           "prof_name": prof_name
         }, config)
         return response?.data?.avgRating || 0.0
@@ -74,6 +89,28 @@ async function convertSchedule(schedule) {
       });
     }
   }
+
+  for(const block of blocks) {
+    console.log(block)
+    let todayDate = new Date();
+    const daysOfWeek = block.days_of_week.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
+    const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), block.start_time.substring(0,2), block.start_time.substring(2,4));
+    console.log(startDateTime)
+    const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: false });
+    console.log(easternStartTime)
+    const easternEndTimeDateTime = new Date(startDateTime.getTime() + (block.duration) * 60 * 1000);
+    const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+    result.push({
+        startTime: easternStartTime,
+        endTime: easternEndTime,
+        title: block.name,
+        id: "block",
+        expandRows: true,
+        daysOfWeek: daysOfWeek,
+        color: "red"
+      });
+    console.log(result)
+  }
 }
 async function addTitle(schedule) {
   for (const course of schedule) {
@@ -86,10 +123,39 @@ async function addTitle(schedule) {
   }
 }
 
+/**
+ * This function will take a screenshot of the calendar and save it in an image format.
+ */
 async function screenie(){
   html2canvas(document.querySelector("#capture")).then(canvas => {
     saveAs(canvas.toDataURL(), 'schedule.png');
   });
+}
+
+/**
+ * This function is used to save a schedule in a PDF format
+ */
+async function exportToPDF() {
+  html2canvas(document.querySelector("#capture")).then(canvas => {
+    var imgData = canvas.toDataURL(
+      'image/png');
+    var doc = new jsPDF('p', 'mm');
+    doc.addImage(imgData, 'PNG', 0, -215, 315, 210, 'a', 'NONE', 270);
+    doc.save('schedule.pdf');
+  });
+}
+
+/**
+ * This function will copy a link when the button is clicked
+ */
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText("https://boilerti.me/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    console.log("https://boilerti.me/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    $toast("Copied link");
+  } catch(error) {
+    $toast.error("Cannot copy");
+  }
 }
 
 let click = ''
@@ -104,9 +170,12 @@ const calendarOptions = ref({
   events: result,
   eventClick: function(info) {
     // console.log(info.event.extendedProps.data)
-    click = "#" + info.event.id
-    // simulate a click of the modal button
-    document.querySelector(click).click()
+    console.log(info.event.id)
+    if(info.event.id != "block") {
+      click = "#" + info.event.id
+      // simulate a click of the modal button
+      document.querySelector(click).click()
+    }
   }
 })
 var accessToken = userStore.accessToken;
@@ -122,28 +191,31 @@ onBeforeMount(async () => {
 
   console.log("GroupID:" + friend_id)
   if (friend_id != undefined) {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
       user_id: friend_id,
       term_id: route.params.term,
     }, config).then((response) => {
       scheduleData.value = response.data.schedule
-      convertSchedule(scheduleData.value)
+      showWarning(response.data.configured)
+      convertSchedule(response.data.schedule, response.data.blocked_times)
     })
   } else {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
     console.log(response.data + response.data.time);
-    showWarning(response.data.time, response.data.rmp)
+    console.log("BLOCKS!!")
+    console.log(response.data.blocked_times)
     scheduleData.value = response.data.schedule
-    convertSchedule(scheduleData.value)
+    showWarning(response.data.configured)
+    convertSchedule(response.data.schedule, response.data.blocked_times)
   }).catch((error) => {
+    console.log("THIS IS THE ERROR " + error)
     if (error.response.status == 500) {
       console.log(error);
-      toast.error("You have not optimized this schedule yet!", {
+      $toast.error("You have not optimized this schedule yet!", {
           timeout: 5000,
-          position: POSITION.TOP_CENTER
       });
       navigateTo('/app/create')
     }
@@ -158,17 +230,10 @@ onMounted(() => {
   });
 })
 
-function showWarning(time, rmp) {
-  console.log(time);
-  if(rmp.toUpperCase() != "NONE") {
-    toast.warning("Warning: Time and RMP May not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
+function showWarning(configured) {
+  if(configured) {
+    $toast.info("We try to fit your preferences, but sometimes it's difficult to find a schedule that satisfies all of them. ", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
-        });
-  } else {
-    toast.warning("Warning: Time of Day and RMP may not always be optimized perfectly. We use AI to optimize, meaning that sometimes a sub-optimal solution sneaks through the cracks. ", {
-          timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   }
 }

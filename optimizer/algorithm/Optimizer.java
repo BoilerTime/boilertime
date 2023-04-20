@@ -34,19 +34,19 @@ public class Optimizer {
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private Schedule[] options;
-    private final int numOptions = 5;
+    private final int numOptions = 3;
     private int numSatisfied; 
     private QualityAnalyzer analyzer; 
     Random r;
 
-    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
+    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences, int totalClasses) {
         this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
 
         this.idEvent = new HashMap<String, Event>();
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
 
-        this.courseSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
+        this.courseSize = this.calculateScheduleSize(registeredC.length, totalClasses);// = registeredC.length;
         this.scheduleSize = this.courseSize + this.blocks.length;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
@@ -60,6 +60,7 @@ public class Optimizer {
             System.out.println( key );
         }
         System.out.println(blocks.length);
+        System.out.println("NUM REQUIRED = " + this.numRequired);
     }
 
 
@@ -128,8 +129,10 @@ public class Optimizer {
         return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
     }
 
-    private int calculateScheduleSize(int size) {
-        if(size < this.maxScheduleSize) {
+    private int calculateScheduleSize(int size, int prefered) {
+        if(prefered <= size && prefered < this.maxScheduleSize) {
+            return prefered;
+        } else if (prefered > size && size < this.maxScheduleSize) {
             return size;
         }
         return this.maxScheduleSize;
@@ -239,7 +242,7 @@ public class Optimizer {
         //System.out.println("MUTATING!");
         boolean[][] parent = new boolean[target.getEvents().length][this.sectionLen];
         boolean[][] mutated = new boolean[parent.length][this.sectionLen];
-        analyzer.calculateIndividualRequiredScore(target, scheduleSize);
+        analyzer.calculateIndividualRequiredScore(target, this.numRequired);
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < parent.length; i++) {
             
@@ -268,6 +271,17 @@ public class Optimizer {
         if(!this.isSatisfiable) {
             return null;
         }
+        
+        if(this.registerdCourses.length == 1) {
+            Schedule[] res = new Schedule[1];
+            Event[] resD = new Event[registerdCourses.length + blocks.length];
+            resD[0] = idEvent.get(Utils.arrToString(Utils.numToBin(0, sectionLen)));//this.registerdCourses[0];
+            for(int i = 0; i < blocks.length; i++) {
+                resD[i+1] = blocks[i]; 
+            }
+            res[0] = new Schedule(resD);
+            return res;
+        }
 
         //Seed the fitness pool with a bunch of random values
         Schedule[] fitPool = new Schedule[this.generationSize * 2];
@@ -282,7 +296,8 @@ public class Optimizer {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            System.out.println(iterationCount);
+            //System.out.println(iterationCount);
+            //System.out.println(iterationCount);
             iterationCount++;
                         //System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
@@ -310,7 +325,7 @@ public class Optimizer {
             }
 
             analyzer.calculateTotalFitnessScores(thisGen, numRequired);
-            
+            //System.out.println(thisGen[0].getRequiredScore());
             //System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
@@ -321,11 +336,8 @@ public class Optimizer {
         }
         System.out.println("\n\n===================");
         System.out.println("Found Optimal Solution After " + iterationCount + " Generations");
-        System.out.println("Courses:");
-        System.out.println(analyzer.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
-        System.out.println(Arrays.toString(options));
         return options;
     }
 
@@ -342,17 +354,17 @@ public class Optimizer {
             //this.sendStatusUpdate(currentIndex);
             double convergneceScore = analyzer.getRMSConvergence();
             //System.out.println("IN IF!");
-            if(convergneceScore > .5) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
-            } else if (convergneceScore > .1) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
-            } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":15}");
-            } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+            if(convergneceScore > .5 && currentIndex % 1000 == 0) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
+            } else if (convergneceScore > .1 && currentIndex % 1000 == 0) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
+            } else if (convergneceScore > 5E-3f && currentIndex % 1000 == 0) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
+            } else if(currentIndex % 1000 == 0) {
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             }
             //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
-            if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
+            if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions && analyzer.getBestSchedule().getRequiredScore() == 0) {
                 //System.out.println("Adding an option!!");
                 if(this.numSatisfied > 0) {
                     /*if(q.getBestSchedule().equals(this.options[this.options.length - 1])) {

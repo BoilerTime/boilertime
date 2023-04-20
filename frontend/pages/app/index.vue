@@ -52,7 +52,7 @@
         <div class="items-start grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
           <div class="grid grid-cols-1 gap-4 lg:col-span-2">
             <section aria-labelledby="section-1-title">
-              <div class="overflow-hidden bg-white shadow-xl rounded-xl h-1/2">
+              <div class="bg-white shadow-xl rounded-xl h-96">
                 <div class="p-6">
                   <div class="flex flex-wrap h-screen dark:bg-neutral-500" v-if="userSchedules.length !== 0">
                     <!-- Add button -->
@@ -107,12 +107,29 @@
 
           <div class="grid grid-cols-1 gap-4 ">
             <section aria-labelledby="section-2-title">
-              <div class="overflow-auto bg-white shadow-xl rounded-xl h-1/2">
+              <div class="overflow-scroll bg-white shadow-xl rounded-xl h-96">
                 <div class="p-6">
-                  <div class="h-screen" v-if="resultData && isDataLoaded">
+                  <div v-if="resultData && isDataLoaded">
                     <h1 class="mb-6 text-xl font-semibold text-left">{{ result }}</h1>
                     <div class="" v-if="resultType == 'Professor'">
-                      <div class="">
+                      <div class="" v-if="resultData.length == 2">
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
+                            <span class="text-base font-medium text-blue-700">Email</span>
+                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['email'] }}</a>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
+                            <span class="text-base font-medium text-blue-700">Title</span>
+                            <span class="text-base font-medium text-blue-700">{{
+                              advanced_result['title'] }}</span>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
+                            <span class="text-base font-medium text-blue-700">Phone</span>
+                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['office phone'] }}</a>
+                          </div>
+                        </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Department</span>
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
@@ -138,11 +155,11 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average difficulty</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgDifficulty > 0">{{
                             (resultData[1].avgDifficulty / 5.0 *
                               100).toPrecision(4) + '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgDifficulty > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
                             :style="{ width: resultData[1].avgDifficulty / 5.0 * 100 + '%' }">
                           </div>
@@ -152,12 +169,12 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Average rating</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgRating > 0">{{
                             ((resultData[1].avgRating) / 5.0 *
                               100).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgRating > 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
                             :style="{ width: resultData[1].avgRating / 5.0 * 100 + '%' }">
                           </div>
@@ -167,11 +184,11 @@
                         </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Would take again</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1]">{{
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">{{
                             (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
                             '%' }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0]">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">
                           <div class="bg-blue-600 h-2.5 rounded-full"
                             :style="{ width: resultData[1].wouldTakeAgainPercent + '%' }">
                           </div>
@@ -179,6 +196,126 @@
                         <div v-else>
                           No data available
                         </div>
+                        <div class="mt-8 mb-4">
+                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
+                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
+                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
+                          </iframe>
+                        </div>
+                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
+                          <span class="text-base font-medium text-blue-700">Office<br></span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            advanced_result['building'] }}</span>
+                        </div>
+                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
+                          <span class="text-base font-medium text-blue-700">Website<br></span>
+                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                            advanced_result['url'] }}</a>
+                        </div>
+                      </div>
+                      <div class="" v-else-if="resultData.length == 1">
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
+                            <span class="text-base font-medium text-blue-700">Email</span>
+                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['email'] }}</a>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
+                            <span class="text-base font-medium text-blue-700">Title</span>
+                            <span class="text-base font-medium text-blue-700">{{
+                              advanced_result['title'] }}</span>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
+                            <span class="text-base font-medium text-blue-700">Phone</span>
+                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['office phone'] }}</a>
+                          </div>
+                        </div>
+                        <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
+                          <span class="text-base font-medium text-blue-700">Average GPA</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
+                            resultData[0].overall_gpa }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0].overall_gpa">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1" v-if="resultData[0].department">
+                          <span class="text-base font-medium text-blue-700">Department</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].department }}</span>
+                        </div>
+                        <div class="flex justify-between mb-4"  v-if="resultData[0].numRatings">
+                          <span class="text-base font-medium text-blue-700">Averaged from</span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            resultData[0].numRatings }}
+                            ratings</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average difficulty</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgDifficulty > 0">{{
+                            (resultData[0].avgDifficulty / 5.0 *
+                              100).toPrecision(4) + '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgDifficulty > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgDifficulty / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Average rating</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].avgRating > 0">{{
+                            ((resultData[0].avgRating) / 5.0 *
+                              100).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0] && resultData[0].avgRating > 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].avgRating / 5.0 * 100 + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="flex justify-between mb-1">
+                          <span class="text-base font-medium text-blue-700">Would take again</span>
+                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">{{
+                            (resultData[0].wouldTakeAgainPercent).toPrecision(4) +
+                            '%' }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0">
+                          <div class="bg-blue-600 h-2.5 rounded-full"
+                            :style="{ width: resultData[0].wouldTakeAgainPercent + '%' }">
+                          </div>
+                        </div>
+                        <div v-else>
+                          No data available
+                        </div>
+                        <div class="mt-8 mb-4">
+                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
+                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
+                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
+                          </iframe>
+                        </div>
+                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
+                          <span class="text-base font-medium text-blue-700">Office<br></span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            advanced_result['building'] }}</span>
+                        </div>
+                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
+                          <span class="text-base font-medium text-blue-700">Website<br></span>
+                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                            advanced_result['url'] }}</a>
+                        </div>
+                      </div>
+                      <div v-else>
+                        No data available
                       </div>
                       <div class="flex justify-between mb-1">
                       </div>
@@ -342,6 +479,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
+import { onUnmounted } from "vue";
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import { ref } from 'vue'
@@ -349,9 +487,7 @@ import axios from 'axios'
 import { onMounted } from 'vue';
 import { useUserStore } from '../../store/user';
 import { useGuestStore } from "../../store/guest";
-import { POSITION, useToast } from "vue-toastification";
-
-import { onUnmounted } from "vue";
+const { $toast } = useNuxtApp()
 
 const userSchedules = ref([])
 const optimizedSchedule = ref([])
@@ -370,7 +506,7 @@ function formatTitle(title) {
 }
 
 onBeforeMount(async () => {
-  await axios.post('http://localhost:3001/api/get/user_schedules', {
+  await axios.post('https://api.boilerti.me/api/get/user_schedules', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     userSchedules.value = response.data
@@ -386,7 +522,7 @@ onBeforeMount(async () => {
   });
   if (!isAGuest.value) {
     if (numSchedules === 0 && guestStore.schedule) {
-      axios.post('http://localhost:3001/api/saveschedule', {
+      axios.post('https://api.boilerti.me/api/saveschedule', {
         user_id: userStore.user_id,
         required_classes: guestStore.schedule.required_classes,
         optional_classes: guestStore.schedule.optional_classes, 
@@ -403,7 +539,7 @@ onBeforeMount(async () => {
           accessToken = userStore.accessToken;
           config.headers['authorization'] = `Bearer ${accessToken}`;
         }
-          toast.success("Imported Schedule Created As Guest!", {
+          $toast.success("Imported Schedule Created As Guest!", {
             timeout: 2000
           });
       });
@@ -423,11 +559,11 @@ onUnmounted(() => {
 const searchTerm = ref('')
 
 const professors = ref([])
+const professorsadvanced = ref([])
 const classrooms = ref([])
 const courses = ref([])
 const tas = ref([])
 const tas_inv = ref([])
-const toast = useToast();
 
 var lastname = ref("")
 var firstname = ref("");
@@ -460,7 +596,7 @@ const config = {
 async function flag(id, type) {
   console.log(id, type, result.value)
   try {
-    await axios.post('http://localhost:3001/api/add/flag', {
+    await axios.post('https://api.boilerti.me/api/add/flag', {
       user_id: id,
       type: type,
       name: result.value.replace(/ /g, '')
@@ -479,19 +615,23 @@ async function logout() {
 
 async function fetch() {
   try {
-    await axios.get('http://localhost:3001/api/professorsnew')
+    await axios.get('https://api.boilerti.me/api/professorsnew')
       .then(response => {
         professors.value = response.data
       })
-    await axios.get('http://localhost:3001/api/classroomsnew')
+    await axios.get('https://api.boilerti.me/api/professorsadvanced')
+      .then(response => {
+        professorsadvanced.value = response.data
+      })
+    await axios.get('https://api.boilerti.me/api/classroomsnew')
       .then(response => {
         classrooms.value = response.data.classrooms
       })
-    await axios.get('http://localhost:3001/api/searchnew')
+    await axios.get('https://api.boilerti.me/api/searchnew')
       .then(response => {
         courses.value = response.data
       })
-    await axios.get('http://localhost:3001/api/tasnew')
+    await axios.get('https://api.boilerti.me/api/tasnew')
       .then(response => {
         tas.value = Object.keys(response.data)
         tas_inv.value = response.data
@@ -502,25 +642,35 @@ async function fetch() {
 }
 
 const filteredResults = computed(() => {
-  resultData.value = []
-  actual_course.value = []
+  advanced_result.value = []
   if (!searchTerm.value) {
     return []
   }
   if (searchType.value == 'Professor') {
     return professors.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Classroom') {
     return classrooms.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Course') {
     return courses.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'TA') {
     return tas.value.filter((item) => {
+      resultData.value = []
+      actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase())
     })
   }
@@ -528,17 +678,43 @@ const filteredResults = computed(() => {
 
 var actual_name = ref('')
 var actual_course = ref([])
+var advanced_result = ref([])
 
 async function navigate(selected, type) {
+  resultData.value = []
+  actual_course.value = []
+  advanced_result.value = []
   searchTerm.value = ''
   result.value = selected;
   resultType.value = type;
   if (type == 'Professor') {
     // getoverall_gpa
     // ratemyprofessor
+    var name = result.value
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
-    axios.post('http://localhost:3001/api/getoverall_gpa', {
+    const advanced = professorsadvanced.value.find(obj => obj.name === name);
+    console.log(advanced)
+    if (advanced) {
+      try {
+        var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
+        lookup = lookup.data
+        var search = (advanced["building"].toUpperCase())
+        advanced["building"] = lookup[search]
+        isDataLoaded.value = true;
+        if (isDataLoaded) {
+          advanced_result.value = advanced
+          isDataLoaded.value = true;
+        }
+      } catch {
+        advanced_result.value = advanced
+        isDataLoaded.value = true;
+      }
+    } else {
+      advanced_result.value = []
+      isDataLoaded.value = true;
+    }
+    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
@@ -550,6 +726,17 @@ async function navigate(selected, type) {
           }
           resultData.value.push(gpa)
           isDataLoaded.value = true;
+          axios.post('https://api.boilerti.me/api/ratemyprofessor', {
+            prof_name: result.value
+          })
+            .then(response => {
+              resultData.value.push(response.data)
+              isDataLoaded.value = true;
+            })
+            .catch(error => {
+              console.log(error)
+              isDataLoaded.value = true;
+            })
         } catch {
           resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
         }
@@ -558,21 +745,11 @@ async function navigate(selected, type) {
         console.log(error)
         resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
       })
-    axios.post('http://localhost:3001/api/ratemyprofessor', {
-      prof_name: result.value
-    })
-      .then(response => {
-        resultData.value.push(response.data)
-        isDataLoaded.value = true;
-      })
-      .catch(error => {
-        console.log(error)
-        isDataLoaded.value = true;
-      })
+    
   }
   if (type == 'Classroom') {
     // clasroom_ratings/classrooms
-    axios.post('http://localhost:3001/api/get/classroom_ratings/classrooms', {
+    await axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
       classroom: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -581,20 +758,14 @@ async function navigate(selected, type) {
         resultData.value.push(data)
       })
     var search = result.value.split(' ')[0]
-    var lookup = await axios.get('http://localhost:3001/api/buildingsnew');
+    var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
     lookup = lookup.data
-    var len = 151
-    for (var i = 0; i < len; i++) {
-      if (Object.keys(lookup)[i] == search) {
-        actual_name.value = Object.values(lookup)[i]
-        break
-      }
-    }
+    actual_name.value = lookup[search]
     isDataLoaded.value = true;
   }
   if (type == 'Course') {
     // course_ratings/courses
-    axios.post('http://localhost:3001/api/get/course_ratings/courses', {
+    await axios.post('https://api.boilerti.me/api/get/course_ratings/courses', {
       course_name: result.value.replace(/ /g, '')
     })
       .then(response => {
@@ -605,7 +776,7 @@ async function navigate(selected, type) {
   }
   if (type == 'TA') {
     // ta_ratings/tas
-    axios.post('http://localhost:3001/api/get/ta_ratings/tas', {
+    await axios.post('https://api.boilerti.me/api/get/ta_ratings/tas', {
       ta: result.value
     })
       .then(response => {
@@ -629,7 +800,7 @@ async function getUserInfo() {
   }
   user_id.value = userStore.user_id;
   axios
-    .post("http://localhost:3001/api/get/profile/", {
+    .post("https://api.boilerti.me/api/get/profile/", {
       user_id: userStore.user_id,
     }, config)
     .then((response) => {
@@ -641,7 +812,7 @@ async function getUserInfo() {
     });
   axios
     .post(
-      "http://localhost:3001/api/get/darkmode/",
+      "https://api.boilerti.me/api/get/darkmode/",
       {
         user_id: userStore.user_id,
       },
