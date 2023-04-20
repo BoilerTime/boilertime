@@ -49,43 +49,23 @@ async function optimizeSchedule(schedule) {
           querySnapshot.forEach(async (collection) => {
             let primaryInfoDB = await collection.where("type", "in", ["Lecture", "Distance Learning"]).get();
             currentCourse.collections.push(collection.id);
-            primaryInfoDB.forEach(async doc => {
-              let data = doc.data();
-              let sectionFormat = {
-                "primary": {
-                  "startTime": "",
-                  "duration": "",
-                  "daysOfWeek": "",
-                  "rating": 0,
-                  "ID": "",
-                  "isFull": false,
-                  "type": ""
-                },
-                "secondary": []
-              }
-              let rawDur = data.durations
-              let date = new Date(data.starttime);
-              sectionFormat.primary.startTime = (date.getUTCHours()+ "" + date.getUTCMinutes());
-              sectionFormat.primary.duration = (moment.duration(rawDur).hours()*60 + moment.duration(rawDur).minutes());
-              sectionFormat.primary.daysOfWeek = data.daysOfWeek;
-              sectionFormat.primary.ID = (doc.id);
-              sectionFormat.primary.type = data.type
-              currentCourse.sections.push(sectionFormat);
-              
-            })
-            
-            let secondaryInfoDB = await collection.where("type", "not-in", ["Lecture", "Distance Learning"]).get();
-            secondaryInfoDB.forEach(async doc => {
-              let data = doc.data();
-              const secondaryFormat = {
+            let sectionFormat = {
+              "primary": {
                 "startTime": "",
                 "duration": "",
                 "daysOfWeek": "",
                 "rating": 0,
                 "ID": "",
                 "isFull": false,
-                "type": ""
-              }
+                "type": "",
+                "parent": ""
+              },
+              "secondary": []
+            }
+            primaryInfoDB.forEach(async doc => {
+              sectionFormat.primary.parent = collection.id
+              
+              let data = doc.data();
               let rawDur = data.durations
               let date = new Date(data.starttime);
               sectionFormat.primary.startTime = (date.getUTCHours()+ "" + date.getUTCMinutes());
@@ -93,10 +73,34 @@ async function optimizeSchedule(schedule) {
               sectionFormat.primary.daysOfWeek = data.daysOfWeek;
               sectionFormat.primary.ID = (doc.id);
               sectionFormat.primary.type = data.type
-              currentCourse.sections.push(sectionFormat);
+              
               
             })
-
+            let secondaryInfoInDB = await collection.where("type", "not-in", ["Lecture", "Distance Learning"]).get();
+            secondaryInfoInDB.forEach(async doc => {
+              let secondaryFormat = {
+                "startTime": "",
+                "duration": "",
+                "daysOfWeek": "",
+                "rating": 0,
+                "ID": "",
+                "isFull": false,
+                "type": "",
+                "doubleParent": ""
+              }
+              let data = doc.data();
+              let rawDur = data.durations
+              let date = new Date(data.starttime);
+              secondaryFormat.startTime = (date.getUTCHours()+ "" + date.getUTCMinutes());
+              secondaryFormat.duration = (moment.duration(rawDur).hours()*60 + moment.duration(rawDur).minutes());
+              secondaryFormat.daysOfWeek = data.daysOfWeek;
+              secondaryFormat.ID = (doc.id);
+              secondaryFormat.type = data.type
+              secondaryFormat.doubleParent = collection.id
+              sectionFormat.secondary.push(secondaryFormat);
+              
+            })
+            currentCourse.sections.push(sectionFormat);
           });
       })
     }
