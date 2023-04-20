@@ -157,9 +157,11 @@ const saveCourses = async function() {
 async function isFull(subject, number, sectionIDs) {
   var data = await fetch('https://api.purdue.io/odata/Courses?$expand=Classes($filter=Term/Code%20eq%20%27202320%27;$expand=Sections($expand=Meetings))&$filter=Subject/Abbreviation%20eq%20%27' + subject + '%27%20and%20Number%20eq%20%27' + number + '%27');
   data = await data.json();
-  console.log(data);
+  console.log(subject + ' ' + number + ' this is the course');
+  //console.log(data);
   var res = [];
   const classes = data.value[0].Classes;
+  //console.log(sectionIDs);
   for (var i = 0; i < sectionIDs.length; i++) {
     var section;
     try {
@@ -177,8 +179,8 @@ async function isFull(subject, number, sectionIDs) {
       res.push(false);
       //res.push({ sectionId: false })
     }
-    console.log(classes[0].Sections[0].Id);
-    console.log(section)
+    //console.log(classes[0].Sections[0].Id);
+    //console.log(section)
   }
   return res;
 }

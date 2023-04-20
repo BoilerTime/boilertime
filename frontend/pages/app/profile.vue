@@ -291,7 +291,7 @@
               {{ item }}
             </li>
             <li class="mb-2 font-bold">Invite Link:</li>
-            <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
+            <li class="mb-2 font-light divide-y divide-dashed">{{ "https://boilerti.me/group/join/?group_id=" +
               item.group_id }}</li>
             </li>
             </li>
