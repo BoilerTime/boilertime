@@ -123,14 +123,14 @@ const config = {
 }
 
 async function get_profgpa(prof_name) {
-  const response = await axios.post('http://localhost:3001/api/getoverall_gpa', {
+  const response = await axios.post('https://api.boilerti.me/api/getoverall_gpa', {
     "prof_name": prof_name
   })
   prof_stats.push(response.data.overall_gpa)
 }
 
 async function getgpa(prof_name, class_name) {
-  const response = await axios.post('http://localhost:3001/api/getgpa', {
+  const response = await axios.post('https://api.boilerti.me/api/getgpa', {
     "prof_name": prof_name,
     "class_name": class_name
   })
@@ -138,7 +138,7 @@ async function getgpa(prof_name, class_name) {
 }
 
 async function getrmp(prof_name) {
-  const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+  const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
     "prof_name": prof_name
   })
   rmp_rating.push(response.data.avgRating)
@@ -170,7 +170,7 @@ onMounted(() => {
     converttime(props.data.meetings[i].startTime, props.data.meetings[i].duration)
   }
   console.log(props.data.subject + " " + props.data.number)
-  axios.post('http://localhost:3001/api/get/classmates', {
+  axios.post('https://api.boilerti.me/api/get/classmates', {
     "user_id": userStore.user_id,
     "course": props.data.subject + " " + props.data.number
   }, config)

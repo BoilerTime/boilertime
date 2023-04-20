@@ -159,7 +159,7 @@ app.post('/api/forgotpassword', (req, res) => {
       from: process.env.EMAIL,
       to: `${email}`,
       subject: 'Reset BoilerTime Password',
-      html: `<a href="http://localhost:3000/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
+      html: `<a href="https://boilerti.me/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
     }
     sendEmail.sendEmail({ mailOptions });
     res.sendStatus(200);
