@@ -104,6 +104,10 @@
             <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Submit
             </button>
+
+            <button @click="blockConfig = true" class="float-middle p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+              Block Time
+            </button>
           </div>
         </div>
       </div>
@@ -380,46 +384,9 @@
                 class="text-xl font-medium text-center text-gray-900 leading-6"
               >
                 Your <span class="text-yellow-500">Blocked Times</span>
-              </DialogTitle>
-              <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off">
-                <div class="mb-4">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
-                    Block Name
-                  </label>
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block_name" type="text" placeholder="Block Name">
-                </div>
-                <div class="mb-4">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
-                    Start Time
-                  </label>
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="start_time" name="Start Time" min="09:00" max="18:00" required>
-                </div>
-                <div class="mb-4">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
-                    End Time
-                  </label>
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="end_time" name="Start Time" min="09:00" max="18:00" required>
-                </div>
-                <div>
-                  <label class="block text-gray-700 text-sm font-bold mb-2">
-                    Days of Week
-                  </label>
-                <div class="flex items-center justify-center" style="Display: block;">
-                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
-                        <div v-for="(days, index) in daysPref">
-                          <input type="radio" :id="days" class="peer hidden" :checked="dayPrefActive[index]" v-on:click="dayPrefActive[index] = !dayPrefActive[index]"/>
-                          <label :for="days" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">{{days}}</label>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-                <br/>
-                <div class="mb-4">
-                  <button class="float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button"> Save </button>
-                </div>
-              </form>
-              
 
+
+              </DialogTitle>
               <div v-for="(entry, index) in blockArray">
                   <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                     <label><b>Block {{index + 1 }}: {{entry.name}}</b></label>
@@ -450,6 +417,50 @@
                   </div>
                 </div>
                 <br/>
+              </div>
+
+              <div class="mb-4">
+                <button @click="showSectionConfig()" class="w-full text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800">{{ blockOption }}</button>
+                <br/>
+              </div>
+              <div v-if="isAddingBlock">
+                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off">
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
+                      Block Name
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block_name" type="text" placeholder="Block Name">
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                      Start Time
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" v-model="startTime" name="Start Time" required>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                      End Time
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" v-model="endTime" name="End Time" required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Days of Week
+                    </label>
+                  <div class="flex items-center justify-center" style="Display: block;">
+                        <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
+                          <div v-for="(days, index) in daysPref">
+                            <input type="radio" :id="days" class="peer hidden" :checked="dayPrefActive[index]" v-on:click="dayPrefActive[index] = !dayPrefActive[index]"/>
+                            <label :for="days" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">{{days}}</label>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="mb-4">
+                    <button class="float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" @click="saveBlock()"> Save </button>
+                  </div>
+                </form>
               </div>
               
             </DialogPanel>
@@ -562,7 +573,7 @@ import {
   DialogTitle,
 } from '@headlessui/vue'
 
-import { BookmarkIcon } from "@heroicons/vue/24/outline"
+import { BookmarkIcon, PlusIcon } from "@heroicons/vue/24/outline"
 import { use } from 'h3';
 const { $socket } = useNuxtApp()
 
@@ -586,12 +597,21 @@ const posInLine = ref('');
 const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
-const blockConfig = ref(true)
+const blockConfig = ref(false)
 const mins = ref('');
 const courseCount = ref('5');
 var trending_classes = ref([]);
 var together_classes = ref([]);
 var configured = false; 
+
+
+/*
+  block configs
+*/
+const isAddingBlock = ref(false);
+const blockOption = ref('Add Block');
+const startTime = ref('')
+const endTime = ref('')
 var totalSum;
 
 function closeModal() {
@@ -1325,7 +1345,7 @@ function fixTime(time) {
 }
 
 function waitingForData() {
-  const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
+  const messages = ["Getting Course Data", "Talking to Server", "Getting Schedules", "Loading Options"]; 
   status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
   algorithmProgress.value = false;
   inLine.value = false;
@@ -1512,6 +1532,60 @@ function resetArray(index, specIndex) {
   blockArray.value[index].daysOfWeek[specIndex] = !blockArray.value[index].daysOfWeek[specIndex];
 }
 
+
+function showSectionConfig() {
+  if(isAddingBlock.value == false && blockArray.value.length < 5) {
+    isAddingBlock.value = true;
+    blockOption.value = "Hide"
+  } else if (isAddingBlock.value == true) {
+    isAddingBlock.value = false;
+    blockOption.value = "Add Block"
+  } else {
+    toast.error("You can't add anymore blocks!", {
+            timeout: 5000,
+            position: POSITION.BOTTOM_RIGHT
+    });
+  }
+}
+
+function saveBlock() {
+  
+  let starting = startTime.value;
+  let ending = endTime.value;
+  if(starting == "" || ending == "") {
+    toast.error("You haven't configured times yet!", {
+            timeout: 5000,
+            position: POSITION.BOTTOM_RIGHT
+    });
+    return;
+  }
+  let startingSplit = starting.split(":");
+  let endingSplit = ending.split(":")
+
+  let startingHour = parseInt(startingSplit[0]);
+  let endingHour = parseInt(endingSplit[0]);
+
+  let startingMinute = parseInt(startingSplit[1]);
+  let endingMinute = parseInt(endingSplit[1]);
+
+  if(startingHour > endingHour) {
+    toast.error("You can't start after you end!", {
+            timeout: 5000,
+            position: POSITION.BOTTOM_RIGHT
+    });
+    return;
+  } else if(startingHour == endingHour) {
+      if(startingMinute > endingMinute) {
+        toast.error("You can't start after you end!", {
+              timeout: 5000,
+              position: POSITION.BOTTOM_RIGHT
+      });
+      return;
+    }
+  }
+
+  
+}
 </script>
 
 <style scoped>
