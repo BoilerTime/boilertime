@@ -41,7 +41,7 @@ const { $toast } = useNuxtApp()
  */
 async function sendemail() {
   userStore.user.num_fg_clicks = userStore.num_fg_clicks + 1;
-  if (userStore.num_fg_clicks < 3) {
+  if (userStore.num_fg_clicks <= 3) {
     await axios.post('https://api.boilerti.me/api/forgotpassword', {
       email: email.value
     })

@@ -62,7 +62,7 @@
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <button class="text-gray-400 text-md hover:text-gray-500" @click="addCounterToFGPassword()">
+                <button class="text-gray-400 text-md hover:text-gray-500" @click.prevent="addCounterToFGPassword()">
                   Forgot password?
                 </button>
               </p>
