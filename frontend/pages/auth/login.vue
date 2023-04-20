@@ -62,9 +62,9 @@
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class="text-gray-400 text-md"
-                  >Forgot password?</a
-                >
+                <button class="text-gray-400 text-md" @click="addCounterToFGPassword()">
+                  Forgot password?
+                </button>
               </p>
             </div>
           </form>
@@ -111,6 +111,19 @@ async function login() {
     // temp alert
     alert("Incorrect username or password");
     password.value = null;
+  }
+}
+
+async function addCounterToFGPassword() {
+  console.log('here');
+  userStore.user.num_fg_clicks = userStore.num_fg_clicks + 1;
+  if (userStore.num_fg_clicks > 3) {
+    $toast.error("You have exceeded the amount of times you can reset passwrod! Please try again later.", {
+      timeout: 5000,
+    });
+  }
+  else {
+    navigateTo('/auth/forgotpassword');
   }
 }
 
