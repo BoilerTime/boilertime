@@ -43,7 +43,7 @@
             <!--Password text & input box-->
             <label
               for="password"
-              class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+              class="block pt-5 mb-2 text-sm font-medium text-gray-900 dark:text-black"
               >Password</label
             >
             <input
@@ -62,7 +62,7 @@
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <button class="text-gray-400 text-md" @click="addCounterToFGPassword()">
+                <button class="text-gray-400 text-md hover:text-gray-500" @click="addCounterToFGPassword()">
                   Forgot password?
                 </button>
               </p>
