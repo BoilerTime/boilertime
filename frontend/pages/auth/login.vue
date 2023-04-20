@@ -43,7 +43,7 @@
             <!--Password text & input box-->
             <label
               for="password"
-              class="pt-5 block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+              class="block pt-5 mb-2 text-sm font-medium text-gray-900 dark:text-black"
               >Password</label
             >
             <input
@@ -62,9 +62,9 @@
                 Log in
               </button>
               <p class="mt-5 lg:ml-2">
-                <a href="/auth/forgotpassword" class="text-gray-400 text-md"
-                  >Forgot password?</a
-                >
+                <button class="text-gray-400 text-md hover:text-gray-500" @click="addCounterToFGPassword()">
+                  Forgot password?
+                </button>
               </p>
             </div>
           </form>
@@ -112,6 +112,10 @@ async function login() {
     alert("Incorrect username or password");
     password.value = null;
   }
+}
+
+async function addCounterToFGPassword() {
+  navigateTo('/auth/forgotpassword');
 }
 
 async function guest() {

@@ -1,0 +1,40 @@
+<!doctypehtml>
+<html lang=en>
+<meta charset=UTF-8>
+<meta content="width=device-width,initial-scale=1" name=viewport>
+<title>BoilerTime – Verify your account</title>
+<link href=https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css rel=stylesheet>
+<style>
+  @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap);
+</style>
+
+<body class="antialiased bg-gray-100 font-sans">
+  <div class="py-8 w-full">
+    <div class="mx-auto bg-white max-w-xl p-6 rounded-lg shadow-lg">
+      <div class=text-center><img alt="BoilerTime Logo" class="mb-4 mx-auto w-64" src=https://i.imgur.com/AfmagMS.png>
+        <p class="mb-6 text-gray-700 text-xl">Verify your account
+      </div>
+      <div class=text-gray-600>
+        <p class=mb-4>Hi <b>{{ name }}</b>,
+        <p class=mb-4>Welcome to BoilerTime!
+        <p class=mb-4>We're excited to help you create your schedule and find the best classes for you.
+        <p class=mb-4>To ensure the integrity of our platform, we require our registered users to have a valid <b>@purdue.edu</b> email.
+        <p class=mb-4>To verify this, please click on the button below:
+        <div class="flex justify-center"><a
+            class="font-semibold bg-yellow-500 duration-200 hover:bg-opacity-90 px-6 py-2 rounded-lg text-white transition"
+            href="{{ link }}">Verify account</a></div>
+        <p class="mb-6 mt-6">If you have any questions or concerns, feel free to reach out to us by replying to this email.
+        <p class=mb-4>Best regards,<br><span class="mb-4 font-semibold">BoilerTime Team</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="text-center text-gray-500 text-xs">
+      <p class=mb-2>This email was sent to {{ email }} because you are a registered user of BoilerTime.
+      <p class=mb-2>If you believe this email was sent in error, you can safely disregard this email.
+      <p>© 2023 BoilerTime. All rights reserved.
+    </div>
+  </footer>
+</body>
+
+</html>

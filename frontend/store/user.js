@@ -7,7 +7,8 @@ export const useUserStore = defineStore("user", {
       user: {
         accessToken: "",
         refreshToken: "",
-        user_id: ""
+        user_id: "",
+        num_fg_clicks: 0
       },
     };
   },
@@ -24,6 +25,9 @@ export const useUserStore = defineStore("user", {
     },
     accessToken() {
         return this.user.accessToken;
+    },
+    num_fg_clicks() {
+      return this.user.num_fg_clicks;
     }
   },
   actions: {
@@ -52,7 +56,8 @@ export const useUserStore = defineStore("user", {
       const user = {
         accessToken: "",
         refreshToken: "",
-        user_id: ""
+        user_id: "",
+        num_fg_clicks: 0
       }
       this.user = user;
     },

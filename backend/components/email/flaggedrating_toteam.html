@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang=en>
+<meta charset=UTF-8>
+<meta content="width=device-width,initial-scale=1" name=viewport>
+<title>A rating has been flagged for review</title>
+<link href=https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css rel=stylesheet>
+<style>
+  @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap);
+</style>
+
+<body class="antialiased bg-gray-100 font-sans">
+  <div class="py-8 w-full">
+    <div class="mx-auto bg-white max-w-xl p-6 rounded-lg shadow-lg">
+      <div class=text-center><img alt="BoilerTime Logo" class="mb-4 mx-auto w-64" src=https://i.imgur.com/AfmagMS.png>
+        <p class="mb-6 text-gray-700 text-xl">Flagged rating for review
+      </div>
+      <div class="text-gray-600 mb-8">
+        <div class="flex justify-center">
+          <table class="bg-white border border-gray-200 rounded-lg shadow-lg">
+            <tr>
+              <th class="px-4 py-2 bg-gray-100 border-b border-gray-200 text-left text-xs uppercase font-semibold">User Email</th>
+              <td class="px-4 py-2 border-b border-gray-200">{{ user_email }}</td>
+            </tr>
+            <tr>
+              <th class="px-4 py-2 bg-gray-100 border-b border-gray-200 text-left text-xs uppercase font-semibold">Rating Type</th>
+              <td class="px-4 py-2 border-b border-gray-200">{{ rating_type }}</td>
+            </tr>
+            <tr>
+              <th class="px-4 py-2 bg-gray-100 border-b border-gray-200 text-left text-xs uppercase font-semibold">Rating Topic</th>
+              <td class="px-4 py-2 border-b border-gray-200">{{ rating_name }}</td>
+            </tr>
+            <tr>
+              <th class="px-4 py-2 bg-gray-100 border-b border-gray-200 text-left text-xs uppercase font-semibold">Flag Count</th>
+              <td class="px-4 py-2 border-b border-gray-200">{{ flag_count }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="text-center text-gray-500 text-xs">
+      <p class=mb-2>This email was sent to {{ email }} because you are a registered team member of BoilerTime.
+      <p class=mb-2>If you believe this email was sent in error, please contact us at <a class=underline
+          href=mailto:boilertimepurdue@gmail.com>boilertimepurdue@gmail.com</a>.
+      <p>© 2023 BoilerTime. All rights reserved.
+    </div>
+  </footer>
+</body>
+
+</html>
