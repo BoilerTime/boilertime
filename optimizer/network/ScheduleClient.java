@@ -5,26 +5,68 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 
+import optimizer.Utils;
 import optimizer.algorithm.*;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
+import optimizer.constants.WeekDays;
+import optimizer.parameters.BlockOverview;
+import optimizer.parameters.CourseOverview;
+import optimizer.parameters.CourseOverviewHelper;
 
-public class ScheduleClient implements Runnable  {
+public class ScheduleClient extends Thread  {
     
     //The socket that is currently being run
     private Socket netSocket;
+    private Scheduler parentScheduler;
+    private Synchronizer waiter;
+    private boolean isWaitingToRun;
+    private final int key;
 
-    public ScheduleClient(Socket s) {
+    public ScheduleClient(Socket s, Scheduler x, Synchronizer waiter, int key) {
         this.netSocket = s;
-        System.out.println(s.toString());
+        //System.out.println(s.toString());
+        this.parentScheduler = x;
+        this.waiter = waiter;
+        this.isWaitingToRun = true;
+        this.key = key;
     }
 
     @Override
     public void run() {
-        System.out.println("Called at new Client!" + netSocket);
+        System.out.println("(ScheduleClient.java) called to run a new client: " + netSocket.getPort() +  " with name: " + Thread.currentThread().getName() + " done");
         try {
             NetworkHandler network = new NetworkHandler(netSocket.getInputStream(), netSocket.getOutputStream());
-            communicateAndRun(network);
-            network.close();
-            System.out.println("Done");
+            Optimizer toBeOptimized = getClientSchedule(network);
+            if(toBeOptimized == null) {
+                System.err.println("(ScheduleClient.java) Failed to get the schedule data for client: " + netSocket.getPort());
+                this.failed(network);
+                return;
+            }
+            synchronized(waiter) {
+                this.notifyParent();
+                while (this.isWaitingToRun) {
+                    try {
+                        waiter.wait();
+                        System.out.println("Just got alerted of a status update! " + netSocket.getPort());
+                        updateClient(network);
+                    } catch (InterruptedException e) {
+                        System.err.println("(ScheduleClient.java) Got a fatal exception waiting: " + e.toString());
+                    }
+                }
+            }
+            network.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":0}");
+            this.optimize(toBeOptimized, network);
+            /*try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }*/
+            
+            parentScheduler.completeOptimization();
+            //currentThread.interrupt(
+            System.out.println("(ScheduleClient.java) Done optimizing client: " + netSocket.getPort());
         } catch (IOException e) {
             System.err.println("Issue: " + e);
             return;
@@ -34,45 +76,43 @@ public class ScheduleClient implements Runnable  {
 
     private void terminate() {
         try {
-            System.out.println("Closing the connection!");
+            System.out.println("(ScheduleClient.java) Closing the connection!");
             netSocket.close();
         } catch (NullPointerException | IOException e) {
-            System.err.println("Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
+            System.err.println("(ScheduleClient.java)Fatal Error: Couldn't terminate thread running on port: " + netSocket.getPort() + " becuase of " + e);
         }
     }
 
-    private int getCoursesCount(NetworkHandler network){
+    private int getNumericalCount(NetworkHandler network, int min, int max){
         //First, write a message that the socket has been oppened to the client
         //output.writeBytes("{\"status\":200,\"message\":\"Socket Opened\",\"data\":null}");
-        String rawClasses = network.getIncomingMessage();//nput.readLine();
-        System.out.println("Got raw: " + rawClasses);
-        if(rawClasses == null) {
+        String rawCount = network.getIncomingMessage();//nput.readLine();
+        if(rawCount == null) {
             return -1;
         }
-        int numberOfClasses;
+        int count;
         try {
-            numberOfClasses = Integer.parseInt(rawClasses);
+            count = Integer.parseInt(rawCount);
         } catch (NumberFormatException e) {
-            numberOfClasses = -1;
+            count = -1;
         }
         
-        if(numberOfClasses > 0 && numberOfClasses < 11) {
+        if(count >= min && count < max) {
             //System.out.println("Number of clases: " + numberOfClasses + " For " + netSocket.getPort());
-            network.sendMessage("{\"status\":200,\"message\":\"Received Number of Classes\",\"data\":null}");
+            network.sendMessage("{\"status\":200,\"message\":\"Received Count\",\"data\":null}");
         } else {
             //System.err.println("Illegal number of classes sent!");
-            network.sendMessage("{\"status\":400,\"message\":\"Illegal\",\"data\":null}");
+            network.sendMessage("{\"status\":400,\"message\":\"Illegal Count\",\"data\":null}");
             //Make it a negative value to allow us to conintue in a defined state
-            numberOfClasses = -1;
+            count = -1;
         }
             //System.out.println("Wrote the initial message!");
-        return numberOfClasses;
+        return count;
     }
 
-    private TimeOfDay getTODPrefernece(NetworkHandler network) {
+    private TimeOfDay getTODPreference(NetworkHandler network) {
         String rawTOD = network.getIncomingMessage();
         TimeOfDay res = null;
-        System.out.println("Got Raw " + rawTOD);
         while(res == null) { 
             if(rawTOD.equalsIgnoreCase("morning")) {
                 res = TimeOfDay.MORNGING;
@@ -92,20 +132,51 @@ public class ScheduleClient implements Runnable  {
         return res; 
     }
 
-    private boolean usingRMP(NetworkHandler network) {
-        String rawRMP = network.getIncomingMessage();
-        while(true) {
-            if(rawRMP.equalsIgnoreCase("RMP")) {
-                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
-                return true;
-            } else if(rawRMP.equalsIgnoreCase("None")) {
-                network.sendMessage("{\"status\":200,\"message\":\"Received RMP\",\"data\":null}");
-                return false;
+    private PreferenceList[] getPreferenceOrderHelper(NetworkHandler network) {
+        String rawOrder = network.getIncomingMessage();
+        System.out.println("Incoming data:" + rawOrder);
+        String[] options = rawOrder.split(",");
+        PreferenceList[] preferences = new PreferenceList[options.length];
+        for(int i = 0; i < options.length; i++) {
+            if(options[i].equalsIgnoreCase("TOD")) {
+                preferences[i] = PreferenceList.TOD;
+            } else if (options[i].equalsIgnoreCase("RMP")) {
+                preferences[i] = PreferenceList.RMP;
+            } else if (options[i].equalsIgnoreCase("TAR")) {
+                preferences[i] = PreferenceList.TAR;
             } else {
-                rawRMP = network.getIncomingMessage();
-                network.sendMessage("{\"status\":400,\"message\":\"Illegal RMP\",\"data\":null}");
+                System.out.println("Bad data: " + options[i]);
+                System.out.println("Message overall: " + rawOrder);
+                return null;
             }
         }
+        return preferences;
+    }
+
+    private PreferenceList[] getPreferenceOrder(NetworkHandler network) {
+        PreferenceList[] preferences = null;
+        while(preferences == null) {
+            preferences = getPreferenceOrderHelper(network);
+            if(preferences != null) {
+                network.sendMessage("{\"status\":200,\"message\":\"Received Preference Order\",\"data\":null}");
+            } else {
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal Preference Order\",\"data\":null}");
+            }
+        }
+        return preferences;
+    }
+
+    private int getCourseSizePref(NetworkHandler network) {
+        int count = -1;
+        while(count <= 0) {
+            try {
+                count = Integer.parseInt(network.getIncomingMessage());
+                network.sendMessage("{\"status\":200,\"message\":\"Received Num Courses\",\"data\":null}");
+            } catch (NumberFormatException e) {
+                network.sendMessage("{\"status\":400,\"message\":\"Illegal Num Courses\",\"data\":null}");
+            }
+        }
+        return count;
     }
 
     private CourseOverview getCourseInfo(NetworkHandler network) {
@@ -122,7 +193,8 @@ public class ScheduleClient implements Runnable  {
             x.addCourseName(temp);
             //System.out.println("Added a name to the course!");
             temp = network.getIncomingMessage();
-            if(temp.equals("True")) {
+            System.out.println("Required message: " + temp);
+            if(temp.equalsIgnoreCase("True")) {
                 x.setRequired(true);
             } else {
                 x.setRequired(false);
@@ -133,7 +205,6 @@ public class ScheduleClient implements Runnable  {
             if(t == null) {
                 return null;
             }
-            System.out.println("twt" + t);
             int numOfTimes = Integer.parseInt(t);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
@@ -141,34 +212,42 @@ public class ScheduleClient implements Runnable  {
 
             for(int i = 0; i < numOfTimes; i++) {
                 String message = network.getIncomingMessage();
-                System.out.println("OwO" + message);
                 x.addCourseTime(Integer.parseInt(message));
 
                 message = network.getIncomingMessage();
-                System.out.println("TwT" + message);
                 x.addDuration(Integer.parseInt(message));
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addWeekDays(message);
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addRating(Double.parseDouble(message));
 
                 message = network.getIncomingMessage();
-                System.out.println(message);
                 x.addSectionId(message);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
         } catch (NumberFormatException e) {
-            System.err.println("Issue: " + e);
+            System.err.println("(ScheduleClient.java) Issue: " + e);
         }
         return null;
     }
 
-    private void writeBestToOutput(Population p, Schedule[] best, NetworkHandler network) {
+    private BlockOverview getBlockOverview(NetworkHandler network) {
+        try {
+            String name = network.getIncomingMessage();
+            int startTime = Integer.parseInt(network.getIncomingMessage());
+            int duration = Integer.parseInt(network.getIncomingMessage());
+            WeekDays[] days = Utils.strListToDayList(network.getIncomingMessage());
+            return new BlockOverview(name, startTime, duration, days);
+        } catch (NumberFormatException e) {
+            System.err.println("(ScheduleClient.java) Issue: " + e);
+        }
+        return null;
+    }
+
+    private void writeBestToOutput(Optimizer p, Schedule[] best, NetworkHandler network) {
         if(best == null) {
             network.sendMessage("{\"status\":404,\"message\":\"No Schedule Found\",\"data\":null}");
             return;
@@ -176,50 +255,88 @@ public class ScheduleClient implements Runnable  {
         network.sendMessage(OptimizerDecoder.decodeOptimizedSchedule(best));
     }
 
-    private void communicateAndRun(NetworkHandler network) {
+    private Optimizer getClientSchedule(NetworkHandler network) {
         CourseOverview courses[];
-        int numOfCourses = getCoursesCount(network);
-        if(numOfCourses == -1) {
+        BlockOverview blocks[];
+        int numOfCourses = getNumericalCount(network, 1, 11);
+        int numOfBlocks = getNumericalCount(network, 0, 10);
+
+        if(numOfCourses == -1 || numOfBlocks == -1) {
             this.terminate();
-            return;
+            return null;
         }
 
         courses = new CourseOverview[numOfCourses];
+        blocks = new BlockOverview[numOfBlocks];
 
-        //Handle the fetching of preferences and generation of a preferences list/
-        TimeOfDay timePreference = getTODPrefernece(network);
-        boolean usingRMP = usingRMP(network);
-        PreferenceList[] preferences = new PreferenceList[2];
-        if(usingRMP) {
-            preferences[0] = PreferenceList.RMP;
-            preferences[1] = PreferenceList.TOD;
-            timePreference = TimeOfDay.AFTERNOON;
-        } else {
-            preferences[1] = PreferenceList.TOD;
-            preferences[0] = PreferenceList.RMP;
-        }
+        //Get the inputted list of preferences from the client
+        PreferenceList[] preferences = getPreferenceOrder(network);
+        //Get the TOD preference from the client
+        TimeOfDay timePreference = getTODPreference(network);
+        int coursePref = getCourseSizePref(network);
 
-        if(timePreference == TimeOfDay.NONE) {
-            timePreference = TimeOfDay.MORNGING;
-            //preferences[1] = TimeOfDay.MORNGING;
-        }
-
+        System.out.println("(ScheduleClient.java) Got all client detail for: " + netSocket.getPort());
         for(int i = 0; i < courses.length; i++) {
             courses[i] = getCourseInfo(network);
-            System.out.println("UwU" + courses[i]);
+
             /*
              * There was an error, terminate the thread and give up
-             * To-do: Add a better error handling mechanism. 
+             * TODO: Add a better error handling mechanism. 
              */
             if(courses[i] == null) {
                 //terminate();
-                return;
+                return null;
             }
             System.out.println(courses[i].getCourseName() + Arrays.toString(courses[i].getCourseDurations()) + Arrays.toString(courses[i].getCourseTimes()) + Arrays.deepToString(courses[i].getWeekDays()) + Arrays.toString(courses[i].getRatings()));
         }
+        System.out.println("(ScheduleClient.java) Got all course details for: " + netSocket.getPort());
+
+        for(int i = 0; i < blocks.length; i++) {
+            blocks[i] = this.getBlockOverview(network);
+            
+            /*
+             * There was an error, terminate the thread and give up
+             * TODO: Add a better error handling mechanism. 
+             */
+            if(blocks[i] == null) {
+                return null;
+            }
+            System.out.println("Block: " + i + " " + blocks[i].getName() + blocks[i].getStartTime() + blocks[i].getDuration() + Arrays.toString(blocks[i].getWeekDays()));
+        }
+        System.out.println("(ScheduleClient.java) Got all block details for: " + netSocket.getPort());
         //System.out.println("Result: " + numOfCourses);
-        Population resultPop = new Population(courses, network, timePreference, preferences);
-        Schedule[] resultOptions = resultPop.getBestSchedule();
-        writeBestToOutput(resultPop, resultOptions, network);
+        return new Optimizer(courses, blocks, network, timePreference, preferences, coursePref);
+    }
+
+    public synchronized void runOptimizer() {
+        this.isWaitingToRun = false;
+    }
+
+    public synchronized void notifyParent() {
+        parentScheduler.gotData(key);
+    }
+
+    private void optimize(Optimizer p, NetworkHandler net) {
+        try {
+            Schedule[] best = p.getBestSchedule();
+            this.writeBestToOutput(p, best, net);
+        } catch(Exception e) {
+            System.err.println("(ScheduleClient.java) Fatal error optimizing the schedule for: " + netSocket.getPort() + " because of " + e + " \n");
+            e.printStackTrace();
+            this.failed(net);
+        }
+    }
+
+    private void updateClient(NetworkHandler network) {
+        network.sendMessage("{\"status\":102,\"message\":\"Position in Queue Update\",\"data\":{\"currentPos\":" + waiter.getPosInQueue() + ",\"totalWaiting\":" + waiter.getWaitlistSize() + "}}");
+    }
+
+    private void failed(NetworkHandler network) {
+        network.sendMessage("{\"status\":404,\"message\":\"Fatal Error in Schedule Input\",\"data\":\"There was an error in the schedule input sent to the server\"}");
+        network.close();
+        this.terminate();
+        synchronized(this.parentScheduler) {
+            this.parentScheduler.failedToGet(key);
+        }
     }
 }

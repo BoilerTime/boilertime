@@ -1,19 +1,32 @@
 package optimizer.algorithm;
 
 import java.util.*;
-import java.io.*;
-import optimizer.Utils;
-import optimizer.network.NetworkHandler;
 
-public class Population {
+import optimizer.Utils;
+import optimizer.algorithm.Analyzer.QualityAnalyzer;
+import optimizer.algorithm.Events.Block;
+import optimizer.algorithm.Events.Event;
+import optimizer.algorithm.Events.Lecture;
+import optimizer.constants.Constants;
+import optimizer.constants.PreferenceList;
+import optimizer.constants.TimeOfDay;
+import optimizer.network.NetworkHandler;
+import optimizer.parameters.BlockOverview;
+import optimizer.parameters.Course;
+import optimizer.parameters.CourseOverview;
+
+public class Optimizer {
 
     private Course[] registerdCourses;
-    private HashMap<String, Section> idSection;
+    private Block[] blocks;
+    private HashMap<String, Event> idEvent;
     private final int scheduleSize;
-    private final int generationSize = 50;
+    private final int courseSize;
+    private final int generationSize = 32;
     private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
-    private int mutationRate = 3; 
+    private final int numBlocks;
+    private int mutationRate = 10; 
     private int waitGens; 
     private final int crossOverRate = 90;
     private final NetworkHandler net;
@@ -21,22 +34,33 @@ public class Population {
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private Schedule[] options;
-    private final int numOptions = 2;
+    private final int numOptions = 5;
     private int numSatisfied; 
-    private QualityAnalyzer q; 
+    private QualityAnalyzer analyzer; 
     Random r;
 
-    public Population(CourseOverview[] registeredC, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences) {
-        this.registerdCourses = new Course[registeredC.length];
-        this.idSection = new HashMap<String, Section>();
-        this.scheduleSize = this.calculateScheduleSize(registeredC.length);// = registeredC.length;
+    public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences, int totalClasses) {
+        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
+
+        this.idEvent = new HashMap<String, Event>();
+        this.parseEventOverviews(registeredC, blocks);
+        this.numBlocks = blocks.length;
+
+        this.courseSize = this.calculateScheduleSize(registeredC.length, totalClasses);// = registeredC.length;
+        this.scheduleSize = this.courseSize + this.blocks.length;
+        System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
-        this.generateCourseStruct(registeredC);
+        
         this.net = network;
-        this.q = new QualityAnalyzer(preferences, timePreference);
+        
         this.options = new Schedule[numOptions];
         this.numSatisfied = 0;
         this.waitGens = 0;
+        for ( String key : idEvent.keySet() ) {
+            System.out.println( key );
+        }
+        System.out.println(blocks.length);
+        System.out.println("NUM REQUIRED = " + this.numRequired);
     }
 
 
@@ -44,30 +68,36 @@ public class Population {
      * A helper method that populates the sections hashamp by instanating sections for each course
      * @param c An array of course overviews that should ulimately be converted to Courses and their respective Sections. 
      */
-    private void generateCourseStruct(CourseOverview[] c) {
-        //How long is each course ID suppossed to be?
+    private void parseEventOverviews(CourseOverview[] c, BlockOverview[] b) {
         int totalSections = 0;
-        this.numRequired= 0;
-        //int singleCount = 0;
-        //HashMap<Integer, Integer> singleCount = new HashMap<Integer, Integer>();
-        ArrayList<Section> singleCount = new ArrayList<Section>();
+        int totalBlocks = b.length;
+        this.registerdCourses = new Course[c.length];
+        this.blocks = new Block[b.length];
+
+        ArrayList<Lecture> singleCount = new ArrayList<Lecture>();
         for(int i = 0; i < c.length; i++) {
-            System.out.println(c[i]);
+            //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
             if(c[i].isRequired()) {
                 numRequired ++;
             }
             registerdCourses[i] = new Course(c[i]);
         }
-        
-        //Find the total number of bits required to represent based on the log of the total number of sections
-        int repBits = (int) Math.ceil(Utils.LogB(totalSections, 2));
-        this.sectionLen = repBits;
+
+        System.out.println("Num required = " + numRequired);
+
+        int repBits = calculateNameBits(totalSections, totalBlocks);
+
+        this.sectionLen = repBits + 2;
         int minCount = 0;
+
+        /*
+         * Loop through all the sections and generate an appropriate section structure to represent them
+         */
         for(int i = 0; i < c.length; i++) {
-            Section[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
+            Lecture[] instSections = this.registerdCourses[i].instantiate(minCount, repBits);
             for(int j = 0; j < instSections.length; j++) {
-                idSection.put(instSections[j].getID(), instSections[j]);
+                idEvent.put(instSections[j].getID(), (Event) instSections[j]);
             }
             //Determine if we have courses that only have a single section, as this warrants pre-entry analysis. 
             if(instSections.length == 1) {
@@ -76,16 +106,33 @@ public class Population {
             minCount+=c[i].getNumberOfSections();
         }
 
+        /*
+         * Loop through all the blocks and generate an appropriate block structure to represent them 
+         */
+        for(int i = 0; i < totalBlocks; i++) {
+            int[] id = Utils.numToBin(minCount++, repBits);
+            String sID = Constants.BLOCK + Utils.arrToString(id);
+            System.out.println("SID = " + sID);
+            this.blocks[i] = new Block(b[i], sID);
+            idEvent.put(sID, (Event) this.blocks[i]);
+        }
+
         if(singleCount.size() > 0) {
-            this.isSatisfiable = RequiredAnalyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Section[singleCount.size()]))) == 0;
+            this.isSatisfiable = analyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
             System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;
         }
     }
 
-    private int calculateScheduleSize(int size) {
-        if(size < this.maxScheduleSize) {
+    private int calculateNameBits(int courseLen, int blockLen) {
+        return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
+    }
+
+    private int calculateScheduleSize(int size, int prefered) {
+        if(prefered <= size && prefered < this.maxScheduleSize) {
+            return prefered;
+        } else if (prefered > size && size < this.maxScheduleSize) {
             return size;
         }
         return this.maxScheduleSize;
@@ -96,8 +143,8 @@ public class Population {
      * @return A schedule that contains sections that exist, but could contain duplicates or other issues. 
      */
     private Schedule generateSeed() {
-        Section[] x = new Section[this.scheduleSize];
-        Section[] mapValues = idSection.values().toArray(new Section[idSection.size()]);
+        Event[] x = new Event[this.scheduleSize];
+        Event[] mapValues = idEvent.values().toArray(new Event[idEvent.size()]);
         for(int i = 0; i < x.length; i++) {
             //Get a bunch of valid -- but random sections. 
             x[i] = mapValues[Utils.randInRange(r, 0, mapValues.length-1)];
@@ -114,28 +161,28 @@ public class Population {
             }
             return s2;
         }
-        boolean[][] gene1 = new boolean[s1.getSections().length][this.sectionLen];
+        boolean[][] gene1 = new boolean[s1.getEvents().length][this.sectionLen];
         boolean[][] gene2 = new boolean[gene1.length][this.sectionLen];
         boolean[][] gener = new boolean[gene1.length][this.sectionLen];
 
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < gene1.length; i++) {
 
-            if(s1.getSections()[i] == null) {
-                gene1[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(s1.getEvents()[i] == null) {
+                gene1[i] = Utils.stringToBoolArray(generate1s());//Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
-                gene1[i] = Utils.stringToBoolArray(s1.getSections()[i].getID());
+                gene1[i] = Utils.stringToBoolArray(s1.getEvents()[i].getID());
             } 
 
-            if(s2.getSections()[i] == null) {
-                gene2[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(s2.getEvents()[i] == null) {
+                gene2[i] = Utils.stringToBoolArray(generate1s());
             } else {
-                gene2[i] = Utils.stringToBoolArray(s2.getSections()[i].getID());
+                gene2[i] = Utils.stringToBoolArray(s2.getEvents()[i].getID());
             } 
 
             for(int j = 0; j < gene1[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
-                if(Utils.randInRange(r, 0, 1+(s1.getFitnessScore() * s2.getFitnessScore())) > Utils.randInRange(r, 0, 1+(s1.getFitnessScore()))) {
+                if(Utils.randInRange(r, 1, 100) > this.crossOverRate) {
                     if(s1.getFitnessScore() > s2.getFitnessScore()) {
                         gene2[i][j] = !gene2[i][j];
                     } else {
@@ -148,8 +195,6 @@ public class Population {
         //Generate cross-over intervals inspired by the fitness scores of the two 
         int betterSectionPtr;
         int upperBound;
-        RequiredAnalyzer.calculateIndividualRequiredScore(s1, true, this.scheduleSize);
-        RequiredAnalyzer.calculateIndividualRequiredScore(s2, true, this.scheduleSize);
         if(s1.getFitnessScore() > s2.getFitnessScore()) {
             betterSectionPtr = 1;//s2.getFitnessScore();
             upperBound = s2.getFitnessScore();
@@ -182,25 +227,35 @@ public class Population {
         }
 
         //Now, we must make a new Section
-        return new Schedule(idSection, gener);
+        return new Schedule(idEvent, gener);
+    }
+
+    private String generate1s() {
+        String result = "";
+        for(int i = 0; i < this.sectionLen; i++) {
+            result += "1";
+        }
+        return result;
     }
 
     private Schedule mutateSchedule(Schedule target) {
-        boolean[][] parent = new boolean[target.getSections().length][this.sectionLen];
+        //System.out.println("MUTATING!");
+        boolean[][] parent = new boolean[target.getEvents().length][this.sectionLen];
         boolean[][] mutated = new boolean[parent.length][this.sectionLen];
-        RequiredAnalyzer.calculateIndividualRequiredScore(target, true, scheduleSize);
+        analyzer.calculateIndividualRequiredScore(target, this.numRequired);
         //Decompose the schedules into boolean genes of each of their constituent sections
         for(int i = 0; i < parent.length; i++) {
             
-            if(target.getSections()[i] == null) {
-                parent[i] = Utils.stringToBoolArray(generateSeed().getSections()[0].getID());
+            if(target.getEvents()[i] == null) {
+                parent[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
-                parent[i] = Utils.stringToBoolArray(target.getSections()[i].getID());
+                parent[i] = Utils.stringToBoolArray(target.getEvents()[i].getID());
             } 
 
             for(int j = 0; j < parent[i].length; j++) {
                 //Under certain conditions, flip some bits before crossing over
                 if(Utils.randInRange(r, 0, 100) < this.mutationRate) {
+                    //System.out.println("Actually mutating!");
                     //System.out.println("Mutating!");
                     mutated[i][j] = !parent[i][j];
                 } else {
@@ -208,13 +263,24 @@ public class Population {
                 }
             }
         }
-        return new Schedule(idSection, mutated);
+        return new Schedule(idEvent, mutated);
     }
 
 
     public Schedule[] getBestSchedule() {
         if(!this.isSatisfiable) {
             return null;
+        }
+        
+        if(this.registerdCourses.length == 1) {
+            Schedule[] res = new Schedule[1];
+            Event[] resD = new Event[registerdCourses.length + blocks.length];
+            resD[0] = idEvent.get(Utils.arrToString(Utils.numToBin(0, sectionLen)));//this.registerdCourses[0];
+            for(int i = 0; i < blocks.length; i++) {
+                resD[i+1] = blocks[i]; 
+            }
+            res[0] = new Schedule(resD);
+            return res;
         }
 
         //Seed the fitness pool with a bunch of random values
@@ -223,14 +289,17 @@ public class Population {
             fitPool[i] = generateSeed();
         }
         //Calculate the fitness score of said starting population. 
-        q.calculateFitnessScores(fitPool, numRequired);
-        System.out.println("First score  = " + fitPool[0].getFitnessScore());
+        analyzer.calculateTotalFitnessScores(fitPool, numRequired);
+        //System.out.println("First score  = " + fitPool[0].getFitnessScore());
 
         //Sort the array based on the fitness scores
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            //System.out.println("\nNew Generation = " + iterationCount );
+            //System.out.println(iterationCount);
+            //System.out.println(iterationCount);
+            iterationCount++;
+                        //System.out.println("\nNew Generation = " + iterationCount );
             //Create a new array
             Schedule[] thisGen = new Schedule[this.generationSize];
             
@@ -255,69 +324,21 @@ public class Population {
                 thisGen[i] = this.crossOver(fitPool[rand1], fitPool[rand2]);
             }
 
-            if(iterationCount >2) {
-                int tangent = q.calculateTangent(iterationCount -2, iterationCount - 1);
-                //System.out.println("Tangent from previous two = " + tangent);
-                if(Math.abs(tangent) < 100) {
-                    for(int i = 0; i < thisGen.length; i++) {
-                        thisGen[i] = this.mutateSchedule(thisGen[i]);
-                    }
-                }
-            } else {
-                for(int i = 0; i < thisGen.length; i++) {
-                    thisGen[i] = this.mutateSchedule(thisGen[i]);
-                }
-            }
-
-            q.calculateFitnessScores(thisGen, numRequired);
+            analyzer.calculateTotalFitnessScores(thisGen, numRequired);
+            //System.out.println(thisGen[0].getRequiredScore());
             //System.out.println("Composite Score = " + thisGen[0].getFitnessScore());
             //Now, sort the array to make it easier to select the fittest and second fittest individual 
             Utils.sortScheduleArray(thisGen, 0, thisGen.length-1);
-            q.addScore(thisGen[0]);
+            analyzer.addScore(thisGen[0]);
             //Now, perform a roulette-wheel integration into the overall fitness pool
             Utils.mergeInto(thisGen, fitPool, r);
             Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
-
-            //Dump the contents of the current gen out 
-            /*for(int k = 0; k < fitPool[0].getSections().length; k++) {
-                if(fitPool[0].getSections()[k] != null) {
-                    System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + " " + fitPool[0].getInvalidCount() + " " + fitPool[0].getFitnessScore() + " " + fitPool[0].getOptionalScore() + " " + fitPool[0].getRequiredScore());
-                } else {
-                    System.out.println("NULL!");
-                }
-            }*/
-            iterationCount++;
         }
         System.out.println("\n\n===================");
         System.out.println("Found Optimal Solution After " + iterationCount + " Generations");
-        System.out.println("Courses:");
-        for(int k = 0; k < fitPool[0].getSections().length; k++) {
-            if(fitPool[0].getSections()[k] != null) {
-                System.out.println(fitPool[0].getSections()[k].getParent().getCourseName() + " " + fitPool[0].getSections()[k].getTime() + " " + fitPool[0].getSections()[k].getDuration() + Arrays.toString(fitPool[0].getSections()[k].getWeekDays()));
-            } else {
-                System.out.println("NULL!");
-            }
-        }
-
-        System.out.println(q.getOverallScores().toString());
         System.out.println("===================\n\n");
         //System.out.println("Convergence: " + q.mayHaveConverged());
-
-
-        FileWriter out;
-        //Print the scores out to a file
-        try {
-            out = new FileWriter("/Users/henrymayer-school/btime/output.txt");
-            Integer[] res = q.getOverallScores().toArray(new Integer[q.getOverallScores().size()]);
-            for(int i = 0; i < res.length; i++) {
-                out.write(res[i].intValue() + "\n");
-            }
-            out.close();
-
-        } catch (IOException e) {
-
-        }
-        return this.options;
+        return options;
     }
 
     private boolean shouldContinue(int currentIndex) {
@@ -331,55 +352,63 @@ public class Population {
         }
         if(currentIndex > 0 && currentIndex % QualityAnalyzer.numSimilarForConvergence == 0) {
             //this.sendStatusUpdate(currentIndex);
-            double convergneceScore = q.getRMSConvergence();
-            System.out.println("IN IF!");
+            double convergneceScore = analyzer.getRMSConvergence();
+            //System.out.println("IN IF!");
             if(convergneceScore > .5) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":5}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else if (convergneceScore > .1) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":10}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else if (convergneceScore > 5E-3f) {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":15}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             } else {
-                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":20}");
+                net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             }
-            System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
-            if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) {
-                System.out.println("Adding an option!!");
+            //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
+            if((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions && analyzer.getBestSchedule().getRequiredScore() == 0) {
+                //System.out.println("Adding an option!!");
                 if(this.numSatisfied > 0) {
                     /*if(q.getBestSchedule().equals(this.options[this.options.length - 1])) {
                         this.mutationRate = 50;
                         return true; 
                     }*/
 
-                    Schedule best = q.getBestSchedule();
+                    Schedule best = analyzer.getBestSchedule();
+                    if(best.getRequiredScore() > 0) {
+                        this.mutationRate = 90;
+                        this.waitGens = 0;
+                        return true;
+                    }
                     for(int j = 0; j < this.numSatisfied; j++) {
-                        System.out.println("LOOPING!");
-                        System.out.println(this.options[0].getSections()[0].getID());
-                        if(this.options[j].getSections()[0].getID().equals(best.getSections()[0].getID())) {
-                            System.out.println("Fatal Error!");
-                            this.mutationRate = 90;
-                            this.waitGens = 0;
-                            return true;
+                        //System.out.println("LOOPING!");
+                        //System.out.println(this.options[0].getEvents()[0].getID());
+                        Event[] optionsJ = Utils.sortSchedule(this.options[j]);
+                        Event[] bestJ = Utils.sortSchedule(best);
+                        boolean found = false;
+                        int index = 0;
+                        while(!found && index < bestJ.length) {
+                            if(!optionsJ[index].getID().equals(bestJ[index].getID())) {
+                                found = true;
+                            }
+                            index++;
                         }
-
-                        if(best.getRequiredScore() != 0) {
+                        if(!found) {
                             this.mutationRate = 90;
                             this.waitGens = 0;
                             return true;
                         }
                     }
                 }
-                options[this.numSatisfied] = q.getBestSchedule();
-                System.out.println(Arrays.toString(this.options));
+                options[this.numSatisfied] = analyzer.getBestSchedule();
+                //System.out.println(Arrays.toString(this.options));
                 this.numSatisfied++;
                 return true; 
             } else if (this.numSatisfied == this.numOptions){
-                System.out.println("STOPPING!");
-                System.out.println(this.numRequired);
-                System.out.println(this.numSatisfied);
+                //System.out.println("STOPPING!");
+                //System.out.println(this.numRequired);
+                //System.out.println(this.numSatisfied);
                 return false; 
             } else {
-                System.out.println("UWU");
+                //System.out.println("UWU");
                 return true; 
             }
         }

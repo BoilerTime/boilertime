@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
+import optimizer.constants.Build;
 
 public class Server {
     private ServerSocket sSocket;
     private boolean run;
     private int port;
+    private Scheduler scheduler; 
 
     public Server(int port) throws IOException {
         this.port = port;
@@ -18,13 +20,24 @@ public class Server {
     public void start() {
 
         this.run = true;
+        this.scheduler = new Scheduler();
         Logger.getLogger(getClass().getName()).info("Server is listening on port: " + port);
+        Logger.getLogger(getClass().getName()).info("This version built at: " + Build.buildV);
 
         try {
             while (run) {
                 Socket cs = sSocket.accept();
                 Logger.getLogger(getClass().getName()).info("New Client Connected! " + cs.getPort());
-                new Thread(new ScheduleClient(cs)).start(); // Put to a new thread.
+                //this.scheduler.
+                synchronized(scheduler) {
+                    this.scheduler.runClient(cs);
+                }
+                //Thread x = new Thread(new ScheduleClient(cs)); // Put to a new thread.
+                //x.start();
+                //System.out.println("Started a new thread on " + cs.getPort());
+                //x.interrupt();
+               
+                //System.out.println("IS interupted?" + x.isInterrupted());
             }
         } catch (IOException e) {
             Logger.getLogger(getClass().getName()).severe(e.getMessage());

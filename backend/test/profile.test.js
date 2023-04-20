@@ -25,7 +25,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test Profile", () => {
+describe("POST Test Profile Sprint 3 User Story 16 (Privacy and Pairs Permissions)", () => {
   // Test that the status code is returned as 200
   it("API Call Returns Status 200", (done) => {
     chai.request(app)
@@ -58,11 +58,14 @@ describe("POST Test Profile", () => {
   });
 
   const profile = {
+    email: "boilertimepurdue@gmail.com",
     grad_month: "Janurary",
     grad_year: 2024,
     firstname: "Me",
     lastname: "You",
     is_grad_student: false,
+    privacy: false,
+    pairs: true
   }
 
   it("API Call To Update Profile", (done) => {

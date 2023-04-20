@@ -264,7 +264,7 @@ var classroomRatings = ref([3]);
 var taRatings = ref([3]);
 
 async function getCourseRatings() {
-    axios.post("http://localhost:3001/api/get/user_ratings/courses", {
+    axios.post("https://api.boilerti.me/api/get/user_ratings/courses", {
         user_id: userstore.user_id,
     })
         .then(function (response) {
@@ -279,7 +279,7 @@ async function getCourseRatings() {
 }
 
 async function getClassroomRatings() {
-    axios.post("http://localhost:3001/api/get/user_ratings/classroom", {
+    axios.post("https://api.boilerti.me/api/get/user_ratings/classroom", {
         user_id: userstore.user_id,
     })
         .then(function (response) {
@@ -291,7 +291,7 @@ async function getClassroomRatings() {
 }
 
 async function getTaRatings() {
-    axios.post("http://localhost:3001/api/get/user_ratings/tas", {
+    axios.post("https://api.boilerti.me/api/get/user_ratings/tas", {
         user_id: userstore.user_id,
     })
         .then(function (response) {
@@ -304,7 +304,7 @@ async function getTaRatings() {
 
 async function flag() {
     if (actualval == enterval.value) {
-        await axios.post("http://localhost:3001/api/add/flag", {
+        await axios.post("https://api.boilerti.me/api/add/flag", {
             user_id: userstore.user_id,
             type: reviewtype.value,
             name: name.value
@@ -321,7 +321,7 @@ async function flag() {
 }
 
 async function getName() {
-    axios.post("http://localhost:3001/api/get/profile/", {
+    axios.post("https://api.boilerti.me/api/get/profile/", {
         user_id: userstore.user_id
     })
         .then(function (response) {

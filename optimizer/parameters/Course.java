@@ -1,7 +1,9 @@
-package optimizer.algorithm;
+package optimizer.parameters;
 import java.util.HashMap;
 
 import optimizer.Utils;
+import optimizer.algorithm.Events.Lecture;
+import optimizer.constants.Constants;
 
 public class Course {
     private final String courseName; 
@@ -9,9 +11,9 @@ public class Course {
     private double[] ratingsArr;
     private final boolean required;
     private boolean isRunnable;
-    private Section[] sections;
+    private Lecture[] sections;
     private final double maxRating; 
-    private HashMap<String, Section> idSection; 
+    private HashMap<String, Lecture> idSection; 
     private String[] sectionIds;
 
 
@@ -19,8 +21,8 @@ public class Course {
         this.courseName = info.getCourseName();
         this.required = info.isRequired();
         this.template = info;
-        this.sections = new Section[info.getCourseTimes().length];
-        this.idSection = new HashMap<String, Section>();
+        this.sections = new Lecture[info.getCourseTimes().length];
+        this.idSection = new HashMap<String, Lecture>();
         this.isRunnable = false;
         this.ratingsArr = info.getRatings();
         this.maxRating = this.calculateMaxRating();
@@ -33,7 +35,7 @@ public class Course {
      * @param overallSize The total number of bits that are required to represent each section {ceil (log)_2} of total number of sections
      * @return An array of sections that were just created. 
      */
-    public Section[] instantiate(int minIndex, int length) {
+    public Lecture[] instantiate(int minIndex, int length) {
         if(isRunnable) {
             return sections;
         }
@@ -42,8 +44,8 @@ public class Course {
         //int length = (int) Utils.LogB(overallSize, 2);
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
-            String sid = Utils.arrToString(id);
-            sections[i] = new Section(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
+            String sid = Constants.LECTURE + Utils.arrToString(id);
+            sections[i] = new Lecture(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
             idSection.put(sid, sections[i]);
         }
         return sections;

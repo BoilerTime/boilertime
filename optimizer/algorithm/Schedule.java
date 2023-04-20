@@ -1,44 +1,53 @@
 package optimizer.algorithm;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import optimizer.Utils;
+import optimizer.algorithm.Events.*;
+import optimizer.constants.EventType;
 
 public class Schedule {
-    private final Section[] sections;
+    private final Event[] events;
+    private final Lecture[] lectures;
+    private final Block[] blocks;
     private int invalidCount; 
     private int requiredFitnessScore;
     private int optionalFitnessScore;
     private boolean hasRequiredScore;
     private boolean hasOptionalScore;
 
-    public Schedule(Section[] s) {
-        this.sections = s;
+    public Schedule(Event[] s) {
+        this.events = s;
+        this.lectures = findLectures();
+        this.blocks = findBlocks();
         this.invalidCount = 0;
         this.hasRequiredScore = false;
         this.hasOptionalScore = false;
     }
 
-    public Schedule(HashMap<String, Section> idSection, boolean[][] result) {
-        this.sections = this.configure(idSection, result);
+    public Schedule(HashMap<String, Event> idEvent, boolean[][] result) {
+        this.events = this.configure(idEvent, result);
+        this.lectures = findLectures();
+        this.blocks = findBlocks();
         this.hasRequiredScore = false; 
         this.hasOptionalScore = false;
     } 
 
-    public Section[] getSections() {
-        return this.sections;
+    public Event[] getEvents() {
+        return this.events;
     }
 
     public int getInvalidCount() {
         return this.invalidCount;
     }
 
-    private Section[] configure(HashMap<String, Section> idSection, boolean[][] result) {
-        Section[] results = new Section[result.length];
+    private Event[] configure(HashMap<String, Event> idEvent, boolean[][] result) {
+        Event[] results = new Event[result.length];
         this.invalidCount = 0;
         for(int i = 0; i < result.length; i++) {
             String s = Utils.boolArrayToString(result[i]);
-            if(idSection.containsKey(s)) {
-                results[i] = idSection.get(s);
+            if(idEvent.containsKey(s)) {
+                results[i] = idEvent.get(s);
             } else {
                 results[i] = null;
                 this.invalidCount ++;
@@ -79,5 +88,33 @@ public class Schedule {
             return this.requiredFitnessScore + this.optionalFitnessScore;
         }
         return -1;
+    }
+
+    private Lecture[] findLectures() {
+        ArrayList<Lecture> lectures = new ArrayList<Lecture>();
+        for(int i = 0; i < events.length; i++) {
+            if(this.events[i] != null && Utils.getEventType(this.events[i].getID()) == EventType.LECTURE) {
+                lectures.add((Lecture) this.events[i]);
+            }
+        }
+        return lectures.toArray(new Lecture[lectures.size()]);
+    }
+
+    public Lecture[] getLectures() {
+        return this.lectures;
+    }
+
+    private Block[] findBlocks() {
+        ArrayList<Block> blocks = new ArrayList<Block>();
+        for(int i = 0; i < events.length; i++) {
+            if(this.events[i] != null && Utils.getEventType(this.events[i].getID()) == EventType.BLOCK) {
+                blocks.add((Block) this.events[i]);
+            }
+        }
+        return blocks.toArray(new Block[blocks.size()]);
+    }
+
+    public Block[] getBlocks() {
+        return this.blocks;
     }
 }
