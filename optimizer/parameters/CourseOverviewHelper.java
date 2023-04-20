@@ -103,7 +103,7 @@ public class CourseOverviewHelper {
         if(this.weekDaysPtr == -1) {
             return -1; 
         }
-        weekDays[weekDaysPtr++] = Utils.strListToDayList(days);
+        weekDays[weekDaysPtr++] = Utils.strListToDayList(days, false);
         return 1;
     }
 

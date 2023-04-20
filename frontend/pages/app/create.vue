@@ -104,6 +104,10 @@
             <button @click="submit" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
               Submit
             </button>
+
+            <button @click="blockConfig = true" class="float-middle p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md">
+              Block Time
+            </button>
           </div>
         </div>
       </div>
@@ -139,7 +143,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              
+
               class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl dark:bg-neutral-700 transition-all"
             >
               <DialogTitle
@@ -235,7 +239,7 @@
                 class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
                 <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
                   <div>
-                   <span class="text-sm text-black" 
+                   <span class="text-sm text-black"
                       >{{ schedule }} <br/>
                     </span><br/>
                   </div>
@@ -341,9 +345,142 @@
             </DialogPanel>
           </TransitionChild>
         </div>
-        
       </div>
-      
+    </Dialog>
+  </TransitionRoot>
+
+
+  <TransitionRoot :show="blockConfig" as="template">
+    <Dialog as="div" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
+      </TransitionChild>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-full p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md p-6 overflow-hidden text-left align-middle bg-white shadow-xl transform rounded-2xl transition-all"
+            >
+              <DialogTitle
+                as="h1"
+                class="text-xl font-medium text-center text-gray-900 leading-6"
+              >
+                Your <span class="text-yellow-500">Blocked Times</span>
+
+
+              </DialogTitle>
+              <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <p class="text-sm text-gray-500 text-left">
+                  Have a meeting? Need some time off? Let's find times that <span class="text-yellow-500">work for you</span>
+                </p>
+              </div>
+              <div v-for="(entry, index) in blockArray" style=" transition: width 2s;">
+                  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <label><b>Block {{index + 1 }}: {{entry.name}}</b>
+                      <button type="button" class="float-right text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500" @click="deleteBlock(index)"><TrashIcon class="w-4 h-4" /><span class="sr-only">Delete</span></button>
+                    </label>
+                    <p>Start Time: {{entry.start}}</p>
+                    <p>Duration: {{entry.duration}}</p>
+
+                    <br/>
+                    <div class="flex items-left justify-left">
+                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl border-4">
+                        <div>
+                          <input type="radio" :id="'Monday'+index" class="peer hidden" :checked="entry.daysOfWeek[0] == true" v-on:click="entry.daysOfWeek[0] = !entry.daysOfWeek[0]"/>
+                          <label :for="'Monday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Tuesday'+index" class="peer hidden" :checked="entry.daysOfWeek[1] == true" v-on:click="resetArray(index, 1)"/>
+                          <label :for="'Tuesday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">T</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Wednesday'+index" class="peer hidden" :checked="entry.daysOfWeek[2] == true" v-on:click="resetArray(index, 2)"/>
+                          <label :for="'Wednesday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">W</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Thursday'+index" class="peer hidden" :checked="entry.daysOfWeek[3] == true" v-on:click="resetArray(index, 3)"/>
+                          <label :for="'Thursday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">R</label>
+                        </div>
+                        <div>
+                          <input type="radio" :id="'Friday'+index" class="peer hidden" :checked="entry.daysOfWeek[4] == true" v-on:click="resetArray(index, 4)"/>
+                          <label :for="'Friday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">F</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br/>
+              </div>
+
+              <div class="mb-4">
+                <button @click="showSectionConfig()" class="w-full text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800">{{ blockOption }}</button>
+                <br/>
+              </div>
+              <div v-if="isAddingBlock">
+                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off" id="blockInputForm">
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
+                      Block Name
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="block_name" type="text" placeholder="Block Name">
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                      Start Time
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" v-model="startTime" name="Start Time" required>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
+                      End Time
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" v-model="endTime" name="End Time" required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Days of Week
+                    </label>
+                  <div class="flex items-center justify-center" style="Display: block;">
+                        <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
+                          <div v-for="(days, index) in daysPref">
+                            <input type="radio" :id="days" class="peer hidden" :checked="dayPrefActive[index]" v-on:click="dayPrefActive[index] = !dayPrefActive[index]"/>
+                            <label :for="days" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">{{days}}</label>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="mb-4">
+                    <button class="float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" @click="saveBlock()"> Save </button>
+                  </div>
+                </form>
+              </div>
+              <div class="mb-4">
+                <button @click="closeBlocks()" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md" style="align: text-right;" >
+                Close
+              </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
     </Dialog>
   </TransitionRoot>
 
@@ -430,7 +567,7 @@
  * Status Possibilities
  * 1) Getting data for schedule from backend
  * 2) Sending schedule data to algorithm
- * 3) Waiting in line for optimization 
+ * 3) Waiting in line for optimization
  * 4) Optimizing
  */
 import { ref, computed, watchEffect, watch, reactive } from 'vue'
@@ -438,7 +575,6 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
 import ProgressBar from "../../components/ProgressBar.vue";
-const { $toast } = useNuxtApp()
 import { VueDraggableNext as draggable2 } from 'vue-draggable-next'
 import draggable from 'vuedraggable'
 
@@ -450,9 +586,10 @@ import {
   DialogTitle,
 } from '@headlessui/vue'
 
-import { BookmarkIcon } from "@heroicons/vue/24/outline"
-import { use } from 'h3';
-const { $socket } = useNuxtApp()
+import { BookmarkIcon, TrashIcon } from "@heroicons/vue/24/outline"
+const { $toast } = useNuxtApp()
+
+var connection;
 
 const data = ref([])
 const optionalData = ref([])
@@ -473,11 +610,24 @@ const posInLine = ref('');
 const totalPos = ref('');
 const multiLoader = ref(false)
 const displayTips = ref(false)
+const blockConfig = ref(false)
 const mins = ref('');
 const courseCount = ref('5');
 var trending_classes = ref([]);
 var together_classes = ref([]);
-var configured = false; 
+var configured = false;
+
+
+/*
+  block configs
+*/
+const isAddingBlock = ref(false);
+const blockOption = ref('Add Block');
+const startTime = ref('')
+const endTime = ref('')
+const block_name = ref('');
+const blockInputForm = ref();
+
 var totalSum;
 
 function closeModal() {
@@ -487,7 +637,7 @@ function openModal() {
   isOpen.value = true
 }
 
-var courseList; 
+var courseList;
 var resultsList = [];
 
 var accessToken = userStore.accessToken;
@@ -559,6 +709,7 @@ onBeforeMount(() => {
       time_pref.value = response?.data?.time || "none"
       configured = response?.data?.configured || false;
       configureState(response.data.preference_list);
+      configureBlocks(response.data.blocked_times)
     })
     axios.post('https://api.boilerti.me/api/getbookmarks', {
       user_id: userStore.user_id,
@@ -596,12 +747,14 @@ const filteredResults = computed(() => {
 })
 
 onMounted(() => {
-  $socket.onopen = () => {
+
+  connection = new WebSocket("wss://ws.boilerti.me");
+  connection.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
-    //algorithmProgress.show = true
   }
-  $socket.onmessage = ((data) => {
+
+  connection.onmessage = ((data) => {
     console.log("data", (data.data))
     try {
       let response = JSON.parse(data.data);
@@ -618,18 +771,19 @@ onMounted(() => {
           $toast.error("No Schedule Found!! Please try again ", {
             timeout: 5000,
           });
-          
+
         }
     } catch (e) {
       console.log("Wasnt JSON!!" + e)
     }
-})
+  })
 
-  $socket.onclose = function () {
+  connection.onclose = function () {
     console.log("disconnected")
   }
-
 })
+
+
 
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
@@ -640,42 +794,7 @@ function addToSelected(item) {
       selectedRequiredCourses.value.push(item)
       isSearchActive.value = false
       searchTerm.value = ''
-      if (!isAGuest.value) {
-          console.log(selectedRequiredCourses.value);
-          axios.post('https://api.boilerti.me/api/saveschedule', {
-            user_id: userStore.user_id,
-            required_classes: selectedRequiredCourses.value,
-            optional_classes: selectedOptionalCourses.value, 
-            time: getTimePref(),
-            preference_list: getPreferenceList(),
-            num_courses: getNumCourses(),
-            configured: configured,
-            blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-          }, config).then((response) => {
-            if (response.data["accessToken"] != undefined) {
-              userStore.user = {
-                accessToken: response.data["accessToken"],
-                //refreshToken: response.data["refreshToken"],
-                user_id: user_id
-              }
-              accessToken = userStore.accessToken;
-              config.headers['authorization'] = `Bearer ${accessToken}`;
-            }
-          })
-      } else {
-        axios.post('https://api.boilerti.me/api/saveschedule/guest', {
-          user_id: userStore.user_id,
-            required_classes: selectedRequiredCourses.value,
-            optional_classes: selectedOptionalCourses.value, 
-            time: getTimePref(),
-            preference_list: getPreferenceList(),
-            num_courses: getNumCourses(),
-            configured: configured,
-            blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-        }).then((response) => {
-          guestStore.guest.schedule = response.data.schedule;
-        });
-    } 
+      saveScheduleToDB();
   } else {
     if (selectedRequiredCourses.value.length >= 5) {
       alert('You can only select 5 required courses')
@@ -720,41 +839,7 @@ function addToSelectedOptional(item) {
     selectedOptionalCourses.value.push(item)
     isOptionalSearchActive.value = false
     optionalSearchTerm.value = ''
-    if(!isAGuest.value) {
-        axios.post('https://api.boilerti.me/api/saveschedule', {
-          user_id: userStore.user_id,
-          required_classes: selectedRequiredCourses.value,
-          optional_classes: selectedOptionalCourses.value,
-          time: getTimePref(),
-          preference_list: getPreferenceList(),
-          num_courses: getNumCourses(),
-          configured: configured,
-          blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-        }, config).then((response) => {
-          if (response.data["accessToken"] != undefined) {
-            userStore.user = {
-              accessToken: response.data["accessToken"],
-              //refreshToken: response.data["refreshToken"],
-              user_id: user_id
-            }
-            accessToken = userStore.accessToken;
-            config.headers['authorization'] = `Bearer ${accessToken}`;
-          }
-        })
-    } else {
-      axios.post('https://api.boilerti.me/api/saveschedule/guest', {
-        user_id: userStore.user_id,
-          required_classes: selectedRequiredCourses.value,
-          optional_classes: selectedOptionalCourses.value, 
-          time: getTimePref(),
-          preference_list: getPreferenceList(),
-          num_courses: getNumCourses(),
-          configured: configured,
-          blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-      }).then((response) => {
-        guestStore.guest.schedule = response.data.schedule;
-      });
-    }
+    saveScheduleToDB();
   } else {
     if (selectedOptionalCourses.value.length > 5) {
       alert('You can only select 5 optional courses')
@@ -769,84 +854,12 @@ function addToSelectedOptional(item) {
 
 function removeFromSelected(index) {
   selectedRequiredCourses.value.splice(index, 1)
-  if(!isAGuest.value) {
-    axios.post('https://api.boilerti.me/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: getTimePref(),
-      preference_list: getPreferenceList(),
-      num_courses: getNumCourses(),
-      configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
-  }
-  else {
-    selectedRequiredCourses.value.splice(index, 1)
-    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
-      user_id: userStore.user_id,
-        required_classes: selectedRequiredCourses.value,
-        optional_classes: selectedOptionalCourses.value, 
-        time: getTimePref(),
-        preference_list: getPreferenceList(),
-        num_courses: getNumCourses(),
-        configured: configured,
-        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }).then((response) => {
-      guestStore.guest.schedule = response.data.schedule;
-    });
-  }
+  saveScheduleToDB()
 }
 
 function removeOptional(index) {
-  selectedOptionalCourses.value.splice(index, 1)
-  if(!isAGuest.value) {
-    axios.post('https://api.boilerti.me/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: getTimePref(),
-      preference_list: getPreferenceList(),
-      num_courses: getNumCourses(),
-      configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
-  } 
-  else {
-    selectedOptionalCourses.value.splice(index, 1)
-    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
-      user_id: userStore.user_id,
-        required_classes: selectedRequiredCourses.value,
-        optional_classes: selectedOptionalCourses.value, 
-        time: getTimePref(),
-        preference_list: getPreferenceList(),
-        num_courses: getNumCourses(),
-        configured: configured,
-        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }).then((response) => {
-      guestStore.guest.schedule = response.data.schedule;
-    });
-  }
+  selectedOptionalCourses.value.splice(index, 1);
+  saveScheduleToDB();
 }
 
 function removeFromBookmarked(index) {
@@ -899,7 +912,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
       })
     }
     else {
-      guestStore.guest.bookmarked_classes = newVal; 
+      guestStore.guest.bookmarked_classes = newVal;
     }
   }
   if (newVal.length < oldVal.length) {
@@ -923,11 +936,11 @@ watch(bookmarked_classes, (newVal, oldVal) => {
 })
 
 watch(selectedRequiredCourses, (newVal, oldVal) => {
-  
+
 })
 
 watch(selectedOptionalCourses, (newVal, oldVal) => {
-  
+
 })
 
 var isAGuest = ref(true)
@@ -973,7 +986,7 @@ function submit() {
       preference_list: getPreferenceList(),
       num_courses: getNumCourses(),
       configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+      blocked_times: calculateOutgoingArray()//[{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule, response.data.blocked_times, response.data);
       courseList = response.data.schedule;
@@ -996,57 +1009,60 @@ function submit() {
   }
   console.log("List: ")
 
-  
+
 }
 
 function sendToOptimizer(courses, blocks, configurations) {
-  if($socket.readyState != $socket.OPEN) {
+  if(connection.readyState != connection.OPEN) {
     $toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
-          timeout: 5000
+          timeout: 5000,
         });
   }
   //We first need to send them number of classes we will be optimzing by
-  $socket.send(courses.length)
-  $socket.send(blocks.length);
+  connection.send(courses.length)
+  connection.send(blocks.length);
   //Next, we send the time of day preferences
-  
+
   console.log(getPreferenceList())
-  $socket.send(getPreferenceList().toString());
-  $socket.send(getTimePref());
-  $socket.send(getNumCourses());
+  connection.send(getPreferenceList().toString());
+  connection.send(getTimePref());
+  connection.send(getNumCourses());
   /*
     * Take care of the courses that the user has entered
   */
   for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
-    $socket.send(courses[i].name)
+    connection.send(courses[i].name)
     //Next, we can send the number of sections
-    $socket.send(courses[i].isRequired)
+    connection.send(courses[i].isRequired)
 
-    $socket.send(courses[i].startTimes.length);
+    connection.send(courses[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < courses[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(fixTime(courses[i].startTimes[j]));
+      connection.send(fixTime(courses[i].startTimes[j]));
       //Durations
-      $socket.send(courses[i].durations[j]);
-      //Week days 
+      connection.send(courses[i].durations[j]);
+      //Week days
       console.log(courses[i].daysOfWeek[j]);
-      $socket.send(courses[i].daysOfWeek[j]);
+      connection.send(courses[i].daysOfWeek[j]);
       //RMP
-      $socket.send(courses[i].rmp[j]);
+      connection.send(courses[i].rmp[j]);
       //Section ID
-      $socket.send(courses[i].sectionIDs[j]);
+      connection.send(courses[i].sectionIDs[j]);
     }
   }
   /*
     * Take care of the blocks that the user has entered
   */
+  console.log("UWU")
+  console.log(blocks)
   for(let i = 0; i < blocks.length; i++) {
-    $socket.send(blocks[i].name);
-    $socket.send(blocks[i].start_time);
-    $socket.send(blocks[i].duration);
-    $socket.send(blocks[i].days_of_week);
+    let time = blocks[i].start_time.split(":");
+    connection.send(blocks[i].name);
+    connection.send(time[0]+""+time[1]);
+    connection.send(blocks[i].duration);
+    connection.send(blocks[i].days_of_week.toString());
   }
 }
 
@@ -1062,7 +1078,7 @@ function parseCoursesResponse(output) {
   console.log(data)
   console.log(blocks)
   for(let i = 0; i < data.length; i++) {
-    
+
     //let thisFormat = [];
     let thisFormat = "";
     for(let j = 0; j < data[i].length; j++) {
@@ -1082,7 +1098,7 @@ function parseCoursesResponse(output) {
       }
       thisFormat += (string)
     }
-    if(blocks[i].length > 0) {
+    if(blocks.length > 0 && blocks[i].length > 0) {
       thisFormat += ". Time off: "
       for(let j = 0; j < blocks[i].length; j++) {
         let string = "";
@@ -1094,7 +1110,7 @@ function parseCoursesResponse(output) {
         string+= tempForm;
         console.log(data[i][j]);
         string = string.replace("block_name", blocks[i][j].blockName);
-        string = string.replace("block_time", fto2(blocks[i][j].blockStarTime));
+        string = string.replace("block_time", fto2(blocks[i][j].blockStartTime));
         string = string.replace("block_duration", blocks[i][j].blockDuration);
         string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
         if(j != blocks[i].length - 1) {
@@ -1108,7 +1124,7 @@ function parseCoursesResponse(output) {
 
   schedule.value = userOutput;
   console.log("Temp Form = " + userOutput);
-  
+
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
   for(let j = 0; j < data.length; j++) {
@@ -1128,10 +1144,14 @@ function parseCoursesResponse(output) {
       thisFormat.userSections.meetings.push(data[j][i].sectionId);
       serverOutput.schedule.push(thisFormat)
     }
+    if(blocks.length == 0) {
+      resultsList.push(serverOutput);
+      continue;
+    }
     for(let i = 0; i < blocks[j].length; i++) {
       let thisFormat = JSON.parse(JSON.stringify(blockFormat));
       thisFormat.name = blocks[j][i].blockName;
-      thisFormat.start_time = blocks[j][i].blockStarTime;
+      thisFormat.start_time = padTime(blocks[j][i].blockStartTime);
       thisFormat.duration = blocks[j][i].blockDuration;
       thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
       console.log(thisFormat)
@@ -1141,7 +1161,7 @@ function parseCoursesResponse(output) {
   }
   console.log("DATA = ")
   console.log(resultsList);
-} 
+}
 
 
 function findCourse(target) {
@@ -1196,7 +1216,7 @@ function fto2(time) {
       hours = hours - 12;
     }
     console.log(hours)
-  
+
     return hours + ":" + minutes + amPM;
   }
 }
@@ -1219,7 +1239,7 @@ function fixTime(time) {
 }
 
 function waitingForData() {
-  const messages = ["Getting Course Data", "Talking to Sever", "Getting Schedules", "Loading Options"]; 
+  const messages = ["Getting Course Data", "Talking to Server", "Getting Schedules", "Loading Options"];
   status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
   algorithmProgress.value = false;
   inLine.value = false;
@@ -1241,7 +1261,7 @@ function inQueue(position, size) {
 function optimizing(progress) {
   const messages = ["Optimizing", "Loading Perfection", "Generating Schedule", "Maximizing Schedule"];
   if(!algorithmProgress.value)
-    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data" 
+    status.value = messages[randInt(messages.length - 1)];//"Getting Course Data"
 
   algorithmProgress.value = true;
   inLine.value = false;
@@ -1314,41 +1334,7 @@ function hidePreferences() {
   console.log(getTimePref())
   isPreferencesOpen.value = false;
   configured = true;
-  if(!isAGuest.value) {
-    axios.post('https://api.boilerti.me/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: getTimePref(),
-      preference_list: getPreferenceList(),
-      num_courses: getNumCourses(),
-      configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
-  } else {
-    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
-      user_id: userStore.user_id,
-        required_classes: selectedRequiredCourses.value,
-        optional_classes: selectedOptionalCourses.value, 
-        time: getTimePref(),
-        preference_list: getPreferenceList(),
-        num_courses: getNumCourses(),
-        configured: configured,
-        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }).then((response) => {
-      guestStore.guest.schedule = response.data.schedule;
-    });
-  }
+  saveScheduleToDB();
 }
 
 function getTimePref() {
@@ -1376,7 +1362,245 @@ function configureState(data) {
     }
     state.list = temp;
   } catch(e) {
-    
+
+  }
+}
+
+const blockArray = ref([]);
+
+const daysPref = ref(
+  ["M", "T", "W", "R", "F"]
+)
+
+const daysOfWeekFull = ["Monday", "Tuesday", "Wednesday", 'Thursday', "Friday"];
+
+const dayPrefActive = ref(
+  [false, false, false, false, false]
+)
+
+
+function resetArray(index, specIndex) {
+  console.log("Called!!" + index + " " + specIndex);
+  console.log(blockArray.value[index].daysOfWeek);
+  blockArray.value[index].daysOfWeek[specIndex] = !blockArray.value[index].daysOfWeek[specIndex];
+}
+
+
+function showSectionConfig() {
+  if(isAddingBlock.value == false && blockArray.value.length < 5) {
+    isAddingBlock.value = true;
+    blockOption.value = "Hide"
+  } else if (isAddingBlock.value == true) {
+    isAddingBlock.value = false;
+    blockOption.value = "Add Block"
+  } else {
+    $toast.error("You can't add anymore blocks!", {
+            timeout: 5000,
+    });
+  }
+}
+
+function saveBlock() {
+
+  let starting = startTime.value;
+  let ending = endTime.value;
+  if(starting == "" || ending == "") {
+    $toast.error("You haven't configured times yet!", {
+            timeout: 5000,
+    });
+    return;
+  }
+  let startingSplit = starting.split(":");
+  let endingSplit = ending.split(":")
+
+  let startingHour = parseInt(startingSplit[0]);
+  let endingHour = parseInt(endingSplit[0]);
+
+  let startingMinute = parseInt(startingSplit[1]);
+  let endingMinute = parseInt(endingSplit[1]);
+
+  if(startingHour > endingHour) {
+    $toast.error("You can't start after you end!", {
+            timeout: 5000,
+    });
+    return;
+  } else if(startingHour == endingHour) {
+      if(startingMinute > endingMinute) {
+        $toast.error("You can't start after you end!", {
+              timeout: 5000,
+      });
+      return;
+    }
+  }
+
+  if(!block_name.value || /^\s*$/.test(block_name.value)) {
+    $toast.error("You need to enter a name for your block!", {
+              timeout: 5000,
+      });
+      return;
+  }
+
+  //Convert date boolean to array
+  let daysWeek = [];
+  for(let i = 0; i < dayPrefActive.value.length; i++) {
+    if(dayPrefActive.value[i]) {
+      daysWeek.push(daysOfWeekFull[i]);
+    }
+  }
+  if(daysWeek.length == 0) {
+    $toast.error("You need to enter some days of the week!", {
+              timeout: 5000,
+      });
+      return;
+  }
+  console.log(daysWeek);
+
+  //We won all the conditions, now we just need to save to the list
+  const format = {
+    name: block_name.value,
+    start: startingHour + ":" + startingMinute,
+    duration: calculateDuration(startingHour + ":" + startingMinute, endingHour + ":" + endingMinute,),
+    daysOfWeek: dayPrefActive.value
+  }
+  blockArray.value.push(format);
+
+  //Clear all the form values out then close the form
+  startTime.value = "";
+  endTime.value = "";
+  block_name.value = "";
+  dayPrefActive.value = [false, false, false, false, false];
+  showSectionConfig();
+  calculateOutgoingArray();
+  saveScheduleToDB();
+}
+
+function deleteBlock(index) {
+  console.log(index)
+  blockArray.value.splice(index, 1);
+  console.log(blockArray.value);
+  saveScheduleToDB();
+}
+
+function calculateOutgoingArray() {
+  let responseArray = [];
+  for(let i = 0; i < blockArray.value.length; i++) {
+    let time = blockArray.value[i].start.split(":")
+    console.log("Outing time: " + time[0] + ""+ time[1]);
+    let template = {
+      start_time: padTime(blockArray.value[i].start),
+      name: blockArray.value[i].name,
+      days_of_week: [],
+      duration: blockArray.value[i].duration//calculateDuration(blockArray.value[i].start, blockArray.value[i].end)
+    }
+    for(let j = 0; j < blockArray.value[i].daysOfWeek.length; j++) {
+      if(blockArray.value[i].daysOfWeek[j]) {
+        template.days_of_week.push(daysOfWeekFull[j]);
+      }
+    }
+    responseArray.push(template)
+  }
+  console.log(responseArray);
+  return responseArray
+}
+
+function padTime(time) {
+  for(let i = 0; i < 4-time.length; i++) {
+    time = "0" + time;
+  }
+  console.log(time)
+  return time;
+}
+
+function calculateDuration(startTime, endTime) {
+  let startingSplit = startTime.split(":");
+  let endingSplit = endTime.split(":")
+
+  let startingHour = parseInt(startingSplit[0]);
+  let endingHour = parseInt(endingSplit[0]);
+
+  let startingMinute = parseInt(startingSplit[1]);
+  let endingMinute = parseInt(endingSplit[1]);
+
+
+  let startingTimeMins = 60*startingHour + startingMinute;
+  let endingTimeMins = 60*endingHour + endingMinute;
+  return endingTimeMins - startingTimeMins;
+}
+
+function saveScheduleToDB() {
+  console.log({
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      configured: configured,
+      blocked_times: calculateOutgoingArray()})
+  if(!isAGuest.value) {
+    axios.post('https://api.boilerti.me/api/saveschedule', {
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      configured: configured,
+      blocked_times: calculateOutgoingArray()
+    }, config).then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id
+        }
+        accessToken = userStore.accessToken;
+        config.headers['authorization'] = `Bearer ${accessToken}`;
+      }
+    })
+  } else {
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
+      user_id: userStore.user_id,
+        required_classes: selectedRequiredCourses.value,
+        optional_classes: selectedOptionalCourses.value,
+        time: getTimePref(),
+        preference_list: getPreferenceList(),
+        num_courses: getNumCourses(),
+        configured: configured,
+        blocked_times: calculateOutgoingArray()
+    }).then((response) => {
+      guestStore.guest.schedule = response.data.schedule;
+    });
+  }
+}
+
+function closeBlocks() {
+  saveScheduleToDB();
+  blockConfig.value = false;
+}
+
+function configureBlocks(blockData) {
+  console.log("CALLED TO CONFIGURE!!");
+  console.log(blockData);
+  for(let i = 0; i < blockData.length; i++) {
+    console.log(blockData[i].startTime);
+    let format = {
+      name: blockData[i].name,
+      start: blockData[i].start_time,
+      duration: blockData[i].duration,
+      daysOfWeek: []
+    }
+
+    for(let j  = 0; j < daysOfWeekFull.length; j++) {
+      console.log(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]))
+      if(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]).length > 0) {
+        format.daysOfWeek.push(true);
+      } else {
+        format.daysOfWeek.push(false);
+      }
+    }
+    console.log(format.daysOfWeek)
+    blockArray.value.push(format);
   }
 }
 </script>
