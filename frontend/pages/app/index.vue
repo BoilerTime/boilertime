@@ -720,7 +720,7 @@ async function navigate(selected, type) {
       advanced_result.value = []
       isDataLoaded.value = true;
     }
-    axios.post('http://localhost:3001/api/getoverall_gpa', {
+    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
       prof_name: result.value
     })
       .then(response => {
