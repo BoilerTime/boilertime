@@ -64,12 +64,14 @@ async function addRating(user_id, course, prequisiteStrictness, pace, depth, exp
 async function editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   const userRatings = await courseUserRatings.doc(user_id).collection(course).doc(user_id).get();
+  console.log(userRatings.exists);
   var rating = [];
   rating[0] = prequisiteStrictness;
   rating[1] = pace;
   rating[2] = depth;
   var updated_average = []
-  userRatings.forEach(async doc => {
+  if (userRatings.exists) {
+    const doc = await userRatings.data();
     courseRating = await courseRatings.doc(course).get();
     await courseRatings.doc(course).set({explanations: {explanation: explanation, timestamp: Timestamp.now()}, avg_ratings: rating});
     if (courseRating.exists) {
@@ -77,10 +79,10 @@ async function editUserRating(user_id, course, prequisiteStrictness, pace, depth
       updated_average[0] = ((data.avg_ratings[0] * data.num_ratings - doc.rating[0] + rating[0]) / (data.num_ratings)).toFixed(2); 
       updated_average[1] = ((data.avg_ratings[1] * data.num_ratings - doc.rating[1] + rating[1]) / (data.num_ratings)).toFixed(2); 
       updated_average[2] = ((data.avg_ratings[2] * data.num_ratings - doc.rating[2] + rating[2]) / (data.num_ratings)).toFixed(2); 
-      courseRating = await courseRatings.doc(course).update({explanations: FieldValue.arrayUnion({explanation: explanation, timestamp: Timestamp.now()}), avg_ratings: updated_average, num_ratings: data.num_ratings + 1});
+      courseRating = await courseRatings.doc(course).update({explanations: FieldValue.arrayUnion({explanation: explanation, timestamp: Timestamp.now()}), avg_ratings: updated_average, num_ratings: data.num_ratings});
     }
-    await doc.ref.update({user_id: user_id, course: course, rating: rating, explanation, explanation, timestamp: Timestamp.now()})
-  })
+    await userRatings.ref.update({user_id: user_id, course: course, rating: rating, explanation, explanation, timestamp: Timestamp.now()})
+  }
 }
 
 /**
