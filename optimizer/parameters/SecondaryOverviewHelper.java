@@ -3,8 +3,8 @@ package optimizer.parameters;
 import optimizer.Utils;
 import optimizer.constants.WeekDays;
 
-public class CourseOverviewHelper {
-    private String courseName;
+public class SecondaryOverviewHelper {
+    private String secondaryName;
     private boolean required;
     //Course Time
     private int[] courseTimes;
@@ -15,9 +15,6 @@ public class CourseOverviewHelper {
     //Days of week
     private WeekDays[][] weekDays;
     private int weekDaysPtr;
-    //Ratings
-    private double[] ratings;
-    private int ratingsPtr;
     //Section ids
     private String[] sectionIds;
     private int sectionIdsPtr;
@@ -25,30 +22,25 @@ public class CourseOverviewHelper {
     private String parentSections[];
     private int parentSectionsPtr;
 
-    private SecondaryOverviewHelper[] relatedSecondaries;
-    private int relatedSecondariesPtr;
-
     /**
      * Constructor to create a wrapper class that assists in instantaiting a CourseOverview method.
      */
-    public CourseOverviewHelper() {
+    public SecondaryOverviewHelper() {
         //Indicate that both of the course stacks cannot be used yet
         this.courseTimesPtr = -1;
         this.courseDurationsPtr = -1;
         this.weekDaysPtr = -1;
-        this.ratingsPtr = -1;
         this.sectionIdsPtr = -1;
         this.parentSectionsPtr = -1;
-        this.relatedSecondariesPtr = -1;
-        courseName = null;
+        secondaryName = null;
     }
 
     /**
      * Adds a name attribute to the helper class
      * @param name The name to be added
      */
-    public void addCourseName(String name) {
-        this.courseName = name;
+    public void addName(String name) {
+        this.secondaryName = name;
     }
 
     /**
@@ -96,34 +88,6 @@ public class CourseOverviewHelper {
         return 1; 
     }
 
-    public CourseOverview toCourseOverview() {
-        if(courseTimesPtr < 0 || courseDurationsPtr < 0) {
-            return null;
-        }
-
-        if(courseTimesPtr != courseTimes.length || courseDurationsPtr != courseDurations.length) {
-            return null;
-        }
-
-        if(courseName == null) {
-            return null;
-        }
-
-        if(weekDaysPtr < 0) {
-            return null;
-        }
-
-        if(this.ratingsPtr < 0 || this.ratings.length != this.ratingsPtr) {
-            return null; 
-        }
-
-        if(this.parentSectionsPtr < 0 || this.relatedSecondariesPtr <0)  {
-            return null;
-        }
-    
-        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required, ratings, sectionIds, parentSections, relatedSecondaries);
-    }
-
     public int addWeekDays(String days) {
         if(this.weekDaysPtr == -1) {
             return -1; 
@@ -147,27 +111,15 @@ public class CourseOverviewHelper {
         //Week Days
         this.weekDays = new WeekDays[length][];
         this.weekDaysPtr = 0;
-        //Ratings
-        this.ratings = new double[length];
-        this.ratingsPtr = 0;
+
         //Ids
         this.sectionIds = new String[length];
         this.sectionIdsPtr = 0;
         //Parent sections
         this.parentSections = new String[length];
         this.parentSectionsPtr = 0;
-        //Secondary components
-        this.relatedSecondaries = new SecondaryOverviewHelper[length];
-        this.relatedSecondariesPtr = 0;
     }
 
-    public double addRating(double r) {
-        if(this.ratingsPtr < 0) {
-            return -1.0f;
-        }
-        this.ratings[ratingsPtr++] = r;
-        return r;  
-    }
 
     public String addSectionId(String id) {
         if(this.sectionIdsPtr < 0) {
@@ -176,13 +128,24 @@ public class CourseOverviewHelper {
         this.sectionIds[sectionIdsPtr++] = id;
         return id;
     }
-
-    public int addRelatedSecondary(SecondaryOverviewHelper data) {
-        if(this.relatedSecondariesPtr == -1) {
-            return -1;
-        }
-        this.relatedSecondaries[this.relatedSecondariesPtr++] = data;
-        return 1;
-    }
     
+    public int[] getTimes() {
+        return this.courseTimes;
+    }
+
+    public int[] getDurations() {
+        return this.courseDurations;
+    }
+
+    public WeekDays[][] getWeekDays() {
+        return this.weekDays;
+    }
+
+    public String[] getSectionIDs() {
+        return this.sectionIds;
+    }
+
+    public String[] getParentSections() {
+        return this.parentSections;
+    }
 }

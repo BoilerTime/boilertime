@@ -11,8 +11,9 @@ public class CourseOverview {
     private final boolean required; 
     private double ratings[]; 
     private final String[] parentSections;
+    private final SecondaryOverviewHelper[] secondaries;
 
-    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings, String[] sectionIds, String[] parentSections) {
+    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings, String[] sectionIds, String[] parentSections, SecondaryOverviewHelper[] secondaries) {
         this.courseName = name; 
         this.courseTimes = times; 
         this.courseDurations = courseDurations; 
@@ -21,6 +22,7 @@ public class CourseOverview {
         this.ratings = ratings;
         this.sectionIds = sectionIds;
         this.parentSections = parentSections;
+        this.secondaries = secondaries;
         System.out.println(name + " is required? " + isRequired);
     }
 
@@ -62,5 +64,13 @@ public class CourseOverview {
 
     public String[] getParentSections() {
         return this.parentSections;
+    }
+
+    public SecondaryOverview[] getRelatedSecondaries() {
+        SecondaryOverview[] results = new SecondaryOverview[this.secondaries.length];
+        for(int i = 0; i < results.length; i++) {
+            results[i] = new SecondaryOverview(this.secondaries[i]);
+        }
+        return results;
     }
 }
