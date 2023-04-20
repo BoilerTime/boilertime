@@ -40,7 +40,7 @@
 import axios from 'axios';
 import { ref, onBeforeMount } from 'vue';
 import html2canvas from 'html2canvas';
-import html2pdf from "html2pdf.js";
+import html2pdf from 'html2pdf.js';
 import { saveAs } from 'file-saver';
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -99,6 +99,9 @@ async function addTitle(schedule) {
   }
 }
 
+/**
+ * This function will take a screenshot of the calendar and save it in an image format.
+ */
 async function screenie(){
   html2canvas(document.querySelector("#capture")).then(canvas => {
     saveAs(canvas.toDataURL(), 'schedule.png');
@@ -109,12 +112,11 @@ async function screenie(){
  * This function is used to save a schedule in a PDF format
  */
 async function exportToPDF() {
-  html2pdf(document.getElementById("capture"), {
+  html2pdf(document.getElementById('capture'), {
     margin: 0,
     filename: "schedule.pdf",
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, dpi: 192, letterRendering: true },
-    jsPDF: { unit: "pt", format: 'A2', orientation: "landscape" }
+    html2canvas: { scale: 2, letterRendering: true },
+    jsPDF: { format: 'A2', orientation: "landscape" }
   });
 }
 
@@ -122,7 +124,13 @@ async function exportToPDF() {
  * This function will copy a link when the button is clicked
  */
 async function copyLink() {
-  // TODO
+  try {
+    await navigator.clipboard.writeText("localhost:3000/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    console.log("localhost:3000/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    alert("Copied link");
+  } catch(error) {
+    alert("Cannot copy");
+  }
 }
 
 let click = ''
