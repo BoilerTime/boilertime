@@ -234,7 +234,7 @@
             <div class="flex flex-col gap-4">
               <div class="flex flex-col items-center gap-2">
                 <label for="privacy" class="font-bold dark:text-gray-200"
-                  >Privacy</label
+                  >Track My Data</label
                 >
                 <Switch
                   v-model="privacy"
@@ -249,7 +249,7 @@
               </div>
               <div class="flex flex-col items-center gap-2">
                 <label for="pairs" class="font-bold dark:text-gray-200"
-                  >Share Me</label
+                  >Show Me To Other Users</label
                 >
                 <Switch
                   v-model="pairs"

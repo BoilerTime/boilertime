@@ -1,10 +1,49 @@
 <template>
-  <main class="h-screen overflow-y-hidden bg-gray-100 dark:bg-neutral-700">
-    <div v-if="!isMobile">
-      <NavBar />
+  <main
+    class="flex flex-col h-screen overflow-y-scroll pb-10 bg-gray-100 dark:bg-neutral-700"
+  >
+    <Modal
+      @closed="closePrivacyPopup()"
+      v-if="privacyPopup"
+      class="absolute inset-y-1"
+    >
+      <template #header>
+        <div class="flex flex-col justify-start">
+          <LockClosedIcon class="h-24 w-24 text-indigo-500"></LockClosedIcon>
+          <h1 class="text-3xl font-bold dark:text-gray-200">
+            Your <span class="text-yellow-500">Privacy</span>
+          </h1>
+        </div>
+      </template>
+      <template #body>
+        <h1 class="-mt-6 text-sm font-medium dark:text-gray-200">
+          In order to provide the best experience, we use cookies to store your
+          preferences and data. We understand that you may not want to be
+          tracked, so we have provided you with the option to opt out of certain
+          cookies. However, this may result in a degraded experience.
+        </h1>
+        <div class="flex flex-row gap-4 justify-center mt-6 -mb-6">
+          <button
+            @click="submitAllCookies"
+            class="text-center w-full bg-indigo-500 hover:bg-indigo-700 p-3 text-white rounded-lg font-bold"
+          >
+            Accept all cookies
+          </button>
+          <button
+            @click="submitNecssaryCookies"
+            class="text-center w-full bg-indigo-200 p-3 text-indigo-600 rounded-lg font-bold hover:bg-indigo-700 hover:text-white"
+          >
+            Necessary cookies only
+          </button>
+        </div>
+      </template>
+      <template #footer class="hidden"> </template>
+    </Modal>
+    <div v-if="isMobile">
+      <NavBarMobile />
     </div>
     <div v-else>
-      <NavBarMobile />
+      <NavBar />
     </div>
     <div class="pb-24">
       <div class="px-8 mx-auto max-w-7xl">
@@ -76,78 +115,72 @@
     </div>
     <main class="-mt-24">
       <div class="px-4 mx-auto max-w-7xl md:px-8">
-        <div class="grid lg:grid-cols-3 md:gap-8">
-          <div class="grid gap-4 lg:col-span-2">
+        <div class="flex flex-row md:gap-8">
+          <div class="flex flex-row items-center gap-4">
             <section>
-              <div class="flex flex-col items-center justify-center bg-white shadow-lg rounded-lg">
-                <div>
-                  <div
-                    class="flex flex-col items-center justify-center md:justify-start md:flex-row dark:bg-neutral-500"
-                    v-if="userSchedules.length !== 0"
-                  >
-                    <!-- Add button -->
+              <div
+                class="flex flex-row flex-wrap justify-center bg-white dark:bg-neutral-500 shadow-lg rounded-lg"
+              >
+                <div v-if="userSchedules.length !== 0">
+                  <!-- Add button -->
+                  <div class="w-1/4 p-6" @click="navigateToCreateSchedule()">
                     <div
-                      class="w-1/4 p-6"
-                      @click="navigateToCreateSchedule()"
+                      class="flex items-center justify-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                     >
-                      <div
-                        class="flex items-center justify-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-full dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
-                      >
-                        <PlusIcon class="w-12 h-12" />
-                      </div>
+                      <PlusIcon class="w-12 h-12" />
                     </div>
-                    <!-- Data items -->
+                  </div>
+                  <!-- Data items -->
+                  <div
+                    v-for="(schedule, index) in userSchedules"
+                    :key="index"
+                    class="p-6 cursor-pointer"
+                    @click="getScheduleView(schedule.term_id)"
+                  >
                     <div
-                      v-for="(schedule, index) in userSchedules"
-                      :key="index"
-                      class="w-1/4 p-6 cursor-pointer h-full"
-                      @click="getScheduleView(schedule.term_id)"
+                      class="flex flex-col justify-between h-72 w-64 border-2 border-black overflow-x-hidden overflow-y-scroll bg-white rounded-lg dark:bg-neutral-700 dark:text-white"
                     >
-                      <div
-                        class="flex flex-col justify-between w-64 overflow-hidden bg-white border-2 border-gray-400 rounded-lg h-64 dark:bg-neutral-700 dark:border-black transition duration-300 dark:text-white"
-                      >
-                        <div class="px-4 py-2 bg-yellow-500">
-                          <h2 class="text-lg font-bold text-black">
-                            {{ formatTitle(schedule.term_id) }}
-                          </h2>
+                      <div class="px-4 py-2 bg-yellow-500">
+                        <h2 class="text-lg font-bold text-black">
+                          {{ formatTitle(schedule.term_id) }}
+                        </h2>
+                      </div>
+                      <div class="flex items-center justify-center flex-grow">
+                        <div class="text-center">
+                          Required:
+                          <span class="text-sm text-black dark:text-white"
+                            >{{ schedule.required_classes.join(", ").trim() }}
+                          </span>
+                          <br />
+                          Optional:
+                          <span class="text-sm text-black dark:text-white"
+                            >{{ schedule.optional_classes.join(", ").trim() }}
+                          </span>
                         </div>
-                        <div class="flex items-center justify-center flex-grow">
-                          <div class="text-center">
-                            Required:
-                            <span class="text-sm text-black dark:text-white"
-                              >{{ schedule.required_classes.join(", ").trim() }}
-                            </span>
-                            <br />
-                            Optional:
-                            <span class="text-sm text-black dark:text-white"
-                              >{{ schedule.optional_classes.join(", ").trim() }}
-                            </span>
-                          </div>
-                        </div>
-                        <div class="px-4 py-2 mt-auto bg-yellow-500">
-                          <span class="text-sm text-black">{{
-                            schedule.timestamp
-                          }}</span>
-                        </div>
+                      </div>
+                      <div class="px-4 py-2 mt-auto bg-yellow-500">
+                        <span class="text-sm text-black">{{
+                          schedule.timestamp
+                        }}</span>
                       </div>
                     </div>
                   </div>
-                  <div v-else>
+                </div>
+                <div v-else>
+                  <div
+                    class="flex items-start justify-start h-screen dark:bg-neutral-500"
+                  >
                     <div
-                      class="flex items-start justify-start h-screen dark:bg-neutral-500"
+                      class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
+                      @click="navigateToCreateSchedule()"
                     >
-                      <div
-                        class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
-                        @click="navigateToCreateSchedule()"
+                      <Bars3Icon
+                        class="w-8 h-8 text-black-400 dark:text-gray-200"
+                      />
+                      <span
+                        class="ml-4 text-lg text-black-400 dark:text-gray-200"
+                        >Create a new schedule</span
                       >
-                        <Bars3Icon
-                          class="w-8 h-8 text-black-400 dark:text-gray-200"
-                        />
-                        <span
-                          class="ml-4 text-lg text-black-400 dark:text-gray-200"
-                          >Create a new schedule</span
-                        >
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -168,23 +201,46 @@
                       <div class="" v-if="resultType == 'Professor'">
                         <div class="" v-if="resultData.length == 2">
                           <div class="mb-6">
-                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
-                            <span class="text-base font-medium text-blue-700">Email</span>
-                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                              advanced_result['email'] }}</a>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['email']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Email</span
+                              >
+                              <a
+                                :href="'mailto:' + advanced_result['email']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["email"] }}</a
+                              >
+                            </div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['title']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Title</span
+                              >
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                >{{ advanced_result["title"] }}</span
+                              >
+                            </div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['office phone']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Phone</span
+                              >
+                              <a
+                                :href="'tel:' + advanced_result['office phone']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["office phone"] }}</a
+                              >
+                            </div>
                           </div>
-                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
-                            <span class="text-base font-medium text-blue-700">Title</span>
-                            <span class="text-base font-medium text-blue-700">{{
-                              advanced_result['title'] }}</span>
-                          </div>
-                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
-                            <span class="text-base font-medium text-blue-700">Phone</span>
-                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                              advanced_result['office phone'] }}</a>
-                          </div>
-                        </div>
-                        <div class="flex justify-between mb-1">
+                          <div class="flex justify-between mb-1">
                             <span class="text-base font-medium text-blue-700"
                               >Department</span
                             >
@@ -205,96 +261,210 @@
                             >
                           </div>
                           <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Average GPA</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
-                            resultData[0].overall_gpa }}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[0]">
-                          <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[0].percentage * 100 + '%' }"></div>
-                        </div>
-                        <div v-else>
-                          No data available
-                        </div>
-                        <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Average difficulty</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgDifficulty > 0">{{
-                            (resultData[1].avgDifficulty / 5.0 *
-                              100).toPrecision(4) + '%' }}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgDifficulty > 0">
-                          <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgDifficulty / 5.0 * 100 + '%' }">
+                            <span class="text-base font-medium text-blue-700"
+                              >Average GPA</span
+                            >
+                            <span
+                              class="text-sm font-medium text-blue-700"
+                              v-if="resultData[0]"
+                              >{{ resultData[0].overall_gpa }}</span
+                            >
                           </div>
-                        </div>
-                        <div v-else>
-                          No data available
-                        </div>
-                        <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Average rating</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].avgRating > 0">{{
-                            ((resultData[1].avgRating) / 5.0 *
-                              100).toPrecision(4) +
-                            '%' }}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3" v-if="resultData[1] && resultData[1].avgRating > 0">
-                          <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].avgRating / 5.0 * 100 + '%' }">
+                          <div
+                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                            v-if="resultData[0]"
+                          >
+                            <div
+                              class="bg-blue-600 h-2.5 rounded-full"
+                              :style="{
+                                width: resultData[0].percentage * 100 + '%',
+                              }"
+                            ></div>
                           </div>
-                        </div>
-                        <div v-else>
-                          No data available
-                        </div>
-                        <div class="flex justify-between mb-1">
-                          <span class="text-base font-medium text-blue-700">Would take again</span>
-                          <span class="text-sm font-medium text-blue-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">{{
-                            (resultData[1].wouldTakeAgainPercent).toPrecision(4) +
-                            '%' }}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700" v-if="resultData[1] && resultData[1].wouldTakeAgainPercent >= 0">
-                          <div class="bg-blue-600 h-2.5 rounded-full"
-                            :style="{ width: resultData[1].wouldTakeAgainPercent + '%' }">
+                          <div v-else>No data available</div>
+                          <div class="flex justify-between mb-1">
+                            <span class="text-base font-medium text-blue-700"
+                              >Average difficulty</span
+                            >
+                            <span
+                              class="text-sm font-medium text-blue-700"
+                              v-if="
+                                resultData[1] && resultData[1].avgDifficulty > 0
+                              "
+                              >{{
+                                (
+                                  (resultData[1].avgDifficulty / 5.0) *
+                                  100
+                                ).toPrecision(4) + "%"
+                              }}</span
+                            >
                           </div>
-                        </div>
-                        <div v-else>
-                          No data available
-                        </div>
-                        <div class="mt-8 mb-4">
-                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
-                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
-                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
-                          </iframe>
-                        </div>
-                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
-                          <span class="text-base font-medium text-blue-700">Office<br></span>
-                          <span class="text-base font-medium text-blue-700">{{
-                            advanced_result['building'] }}</span>
-                        </div>
-                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
-                          <span class="text-base font-medium text-blue-700">Website<br></span>
-                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                            advanced_result['url'] }}</a>
-                        </div>
-                      </div>
-                      <div class="" v-else-if="resultData.length == 1">
-                        <div class="mb-6">
-                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
-                            <span class="text-base font-medium text-blue-700">Email</span>
-                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                              advanced_result['email'] }}</a>
+                          <div
+                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                            v-if="
+                              resultData[1] && resultData[1].avgDifficulty > 0
+                            "
+                          >
+                            <div
+                              class="bg-blue-600 h-2.5 rounded-full"
+                              :style="{
+                                width:
+                                  (resultData[1].avgDifficulty / 5.0) * 100 +
+                                  '%',
+                              }"
+                            ></div>
                           </div>
-                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
-                            <span class="text-base font-medium text-blue-700">Title</span>
+                          <div v-else>No data available</div>
+                          <div class="flex justify-between mb-1">
+                            <span class="text-base font-medium text-blue-700"
+                              >Average rating</span
+                            >
+                            <span
+                              class="text-sm font-medium text-blue-700"
+                              v-if="
+                                resultData[1] && resultData[1].avgRating > 0
+                              "
+                              >{{
+                                (
+                                  (resultData[1].avgRating / 5.0) *
+                                  100
+                                ).toPrecision(4) + "%"
+                              }}</span
+                            >
+                          </div>
+                          <div
+                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                            v-if="resultData[1] && resultData[1].avgRating > 0"
+                          >
+                            <div
+                              class="bg-blue-600 h-2.5 rounded-full"
+                              :style="{
+                                width:
+                                  (resultData[1].avgRating / 5.0) * 100 + '%',
+                              }"
+                            ></div>
+                          </div>
+                          <div v-else>No data available</div>
+                          <div class="flex justify-between mb-1">
+                            <span class="text-base font-medium text-blue-700"
+                              >Would take again</span
+                            >
+                            <span
+                              class="text-sm font-medium text-blue-700"
+                              v-if="
+                                resultData[1] &&
+                                resultData[1].wouldTakeAgainPercent >= 0
+                              "
+                              >{{
+                                resultData[1].wouldTakeAgainPercent.toPrecision(
+                                  4
+                                ) + "%"
+                              }}</span
+                            >
+                          </div>
+                          <div
+                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
+                            v-if="
+                              resultData[1] &&
+                              resultData[1].wouldTakeAgainPercent >= 0
+                            "
+                          >
+                            <div
+                              class="bg-blue-600 h-2.5 rounded-full"
+                              :style="{
+                                width:
+                                  resultData[1].wouldTakeAgainPercent + '%',
+                              }"
+                            ></div>
+                          </div>
+                          <div v-else>No data available</div>
+                          <div class="mt-8 mb-4">
+                            <iframe
+                              width="335"
+                              height="250"
+                              style="border: 0"
+                              loading="lazy"
+                              scrolling="no"
+                              gestureHandling="none"
+                              referrerpolicy="no-referrer-when-downgrade"
+                              :src="
+                                'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
+                                advanced_result['building'] +
+                                ' Purdue+University,West+Lafayette+IN'
+                              "
+                            >
+                            </iframe>
+                          </div>
+                          <div
+                            class="mb-3 flex-wrap text-center items-center"
+                            v-if="advanced_result['building']"
+                          >
+                            <span class="text-base font-medium text-blue-700"
+                              >Office<br
+                            /></span>
                             <span class="text-base font-medium text-blue-700">{{
-                              advanced_result['title'] }}</span>
+                              advanced_result["building"]
+                            }}</span>
                           </div>
-                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
-                            <span class="text-base font-medium text-blue-700">Phone</span>
-                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                              advanced_result['office phone'] }}</a>
+                          <div
+                            class="mb-2 flex-wrap text-center items-center"
+                            v-if="advanced_result['url']"
+                          >
+                            <span class="text-base font-medium text-blue-700"
+                              >Website<br
+                            /></span>
+                            <a
+                              :href="advanced_result['url']"
+                              class="text-base font-medium text-blue-700 hover:text-blue-300"
+                              >{{ advanced_result["url"] }}</a
+                            >
                           </div>
                         </div>
-                        <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
+                        <div class="" v-else-if="resultData.length == 1">
+                          <div class="mb-6">
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['email']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Email</span
+                              >
+                              <a
+                                :href="'mailto:' + advanced_result['email']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["email"] }}</a
+                              >
+                            </div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['title']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Title</span
+                              >
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                >{{ advanced_result["title"] }}</span
+                              >
+                            </div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="advanced_result['office phone']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Phone</span
+                              >
+                              <a
+                                :href="'tel:' + advanced_result['office phone']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["office phone"] }}</a
+                              >
+                            </div>
+                          </div>
+                          <div
+                            class="flex justify-between mb-1"
+                            v-if="resultData[0].overall_gpa"
+                          >
                             <span class="text-base font-medium text-blue-700"
                               >Average GPA</span
                             >
@@ -316,24 +486,37 @@
                             ></div>
                           </div>
                           <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1" v-if="resultData[0].department">
-                          <span class="text-base font-medium text-blue-700">Department</span>
-                          <span class="text-base font-medium text-blue-700">{{
-                            resultData[0].department }}</span>
-                        </div>
-                        <div class="flex justify-between mb-4"  v-if="resultData[0].numRatings">
-                          <span class="text-base font-medium text-blue-700">Averaged from</span>
-                          <span class="text-base font-medium text-blue-700">{{
-                            resultData[0].numRatings }}
-                            ratings</span>
-                        </div>
-                        <div class="flex justify-between mb-1">
+                          <div
+                            class="flex justify-between mb-1"
+                            v-if="resultData[0].department"
+                          >
+                            <span class="text-base font-medium text-blue-700"
+                              >Department</span
+                            >
+                            <span class="text-base font-medium text-blue-700">{{
+                              resultData[0].department
+                            }}</span>
+                          </div>
+                          <div
+                            class="flex justify-between mb-4"
+                            v-if="resultData[0].numRatings"
+                          >
+                            <span class="text-base font-medium text-blue-700"
+                              >Averaged from</span
+                            >
+                            <span class="text-base font-medium text-blue-700"
+                              >{{ resultData[0].numRatings }} ratings</span
+                            >
+                          </div>
+                          <div class="flex justify-between mb-1">
                             <span class="text-base font-medium text-blue-700"
                               >Average difficulty</span
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[0] && resultData[0].avgDifficulty > 0"
+                              v-if="
+                                resultData[0] && resultData[0].avgDifficulty > 0
+                              "
                               >{{
                                 (
                                   (resultData[0].avgDifficulty / 5.0) *
@@ -344,7 +527,9 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0] && resultData[0].avgDifficulty > 0"
+                            v-if="
+                              resultData[0] && resultData[0].avgDifficulty > 0
+                            "
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
@@ -362,7 +547,9 @@
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[0] && resultData[0].avgRating > 0"
+                              v-if="
+                                resultData[0] && resultData[0].avgRating > 0
+                              "
                               >{{
                                 (
                                   (resultData[0].avgRating / 5.0) *
@@ -390,7 +577,10 @@
                             >
                             <span
                               class="text-sm font-medium text-blue-700"
-                              v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0"
+                              v-if="
+                                resultData[0] &&
+                                resultData[0].wouldTakeAgainPercent >= 0
+                              "
                               >{{
                                 resultData[0].wouldTakeAgainPercent.toPrecision(
                                   4
@@ -400,7 +590,10 @@
                           </div>
                           <div
                             class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                            v-if="resultData[0] && resultData[0].wouldTakeAgainPercent >= 0"
+                            v-if="
+                              resultData[0] &&
+                              resultData[0].wouldTakeAgainPercent >= 0
+                            "
                           >
                             <div
                               class="bg-blue-600 h-2.5 rounded-full"
@@ -414,25 +607,48 @@
                         </div>
                         <div class="flex justify-between mb-1"></div>
                       </div>
-                        <div class="mt-8 mb-4">
-                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
-                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
-                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
-                          </iframe>
-                        </div>
-                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
-                          <span class="text-base font-medium text-blue-700">Office<br></span>
-                          <span class="text-base font-medium text-blue-700">{{
-                            advanced_result['building'] }}</span>
-                        </div>
-                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
-                          <span class="text-base font-medium text-blue-700">Website<br></span>
-                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
-                            advanced_result['url'] }}</a>
-                        </div>
-                      <div v-else>
-                        No data available
+                      <div class="mt-8 mb-4">
+                        <iframe
+                          width="335"
+                          height="250"
+                          style="border: 0"
+                          loading="lazy"
+                          scrolling="no"
+                          gestureHandling="none"
+                          referrerpolicy="no-referrer-when-downgrade"
+                          :src="
+                            'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
+                            advanced_result['building'] +
+                            ' Purdue+University,West+Lafayette+IN'
+                          "
+                        >
+                        </iframe>
                       </div>
+                      <div
+                        class="mb-3 flex-wrap text-center items-center"
+                        v-if="advanced_result['building']"
+                      >
+                        <span class="text-base font-medium text-blue-700"
+                          >Office<br
+                        /></span>
+                        <span class="text-base font-medium text-blue-700">{{
+                          advanced_result["building"]
+                        }}</span>
+                      </div>
+                      <div
+                        class="mb-2 flex-wrap text-center items-center"
+                        v-if="advanced_result['url']"
+                      >
+                        <span class="text-base font-medium text-blue-700"
+                          >Website<br
+                        /></span>
+                        <a
+                          :href="advanced_result['url']"
+                          class="text-base font-medium text-blue-700 hover:text-blue-300"
+                          >{{ advanced_result["url"] }}</a
+                        >
+                      </div>
+                      <div v-else>No data available</div>
                       <div
                         class="flex flex-col items-center mb-12"
                         v-if="resultType == 'Classroom'"
@@ -711,42 +927,47 @@
             </div>
           </div>
         </div>
-        
       </div>
     </main>
   </main>
 </template>
 
 <script setup>
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Popover,
-  PopoverButton,
-  PopoverOverlay,
-  PopoverPanel,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
 import { onUnmounted } from "vue";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/20/solid";
+import { Bars3Icon, LockClosedIcon } from "@heroicons/vue/24/outline";
+import { PlusIcon } from "@heroicons/vue/20/solid";
 import { ref } from "vue";
 import axios from "axios";
 import { onMounted } from "vue";
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
-const { $toast } = useNuxtApp()
-
+const { $toast } = useNuxtApp();
+const route = useRoute();
 const userSchedules = ref([]);
-const optimizedSchedule = ref([]);
 var numSchedules;
 var isMobile = ref(false);
+var privacyPopup = ref(false);
+var firstname = ref("");
+var lastname = ref("");
+var privacy = ref();
+var pairs = ref();
+var gradMonth = ref("");
+var email = ref("");
+var gradYear = ref();
+var isGradStudent = ref(false);
+
+function openPrivacyPopup() {
+  if (route.query.verified == "true") {
+    privacyPopup.value = true;
+  }
+}
+
+function closePrivacyPopup() {
+  privacyPopup.value = false;
+}
 
 async function checkWindowSize() {
-  isMobile = window.innerWidth <= 768;
+  isMobile.value = window.innerWidth <= 768;
 }
 
 async function navigateToCreateSchedule() {
@@ -772,15 +993,9 @@ onBeforeMount(async () => {
     )
     .then((response) => {
       userSchedules.value = response.data;
-      /*
-    for (var i = 0; i < userSchedules.value.length; i++) {
-      console.log(userSchedules.value[i] + " << Value");
-    }
-    */
       numSchedules =
         userSchedules.value[userSchedules.value.length - 1].num_schedules;
       console.log(numSchedules + " this is the num schedules");
-      //userSchedules.splice(userSchedules.value.length - 1, 1);
       userSchedules.value.pop();
     });
   if (!isAGuest.value) {
@@ -802,7 +1017,6 @@ onBeforeMount(async () => {
           if (response.data["accessToken"] != undefined) {
             userStore.user = {
               accessToken: response.data["accessToken"],
-              //refreshToken: response.data["refreshToken"],
               user_id: user_id,
             };
             accessToken = userStore.accessToken;
@@ -817,6 +1031,7 @@ onBeforeMount(async () => {
       }, 2000); // Wait 1 second before showing the toast message
     }
   }
+  await checkWindowSize();
 });
 
 let interval;
@@ -828,7 +1043,7 @@ onUnmounted(() => {
 const searchTerm = ref("");
 
 const professors = ref([]);
-const professorsadvanced = ref([])
+const professorsadvanced = ref([]);
 const classrooms = ref([]);
 const courses = ref([]);
 const tas = ref([]);
@@ -893,18 +1108,21 @@ async function fetch() {
       .then((response) => {
         professors.value = response.data;
       });
-    await axios.get('https://api.boilerti.me/api/professorsadvanced')
-      .then(response => {
-        professorsadvanced.value = response.data
-      })
+    await axios
+      .get("https://api.boilerti.me/api/professorsadvanced")
+      .then((response) => {
+        professorsadvanced.value = response.data;
+      });
     await axios
       .get("https://api.boilerti.me/api/classroomsnew")
       .then((response) => {
         classrooms.value = response.data.classrooms;
       });
-    await axios.get("https://api.boilerti.me/api/searchnew").then((response) => {
-      courses.value = response.data;
-    });
+    await axios
+      .get("https://api.boilerti.me/api/searchnew")
+      .then((response) => {
+        courses.value = response.data;
+      });
     await axios.get("https://api.boilerti.me/api/tasnew").then((response) => {
       tas.value = Object.keys(response.data);
       tas_inv.value = response.data;
@@ -917,35 +1135,35 @@ async function fetch() {
 const filteredResults = computed(() => {
   resultData.value = [];
   actual_course.value = [];
-  advanced_result.value = []
+  advanced_result.value = [];
   if (!searchTerm.value) {
     return [];
   }
   if (searchType.value == "Professor") {
     return professors.value.filter((item) => {
-      resultData.value = []
-      actual_course.value = []
+      resultData.value = [];
+      actual_course.value = [];
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "Classroom") {
     return classrooms.value.filter((item) => {
-      resultData.value = []
-      actual_course.value = []
-      advanced_result.value = []
+      resultData.value = [];
+      actual_course.value = [];
+      advanced_result.value = [];
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "Course") {
     return courses.value.filter((item) => {
-      resultData.value = []
-      actual_course.value = []
-      advanced_result.value = []
+      resultData.value = [];
+      actual_course.value = [];
+      advanced_result.value = [];
       return item.toLowerCase().includes(searchTerm.value.toLowerCase());
     });
   } else if (searchType.value == "TA") {
     return tas.value.filter((item) => {
-      resultData.value = []
-      actual_course.value = []
-      advanced_result.value = []
+      resultData.value = [];
+      actual_course.value = [];
+      advanced_result.value = [];
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase());
     });
   }
@@ -953,47 +1171,48 @@ const filteredResults = computed(() => {
 
 var actual_name = ref("");
 var actual_course = ref([]);
-var advanced_result = ref([])
+var advanced_result = ref([]);
 
 async function navigate(selected, type) {
-  resultData.value = []
-  actual_course.value = []
-  advanced_result.value = []
+  resultData.value = [];
+  actual_course.value = [];
+  advanced_result.value = [];
   searchTerm.value = "";
   result.value = selected;
   resultType.value = type;
   if (type == "Professor") {
-    // getoverall_gpa
-    // ratemyprofessor
-    var name = result.value
+    var name = result.value;
     result.value = result.value.split(",");
     result.value = result.value[1].trim() + " " + result.value[0];
-    const advanced = professorsadvanced.value.find(obj => obj.name === name);
-    console.log(advanced)
+    const advanced = professorsadvanced.value.find((obj) => obj.name === name);
+    console.log(advanced);
     if (advanced) {
       try {
-        var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
-        lookup = lookup.data
-        var search = (advanced["building"].toUpperCase())
-        advanced["building"] = lookup[search]
+        var lookup = await axios.get(
+          "https://api.boilerti.me/api/buildingsnew"
+        );
+        lookup = lookup.data;
+        var search = advanced["building"].toUpperCase();
+        advanced["building"] = lookup[search];
         isDataLoaded.value = true;
         if (isDataLoaded) {
-          advanced_result.value = advanced
+          advanced_result.value = advanced;
           isDataLoaded.value = true;
         }
       } catch {
-        advanced_result.value = advanced
+        advanced_result.value = advanced;
         isDataLoaded.value = true;
       }
     } else {
-      advanced_result.value = []
+      advanced_result.value = [];
       isDataLoaded.value = true;
     }
-    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
-      prof_name: result.value
-    })
-      .then(response => {
-        console.log(response.data.overall_gpa)
+    axios
+      .post("https://api.boilerti.me/api/getoverall_gpa", {
+        prof_name: result.value,
+      })
+      .then((response) => {
+        console.log(response.data.overall_gpa);
         try {
           var gpa = {
             overall_gpa: response.data.overall_gpa,
@@ -1001,41 +1220,42 @@ async function navigate(selected, type) {
           };
           resultData.value.push(gpa);
           isDataLoaded.value = true;
-          axios.post('https://api.boilerti.me/api/ratemyprofessor', {
-            prof_name: result.value
-          })
-            .then(response => {
-              resultData.value.push(response.data)
+          axios
+            .post("https://api.boilerti.me/api/ratemyprofessor", {
+              prof_name: result.value,
+            })
+            .then((response) => {
+              resultData.value.push(response.data);
               isDataLoaded.value = true;
             })
-            .catch(error => {
-              console.log(error)
+            .catch((error) => {
+              console.log(error);
               isDataLoaded.value = true;
-            })
+            });
         } catch {
-          resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
+          resultData.value.push({ overall_gpa: "N/A", percentage: 0 });
         }
       })
-      .catch(error => {
-        console.log(error)
-        resultData.value.push({ 'overall_gpa': 'N/A', 'percentage': 0 })
-      })
-    
+      .catch((error) => {
+        console.log(error);
+        resultData.value.push({ overall_gpa: "N/A", percentage: 0 });
+      });
   }
-  if (type == 'Classroom') {
+  if (type == "Classroom") {
     // clasroom_ratings/classrooms
-    await axios.post('https://api.boilerti.me/api/get/classroom_ratings/classrooms', {
-      classroom: result.value.replace(/ /g, '')
-    })
-      .then(response => {
-        console.log(response.data)
-        var data = response.data
-        resultData.value.push(data)
+    await axios
+      .post("https://api.boilerti.me/api/get/classroom_ratings/classrooms", {
+        classroom: result.value.replace(/ /g, ""),
       })
-    var search = result.value.split(' ')[0]
-    var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
-    lookup = lookup.data
-    actual_name.value = lookup[search]
+      .then((response) => {
+        console.log(response.data);
+        var data = response.data;
+        resultData.value.push(data);
+      });
+    var search = result.value.split(" ")[0];
+    var lookup = await axios.get("https://api.boilerti.me/api/buildingsnew");
+    lookup = lookup.data;
+    actual_name.value = lookup[search];
     isDataLoaded.value = true;
   }
   if (type == "Course") {
@@ -1087,6 +1307,12 @@ async function getUserInfo() {
     .then((response) => {
       firstname.value = response.data.firstname;
       lastname.value = response.data.lastname;
+      gradMonth.value = response.data.grad_month;
+      gradYear.value = response.data.grad_year;
+      isGradStudent.value = response.data.is_grad_student;
+      email.value = response.data.email;
+      pairs.value = response.data.pairs;
+      privacy.value = response.data.privacy;
     })
     .catch((error) => {
       console.error(error);
@@ -1101,7 +1327,71 @@ async function getUserInfo() {
     )
     .then((response) => {
       userStore.user.dark_mode = response.data.dark_mode;
-      //console.log(userStore.user.dark_mode + "hello");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function submitAllCookies() {
+  axios
+    .post(
+      "https://api.boilerti.me/api/update/profile",
+      {
+        user_id: userStore.user_id,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        classification_year: "Freshman",
+        grad_month: gradMonth.value,
+        grad_year: gradYear.value,
+        is_grad_student: isGradStudent.value,
+        pairs: true,
+        privacy: true,
+      },
+      config
+    )
+    .then((response) => {
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id,
+        };
+      }
+      privacyPopup.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+async function submitNecssaryCookies() {
+  axios
+    .post(
+      "https://api.boilerti.me/api/update/profile",
+      {
+        user_id: userStore.user_id,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        classification_year: "Freshman",
+        grad_month: gradMonth.value,
+        grad_year: gradYear.value,
+        is_grad_student: isGradStudent.value,
+        pairs: false,
+        privacy: false,
+      },
+      config
+    )
+    .then((response) => {
+      console.log("changed cookies");
+      if (response.data["accessToken"] != undefined) {
+        userStore.user = {
+          accessToken: response.data["accessToken"],
+          //refreshToken: response.data["refreshToken"],
+          user_id: user_id,
+        };
+      }
+      privacyPopup.value = false;
     })
     .catch((error) => {
       console.error(error);
@@ -1111,6 +1401,6 @@ async function getUserInfo() {
 onBeforeMount(async () => {
   await getUserInfo();
   await fetch();
-  await checkWindowSize();
+  await openPrivacyPopup();
 });
 </script>
