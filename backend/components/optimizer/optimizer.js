@@ -11,6 +11,7 @@ const db = getFirestore()
 const courses = db.collection('classes').doc("spring_2023");
 const purdueio = require('../datasources/purdueios');
 let badList = new Map();
+let hitTable = new Map();
 
 //client.send("request open");
 async function optimizeSchedule(schedule) {
@@ -87,10 +88,10 @@ async function optimizeSchedule(schedule) {
             output[i].sections.push(sectionFormat);
       }
     }
-    console.log(output)
+    //console.log(output)
     //output = await getIsFull(output);
     output = await getRating(output)
-    console.log(JSON.stringify(output));
+    //console.log(JSON.stringify(output));
     return output;
 }
 
@@ -143,8 +144,14 @@ async function getRating(output) {
         output[i].sections[j].primary.rating = 2.5;
         continue;
       }
+      if(hitTable.has(output[i].sections[j].primary.professor)) {
+        output[i].sections[j].primary.rating = hitTable.get(output[i].sections[j].primary.professor);
+        console.log(output[i].sections[j].primary.rating);
+        continue;
+      }
       await utils.getProfessorRating(output[i].sections[j].primary.professor).then((data) => {
         output[i].sections[j].primary.rating = data.avgRating;
+        hitTable.set(output[i].sections[j].primary.professor, data.avgRating);
       }).catch((e) => {
         output[i].sections[j].primary.rating = 2.5;
         console.log(e)
