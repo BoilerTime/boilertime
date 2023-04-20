@@ -387,12 +387,22 @@
 
 
               </DialogTitle>
-              <div v-for="(entry, index) in blockArray">
+              <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <p class="text-sm text-gray-500 text-left">
+                  Have a meeting? Need some time off? Let's find times that <span class="text-yellow-500">work for you</span>
+                </p>
+              </div>
+              <div v-for="(entry, index) in blockArray" style=" transition: width 2s;">
                   <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                    <label><b>Block {{index + 1 }}: {{entry.name}}</b></label>
-                    <p>{{entry.name}}</p>
-                    <div class="flex items-center justify-center">
-                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl">
+                    <label><b>Block {{index + 1 }}: {{entry.name}}</b>
+                      <button type="button" class="float-right text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500" @click="deleteBlock(index)"><TrashIcon class="w-4 h-4" /><span class="sr-only">Delete</span></button>
+                    </label>
+                    <p>Start Time: {{entry.start}}</p>
+                    <p>End Time: {{entry.end}}</p>
+                    
+                    <br/>
+                    <div class="flex items-left justify-left">
+                      <div class="grid grid-cols-5 grid-rows-1 gap-4 bg-gray-200 rounded-xl border-4">
                         <div>
                           <input type="radio" :id="'Monday'+index" class="peer hidden" :checked="entry.daysOfWeek[0] == true" v-on:click="entry.daysOfWeek[0] = !entry.daysOfWeek[0]"/>
                           <label :for="'Monday'+index" class="col-start-4 block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white">M</label>
@@ -424,7 +434,7 @@
                 <br/>
               </div>
               <div v-if="isAddingBlock">
-                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off">
+                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" autocomplete="off" id="blockInputForm">
                   <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
                       Block Name
@@ -573,7 +583,7 @@ import {
   DialogTitle,
 } from '@headlessui/vue'
 
-import { BookmarkIcon, PlusIcon } from "@heroicons/vue/24/outline"
+import { BookmarkIcon, TrashIcon } from "@heroicons/vue/24/outline"
 import { use } from 'h3';
 const { $socket } = useNuxtApp()
 
@@ -613,6 +623,7 @@ const blockOption = ref('Add Block');
 const startTime = ref('')
 const endTime = ref('')
 const block_name = ref('');
+const blockInputForm = ref();
 var totalSum;
 
 function closeModal() {
@@ -1509,14 +1520,7 @@ function configureState(data) {
   }
 }
 
-const blockArray = ref([
-    {
-      name: "none",
-      start: 9000,
-      duration: 9111,
-      daysOfWeek: [true, true, true, true, true]
-    }, 
-]);
+const blockArray = ref([]);
 
 const daysPref = ref(
   ["M", "T", "W", "R", "F"]
@@ -1615,11 +1619,24 @@ function saveBlock() {
   const format = {
     name: block_name.value,
     start: startingHour + ":" + startingMinute,
-    end: startingMinute + ":" + endingMinute,
+    end: endingHour + ":" + endingMinute,
     daysOfWeek: dayPrefActive.value
   }
   blockArray.value.push(format);
+  
+  //Clear all the form values out then close the form
+  startTime.value = "";
+  endTime.value = "";
+  block_name.value = "";
+  dayPrefActive.value = [false, false, false, false, false];
+  showSectionConfig();
 
+}
+
+function deleteBlock(index) {
+  console.log(index)
+  blockArray.value.splice(index, 1);
+  console.log(blockArray.value);
 }
 </script>
 
