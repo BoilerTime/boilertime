@@ -64,7 +64,7 @@ async function sendEmailWhenFlagged(type, name, user_id, flag_count) {
     var user_email = await utils.getUserEmail(user_id)
 
     const touser = {
-      from: 'BoilerTime Data Integrity <donotreply@boilerti.me>',
+      from: 'BoilerTime Data Integrity <donotreply@mg.boilerti.me>',
       to: user_email,
       subject: 'Your rating on BoilerTime has been flagged!',
       template: 'flaggedrating_touser',
@@ -84,7 +84,7 @@ async function sendEmailWhenFlagged(type, name, user_id, flag_count) {
     }
 
     const toteam = {
-      from: 'BoilerTime Data Integrity <donotreply@boilerti.me>',
+      from: 'BoilerTime Data Integrity <donotreply@mg.boilerti.me>',
       to: team_maillist,
       subject: 'A rating on BoilerTime has been flagged!',
       template: 'flaggedrating_toteam',
