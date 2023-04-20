@@ -226,6 +226,9 @@ public class ScheduleClient extends Thread  {
 
                 message = network.getIncomingMessage();
                 x.addSectionId(message);
+
+                message = network.getIncomingMessage();
+                x.addParentSection(message);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();

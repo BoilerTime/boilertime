@@ -1051,6 +1051,8 @@ function sendToOptimizer(courses, blocks, configurations) {
       connection.send(courses[i].sections[j].primary.rating);
       //Section ID
       connection.send(courses[i].sections[j].primary.ID);
+      //Parent ID
+      connection.send(courses[i].collections[j]);
     }
   }
   /*

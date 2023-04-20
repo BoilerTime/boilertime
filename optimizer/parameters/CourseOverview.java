@@ -10,8 +10,9 @@ public class CourseOverview {
     private String[] sectionIds;
     private final boolean required; 
     private double ratings[]; 
+    private final String[] parentSections;
 
-    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings, String[] sectionIds) {
+    public CourseOverview(String name, int[] times, int[] courseDurations, WeekDays[][] daysOfWeek, boolean isRequired, double[] ratings, String[] sectionIds, String[] parentSections) {
         this.courseName = name; 
         this.courseTimes = times; 
         this.courseDurations = courseDurations; 
@@ -19,6 +20,7 @@ public class CourseOverview {
         this.required = isRequired;
         this.ratings = ratings;
         this.sectionIds = sectionIds;
+        this.parentSections = parentSections;
         System.out.println(name + " is required? " + isRequired);
     }
 
@@ -56,5 +58,9 @@ public class CourseOverview {
     
     public String[] getSectionIds() {
         return this.sectionIds;
+    }
+
+    public String[] getParentSections() {
+        return this.parentSections;
     }
 }
