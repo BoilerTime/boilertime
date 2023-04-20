@@ -429,7 +429,7 @@
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="block_name">
                       Block Name
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block_name" type="text" placeholder="Block Name">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="block_name" type="text" placeholder="Block Name">
                   </div>
                   <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="start_time">
@@ -612,6 +612,7 @@ const isAddingBlock = ref(false);
 const blockOption = ref('Add Block');
 const startTime = ref('')
 const endTime = ref('')
+const block_name = ref('');
 var totalSum;
 
 function closeModal() {
@@ -1584,7 +1585,30 @@ function saveBlock() {
     }
   }
 
-  
+  if(!block_name.value || /^\s*$/.test(block_name.value)) {
+    toast.error("You need to enter a name for your block!", {
+              timeout: 5000,
+              position: POSITION.BOTTOM_RIGHT
+      });
+      return;
+  }
+
+  //Convert date boolean to array
+  let daysWeek = [];
+  for(let i = 0; i < dayPrefActive.value.length; i++) {
+    if(dayPrefActive.value[i]) {
+      daysWeek.push(daysPref.value[i]);
+    }
+  }
+  if(daysWeek.length == 0) {
+    toast.error("You need to enter some days of the week!", {
+              timeout: 5000,
+              position: POSITION.BOTTOM_RIGHT
+      });
+      return;
+  }
+  console.log(daysWeek);
+
 }
 </script>
 
