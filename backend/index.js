@@ -331,23 +331,21 @@ app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   }
   else {
     console.log(req.body);
-    await schedule.addClasses(req.body).then((input) => {
+    await schedule.addClasses(req.body).then(async (input) => {
       console.log("Schedule Added to Database")
+      const requiredClasses = req.body.required_classes;
+      const optionalClasses = req.body.optional_classes;
+      const user_id = req.body.user_id;
+      const classes = requiredClasses.concat(optionalClasses);
+      await optimizer.optimizeSchedule(req.body).then((data) => {
+        console.log("Saved!");
+        return res.json({ accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times });
+      }).catch((err) => {
+        console.log(err)
+        return res.sendStatus(500);
+      });
     }).catch(err => {
       console.error(err)
-      return res.sendStatus(500);
-    });
-    
-    const requiredClasses = req.body.required_classes;
-    const optionalClasses = req.body.optional_classes;
-    const user_id = req.body.user_id;
-    const classes = requiredClasses.concat(optionalClasses);
-
-    await optimizer.optimizeSchedule(req.body).then((data)=>{
-      console.log("Saved!");
-      return res.json({accessToken: req.user.accessToken, schedule: data, blocked_times: req.body.blocked_times});
-    }).catch((err) => {
-      console.log(err)
       return res.sendStatus(500);
     });
   }
