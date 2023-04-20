@@ -15,6 +15,7 @@ public class Course {
     private final double maxRating; 
     private HashMap<String, Lecture> idSection; 
     private String[] sectionIds;
+    private String[] parentSections;
 
 
     public Course(CourseOverview info) {
@@ -27,6 +28,7 @@ public class Course {
         this.ratingsArr = info.getRatings();
         this.maxRating = this.calculateMaxRating();
         this.sectionIds = info.getSectionIds();
+        this.parentSections = info.getParentSections();
     }
 
     /**
