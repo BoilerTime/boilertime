@@ -1057,6 +1057,8 @@ function sendToOptimizer(courses, blocks, configurations) {
       connection.send(courses[i].sections[j].secondary.length);
       //Send the secondaries for this one
       for(let k = 0; k < courses[i].sections[j].secondary.length; k++) {
+        //Type
+        connection.send(courses[i].sections[j].secondary[k].type);
         //Start time
         connection.send(courses[i].sections[j].secondary[k].startTime);
         //duration

@@ -73,4 +73,13 @@ public class CourseOverview {
         }
         return results;
     }
+
+    public boolean hasSecondaries() {
+        for(int i = 0; i < this.secondaries.length; i++) {
+            if(secondaries[i].getNumberOfSecondaries() > 0) {
+                return true;
+            }
+        }
+        return false;
+    } 
 }

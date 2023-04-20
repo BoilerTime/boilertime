@@ -5,7 +5,6 @@ import optimizer.constants.WeekDays;
 
 public class SecondaryOverviewHelper {
     private String secondaryName;
-    private boolean required;
     //Course Time
     private int[] courseTimes;
     private int courseTimesPtr;
@@ -20,6 +19,7 @@ public class SecondaryOverviewHelper {
     private int sectionIdsPtr;
 
     private String parentSection;
+    private int numberOfSecondaries;
 
 
     /**
@@ -33,6 +33,7 @@ public class SecondaryOverviewHelper {
         this.sectionIdsPtr = -1;
         secondaryName = null;
         parentSection = null;
+        this.numberOfSecondaries = -1;
     }
 
     /**
@@ -51,14 +52,6 @@ public class SecondaryOverviewHelper {
         this.parentSection = name;
     }
     
-    /**
-     * Adds a flag of whether or not the course is required
-     * @param r A boolean true if the course is required, otherwise false. 
-     */
-    public void setRequired(boolean r) {
-        this.required = r;
-    }
-
 
     /**
      * A method that pushes a new time to the list of times for a specific class
@@ -98,6 +91,7 @@ public class SecondaryOverviewHelper {
      * @param length The number of sections to be allocated. 
      */
     public void instantiateHelper(int length) {
+        this.numberOfSecondaries = length;
         //Course times
         this.courseTimes = new int[length];
         this.courseTimesPtr = 0;
@@ -140,5 +134,13 @@ public class SecondaryOverviewHelper {
 
     public String getParentSections() {
         return this.parentSection;
+    }
+    
+    public String getType() {
+        return this.secondaryName;
+    }
+
+    public int getNumberOfSecondaries() {
+        return this.numberOfSecondaries;
     }
 }

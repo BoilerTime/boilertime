@@ -16,6 +16,7 @@ public class Course {
     private HashMap<String, Lecture> idSection; 
     private String[] sectionIds;
     private String[] parentSections;
+    private final boolean hasSecondaryComponents;
 
 
     public Course(CourseOverview info) {
@@ -29,6 +30,7 @@ public class Course {
         this.maxRating = this.calculateMaxRating();
         this.sectionIds = info.getSectionIds();
         this.parentSections = info.getParentSections();
+        this.hasSecondaryComponents = info.hasSecondaries();
     }
 
     /**

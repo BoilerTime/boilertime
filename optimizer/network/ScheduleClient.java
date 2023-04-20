@@ -230,6 +230,7 @@ public class ScheduleClient extends Thread  {
                 s.instantiateHelper(numberOfSecondaries);
                 System.out.println("About to start helper!!" + numberOfSecondaries + " " + i + " " + numOfTimes);
                 for(int j = 0; j < numberOfSecondaries; j++) {
+                    s.addName(network.getIncomingMessage());
                     s.addTime(this.getNumber(network));
                     s.addDuration(this.getNumber(network));
                     s.addWeekDays(network.getIncomingMessage());
