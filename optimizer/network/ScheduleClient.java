@@ -239,7 +239,9 @@ public class ScheduleClient extends Thread  {
             String name = network.getIncomingMessage();
             int startTime = Integer.parseInt(network.getIncomingMessage());
             int duration = Integer.parseInt(network.getIncomingMessage());
-            WeekDays[] days = Utils.strListToDayList(network.getIncomingMessage());
+            String temp = network.getIncomingMessage();
+            System.out.println("BLOCK DAYS: " + temp);
+            WeekDays[] days = Utils.strListToDayList(temp);
             return new BlockOverview(name, startTime, duration, days);
         } catch (NumberFormatException e) {
             System.err.println("(ScheduleClient.java) Issue: " + e);

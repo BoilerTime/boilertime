@@ -496,7 +496,7 @@ public class Utils {
      * @return The array result, with none where no day of week was found to be
      */
     public static WeekDays[] strListToDayList(String target) {
-        String[] aDays = target.split(", ");
+        String[] aDays = target.split(",");
         WeekDays[] res = new WeekDays[aDays.length];
         for(int i = 0; i < aDays.length; i++) {
             res[i] = strToDay(aDays[i]);

@@ -588,8 +588,8 @@ import {
 } from '@headlessui/vue'
 
 import { BookmarkIcon, TrashIcon } from "@heroicons/vue/24/outline"
-import { use } from 'h3';
 const { $socket } = useNuxtApp()
+var connection;
 
 const data = ref([])
 const optionalData = ref([])
@@ -628,6 +628,7 @@ const startTime = ref('')
 const endTime = ref('')
 const block_name = ref('');
 const blockInputForm = ref();
+
 var totalSum;
 
 function closeModal() {
@@ -734,12 +735,14 @@ const filteredResults = computed(() => {
 })
 
 onMounted(() => {
-  $socket.onopen = () => {
+  
+  connection = new WebSocket("ws://localhost:3002"); 
+  connection.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
-    //algorithmProgress.show = true
   }
-  $socket.onmessage = ((data) => {
+
+  connection.onmessage = ((data) => {
     console.log("data", (data.data))
     try {
       let response = JSON.parse(data.data);
@@ -762,14 +765,15 @@ onMounted(() => {
     } catch (e) {
       console.log("Wasnt JSON!!" + e)
     }
-})
+  })
 
-  $socket.onclose = function () {
+  connection.onclose = function () {
     console.log("disconnected")
   }
-
 })
 
+
+  
 const selectedRequiredCourses = ref([])
 const isSearchActive = ref(false)
 
@@ -1002,45 +1006,45 @@ function submit() {
   
 }
 
-function sendToOptimizer(courses, blocks, configurations) {
-  if($socket.readyState != $socket.OPEN) {
+function sendToOptimizer(courses, blocks, configurations) {  
+  if(connection.readyState != connection.OPEN) {
     toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
           timeout: 5000,
           position: POSITION.BOTTOM_RIGHT
         });
   }
   //We first need to send them number of classes we will be optimzing by
-  $socket.send(courses.length)
-  $socket.send(blocks.length);
+  connection.send(courses.length)
+  connection.send(blocks.length);
   //Next, we send the time of day preferences
   
   console.log(getPreferenceList())
-  $socket.send(getPreferenceList().toString());
-  $socket.send(getTimePref());
-  $socket.send(getNumCourses());
+  connection.send(getPreferenceList().toString());
+  connection.send(getTimePref());
+  connection.send(getNumCourses());
   /*
     * Take care of the courses that the user has entered
   */
   for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
-    $socket.send(courses[i].name)
+    connection.send(courses[i].name)
     //Next, we can send the number of sections
-    $socket.send(courses[i].isRequired)
+    connection.send(courses[i].isRequired)
 
-    $socket.send(courses[i].startTimes.length);
+    connection.send(courses[i].startTimes.length);
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < courses[i].startTimes.length; j++) {
       //First, we can send the start time
-      $socket.send(fixTime(courses[i].startTimes[j]));
+      connection.send(fixTime(courses[i].startTimes[j]));
       //Durations
-      $socket.send(courses[i].durations[j]);
+      connection.send(courses[i].durations[j]);
       //Week days 
       console.log(courses[i].daysOfWeek[j]);
-      $socket.send(courses[i].daysOfWeek[j]);
+      connection.send(courses[i].daysOfWeek[j]);
       //RMP
-      $socket.send(courses[i].rmp[j]);
+      connection.send(courses[i].rmp[j]);
       //Section ID
-      $socket.send(courses[i].sectionIDs[j]);
+      connection.send(courses[i].sectionIDs[j]);
     }
   }
   /*
@@ -1049,10 +1053,10 @@ function sendToOptimizer(courses, blocks, configurations) {
   console.log("UWU")
   console.log(blocks)
   for(let i = 0; i < blocks.length; i++) {
-    $socket.send(blocks[i].name);
-    $socket.send(blocks[i].start_time);
-    $socket.send(blocks[i].duration);
-    $socket.send(blocks[i].days_of_week.toString());
+    connection.send(blocks[i].name);
+    connection.send(blocks[i].start_time);
+    connection.send(blocks[i].duration);
+    connection.send(blocks[i].days_of_week.toString());
   }
 }
 
@@ -1100,7 +1104,7 @@ function parseCoursesResponse(output) {
         string+= tempForm;
         console.log(data[i][j]);
         string = string.replace("block_name", blocks[i][j].blockName);
-        string = string.replace("block_time", fto2(blocks[i][j].blockStarTime));
+        string = string.replace("block_time", fto2(blocks[i][j].blockStartTime));
         string = string.replace("block_duration", blocks[i][j].blockDuration);
         string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
         if(j != blocks[i].length - 1) {
