@@ -34,9 +34,9 @@ onBeforeMount(async () => {
     })
     .then((res) => {
       //alert("Verification has been successful.");
-      toast.success("Verification has been successful!", {
+      $toast.success("Verification has been successful!", {
       });
-      navigateTo("/auth/login");
+      navigateTo("/auth/login?verified=true");
     })
     .catch((error) => {
       console.log(error + "HERE");

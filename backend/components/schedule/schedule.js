@@ -290,7 +290,7 @@ async function getClassMates(user_id, course) {
   try {
     for (var i = 0; i < doc.data().users.length; i++) {
       const jsonObj = await utils.getUserProfile(doc.data().users[i]);
-      if (doc.data().users[i] != user_id) {
+      if (doc.data().users[i] != user_id && jsonObj.pairs) {
         names.push(jsonObj.firstname + ' ' + jsonObj.lastname + ', ' + jsonObj.email);
       }
     } 

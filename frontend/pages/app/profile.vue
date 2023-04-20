@@ -938,6 +938,7 @@ async function getUserInfo() {
       email.value = response.data.email;
       pairs.value = response.data.pairs;
       privacy.value = response.data.privacy;
+      console.log(pairs.value + " " + privacy.value);
     })
     .catch((error) => {
       console.error(error);
