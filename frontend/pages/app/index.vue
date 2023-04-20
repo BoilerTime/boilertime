@@ -700,14 +700,8 @@ async function navigate(selected, type) {
         var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
         lookup = lookup.data
         var search = (advanced["building"].toUpperCase())
-        var len = 151
-        for (var i = 0; i < len; i++) {
-          if (Object.keys(lookup)[i] == search) {
-            advanced["building"] = Object.values(lookup)[i]
-            isDataLoaded.value = true;
-            break
-          }
-        }
+        advanced["building"] = lookup[search]
+        isDataLoaded.value = true;
         if (isDataLoaded) {
           advanced_result.value = advanced
           isDataLoaded.value = true;
@@ -766,13 +760,7 @@ async function navigate(selected, type) {
     var search = result.value.split(' ')[0]
     var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
     lookup = lookup.data
-    var len = 151
-    for (var i = 0; i < len; i++) {
-      if (Object.keys(lookup)[i] == search) {
-        actual_name.value = Object.values(lookup)[i]
-        break
-      }
-    }
+    actual_name.value = lookup[search]
     isDataLoaded.value = true;
   }
   if (type == 'Course') {
