@@ -39,23 +39,57 @@
       </template>
       <template #footer class="hidden"> </template>
     </Modal>
-    <div v-if="isMobile">
-      <NavBarMobile />
-    </div>
-    <div v-else>
-      <NavBar />
-    </div>
-    <div class="pb-24">
-      <div class="px-8 mx-auto max-w-7xl">
+    <body>
+      <div v-if="isMobile">
+        <NavBarMobile />
+      </div>
+      <div v-else>
+        <NavBar />
+      </div>
+      <div class="px-4 mx-auto max-w-7xl md:px-8">
         <div class="block py-5">
-          <div class="items-center grid grid-cols-3 gap-8">
-            <div class="col-span-2">
+          <div class="items-center flex gap-8">
+            <div>
               <p class="text-2xl font-semibold text-black dark:text-white">
                 Welcome, {{ firstname }}
               </p>
             </div>
-
-            <div v-if="!isMobile">
+          </div>
+        </div>
+        <section class="flex flex-row gap-10">
+          <div class="bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
+            <div v-if="userSchedules.length !== 0">
+              <!-- Data items -->
+              <div class="flex flex-row justify-center gap-10 p-10">
+                <!-- Add button -->
+                <button
+                  class="p-6 flex justify-center items-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
+                  @click="navigateToCreateSchedule()"
+                >
+                  <PlusIcon class="w-12 h-12" />
+                </button>
+              </div>
+            </div>
+            <div v-else>
+              <div
+                class="flex items-start justify-start h-screen dark:bg-neutral-500"
+              >
+                <div
+                  class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
+                  @click="navigateToCreateSchedule()"
+                >
+                  <Bars3Icon
+                    class="w-8 h-8 text-black-400 dark:text-gray-200"
+                  />
+                  <span class="ml-4 text-lg text-black-400 dark:text-gray-200"
+                    >Create a new schedule</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div v-if="!isMobile" class="mb-4">
               <!--Start Search Bar-->
               <div class="w-full max-w-md">
                 <div class="flex">
@@ -109,278 +143,495 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <main class="-mt-24">
-      <div class="px-4 mx-auto max-w-7xl md:px-8">
-        <div class="flex flex-row md:gap-8">
-          <div class="flex flex-row items-center gap-4">
-            <section>
-              <div
-                class="flex flex-row flex-wrap justify-center bg-white dark:bg-neutral-500 shadow-lg rounded-lg"
-              >
-                <div v-if="userSchedules.length !== 0">
-                  <!-- Add button -->
-                  <div class="w-1/4 p-6" @click="navigateToCreateSchedule()">
-                    <div
-                      class="flex items-center justify-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
-                    >
-                      <PlusIcon class="w-12 h-12" />
-                    </div>
-                  </div>
-                  <!-- Data items -->
+            <div v-if="!isMobile">
+              <!--Hub content -->
+              <div class="grid grid-cols-1 gap-4">
+                <section aria-labelledby="section-2-title">
                   <div
-                    v-for="(schedule, index) in userSchedules"
-                    :key="index"
-                    class="p-6 cursor-pointer"
-                    @click="getScheduleView(schedule.term_id)"
+                    class="overflow-scroll bg-white shadow-xl rounded-xl h-96"
                   >
-                    <div
-                      class="flex flex-col justify-between h-72 w-64 border-2 border-black overflow-x-hidden overflow-y-scroll bg-white rounded-lg dark:bg-neutral-700 dark:text-white"
-                    >
-                      <div class="px-4 py-2 bg-yellow-500">
-                        <h2 class="text-lg font-bold text-black">
-                          {{ formatTitle(schedule.term_id) }}
-                        </h2>
-                      </div>
-                      <div class="flex items-center justify-center flex-grow">
-                        <div class="text-center">
-                          Required:
-                          <span class="text-sm text-black dark:text-white"
-                            >{{ schedule.required_classes.join(", ").trim() }}
-                          </span>
-                          <br />
-                          Optional:
-                          <span class="text-sm text-black dark:text-white"
-                            >{{ schedule.optional_classes.join(", ").trim() }}
-                          </span>
-                        </div>
-                      </div>
-                      <div class="px-4 py-2 mt-auto bg-yellow-500">
-                        <span class="text-sm text-black">{{
-                          schedule.timestamp
-                        }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div v-else>
-                  <div
-                    class="flex items-start justify-start h-screen dark:bg-neutral-500"
-                  >
-                    <div
-                      class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
-                      @click="navigateToCreateSchedule()"
-                    >
-                      <Bars3Icon
-                        class="w-8 h-8 text-black-400 dark:text-gray-200"
-                      />
-                      <span
-                        class="ml-4 text-lg text-black-400 dark:text-gray-200"
-                        >Create a new schedule</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <div v-if="!isMobile">
-            <!--Hub content -->
-            <div class="grid grid-cols-1 gap-4">
-              <section aria-labelledby="section-2-title">
-                <div class="overflow-scroll bg-white shadow-xl rounded-xl h-96">
-                  <div class="p-6">
-                    <div v-if="resultData && isDataLoaded">
-                      <h1 class="mb-6 text-xl font-semibold text-left">
-                        {{ result }}
-                      </h1>
-                      <div class="" v-if="resultType == 'Professor'">
-                        <div class="" v-if="resultData.length == 2">
-                          <div class="mb-6">
-                            <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['email']"
-                            >
-                              <span class="text-base font-medium text-blue-700"
-                                >Email</span
+                    <div class="p-6">
+                      <div v-if="resultData && isDataLoaded">
+                        <h1 class="mb-6 text-xl font-semibold text-left">
+                          {{ result }}
+                        </h1>
+                        <div class="" v-if="resultType == 'Professor'">
+                          <div class="" v-if="resultData.length == 2">
+                            <div class="mb-6">
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['email']"
                               >
-                              <a
-                                :href="'mailto:' + advanced_result['email']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
-                                >{{ advanced_result["email"] }}</a
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Email</span
+                                >
+                                <a
+                                  :href="'mailto:' + advanced_result['email']"
+                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  >{{ advanced_result["email"] }}</a
+                                >
+                              </div>
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['title']"
                               >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Title</span
+                                >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >{{ advanced_result["title"] }}</span
+                                >
+                              </div>
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['office phone']"
+                              >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Phone</span
+                                >
+                                <a
+                                  :href="
+                                    'tel:' + advanced_result['office phone']
+                                  "
+                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  >{{ advanced_result["office phone"] }}</a
+                                >
+                              </div>
                             </div>
-                            <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['title']"
-                            >
+                            <div class="flex justify-between mb-1">
                               <span class="text-base font-medium text-blue-700"
-                                >Title</span
+                                >Department</span
                               >
                               <span
                                 class="text-base font-medium text-blue-700"
-                                >{{ advanced_result["title"] }}</span
+                                v-if="resultData[1]"
+                                >{{ resultData[1].department }}</span
                               >
                             </div>
-                            <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['office phone']"
-                            >
+                            <div class="flex justify-between mb-4">
                               <span class="text-base font-medium text-blue-700"
-                                >Phone</span
+                                >Averaged from</span
                               >
-                              <a
-                                :href="'tel:' + advanced_result['office phone']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
-                                >{{ advanced_result["office phone"] }}</a
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                v-if="resultData[1]"
+                                >{{ resultData[1].numRatings }} ratings</span
                               >
                             </div>
-                          </div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Department</span
-                            >
-                            <span
-                              class="text-base font-medium text-blue-700"
-                              v-if="resultData[1]"
-                              >{{ resultData[1].department }}</span
-                            >
-                          </div>
-                          <div class="flex justify-between mb-4">
-                            <span class="text-base font-medium text-blue-700"
-                              >Averaged from</span
-                            >
-                            <span
-                              class="text-base font-medium text-blue-700"
-                              v-if="resultData[1]"
-                              >{{ resultData[1].numRatings }} ratings</span
-                            >
-                          </div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Average GPA</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
-                              v-if="resultData[0]"
-                              >{{ resultData[0].overall_gpa }}</span
-                            >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0]"
-                          >
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Average GPA</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="resultData[0]"
+                                >{{ resultData[0].overall_gpa }}</span
+                              >
+                            </div>
                             <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width: resultData[0].percentage * 100 + '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Average difficulty</span
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                              v-if="resultData[0]"
                             >
-                            <span
-                              class="text-sm font-medium text-blue-700"
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width: resultData[0].percentage * 100 + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Average difficulty</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[1] &&
+                                  resultData[1].avgDifficulty > 0
+                                "
+                                >{{
+                                  (
+                                    (resultData[1].avgDifficulty / 5.0) *
+                                    100
+                                  ).toPrecision(4) + "%"
+                                }}</span
+                              >
+                            </div>
+                            <div
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
                               v-if="
                                 resultData[1] && resultData[1].avgDifficulty > 0
                               "
-                              >{{
-                                (
-                                  (resultData[1].avgDifficulty / 5.0) *
-                                  100
-                                ).toPrecision(4) + "%"
-                              }}</span
                             >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="
-                              resultData[1] && resultData[1].avgDifficulty > 0
-                            "
-                          >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    (resultData[1].avgDifficulty / 5.0) * 100 +
+                                    '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Average rating</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[1] && resultData[1].avgRating > 0
+                                "
+                                >{{
+                                  (
+                                    (resultData[1].avgRating / 5.0) *
+                                    100
+                                  ).toPrecision(4) + "%"
+                                }}</span
+                              >
+                            </div>
                             <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  (resultData[1].avgDifficulty / 5.0) * 100 +
-                                  '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Average rating</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
                               v-if="
                                 resultData[1] && resultData[1].avgRating > 0
                               "
-                              >{{
-                                (
-                                  (resultData[1].avgRating / 5.0) *
-                                  100
-                                ).toPrecision(4) + "%"
-                              }}</span
                             >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[1] && resultData[1].avgRating > 0"
-                          >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    (resultData[1].avgRating / 5.0) * 100 + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Would take again</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[1] &&
+                                  resultData[1].wouldTakeAgainPercent >= 0
+                                "
+                                >{{
+                                  resultData[1].wouldTakeAgainPercent.toPrecision(
+                                    4
+                                  ) + "%"
+                                }}</span
+                              >
+                            </div>
                             <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  (resultData[1].avgRating / 5.0) * 100 + '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Would take again</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
                               v-if="
                                 resultData[1] &&
                                 resultData[1].wouldTakeAgainPercent >= 0
                               "
-                              >{{
-                                resultData[1].wouldTakeAgainPercent.toPrecision(
-                                  4
-                                ) + "%"
-                              }}</span
                             >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                            v-if="
-                              resultData[1] &&
-                              resultData[1].wouldTakeAgainPercent >= 0
-                            "
-                          >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    resultData[1].wouldTakeAgainPercent + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="mt-8 mb-4">
+                              <iframe
+                                width="335"
+                                height="250"
+                                style="border: 0"
+                                loading="lazy"
+                                scrolling="no"
+                                gestureHandling="none"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                :src="
+                                  'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
+                                  advanced_result['building'] +
+                                  ' Purdue+University,West+Lafayette+IN'
+                                "
+                              >
+                              </iframe>
+                            </div>
                             <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  resultData[1].wouldTakeAgainPercent + '%',
-                              }"
-                            ></div>
+                              class="mb-3 flex-wrap text-center items-center"
+                              v-if="advanced_result['building']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Office<br
+                              /></span>
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                >{{ advanced_result["building"] }}</span
+                              >
+                            </div>
+                            <div
+                              class="mb-2 flex-wrap text-center items-center"
+                              v-if="advanced_result['url']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Website<br
+                              /></span>
+                              <a
+                                :href="advanced_result['url']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["url"] }}</a
+                              >
+                            </div>
+                          </div>
+                          <div class="" v-else-if="resultData.length == 1">
+                            <div class="mb-6">
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['email']"
+                              >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Email</span
+                                >
+                                <a
+                                  :href="'mailto:' + advanced_result['email']"
+                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  >{{ advanced_result["email"] }}</a
+                                >
+                              </div>
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['title']"
+                              >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Title</span
+                                >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >{{ advanced_result["title"] }}</span
+                                >
+                              </div>
+                              <div
+                                class="flex justify-between mb-1"
+                                v-if="advanced_result['office phone']"
+                              >
+                                <span
+                                  class="text-base font-medium text-blue-700"
+                                  >Phone</span
+                                >
+                                <a
+                                  :href="
+                                    'tel:' + advanced_result['office phone']
+                                  "
+                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  >{{ advanced_result["office phone"] }}</a
+                                >
+                              </div>
+                            </div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="resultData[0].overall_gpa"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Average GPA</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="resultData[0]"
+                                >{{ resultData[0].overall_gpa }}</span
+                              >
+                            </div>
+                            <div
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                              v-if="resultData[0].overall_gpa"
+                            >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width: resultData[0].percentage * 100 + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div
+                              class="flex justify-between mb-1"
+                              v-if="resultData[0].department"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Department</span
+                              >
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                >{{ resultData[0].department }}</span
+                              >
+                            </div>
+                            <div
+                              class="flex justify-between mb-4"
+                              v-if="resultData[0].numRatings"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Averaged from</span
+                              >
+                              <span class="text-base font-medium text-blue-700"
+                                >{{ resultData[0].numRatings }} ratings</span
+                              >
+                            </div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Average difficulty</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[0] &&
+                                  resultData[0].avgDifficulty > 0
+                                "
+                                >{{
+                                  (
+                                    (resultData[0].avgDifficulty / 5.0) *
+                                    100
+                                  ).toPrecision(4) + "%"
+                                }}</span
+                              >
+                            </div>
+                            <div
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                              v-if="
+                                resultData[0] && resultData[0].avgDifficulty > 0
+                              "
+                            >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    (resultData[0].avgDifficulty / 5.0) * 100 +
+                                    '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Average rating</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[0] && resultData[0].avgRating > 0
+                                "
+                                >{{
+                                  (
+                                    (resultData[0].avgRating / 5.0) *
+                                    100
+                                  ).toPrecision(4) + "%"
+                                }}</span
+                              >
+                            </div>
+                            <div
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
+                              v-if="
+                                resultData[0] && resultData[0].avgRating > 0
+                              "
+                            >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    (resultData[0].avgRating / 5.0) * 100 + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Would take again</span
+                              >
+                              <span
+                                class="text-sm font-medium text-blue-700"
+                                v-if="
+                                  resultData[0] &&
+                                  resultData[0].wouldTakeAgainPercent >= 0
+                                "
+                                >{{
+                                  resultData[0].wouldTakeAgainPercent.toPrecision(
+                                    4
+                                  ) + "%"
+                                }}</span
+                              >
+                            </div>
+                            <div
+                              class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
+                              v-if="
+                                resultData[0] &&
+                                resultData[0].wouldTakeAgainPercent >= 0
+                              "
+                            >
+                              <div
+                                class="bg-blue-600 h-2.5 rounded-full"
+                                :style="{
+                                  width:
+                                    resultData[0].wouldTakeAgainPercent + '%',
+                                }"
+                              ></div>
+                            </div>
+                            <div v-else>No data available</div>
+                            <div class="mt-8 mb-4">
+                              <iframe
+                                width="335"
+                                height="250"
+                                style="border: 0"
+                                loading="lazy"
+                                scrolling="no"
+                                gestureHandling="none"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                :src="
+                                  'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
+                                  advanced_result['building'] +
+                                  ' Purdue+University,West+Lafayette+IN'
+                                "
+                              >
+                              </iframe>
+                            </div>
+                            <div
+                              class="mb-3 flex-wrap text-center items-center"
+                              v-if="advanced_result['building']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Office<br
+                              /></span>
+                              <span
+                                class="text-base font-medium text-blue-700"
+                                >{{ advanced_result["building"] }}</span
+                              >
+                            </div>
+                            <div
+                              class="mb-2 flex-wrap text-center items-center"
+                              v-if="advanced_result['url']"
+                            >
+                              <span class="text-base font-medium text-blue-700"
+                                >Website<br
+                              /></span>
+                              <a
+                                :href="advanced_result['url']"
+                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                >{{ advanced_result["url"] }}</a
+                              >
+                            </div>
                           </div>
                           <div v-else>No data available</div>
-                          <div class="mt-8 mb-4">
+                          <div class="flex justify-between mb-1"></div>
+                        </div>
+                        <div
+                          class="flex flex-col items-center mb-12"
+                          v-if="resultType == 'Classroom'"
+                        >
+                          <div class="w-full max-w-md">
                             <iframe
-                              width="335"
+                              width="320"
                               height="250"
                               style="border: 0"
                               loading="lazy"
@@ -389,546 +640,274 @@
                               referrerpolicy="no-referrer-when-downgrade"
                               :src="
                                 'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
-                                advanced_result['building'] +
-                                ' Purdue+University,West+Lafayette+IN'
+                                actual_name +
+                                'Purdue+University,West+Lafayette+IN'
                               "
                             >
                             </iframe>
-                          </div>
-                          <div
-                            class="mb-3 flex-wrap text-center items-center"
-                            v-if="advanced_result['building']"
-                          >
-                            <span class="text-base font-medium text-blue-700"
-                              >Office<br
-                            /></span>
-                            <span class="text-base font-medium text-blue-700">{{
-                              advanced_result["building"]
-                            }}</span>
-                          </div>
-                          <div
-                            class="mb-2 flex-wrap text-center items-center"
-                            v-if="advanced_result['url']"
-                          >
-                            <span class="text-base font-medium text-blue-700"
-                              >Website<br
-                            /></span>
-                            <a
-                              :href="advanced_result['url']"
-                              class="text-base font-medium text-blue-700 hover:text-blue-300"
-                              >{{ advanced_result["url"] }}</a
-                            >
-                          </div>
-                        </div>
-                        <div class="" v-else-if="resultData.length == 1">
-                          <div class="mb-6">
+                            <h2 class="mt-8 mb-4 text-2xl font-bold">
+                              Ratings
+                            </h2>
                             <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['email']"
+                              v-for="(group, index) in resultData"
+                              :key="index"
                             >
-                              <span class="text-base font-medium text-blue-700"
-                                >Email</span
-                              >
-                              <a
-                                :href="'mailto:' + advanced_result['email']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
-                                >{{ advanced_result["email"] }}</a
-                              >
-                            </div>
-                            <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['title']"
-                            >
-                              <span class="text-base font-medium text-blue-700"
-                                >Title</span
-                              >
-                              <span
-                                class="text-base font-medium text-blue-700"
-                                >{{ advanced_result["title"] }}</span
-                              >
-                            </div>
-                            <div
-                              class="flex justify-between mb-1"
-                              v-if="advanced_result['office phone']"
-                            >
-                              <span class="text-base font-medium text-blue-700"
-                                >Phone</span
-                              >
-                              <a
-                                :href="'tel:' + advanced_result['office phone']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
-                                >{{ advanced_result["office phone"] }}</a
-                              >
-                            </div>
-                          </div>
-                          <div
-                            class="flex justify-between mb-1"
-                            v-if="resultData[0].overall_gpa"
-                          >
-                            <span class="text-base font-medium text-blue-700"
-                              >Average GPA</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
-                              v-if="resultData[0]"
-                              >{{ resultData[0].overall_gpa }}</span
-                            >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0].overall_gpa"
-                          >
-                            <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width: resultData[0].percentage * 100 + '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div
-                            class="flex justify-between mb-1"
-                            v-if="resultData[0].department"
-                          >
-                            <span class="text-base font-medium text-blue-700"
-                              >Department</span
-                            >
-                            <span class="text-base font-medium text-blue-700">{{
-                              resultData[0].department
-                            }}</span>
-                          </div>
-                          <div
-                            class="flex justify-between mb-4"
-                            v-if="resultData[0].numRatings"
-                          >
-                            <span class="text-base font-medium text-blue-700"
-                              >Averaged from</span
-                            >
-                            <span class="text-base font-medium text-blue-700"
-                              >{{ resultData[0].numRatings }} ratings</span
-                            >
-                          </div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Average difficulty</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
-                              v-if="
-                                resultData[0] && resultData[0].avgDifficulty > 0
-                              "
-                              >{{
-                                (
-                                  (resultData[0].avgDifficulty / 5.0) *
-                                  100
-                                ).toPrecision(4) + "%"
-                              }}</span
-                            >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="
-                              resultData[0] && resultData[0].avgDifficulty > 0
-                            "
-                          >
-                            <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  (resultData[0].avgDifficulty / 5.0) * 100 +
-                                  '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Average rating</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
-                              v-if="
-                                resultData[0] && resultData[0].avgRating > 0
-                              "
-                              >{{
-                                (
-                                  (resultData[0].avgRating / 5.0) *
-                                  100
-                                ).toPrecision(4) + "%"
-                              }}</span
-                            >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-3"
-                            v-if="resultData[0] && resultData[0].avgRating > 0"
-                          >
-                            <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  (resultData[0].avgRating / 5.0) * 100 + '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Would take again</span
-                            >
-                            <span
-                              class="text-sm font-medium text-blue-700"
-                              v-if="
-                                resultData[0] &&
-                                resultData[0].wouldTakeAgainPercent >= 0
-                              "
-                              >{{
-                                resultData[0].wouldTakeAgainPercent.toPrecision(
-                                  4
-                                ) + "%"
-                              }}</span
-                            >
-                          </div>
-                          <div
-                            class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                            v-if="
-                              resultData[0] &&
-                              resultData[0].wouldTakeAgainPercent >= 0
-                            "
-                          >
-                            <div
-                              class="bg-blue-600 h-2.5 rounded-full"
-                              :style="{
-                                width:
-                                  resultData[0].wouldTakeAgainPercent + '%',
-                              }"
-                            ></div>
-                          </div>
-                          <div v-else>No data available</div>
-                        </div>
-                        <div class="flex justify-between mb-1"></div>
-                      </div>
-                      <div class="mt-8 mb-4">
-                        <iframe
-                          width="335"
-                          height="250"
-                          style="border: 0"
-                          loading="lazy"
-                          scrolling="no"
-                          gestureHandling="none"
-                          referrerpolicy="no-referrer-when-downgrade"
-                          :src="
-                            'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
-                            advanced_result['building'] +
-                            ' Purdue+University,West+Lafayette+IN'
-                          "
-                        >
-                        </iframe>
-                      </div>
-                      <div
-                        class="mb-3 flex-wrap text-center items-center"
-                        v-if="advanced_result['building']"
-                      >
-                        <span class="text-base font-medium text-blue-700"
-                          >Office<br
-                        /></span>
-                        <span class="text-base font-medium text-blue-700">{{
-                          advanced_result["building"]
-                        }}</span>
-                      </div>
-                      <div
-                        class="mb-2 flex-wrap text-center items-center"
-                        v-if="advanced_result['url']"
-                      >
-                        <span class="text-base font-medium text-blue-700"
-                          >Website<br
-                        /></span>
-                        <a
-                          :href="advanced_result['url']"
-                          class="text-base font-medium text-blue-700 hover:text-blue-300"
-                          >{{ advanced_result["url"] }}</a
-                        >
-                      </div>
-                      <div v-else>No data available</div>
-                      <div
-                        class="flex flex-col items-center mb-12"
-                        v-if="resultType == 'Classroom'"
-                      >
-                        <div class="w-full max-w-md">
-                          <iframe
-                            width="320"
-                            height="250"
-                            style="border: 0"
-                            loading="lazy"
-                            scrolling="no"
-                            gestureHandling="none"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            :src="
-                              'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
-                              actual_name +
-                              'Purdue+University,West+Lafayette+IN'
-                            "
-                          >
-                          </iframe>
-                          <h2 class="mt-8 mb-4 text-2xl font-bold">Ratings</h2>
-                          <div
-                            v-for="(group, index) in resultData"
-                            :key="index"
-                          >
-                            <div
-                              v-for="(rating, ratingIndex) in group"
-                              :key="ratingIndex"
-                              class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
-                            >
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Timestamp:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.timestamp
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Convenience of access:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[0]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Quality of seating:
-                                </span>
-                                <span class="text-gray-600">{{
-                                  rating.rating[1]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Availability of technology:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[2]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Explanation:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.explanation
-                                }}</span>
-                              </div>
                               <div
-                                class="flex items-center"
-                                v-if="rating.flag_count >= 3"
+                                v-for="(rating, ratingIndex) in group"
+                                :key="ratingIndex"
+                                class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
                               >
-                                <span class="mr-2 font-bold text-red-500"
-                                  >Rating was flagged</span
-                                >
-                                <span class="text-red-500"
-                                  >{{ rating.flag_count }} times</span
-                                >
-                              </div>
-                              <button
-                                v-if="rating.user_id != userStore.user_id"
-                                class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
-                                @click="flag(rating.user_id, 'classroom')"
-                              >
-                                Flag
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="flex flex-col items-center py-6 mb-12"
-                        v-if="resultType === 'Course'"
-                      >
-                        <div class="w-full max-w-md">
-                          <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
-                          <div
-                            v-for="(group, index) in resultData"
-                            :key="index"
-                          >
-                            <div
-                              v-for="(rating, ratingIndex) in group"
-                              :key="ratingIndex"
-                              class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
-                            >
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Timestamp:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.timestamp
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Strictness of prerequisite
-                                  requirements:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[0]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Pace of material covered:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[1]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Depth of material covered:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[2]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Explanation:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.explanation
-                                }}</span>
-                              </div>
-                              <div
-                                class="flex items-center"
-                                v-if="rating.flag_count >= 3"
-                              >
-                                <span class="mr-2 font-bold text-red-500"
-                                  >Rating was flagged</span
-                                >
-                                <span class="text-red-500"
-                                  >{{ rating.flag_count }} times</span
-                                >
-                              </div>
-                              <button
-                                v-if="rating.user_id != userStore.user_id"
-                                class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
-                                @click="flag(rating.user_id, 'course')"
-                              >
-                                Flag
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="flex flex-col items-center py-6 mb-12"
-                        v-if="resultType === 'TA'"
-                      >
-                        <div class="w-full max-w-md">
-                          <div class="flex justify-between mb-1">
-                            <span class="text-base font-medium text-blue-700"
-                              >Involved with</span
-                            >
-                            <div class="flex items-center">
-                              <ul>
-                                <li
-                                  v-for="(course, index) in actual_course"
-                                  :key="index"
-                                >
-                                  <p
-                                    class="text-base font-medium text-blue-700"
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Timestamp:</span
                                   >
-                                    {{ course }}
-                                  </p>
-                                </li>
-                              </ul>
+                                  <span class="text-gray-600">{{
+                                    rating.timestamp
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Convenience of access:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[0]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Quality of seating:
+                                  </span>
+                                  <span class="text-gray-600">{{
+                                    rating.rating[1]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Availability of technology:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[2]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Explanation:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.explanation
+                                  }}</span>
+                                </div>
+                                <div
+                                  class="flex items-center"
+                                  v-if="rating.flag_count >= 3"
+                                >
+                                  <span class="mr-2 font-bold text-red-500"
+                                    >Rating was flagged</span
+                                  >
+                                  <span class="text-red-500"
+                                    >{{ rating.flag_count }} times</span
+                                  >
+                                </div>
+                                <button
+                                  v-if="rating.user_id != userStore.user_id"
+                                  class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
+                                  @click="flag(rating.user_id, 'classroom')"
+                                >
+                                  Flag
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
-                          <div
-                            v-for="(group, index) in resultData"
-                            :key="index"
-                          >
+                        </div>
+                        <div
+                          class="flex flex-col items-center py-6 mb-12"
+                          v-if="resultType === 'Course'"
+                        >
+                          <div class="w-full max-w-md">
+                            <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
                             <div
-                              v-for="(rating, ratingIndex) in group"
-                              :key="ratingIndex"
-                              class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
+                              v-for="(group, index) in resultData"
+                              :key="index"
                             >
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Timestamp:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.timestamp
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Helpfulness of answering questions:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[0]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Responsiveness:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[1]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Fairness of grading:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.rating[2]
-                                }}</span>
-                              </div>
-                              <div class="flex items-center mb-2">
-                                <span class="mr-2 font-bold text-gray-700"
-                                  >Explanation:</span
-                                >
-                                <span class="text-gray-600">{{
-                                  rating.explanation
-                                }}</span>
-                              </div>
                               <div
-                                class="flex items-center"
-                                v-if="rating.flag_count >= 3"
+                                v-for="(rating, ratingIndex) in group"
+                                :key="ratingIndex"
+                                class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
                               >
-                                <span class="mr-2 font-bold text-red-500"
-                                  >Rating was flagged</span
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Timestamp:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.timestamp
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Strictness of prerequisite
+                                    requirements:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[0]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Pace of material covered:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[1]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Depth of material covered:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[2]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Explanation:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.explanation
+                                  }}</span>
+                                </div>
+                                <div
+                                  class="flex items-center"
+                                  v-if="rating.flag_count >= 3"
                                 >
-                                <span class="text-red-500"
-                                  >{{ rating.flag_count }} times</span
+                                  <span class="mr-2 font-bold text-red-500"
+                                    >Rating was flagged</span
+                                  >
+                                  <span class="text-red-500"
+                                    >{{ rating.flag_count }} times</span
+                                  >
+                                </div>
+                                <button
+                                  v-if="rating.user_id != userStore.user_id"
+                                  class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
+                                  @click="flag(rating.user_id, 'course')"
                                 >
+                                  Flag
+                                </button>
                               </div>
-                              <button
-                                v-if="rating.user_id != userStore.user_id"
-                                class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
-                                @click="flag(rating.user_id, 'ta')"
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="flex flex-col items-center py-6 mb-12"
+                          v-if="resultType === 'TA'"
+                        >
+                          <div class="w-full max-w-md">
+                            <div class="flex justify-between mb-1">
+                              <span class="text-base font-medium text-blue-700"
+                                >Involved with</span
                               >
-                                Flag
-                              </button>
+                              <div class="flex items-center">
+                                <ul>
+                                  <li
+                                    v-for="(course, index) in actual_course"
+                                    :key="index"
+                                  >
+                                    <p
+                                      class="text-base font-medium text-blue-700"
+                                    >
+                                      {{ course }}
+                                    </p>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <h2 class="mb-4 text-2xl font-bold">Ratings</h2>
+                            <div
+                              v-for="(group, index) in resultData"
+                              :key="index"
+                            >
+                              <div
+                                v-for="(rating, ratingIndex) in group"
+                                :key="ratingIndex"
+                                class="p-4 mb-4 bg-gray-300 rounded-lg shadow-xl"
+                              >
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Timestamp:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.timestamp
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Helpfulness of answering questions:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[0]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Responsiveness:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[1]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Fairness of grading:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.rating[2]
+                                  }}</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                  <span class="mr-2 font-bold text-gray-700"
+                                    >Explanation:</span
+                                  >
+                                  <span class="text-gray-600">{{
+                                    rating.explanation
+                                  }}</span>
+                                </div>
+                                <div
+                                  class="flex items-center"
+                                  v-if="rating.flag_count >= 3"
+                                >
+                                  <span class="mr-2 font-bold text-red-500"
+                                    >Rating was flagged</span
+                                  >
+                                  <span class="text-red-500"
+                                    >{{ rating.flag_count }} times</span
+                                  >
+                                </div>
+                                <button
+                                  v-if="rating.user_id != userStore.user_id"
+                                  class="p-1 mt-3 text-sm font-bold text-white bg-red-500 rounded"
+                                  @click="flag(rating.user_id, 'ta')"
+                                >
+                                  Flag
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div v-else>
-                      <div
-                        class="flex items-start justify-start h-screen dark:bg-neutral-500"
-                      ></div>
+                      <div v-else>
+                        <div
+                          class="flex items-start justify-start h-screen dark:bg-neutral-500"
+                        ></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
+                </section>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </main>
+    </body>
   </main>
 </template>
 
