@@ -52,7 +52,7 @@ async function resetpassword() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
   if (newpassword === newconfpassword) {
-    await axios.post('http://localhost:3001/api/resetpassword', {
+    await axios.post('https://api.boilerti.me/api/resetpassword', {
       user_id: user_id,
       password: newpassword
     })
