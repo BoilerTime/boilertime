@@ -697,6 +697,7 @@ onBeforeMount(() => {
       time_pref.value = response?.data?.time || "none"
       configured = response?.data?.configured || false;
       configureState(response.data.preference_list);
+      configureBlocks(response.data.blocked_times)
     })
 
     axios.post('http://localhost:3001/api/getbookmarks', {
@@ -1053,8 +1054,9 @@ function sendToOptimizer(courses, blocks, configurations) {
   console.log("UWU")
   console.log(blocks)
   for(let i = 0; i < blocks.length; i++) {
+    let time = blocks[i].start_time.split(":");
     connection.send(blocks[i].name);
-    connection.send(blocks[i].start_time);
+    connection.send(time[0]+""+time[1]);
     connection.send(blocks[i].duration);
     connection.send(blocks[i].days_of_week.toString());
   }
@@ -1487,8 +1489,9 @@ function calculateOutgoingArray() {
   let responseArray = [];
   for(let i = 0; i < blockArray.value.length; i++) {
     let time = blockArray.value[i].start.split(":")
+    console.log("Outing time: " + time[0] + ""+ time[1]);
     let template = {
-      start_time: time[0]+""+time[1],
+      start_time: blockArray.value[i].start,
       name: blockArray.value[i].name,
       days_of_week: [],
       duration: blockArray.value[i].duration//calculateDuration(blockArray.value[i].start, blockArray.value[i].end)
@@ -1570,6 +1573,29 @@ function saveScheduleToDB() {
 function closeBlocks() {
   saveScheduleToDB();
   blockConfig.value = false;
+}
+
+function configureBlocks(blockData) {
+  console.log("CALLED TO CONFIGURE!!");
+  console.log(blockData);
+  for(let i = 0; i < blockData.length; i++) {
+    console.log(blockData[i].startTime);
+    const format = {
+      name: blockData[i].name,
+      start: blockData[i].start_time,
+      duration: blockData[i].duration,
+      daysOfWeek: []
+    }
+
+    for(let j  = 0; j < daysOfWeekFull.length; j++) {
+      if(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]) != undefined) {
+        format.daysOfWeek.push(true);
+      } else {
+        format.daysOfWeek.push(false);
+      }
+    }
+    blockArray.value.push(format);
+  }
 }
 </script>
 
