@@ -1522,6 +1522,8 @@ const daysPref = ref(
   ["M", "T", "W", "R", "F"]
 )
 
+const daysOfWeekFull = ["Monday", "Tuesday", "Wednesday", 'Thursday', "Friday"];
+
 const dayPrefActive = ref(
   [false, false, false, false, false]
 )
@@ -1597,7 +1599,7 @@ function saveBlock() {
   let daysWeek = [];
   for(let i = 0; i < dayPrefActive.value.length; i++) {
     if(dayPrefActive.value[i]) {
-      daysWeek.push(daysPref.value[i]);
+      daysWeek.push(daysOfWeekFull[i]);
     }
   }
   if(daysWeek.length == 0) {
@@ -1608,6 +1610,15 @@ function saveBlock() {
       return;
   }
   console.log(daysWeek);
+
+  //We won all the conditions, now we just need to save to the list
+  const format = {
+    name: block_name.value,
+    start: startingHour + ":" + startingMinute,
+    end: startingMinute + ":" + endingMinute,
+    daysOfWeek: dayPrefActive.value
+  }
+  blockArray.value.push(format);
 
 }
 </script>
