@@ -5,7 +5,7 @@ const dayjs = require('dayjs')
 //
 module.exports = {
   getUserRatings,
-  addUserRating,
+  addRating,
   getCourseRatings,
   editUserRating,
   deleteUserRating
@@ -17,6 +17,7 @@ const { collection, query, where, getDocs } = require('firebase/firestore');
 const utils = require('../utils/utils.js');
 
 const db = getFirestore()
+const courseUserRatings = db.collection('ratings').doc('courses').collection('user_ratings');
 const courseRatings = db.collection('ratings').doc('courses').collection('course_ratings');
 
 /*
@@ -27,7 +28,7 @@ const courseRatings = db.collection('ratings').doc('courses').collection('course
  * @param {number} pace - Rating of how the pace of material covered is out of 5 at rating[1]
  * @param {number} depth - Rating of deep the material covered is out of 5 at rating[2]
  */
-async function addUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
+async function addRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
   if (await userAlreadyRated(user_id, course)) {
     //console.log('here SENDING FALSE');
@@ -39,7 +40,15 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth,
     rating[0] = prequisiteStrictness;
     rating[1] = pace;
     rating[2] = depth;
-    await courseRatings.add({user_id: user_id, course: course, rating: rating, flag_count: 0, explanation: explanation, timestamp: Timestamp.now()})
+    await courseUserRatings.doc(user_id).collection(course).doc(user_id).set({user_id: user_id, course: course, rating: rating, flag_count: 0, explanation: explanation, timestamp: Timestamp.now()})
+    courseRating = await courseRatings.doc(course).get();
+    if (courseRating.exists) {
+      const data = courseRating.data();
+      rating[0] = ((data.avg_ratings[0] * data.num_ratings + rating[0]) / (data.num_ratings + 1)).toFixed(2); 
+      rating[1] = ((data.avg_ratings[1] * data.num_ratings + rating[1]) / (data.num_ratings + 1)).toFixed(2); 
+      rating[2] = ((data.avg_ratings[2] * data.num_ratings + rating[2]) / (data.num_ratings + 1)).toFixed(2); 
+      courseRating = await courseRatings.doc(course).update({explanations: FieldValue.arrayUnion({explanation: explanation, timestamp: Timestamp.now()}), avg_ratings: rating, num_ratings: data.num_ratings + 1});
+    }
   }
   return true;
 }
@@ -54,12 +63,22 @@ async function addUserRating(user_id, course, prequisiteStrictness, pace, depth,
  */
 async function editUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation) {
   //console.log(await userAlreadyRated(user_id, course) + " << this is the value");
-  const userRatings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  const userRatings = await courseUserRatings.doc(user_id).collection(course).doc(user_id).get();
   var rating = [];
   rating[0] = prequisiteStrictness;
   rating[1] = pace;
   rating[2] = depth;
+  var updated_average = []
   userRatings.forEach(async doc => {
+    courseRating = await courseRatings.doc(course).get();
+    await courseRatings.doc(course).set({explanations: {explanation: explanation, timestamp: Timestamp.now()}, avg_ratings: rating});
+    if (courseRating.exists) {
+      const data = courseRating.data();
+      updated_average[0] = ((data.avg_ratings[0] * data.num_ratings - doc.rating[0] + rating[0]) / (data.num_ratings)).toFixed(2); 
+      updated_average[1] = ((data.avg_ratings[1] * data.num_ratings - doc.rating[1] + rating[1]) / (data.num_ratings)).toFixed(2); 
+      updated_average[2] = ((data.avg_ratings[2] * data.num_ratings - doc.rating[2] + rating[2]) / (data.num_ratings)).toFixed(2); 
+      courseRating = await courseRatings.doc(course).update({explanations: FieldValue.arrayUnion({explanation: explanation, timestamp: Timestamp.now()}), avg_ratings: updated_average, num_ratings: data.num_ratings + 1});
+    }
     await doc.ref.update({user_id: user_id, course: course, rating: rating, explanation, explanation, timestamp: Timestamp.now()})
   })
 }
@@ -70,7 +89,7 @@ async function editUserRating(user_id, course, prequisiteStrictness, pace, depth
  * @param {string} course - Name of the course they are rating
  */
 async function deleteUserRating(user_id, course) {
-  const userRatings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  const userRatings = await courseUserRatings.doc(user_id).where('course', '==', course).get();
   userRatings.forEach(async doc => {
     await doc.ref.delete()
   })
@@ -81,8 +100,7 @@ async function deleteUserRating(user_id, course) {
  * @param {string} user_id - ID of user
  */
 async function getUserRatings(user_id) {
-  const userRatings = await courseRatings.where('user_id', '==', user_id).get();
-
+  const userRatings = await courseUserRatings.doc(user_id).get();
 
   jArray = [];
   var count = 0;
@@ -109,7 +127,7 @@ async function getUserRatings(user_id) {
  * @param {string} course - The course that is getting rated
  */
 async function userAlreadyRated(user_id, course) {
-  const ratings = await courseRatings.where('user_id', '==', user_id).where('course', '==', course).get();
+  const ratings = await courseUserRatings.doc(user_id).collection(course).get();
   if (ratings.empty) {
     //console.log('EMPTY');
     return false;
@@ -123,7 +141,7 @@ async function userAlreadyRated(user_id, course) {
  * @param {string} courseName - Name of the course (ex. CS30700) 
  */
 async function getCourseRatings(courseName) {
-  const ratings = await courseRatings.where('course', '==', courseName).get(); 
+  const ratings = await courseRatings.doc(courseName).get(); 
 
   var jsonObj = {};
 
@@ -151,5 +169,4 @@ async function getCourseRatings(courseName) {
   });
   return jArray;
 }
-
 

@@ -574,7 +574,7 @@ app.post('/api/add/ratings/courses', jwt.authenticateToken, async (req, res) => 
     const pace = req.body.pace;
     const depth = req.body.depth;
     const explanation = req.body.explanation;
-    result = await courseRatings.addUserRating(user_id, course, prequisiteStrictness, pace, depth, explanation);
+    result = await courseRatings.addRating(user_id, course, prequisiteStrictness, pace, depth, explanation);
     if (!result) {
       //console.log('here sending bad status');
       res.sendStatus(409);
