@@ -1,4 +1,4 @@
 #!/bin/sh
 echo "cron job running"
-response=$(curl --silent --request POST http://localhost:3001/api/notifyusers)
+response=$(curl --silent --request POST https://api.boilerti.me/api/notifyusers)
 echo $response

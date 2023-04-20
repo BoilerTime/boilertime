@@ -38,7 +38,7 @@ async function updatePassword({ user_id, new_password }) {
       const updatedpw = {
         from: 'BoilerTime Trust & Safety <donotreply@mg.boilerti.me>',
         to: email,
-        subject: 'Your rating on BoilerTime has been flagged!',
+        subject: 'BoilerTime – Your password has been updated',
         template: 'updatedpw',
         'h:X-Mailgun-Variables': JSON.stringify({
           email: email,

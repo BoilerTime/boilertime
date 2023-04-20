@@ -93,7 +93,7 @@ const findExistingUsers = async function (email) {
 const sendVerificationEmail = async function (profile) {
 
   const verifyaccount = {
-    from: 'BoilerTime <donotreply@boilerti.me>',
+    from: 'BoilerTime <donotreply@mg.boilerti.me>',
     to: profile.email,
     subject: 'BoilerTime – Verify your account, ' + profile.firstname,
     template: 'verifyaccount',

@@ -166,7 +166,7 @@ app.post('/api/forgotpassword', (req, res) => {
   //getuid
   utils.getUID({ email }).then(async user => {
     const touser = {
-      from: 'BoilerTime Trust & Safety <donotreply@boilerti.me>',
+      from: 'BoilerTime Trust & Safety <donotreply@mg.boilerti.me>',
       to: email,
       subject: 'BoilerTime – Reset password',
       template: 'resetpw',
