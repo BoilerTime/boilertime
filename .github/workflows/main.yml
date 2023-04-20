@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - sprint-3-user-story-8
 
 jobs:
   deploy:
