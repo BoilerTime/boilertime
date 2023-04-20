@@ -34,7 +34,7 @@ public class Optimizer {
     private boolean isSatisfiable = true; 
     private int sectionLen;
     private Schedule[] options;
-    private final int numOptions = 5;
+    private final int numOptions = 3;
     private int numSatisfied; 
     private QualityAnalyzer analyzer; 
     Random r;

@@ -398,7 +398,7 @@
                       <button type="button" class="float-right text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500" @click="deleteBlock(index)"><TrashIcon class="w-4 h-4" /><span class="sr-only">Delete</span></button>
                     </label>
                     <p>Start Time: {{entry.start}}</p>
-                    <p>End Time: {{entry.end}}</p>
+                    <p>Duration: {{entry.duration}}</p>
                     
                     <br/>
                     <div class="flex items-left justify-left">
@@ -472,7 +472,11 @@
                   </div>
                 </form>
               </div>
-              
+              <div class="mb-4">
+                <button @click="closeBlocks()" class="float-right p-2 font-bold text-white bg-yellow-500 border hover:bg-yellow-700 text-md dark:border-black rounded-md" style="align: text-right;" >
+                Close
+              </button>
+              </div>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -775,42 +779,7 @@ function addToSelected(item) {
       selectedRequiredCourses.value.push(item)
       isSearchActive.value = false
       searchTerm.value = ''
-      if (!isAGuest.value) {
-          console.log(selectedRequiredCourses.value);
-          axios.post('http://localhost:3001/api/saveschedule', {
-            user_id: userStore.user_id,
-            required_classes: selectedRequiredCourses.value,
-            optional_classes: selectedOptionalCourses.value, 
-            time: getTimePref(),
-            preference_list: getPreferenceList(),
-            num_courses: getNumCourses(),
-            configured: configured,
-            blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-          }, config).then((response) => {
-            if (response.data["accessToken"] != undefined) {
-              userStore.user = {
-                accessToken: response.data["accessToken"],
-                //refreshToken: response.data["refreshToken"],
-                user_id: user_id
-              }
-              accessToken = userStore.accessToken;
-              config.headers['authorization'] = `Bearer ${accessToken}`;
-            }
-          })
-      } else {
-        axios.post('http://localhost:3001/api/saveschedule/guest', {
-          user_id: userStore.user_id,
-            required_classes: selectedRequiredCourses.value,
-            optional_classes: selectedOptionalCourses.value, 
-            time: getTimePref(),
-            preference_list: getPreferenceList(),
-            num_courses: getNumCourses(),
-            configured: configured,
-            blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-        }).then((response) => {
-          guestStore.guest.schedule = response.data.schedule;
-        });
-    } 
+      saveScheduleToDB();
   } else {
     if (selectedRequiredCourses.value.length >= 5) {
       alert('You can only select 5 required courses')
@@ -855,41 +824,7 @@ function addToSelectedOptional(item) {
     selectedOptionalCourses.value.push(item)
     isOptionalSearchActive.value = false
     optionalSearchTerm.value = ''
-    if(!isAGuest.value) {
-        axios.post('http://localhost:3001/api/saveschedule', {
-          user_id: userStore.user_id,
-          required_classes: selectedRequiredCourses.value,
-          optional_classes: selectedOptionalCourses.value,
-          time: getTimePref(),
-          preference_list: getPreferenceList(),
-          num_courses: getNumCourses(),
-          configured: configured,
-          blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-        }, config).then((response) => {
-          if (response.data["accessToken"] != undefined) {
-            userStore.user = {
-              accessToken: response.data["accessToken"],
-              //refreshToken: response.data["refreshToken"],
-              user_id: user_id
-            }
-            accessToken = userStore.accessToken;
-            config.headers['authorization'] = `Bearer ${accessToken}`;
-          }
-        })
-    } else {
-      axios.post('http://localhost:3001/api/saveschedule/guest', {
-        user_id: userStore.user_id,
-          required_classes: selectedRequiredCourses.value,
-          optional_classes: selectedOptionalCourses.value, 
-          time: getTimePref(),
-          preference_list: getPreferenceList(),
-          num_courses: getNumCourses(),
-          configured: configured,
-          blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-      }).then((response) => {
-        guestStore.guest.schedule = response.data.schedule;
-      });
-    }
+    saveScheduleToDB();
   } else {
     if (selectedOptionalCourses.value.length > 5) {
       alert('You can only select 5 optional courses')
@@ -904,42 +839,7 @@ function addToSelectedOptional(item) {
 
 function removeFromSelected(index) {
   selectedRequiredCourses.value.splice(index, 1)
-  
-  if(!isAGuest.value) {
-    axios.post('http://localhost:3001/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: getTimePref(),
-      preference_list: getPreferenceList(),
-      num_courses: getNumCourses(),
-      configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
-  } else {
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
-      user_id: userStore.user_id,
-        required_classes: selectedRequiredCourses.value,
-        optional_classes: selectedOptionalCourses.value, 
-        time: getTimePref(),
-        preference_list: getPreferenceList(),
-        num_courses: getNumCourses(),
-        configured: configured,
-        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }).then((response) => {
-      guestStore.guest.schedule = response.data.schedule;
-    });
-  }
+  saveScheduleToDB()
 }
 
 function removeOptional(index) {
@@ -1076,7 +976,7 @@ function submit() {
       preference_list: getPreferenceList(),
       num_courses: getNumCourses(),
       configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
+      blocked_times: calculateOutgoingArray()//[{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
     }, config).then((response) => {
       sendToOptimizer(response.data.schedule, response.data.blocked_times, response.data);
       courseList = response.data.schedule;
@@ -1146,11 +1046,13 @@ function sendToOptimizer(courses, blocks, configurations) {
   /*
     * Take care of the blocks that the user has entered
   */
+  console.log("UWU")
+  console.log(blocks)
   for(let i = 0; i < blocks.length; i++) {
     $socket.send(blocks[i].name);
     $socket.send(blocks[i].start_time);
     $socket.send(blocks[i].duration);
-    $socket.send(blocks[i].days_of_week);
+    $socket.send(blocks[i].days_of_week.toString());
   }
 }
 
@@ -1186,7 +1088,7 @@ function parseCoursesResponse(output) {
       }
       thisFormat += (string)
     }
-    if(blocks[i].length > 0) {
+    if(blocks.length > 0 && blocks[i].length > 0) {
       thisFormat += ". Time off: "
       for(let j = 0; j < blocks[i].length; j++) {
         let string = "";
@@ -1231,6 +1133,10 @@ function parseCoursesResponse(output) {
       thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
       thisFormat.userSections.meetings.push(data[j][i].sectionId);
       serverOutput.schedule.push(thisFormat)
+    }
+    if(blocks.length == 0) {
+      resultsList.push(serverOutput);
+      continue;
     }
     for(let i = 0; i < blocks[j].length; i++) {
       let thisFormat = JSON.parse(JSON.stringify(blockFormat));
@@ -1420,41 +1326,7 @@ function hidePreferences() {
   console.log(getTimePref())
   isPreferencesOpen.value = false;
   configured = true;
-  if(!isAGuest.value) {
-    axios.post('http://localhost:3001/api/saveschedule', {
-      user_id: userStore.user_id,
-      required_classes: selectedRequiredCourses.value,
-      optional_classes: selectedOptionalCourses.value,
-      time: getTimePref(),
-      preference_list: getPreferenceList(),
-      num_courses: getNumCourses(),
-      configured: configured,
-      blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }, config).then((response) => {
-      if (response.data["accessToken"] != undefined) {
-        userStore.user = {
-          accessToken: response.data["accessToken"],
-          //refreshToken: response.data["refreshToken"],
-          user_id: user_id
-        }
-        accessToken = userStore.accessToken;
-        config.headers['authorization'] = `Bearer ${accessToken}`;
-      }
-    })
-  } else {
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
-      user_id: userStore.user_id,
-        required_classes: selectedRequiredCourses.value,
-        optional_classes: selectedOptionalCourses.value, 
-        time: getTimePref(),
-        preference_list: getPreferenceList(),
-        num_courses: getNumCourses(),
-        configured: configured,
-        blocked_times: [{start_time: "0830", duration: 50, days_of_week: "Monday", name: "breakfast"}, {start_time: "1230", duration: 60, days_of_week: "Monday, Tuesday, Wednesday, Thursday, Friday", name: "lunch"}]
-    }).then((response) => {
-      guestStore.guest.schedule = response.data.schedule;
-    });
-  }
+  saveScheduleToDB();
 }
 
 function getTimePref() {
@@ -1585,7 +1457,7 @@ function saveBlock() {
   const format = {
     name: block_name.value,
     start: startingHour + ":" + startingMinute,
-    end: endingHour + ":" + endingMinute,
+    duration: calculateDuration(startingHour + ":" + startingMinute, endingHour + ":" + endingMinute,),
     daysOfWeek: dayPrefActive.value
   }
   blockArray.value.push(format);
@@ -1597,31 +1469,35 @@ function saveBlock() {
   dayPrefActive.value = [false, false, false, false, false];
   showSectionConfig();
   calculateOutgoingArray();
+  saveScheduleToDB();
 }
 
 function deleteBlock(index) {
   console.log(index)
   blockArray.value.splice(index, 1);
   console.log(blockArray.value);
+  saveScheduleToDB();
 }
 
 function calculateOutgoingArray() {
   let responseArray = [];
   for(let i = 0; i < blockArray.value.length; i++) {
+    let time = blockArray.value[i].start.split(":")
     let template = {
-      start_time: blockArray.value[i].start,
+      start_time: time[0]+""+time[1],
       name: blockArray.value[i].name,
       days_of_week: [],
-      duration: calculateDuration(blockArray.value[i].start, blockArray.value[i].end)
+      duration: blockArray.value[i].duration//calculateDuration(blockArray.value[i].start, blockArray.value[i].end)
     }
     for(let j = 0; j < blockArray.value[i].daysOfWeek.length; j++) {
       if(blockArray.value[i].daysOfWeek[j]) {
-        template.days_of_week.push(daysOfWeekFull[i]);
+        template.days_of_week.push(daysOfWeekFull[j]);
       }
     }
     responseArray.push(template)
   }
   console.log(responseArray);
+  return responseArray
 }
 
 function calculateDuration(startTime, endTime) {
@@ -1641,6 +1517,15 @@ function calculateDuration(startTime, endTime) {
 }
 
 function saveScheduleToDB() {
+  console.log({      
+      user_id: userStore.user_id,
+      required_classes: selectedRequiredCourses.value,
+      optional_classes: selectedOptionalCourses.value,
+      time: getTimePref(),
+      preference_list: getPreferenceList(),
+      num_courses: getNumCourses(),
+      configured: configured,
+      blocked_times: calculateOutgoingArray()})
   if(!isAGuest.value) {
     axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
@@ -1678,6 +1563,10 @@ function saveScheduleToDB() {
   }
 }
 
+function closeBlocks() {
+  saveScheduleToDB();
+  blockConfig.value = false;
+}
 </script>
 
 <style scoped>

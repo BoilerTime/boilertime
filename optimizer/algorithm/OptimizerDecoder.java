@@ -51,6 +51,11 @@ public class OptimizerDecoder {
             result += courseResults[i] + ", ";
         }
         result += courseResults[courseResults.length - 1] + "], \"blocks\": [";
+        if(best[0].getBlocks().length == 0 ) {
+            result += "]}}";
+            return result;
+            //return (result + "]}}");
+        }
 
         //Blocks
         String[] blockResults = new String[validLength];
