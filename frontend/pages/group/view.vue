@@ -17,7 +17,7 @@
                                 {{ item }}
                             </li>
                             <li class="mb-2 font-bold">Invite Link:</li>
-                            <li class="mb-2 font-light divide-y divide-dashed">{{ "localhost:3000/group/join/?group_id=" +
+                            <li class="mb-2 font-light divide-y divide-dashed">{{ "https://boilerti.me/group/join/?group_id=" +
                                 item.group_id }}</li>
                             <button type="copy" class="mb-2 w-1/8 bg-blue-500 hover:bg-blue-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg hover:"
                                 @click="copyLink(item.group_id)">
@@ -72,7 +72,7 @@ var isOwner = ref(false);
  * This function is used to get the information of groups a user is in.
  */
 async function getGroups() {
-    axios.post('http://localhost:3001/api/groups', {
+    axios.post('https://api.boilerti.me/api/groups', {
         user_id: user_id
     }, config)
         .then((res) => {
@@ -89,7 +89,7 @@ async function getGroups() {
  * This function is used to leave a group.
  */
 async function leaveGroup(group_id) {
-    axios.post('http://localhost:3001/api/leavegroup', {
+    axios.post('https://api.boilerti.me/api/leavegroup', {
         user_id: user_id,
         group_id: group_id
     }, config)
@@ -111,7 +111,7 @@ async function leaveGroup(group_id) {
  * This function is used for deleting a group, only if the user is the owner.
  */
 async function deleteGroup(group_id) {
-    axios.post('http://localhost:3001/api/removegroup', {
+    axios.post('https://api.boilerti.me/api/removegroup', {
         user_id: user_id,
         group_id, group_id
     }, config)
@@ -131,8 +131,8 @@ async function deleteGroup(group_id) {
  */
 async function copyLink(group_id) {
     try {
-        await navigator.clipboard.writeText("localhost:3000/group/join/?group_id=" + group_id);
-        console.log("localhost:3000/group/join/?group_id=" + group_id)
+        await navigator.clipboard.writeText("https://boilerti.me/group/join/?group_id=" + group_id);
+        console.log("https://boilerti.me/group/join/?group_id=" + group_id)
         alert("Copied link");
     } catch(error) {
         alert("Cannot copy");

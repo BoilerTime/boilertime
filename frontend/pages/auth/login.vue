@@ -84,11 +84,11 @@
 import { ref } from "vue";
 import { useUserStore } from "../../store/user";
 import sha256 from "js-sha256";
-import { POSITION, useToast } from "vue-toastification";
+const { $toast } = useNuxtApp()
 
 const email = ref("");
 const password = ref("");
-const toast = useToast();
+const route = useRoute();
 
 const userStore = useUserStore();
 
@@ -99,13 +99,13 @@ async function login() {
   try {
     await userStore.signIn(email.value, sha256(password.value));
     if (!userStore.isLoggedIn) {
-      navigateTo("/auth/login");
+      navigateTo(`/auth/login?verified=${route.query.verified}`);
     } else {
       // start temp fix, this is janky
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      navigateTo("/app");
+      navigateTo(`/app?verified=${route.query.verified}`);
     }
   } catch (error) {
     // temp alert
@@ -124,9 +124,8 @@ async function guest() {
       const el = document.getElementById("__nuxt");
       el.innerHTML = "";
       // end temp fix
-      this.toast.error("Warning: Guest mode has access to limited functionality!", {
+      $toast.error("Warning: Guest mode has access to limited functionality!", {
         timeout: 5000,
-        position: POSITION.BOTTOM_LEFT
       });
       navigateTo("/app");
     }

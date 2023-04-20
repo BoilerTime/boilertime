@@ -152,6 +152,58 @@ async function classCounterIncrement(user_id, classes) {
   }
 }
 
+async function getGeneratedSchedule(user_id) {
+  const doc = await schedules.doc(user_id).collection('spring_2023').doc('generated_schedule').get();
+  try {
+  return doc.data().schedule;
+  } catch (e) {
+    return undefined;
+  }
+
+}
+
+async function classCounterDecrement(user_id, generated_schedule) {
+  try {
+      classes = generated_schedule
+      const counter = db.collection('counter');
+      for (var i = 0; i < classes.length; i++) {
+        // add names here
+        for (var j = 0; j < classes.length; j++) {
+          if (i != j) {
+            const class1 = classes[i].subject + ' ' + classes[i].number;
+            const class2 = classes[j].subject + ' ' + classes[j].number;
+            const doc = await counter.doc(class1).collection('pairs').doc(class2).get().catch((err) => {
+              console.error(err);
+              throw new Error(500);
+            });
+            if (doc.exists) {
+                counter.doc(class1).collection('pairs').doc(class2).update({ "count": FieldValue.increment(-1)}).catch((err) => {
+                console.error(err);
+                throw new Error(500);
+              });
+            }
+          } else {
+            counter.doc(class1).update({ "count": FieldValue.increment(1), "users": FieldValue.arrayUnion(user_id) }).catch((err) => {
+              const class1 = classes[i].subject + ' ' + classes[i].number;
+              const doc = counter.doc(class1).get().catch((err) => {
+                console.error(err);
+                throw new Error(500);
+              });
+              if (doc.exists) {
+                  counter.doc(class1).update({ "count": FieldValue.increment(-1), "users": FieldValue.arrayRemove(user_id) }).catch((err) => {
+                    console.error(err);
+                    throw new Error(500);
+                  });
+                }
+             });
+          }
+        }
+     } 
+  }catch (e) {
+    console.error(e);
+  }
+}
+
 async function getSections(subject, number, sectionID) {
   console.log(subject + number + sectionID);
   const docs1 = await classes.doc('spring_2023').get();
@@ -238,7 +290,7 @@ async function getClassMates(user_id, course) {
   try {
     for (var i = 0; i < doc.data().users.length; i++) {
       const jsonObj = await utils.getUserProfile(doc.data().users[i]);
-      if (doc.data().users[i] != user_id) {
+      if (doc.data().users[i] != user_id && jsonObj.pairs) {
         names.push(jsonObj.firstname + ' ' + jsonObj.lastname + ', ' + jsonObj.email);
       }
     } 

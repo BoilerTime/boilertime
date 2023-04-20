@@ -70,7 +70,7 @@ var group_id = "";
 async function creategroup() {
   await axios
     .post(
-      "http://localhost:3001/api/creategroup",
+      "https://api.boilerti.me/api/creategroup",
       {
         user_id: user_id,
         group_name: group_name.value,
@@ -78,7 +78,7 @@ async function creategroup() {
       config
     )
     .then((res) => {
-      group_id = "http://localhost:3000/group/join/?group_id=" + res.data.group_id;
+      group_id = "https://boilerti.me/group/join/?group_id=" + res.data.group_id;
       isModalVisible.value = true;
     })
     .catch(function (error) {

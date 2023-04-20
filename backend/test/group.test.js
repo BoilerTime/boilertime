@@ -39,7 +39,7 @@ before(function (done) {
     });
 });
 
-describe("POST Test Group Sprint 2 User Story 13", () => {
+describe("POST Test Group Sprint 2 User Story 13 and Sprint 3 User Story 3", () => {
 
   //Data to test against
   const newGroup = {
