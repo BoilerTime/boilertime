@@ -29,7 +29,7 @@ const optionalClasses = ref(Array(5).fill({ searchTerm: '', classes: [] }))
 const handleSearch = async (index, isRequired) => {
   const dept = isRequired ? 'required' : 'optional'
   const searchTerm = isRequired ? requiredClasses.value[index].searchTerm : optionalClasses.value[index].searchTerm
-  const res = await fetch('http://localhost:3001/api/search', {
+  const res = await fetch('https://api.boilerti.me/api/search', {
     method: 'POST',
     body: JSON.stringify({ dept, searchTerm }),
     headers: {

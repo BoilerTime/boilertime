@@ -37,7 +37,7 @@ const email = ref('')
  * A function to call the resetPassword function
  */
 async function sendemail() {
-  await axios.post('http://localhost:3001/api/forgotpassword', {
+  await axios.post('https://api.boilerti.me/api/forgotpassword', {
     email: email.value
   })
     .then(function() {

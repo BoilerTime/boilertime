@@ -22,12 +22,12 @@ console.log(user_id + 'this is the user id');
  * A function that will make sure the user's userid matches with the emailed one.
  */
 onBeforeMount(async () => {
-    await axios.post('http://localhost:3001/api/verifyaccount', {
+    await axios.post('https://api.boilerti.me/api/verifyaccount', {
         userID: user_id
     })
       .then((res) => {
             alert("Verification has been successful.")
-            navigateTo("/auth/login")
+            navigateTo("/auth/login?verified=true")
         })
         .catch((error) => {
             console.log(error + "HERE");

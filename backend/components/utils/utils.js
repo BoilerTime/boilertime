@@ -113,7 +113,7 @@ async function getClassesFromDept(department) {
 async function updateProfile(user_id, grad_month, grad_year, new_classification_year, new_firstname, new_lastname, isGradStudent, privacy, pairs) {
 
   const profile = users.doc(user_id);
-  await profile.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname, grad_year: grad_year, grad_month: grad_month, is_grad_student: isGradStudent, pairs: pairs, privacy, privacy});
+  await profile.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname, grad_year: grad_year, grad_month: grad_month, is_grad_student: isGradStudent, pairs: pairs, privacy: privacy});
   /*
   profile.forEach(doc => {
     doc.ref.update({classification_year: new_classification_year, firstname: new_firstname, lastname: new_lastname});

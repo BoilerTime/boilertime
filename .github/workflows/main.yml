@@ -1,0 +1,38 @@
+name: Deploy optimizer to ubuntu-s-2vcpu-2gb-nyc1-01
+
+on:
+  push:
+    branches:
+      - main
+      - sprint-3-user-story-8
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker registry
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t mapldx/boilertime:latest .
+
+    - name: Push Docker image
+      run: docker push mapldx/boilertime:latest
+
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: 'hello-world'
+
+    - name: Adding Known Hosts
+      run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy and run Docker container
+      run: |
+        scp ./deploy.sh root@${{ secrets.SSH_HOST }}:/root
+        ssh root@${{ secrets.SSH_HOST }} 'bash -s' < ./deploy.sh
