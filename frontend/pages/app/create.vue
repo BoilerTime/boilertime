@@ -1559,7 +1559,7 @@ function saveScheduleToDB() {
       }
     })
   } else {
-    axios.post('http://localhost:3001/api/saveschedule/guest', {
+    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
       user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value,

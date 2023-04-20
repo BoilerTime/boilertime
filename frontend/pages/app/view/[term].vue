@@ -150,11 +150,11 @@ async function exportToPDF() {
  */
 async function copyLink() {
   try {
-    await navigator.clipboard.writeText("localhost:3000/app/view/" + route.params.term + "/?id=" + userStore.user_id);
-    console.log("localhost:3000/app/view/" + route.params.term + "/?id=" + userStore.user_id);
-    alert("Copied link");
+    await navigator.clipboard.writeText("https://boilerti.me/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    console.log("https://boilerti.me/app/view/" + route.params.term + "/?id=" + userStore.user_id);
+    $toast("Copied link");
   } catch(error) {
-    alert("Cannot copy");
+    $toast.error("Cannot copy");
   }
 }
 
