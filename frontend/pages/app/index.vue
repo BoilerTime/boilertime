@@ -52,7 +52,7 @@
         <div class="items-start grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
           <div class="grid grid-cols-1 gap-4 lg:col-span-2">
             <section aria-labelledby="section-1-title">
-              <div class="overflow-hidden bg-white shadow-xl rounded-xl h-1/2">
+              <div class="bg-white shadow-xl rounded-xl h-96">
                 <div class="p-6">
                   <div class="flex flex-wrap h-screen dark:bg-neutral-500" v-if="userSchedules.length !== 0">
                     <!-- Add button -->
@@ -107,12 +107,29 @@
 
           <div class="grid grid-cols-1 gap-4 ">
             <section aria-labelledby="section-2-title">
-              <div class="overflow-auto bg-white shadow-xl rounded-xl h-1/2">
+              <div class="overflow-scroll bg-white shadow-xl rounded-xl h-96">
                 <div class="p-6">
-                  <div class="h-screen" v-if="resultData && isDataLoaded">
+                  <div v-if="resultData && isDataLoaded">
                     <h1 class="mb-6 text-xl font-semibold text-left">{{ result }}</h1>
                     <div class="" v-if="resultType == 'Professor'">
                       <div class="" v-if="resultData.length == 2">
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
+                            <span class="text-base font-medium text-blue-700">Email</span>
+                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['email'] }}</a>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
+                            <span class="text-base font-medium text-blue-700">Title</span>
+                            <span class="text-base font-medium text-blue-700">{{
+                              advanced_result['title'] }}</span>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
+                            <span class="text-base font-medium text-blue-700">Phone</span>
+                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['office phone'] }}</a>
+                          </div>
+                        </div>
                         <div class="flex justify-between mb-1">
                           <span class="text-base font-medium text-blue-700">Department</span>
                           <span class="text-base font-medium text-blue-700" v-if="resultData[1]">{{
@@ -179,8 +196,41 @@
                         <div v-else>
                           No data available
                         </div>
+                        <div class="mt-8 mb-4">
+                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
+                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
+                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
+                          </iframe>
+                        </div>
+                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
+                          <span class="text-base font-medium text-blue-700">Office<br></span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            advanced_result['building'] }}</span>
+                        </div>
+                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
+                          <span class="text-base font-medium text-blue-700">Website<br></span>
+                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                            advanced_result['url'] }}</a>
+                        </div>
                       </div>
                       <div class="" v-else-if="resultData.length == 1">
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-1" v-if="advanced_result['email']">
+                            <span class="text-base font-medium text-blue-700">Email</span>
+                            <a :href="'mailto:' + advanced_result['email']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['email'] }}</a>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['title']">
+                            <span class="text-base font-medium text-blue-700">Title</span>
+                            <span class="text-base font-medium text-blue-700">{{
+                              advanced_result['title'] }}</span>
+                          </div>
+                          <div class="flex justify-between mb-1" v-if="advanced_result['office phone']">
+                            <span class="text-base font-medium text-blue-700">Phone</span>
+                            <a :href="'tel:' + advanced_result['office phone']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                              advanced_result['office phone'] }}</a>
+                          </div>
+                        </div>
                         <div class="flex justify-between mb-1" v-if="resultData[0].overall_gpa">
                           <span class="text-base font-medium text-blue-700">Average GPA</span>
                           <span class="text-sm font-medium text-blue-700" v-if="resultData[0]">{{
@@ -246,6 +296,22 @@
                         </div>
                         <div v-else>
                           No data available
+                        </div>
+                        <div class="mt-8 mb-4">
+                          <iframe width="335" height="250" style="border:0" loading="lazy" scrolling="no"
+                            gestureHandling="none" referrerpolicy="no-referrer-when-downgrade"
+                            :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + advanced_result['building'] + ' Purdue+University,West+Lafayette+IN'">
+                          </iframe>
+                        </div>
+                        <div class="mb-3 flex-wrap text-center items-center" v-if="advanced_result['building']">
+                          <span class="text-base font-medium text-blue-700">Office<br></span>
+                          <span class="text-base font-medium text-blue-700">{{
+                            advanced_result['building'] }}</span>
+                        </div>
+                        <div class="mb-2 flex-wrap text-center items-center" v-if="advanced_result['url']">
+                          <span class="text-base font-medium text-blue-700">Website<br></span>
+                          <a :href="advanced_result['url']" class="text-base font-medium text-blue-700 hover:text-blue-300">{{
+                            advanced_result['url'] }}</a>
                         </div>
                       </div>
                       <div v-else>
@@ -553,11 +619,11 @@ async function fetch() {
       .then(response => {
         professors.value = response.data
       })
-    await axios.get('http://localhost:3001/api/professorsadvanced')
+    await axios.get('https://api.boilerti.me/api/professorsadvanced')
       .then(response => {
         professorsadvanced.value = response.data
       })
-    await axios.get('http://localhost:3001/api/classroomsnew')
+    await axios.get('https://api.boilerti.me/api/classroomsnew')
       .then(response => {
         classrooms.value = response.data.classrooms
       })
@@ -576,6 +642,7 @@ async function fetch() {
 }
 
 const filteredResults = computed(() => {
+  advanced_result.value = []
   if (!searchTerm.value) {
     return []
   }
@@ -589,18 +656,21 @@ const filteredResults = computed(() => {
     return classrooms.value.filter((item) => {
       resultData.value = []
       actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'Course') {
     return courses.value.filter((item) => {
       resultData.value = []
       actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().includes(searchTerm.value.toLowerCase())
     })
   } else if (searchType.value == 'TA') {
     return tas.value.filter((item) => {
       resultData.value = []
       actual_course.value = []
+      advanced_result.value = []
       return item.toLowerCase().startsWith(searchTerm.value.toLowerCase())
     })
   }
@@ -613,6 +683,7 @@ var advanced_result = ref([])
 async function navigate(selected, type) {
   resultData.value = []
   actual_course.value = []
+  advanced_result.value = []
   searchTerm.value = ''
   result.value = selected;
   resultType.value = type;
@@ -623,10 +694,31 @@ async function navigate(selected, type) {
     result.value = result.value.split(',');
     result.value = result.value[1].trim() + ' ' + result.value[0];
     const advanced = professorsadvanced.value.find(obj => obj.name === name);
+    console.log(advanced)
     if (advanced) {
-      advanced_result.value = advanced
+      try {
+        var lookup = await axios.get('https://api.boilerti.me/api/buildingsnew');
+        lookup = lookup.data
+        var search = (advanced["building"].toUpperCase())
+        var len = 151
+        for (var i = 0; i < len; i++) {
+          if (Object.keys(lookup)[i] == search) {
+            advanced["building"] = Object.values(lookup)[i]
+            isDataLoaded.value = true;
+            break
+          }
+        }
+        if (isDataLoaded) {
+          advanced_result.value = advanced
+          isDataLoaded.value = true;
+        }
+      } catch {
+        advanced_result.value = advanced
+        isDataLoaded.value = true;
+      }
     } else {
       advanced_result.value = []
+      isDataLoaded.value = true;
     }
     axios.post('http://localhost:3001/api/getoverall_gpa', {
       prof_name: result.value
