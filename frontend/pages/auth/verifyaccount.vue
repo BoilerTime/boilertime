@@ -31,7 +31,7 @@ const toast = useToast();
  */
 onBeforeMount(async () => {
   await axios
-    .post("http://localhost:3001/api/verifyaccount", {
+    .post("https://api.boilerti.me/api/verifyaccount", {
       userID: user_id,
     })
     .then((res) => {

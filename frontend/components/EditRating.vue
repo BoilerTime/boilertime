@@ -141,7 +141,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/courses", data, config)
+      await axios.post("https://api.boilerti.me/api/edit/ratings/courses", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -182,7 +182,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/classrooms", data, config)
+      await axios.post("https://api.boilerti.me/api/edit/ratings/classrooms", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')
@@ -223,7 +223,7 @@ async function submit() {
     }
     setTimeout(async () => {
       console.log(data)
-      await axios.post("http://localhost:3001/api/edit/ratings/tas", data, config)
+      await axios.post("https://api.boilerti.me/api/edit/ratings/tas", data, config)
       .then((res) => {
         console.log(res.data)
         alert('Successfully edited rating')

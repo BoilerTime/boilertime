@@ -51,7 +51,7 @@ const toast = useToast();
  */
 async function sendemail() {
   await axios
-    .post("http://localhost:3001/api/forgotpassword", {
+    .post("https://api.boilerti.me/api/forgotpassword", {
       email: email.value,
     })
     .then(function () {

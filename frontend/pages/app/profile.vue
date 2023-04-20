@@ -656,18 +656,18 @@ async function deleteAccount() {
     var pwd = sha256(password.value);
     const res = await axios
       .post(
-        "http://localhost:3001/api/deleteuser",
+        "https://api.boilerti.me/api/deleteuser",
         {
-          user_id: user_id,
-          password: pwd,
-        },
+            user_id: user_id,
+            password: pwd,
+          },
         config
       )
       .then(() => {
-        userStore.logOut();
-        alert("Account deleted");
-        navigateTo("/");
-      });
+          userStore.logOut();
+          alert("Account deleted");
+          navigateTo("/");
+        });
   } catch (error) {
     // temp alert
     alert("Incorrect username or password");
@@ -687,7 +687,7 @@ async function changePassword() {
   var newconfpassword = sha256(confpassword.value);
   // Getting the encrypted user ID
   await axios
-    .post("http://localhost:3001/api/encryptuserid", {
+    .post("https://api.boilerti.me/api/encryptuserid", {
       user_id: user_id,
     })
     .then((res) => {
@@ -700,7 +700,7 @@ async function changePassword() {
   // Resetting the password
   if (newpassword === newconfpassword) {
     await axios
-      .post("http://localhost:3001/api/resetpassword", {
+      .post("https://api.boilerti.me/api/resetpassword", {
         user_id: encrypteduserid,
         password: newpassword,
       })
@@ -794,7 +794,7 @@ async function edit(title, q1, q2, q3, expl, type) {
 async function getBookmarks() {
   axios
     .post(
-      "http://localhost:3001/api/getbookmarks",
+      "https://api.boilerti.me/api/getbookmarks",
       {
         user_id: userStore.user_id,
       },
@@ -818,7 +818,7 @@ async function getBookmarks() {
 async function getGroups() {
   axios
     .post(
-      "http://localhost:3001/api/groups",
+      "https://api.boilerti.me/api/groups",
       {
         user_id: user_id,
       },
@@ -836,7 +836,7 @@ async function getGroups() {
 async function deletecourses(course) {
   axios
     .post(
-      "http://localhost:3001/api/delete/ratings/courses",
+      "https://api.boilerti.me/api/delete/ratings/courses",
       {
         user_id: userStore.user_id,
         course: course,
@@ -862,7 +862,7 @@ async function deletecourses(course) {
 async function deleteclassrooms(classroom) {
   axios
     .post(
-      "http://localhost:3001/api/delete/ratings/classrooms",
+      "https://api.boilerti.me/api/delete/ratings/classrooms",
       {
         user_id: userStore.user_id,
         classroom: classroom,
@@ -889,7 +889,7 @@ async function deleteclassrooms(classroom) {
 async function deleteta(ta) {
   axios
     .post(
-      "http://localhost:3001/api/delete/ratings/tas",
+      "https://api.boilerti.me/api/delete/ratings/tas",
       {
         user_id: userStore.user_id,
         ta: ta,
@@ -916,7 +916,7 @@ async function deleteta(ta) {
 async function getUserInfo() {
   axios
     .post(
-      "http://localhost:3001/api/get/profile/",
+      "https://api.boilerti.me/api/get/profile/",
       {
         user_id: userStore.user_id,
       },
@@ -949,7 +949,7 @@ var selectedOptionalCourses = ref([]);
 async function getSchedule() {
   axios
     .post(
-      "http://localhost:3001/api/getclasses",
+      "https://api.boilerti.me/api/getclasses",
       {
         user_id: userStore.user_id,
       },
@@ -960,7 +960,7 @@ async function getSchedule() {
     });
   axios
     .post(
-      "http://localhost:3001/api/getclasses",
+      "https://api.boilerti.me/api/getclasses",
       {
         user_id: userStore.user_id,
       },
@@ -978,7 +978,7 @@ let tas = [];
 async function getratings() {
   await axios
     .post(
-      "http://localhost:3001/api/get/user_ratings/courses",
+      "https://api.boilerti.me/api/get/user_ratings/courses",
       {
         user_id: userStore.user_id,
       },
@@ -1003,7 +1003,7 @@ async function getratings() {
     .then(async () => {
       await axios
         .post(
-          "http://localhost:3001/api/get/user_ratings/classrooms",
+          "https://api.boilerti.me/api/get/user_ratings/classrooms",
           {
             user_id: userStore.user_id,
           },
@@ -1026,7 +1026,7 @@ async function getratings() {
         });
       await axios
         .post(
-          "http://localhost:3001/api/get/user_ratings/tas",
+          "https://api.boilerti.me/api/get/user_ratings/tas",
           {
             user_id: userStore.user_id,
           },
@@ -1051,7 +1051,7 @@ async function getratings() {
 async function submit() {
   axios
     .post(
-      "http://localhost:3001/api/update/profile",
+      "https://api.boilerti.me/api/update/profile",
       {
         user_id: userStore.user_id,
         firstname: firstname.value,
