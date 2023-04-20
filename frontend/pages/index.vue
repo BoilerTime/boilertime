@@ -302,6 +302,7 @@ import {
   DisclosurePanel,
   DisclosureButton,
 } from "@headlessui/vue";
+import { useUserStore } from "../store/user"
 
 var users = ref();
 var schedules = ref();
@@ -355,10 +356,15 @@ function getSchedules() {
         });
 }
 
+const userStore = useUserStore();
+
 onMounted(async () => {
     getUsers();
     getRatings();
     getSchedules();
+    if (userStore.isLoggedIn) {
+      navigateTo('/app')
+    }
 });
 
 </script>
