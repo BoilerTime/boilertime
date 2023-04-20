@@ -995,11 +995,11 @@ async function navigate(selected, type) {
       advanced_result.value = []
       isDataLoaded.value = true;
     }
-    axios.post("http://localhost:3001/api/getoverall_gpa", {
-        prof_name: result.value,
-      })
-      .then((response) => {
-        console.log(response.data.overall_gpa);
+    axios.post('https://api.boilerti.me/api/getoverall_gpa', {
+      prof_name: result.value
+    })
+      .then(response => {
+        console.log(response.data.overall_gpa)
         try {
           var gpa = {
             overall_gpa: response.data.overall_gpa,
