@@ -161,7 +161,12 @@ async function isFull(subject, number, sectionIDs) {
   var res = [];
   const classes = data.value[0].Classes;
   for (var i = 0; i < sectionIDs.length; i++) {
-    const section = classes.find(c => c.Sections.some(s => s.Id === sectionIDs[i])).Sections.find(s => s.Id === sectionIDs[i]);;
+    var section;
+    try {
+      section = classes.find(c => c.Sections.some(s => s.Id === sectionIDs[i])).Sections.find(s => s.Id === sectionIDs[i]);
+    } catch (e) {
+      section = classes.find(c => c.Sections.some(s => s.ClassId === sectionIDs[i])).Sections.find(s => s.ClassId === sectionIDs[i]);
+    }
     sectionId = sectionIDs[i];
     if (section.RemainingSpace <= 0) {
       //res.push = { sectionId: true }
