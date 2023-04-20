@@ -181,6 +181,7 @@ public class CourseOverviewHelper {
         if(this.relatedSecondariesPtr == -1) {
             return -1;
         }
+        System.out.println(this.relatedSecondariesPtr);
         this.relatedSecondaries[this.relatedSecondariesPtr++] = data;
         return 1;
     }

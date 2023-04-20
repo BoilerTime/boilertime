@@ -7,7 +7,7 @@ public class SecondaryOverview {
     private int[] courseDurations;
     private WeekDays[][] courseDaysOfWeek; 
     private String[] sectionIds;
-    private final String[] parentSections;
+    private final String parentSections;
 
     public SecondaryOverview(SecondaryOverviewHelper sec) {
         this.courseTimes = sec.getTimes(); 
@@ -41,7 +41,7 @@ public class SecondaryOverview {
         return this.sectionIds;
     }
 
-    public String[] getParentSections() {
+    public String getParentSections() {
         return this.parentSections;
     }
 }

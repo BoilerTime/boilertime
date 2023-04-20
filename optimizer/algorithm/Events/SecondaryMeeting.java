@@ -1,6 +1,5 @@
 package optimizer.algorithm.Events;
 
-import optimizer.parameters.BlockOverview;
 import optimizer.parameters.SecondaryOverview;
 
 public class SecondaryMeeting extends Event {

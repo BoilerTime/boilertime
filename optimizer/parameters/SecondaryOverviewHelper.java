@@ -19,8 +19,8 @@ public class SecondaryOverviewHelper {
     private String[] sectionIds;
     private int sectionIdsPtr;
 
-    private String parentSections[];
-    private int parentSectionsPtr;
+    private String parentSection;
+
 
     /**
      * Constructor to create a wrapper class that assists in instantaiting a CourseOverview method.
@@ -31,8 +31,8 @@ public class SecondaryOverviewHelper {
         this.courseDurationsPtr = -1;
         this.weekDaysPtr = -1;
         this.sectionIdsPtr = -1;
-        this.parentSectionsPtr = -1;
         secondaryName = null;
+        parentSection = null;
     }
 
     /**
@@ -47,12 +47,8 @@ public class SecondaryOverviewHelper {
      * A helper method to set the parent ID of the course that is in question
      * @param name A string that represents the ID. 
      */
-    public int addParentSection(String name) {
-        if(this.parentSectionsPtr < 0) {
-            return -1;
-        }
-        this.parentSections[this.parentSectionsPtr++] = name; 
-        return 1;
+    public void addParentSection(String name) {
+        this.parentSection = name;
     }
     
     /**
@@ -68,7 +64,7 @@ public class SecondaryOverviewHelper {
      * A method that pushes a new time to the list of times for a specific class
      * @param time The time that is to be added
      */
-    public int addCourseTime(int time) {
+    public int addTime(int time) {
         if(this.courseTimesPtr < 0) {
             return -1;
         }
@@ -115,9 +111,6 @@ public class SecondaryOverviewHelper {
         //Ids
         this.sectionIds = new String[length];
         this.sectionIdsPtr = 0;
-        //Parent sections
-        this.parentSections = new String[length];
-        this.parentSectionsPtr = 0;
     }
 
 
@@ -145,7 +138,7 @@ public class SecondaryOverviewHelper {
         return this.sectionIds;
     }
 
-    public String[] getParentSections() {
-        return this.parentSections;
+    public String getParentSections() {
+        return this.parentSection;
     }
 }

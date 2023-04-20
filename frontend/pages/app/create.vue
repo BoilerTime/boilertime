@@ -1053,6 +1053,19 @@ function sendToOptimizer(courses, blocks, configurations) {
       connection.send(courses[i].sections[j].primary.ID);
       //Parent ID
       connection.send(courses[i].collections[j]);
+      //Number of secondaries
+      connection.send(courses[i].sections[j].secondary.length);
+      //Send the secondaries for this one
+      for(let k = 0; k < courses[i].sections[j].secondary.length; k++) {
+        //Start time
+        connection.send(courses[i].sections[j].secondary[k].startTime);
+        //duration
+        connection.send(courses[i].sections[j].secondary[k].duration);
+        //Week 
+        connection.send(courses[i].sections[j].secondary[k].daysOfWeek);
+        //Section ID
+        connection.send(courses[i].sections[j].secondary[k].ID);
+      }
     }
   }
   /*

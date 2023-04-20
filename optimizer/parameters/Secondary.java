@@ -12,7 +12,7 @@ public class Secondary {
     private SecondaryMeeting[] meetings;
     private HashMap<String, SecondaryMeeting> idSection; 
     private String[] sectionIds;
-    private String[] parentSections;
+    private String parentSections;
 
 
     public Secondary(SecondaryOverview info) {
@@ -47,7 +47,7 @@ public class Secondary {
     }
 
     /**
-     * A helper method tells the number of sections that exist for the course in question.
+     * A helper method tells the number of secondaries for the section in question
      * @return The number of sections, if the times and durations arrays are the same, otherwise -1. 
      */
     public int getNumberOfSecondaries() {
