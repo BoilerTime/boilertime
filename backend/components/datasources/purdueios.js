@@ -162,7 +162,8 @@ async function isFull(subject, number, sectionIDs) {
   const classes = data.value[0].Classes;
   for (var i = 0; i < sectionIDs.length; i++) {
     const section = classes.find(c => c.Sections.some(s => s.Id === sectionIDs[i])).Sections.find(s => s.Id === sectionIDs[i]);;
-    sectionId = sectionIDs[i];
+    let sectionId = sectionIDs[i];
+	console.log("Remaining: " + section.RemainingSpace)
     if (section.RemainingSpace <= 0) {
       //res.push = { sectionId: true }
       res.push(true);
