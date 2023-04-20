@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Commit empty change
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           git config --local user.email "alpinemail@zsy.sh"
           git config --local user.name "Zachary Will Sy"
