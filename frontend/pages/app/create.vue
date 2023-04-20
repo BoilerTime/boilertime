@@ -1147,7 +1147,7 @@ function parseCoursesResponse(output) {
     for(let i = 0; i < blocks[j].length; i++) {
       let thisFormat = JSON.parse(JSON.stringify(blockFormat));
       thisFormat.name = blocks[j][i].blockName;
-      thisFormat.start_time = blocks[j][i].blockStarTime;
+      thisFormat.start_time = padTime(blocks[j][i].blockStartTime);
       thisFormat.duration = blocks[j][i].blockDuration;
       thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
       console.log(thisFormat)
@@ -1491,7 +1491,7 @@ function calculateOutgoingArray() {
     let time = blockArray.value[i].start.split(":")
     console.log("Outing time: " + time[0] + ""+ time[1]);
     let template = {
-      start_time: blockArray.value[i].start,
+      start_time: padTime(blockArray.value[i].start),
       name: blockArray.value[i].name,
       days_of_week: [],
       duration: blockArray.value[i].duration//calculateDuration(blockArray.value[i].start, blockArray.value[i].end)
@@ -1505,6 +1505,14 @@ function calculateOutgoingArray() {
   }
   console.log(responseArray);
   return responseArray
+}
+
+function padTime(time) {
+  for(let i = 0; i < 4-time.length; i++) {
+    time = "0" + time;
+  }
+  console.log(time)
+  return time;
 }
 
 function calculateDuration(startTime, endTime) {
@@ -1580,7 +1588,7 @@ function configureBlocks(blockData) {
   console.log(blockData);
   for(let i = 0; i < blockData.length; i++) {
     console.log(blockData[i].startTime);
-    const format = {
+    let format = {
       name: blockData[i].name,
       start: blockData[i].start_time,
       duration: blockData[i].duration,
@@ -1588,12 +1596,14 @@ function configureBlocks(blockData) {
     }
 
     for(let j  = 0; j < daysOfWeekFull.length; j++) {
-      if(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]) != undefined) {
+      console.log(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]))
+      if(blockData[i].days_of_week.filter(day => day == daysOfWeekFull[j]).length > 0) {
         format.daysOfWeek.push(true);
       } else {
         format.daysOfWeek.push(false);
       }
     }
+    console.log(format.daysOfWeek)
     blockArray.value.push(format);
   }
 }

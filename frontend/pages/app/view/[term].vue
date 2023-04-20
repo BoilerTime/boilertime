@@ -39,10 +39,12 @@ const isDataLoaded = ref(false);
 const userStore = useUserStore();
 const route = useRoute()
 let result = [];
-async function convertSchedule(schedule) {
+async function convertSchedule(schedule, blocks) {
   console.log(schedule)
+  console.log(blocks)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
+      console.log(meeting.startTime)
       const startDateTime = new Date(meeting.startTime);
       const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const duration = meeting.duration.slice(2).toLowerCase();
@@ -73,6 +75,28 @@ async function convertSchedule(schedule) {
         daysOfWeek: daysOfWeek,
       });
     }
+  }
+
+  for(const block of blocks) {
+    console.log(block)
+    let todayDate = new Date();
+    const daysOfWeek = block.days_of_week.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
+    const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), block.start_time.substring(0,2), block.start_time.substring(2,4));
+    console.log(startDateTime)
+    const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: false });
+    console.log(easternStartTime)
+    const easternEndTimeDateTime = new Date(startDateTime.getTime() + (block.duration) * 60 * 1000);
+    const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+    result.push({
+        startTime: easternStartTime,
+        endTime: easternEndTime,
+        title: block.name,
+        id: block.name,
+        expandRows: true,
+        daysOfWeek: daysOfWeek,
+        color: "red"
+      });
+    console.log(result)
   }
 }
 async function addTitle(schedule) {
@@ -135,10 +159,10 @@ onBeforeMount(async () => {
     term_id: route.params.term,
   }, config).then((response) => {
     console.log(response.data + response.data.time);
-    console.log(response.data)
+    console.log("BLOCKS!!")
+    console.log(response.data.blocked_times)
     showWarning(response.data.configured)
-    scheduleData.value = response.data.schedule
-    convertSchedule(scheduleData.value)
+    convertSchedule(response.data.schedule, response.data.blocked_times)
   }).catch((error) => {
     if (error.response.status == 500) {
       console.log(error);

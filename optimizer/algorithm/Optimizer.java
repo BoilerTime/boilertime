@@ -354,13 +354,13 @@ public class Optimizer {
             //this.sendStatusUpdate(currentIndex);
             double convergneceScore = analyzer.getRMSConvergence();
             //System.out.println("IN IF!");
-            if(convergneceScore > .5) {
+            if(convergneceScore > .5 && currentIndex % 1000 == 0) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
-            } else if (convergneceScore > .1) {
+            } else if (convergneceScore > .1 && currentIndex % 1000 == 0) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
-            } else if (convergneceScore > 5E-3f) {
+            } else if (convergneceScore > 5E-3f && currentIndex % 1000 == 0) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
-            } else {
+            } else if(currentIndex % 1000 == 0) {
                 net.sendMessage("{\"status\":200,\"message\":\"Status Update\",\"data\":1}");
             }
             //System.out.println("Score = " + ((convergneceScore < 9.0E-4f) && this.numSatisfied < this.numOptions) + " " + convergneceScore + " " + this.numSatisfied);
