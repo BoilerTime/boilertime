@@ -12,7 +12,7 @@
       </div>
       <div id="calendar" v-if="result.length > 0">
           <button class="rounded-lg bg-yellow-500 hover:bg-yellow-700 px-4 py-2 text-sm font-bold border dark:border-black text-white" @click="screenie">
-            Screenie
+            Save Picture
           </button>
           <FullCalendar :options="calendarOptions" />
         </div>
@@ -90,7 +90,7 @@ async function convertSchedule(schedule, blocks) {
         startTime: easternStartTime,
         endTime: easternEndTime,
         title: block.name,
-        id: block.name,
+        id: "block",
         expandRows: true,
         daysOfWeek: daysOfWeek,
         color: "red"
@@ -127,9 +127,12 @@ const calendarOptions = ref({
   events: result,
   eventClick: function(info) {
     // console.log(info.event.extendedProps.data)
-    click = "#" + info.event.id
-    // simulate a click of the modal button
-    document.querySelector(click).click()
+    console.log(info.event.id)
+    if(info.event.id != "block") {
+      click = "#" + info.event.id
+      // simulate a click of the modal button
+      document.querySelector(click).click()
+    }
   }
 })
 var accessToken = userStore.accessToken;
@@ -150,7 +153,8 @@ onBeforeMount(async () => {
       term_id: route.params.term,
     }, config).then((response) => {
       scheduleData.value = response.data.schedule
-      convertSchedule(scheduleData.value)
+      showWarning(response.data.configured)
+      convertSchedule(response.data.schedule, response.data.blocked_times)
     })
   } else {
     await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
@@ -160,6 +164,7 @@ onBeforeMount(async () => {
     console.log(response.data + response.data.time);
     console.log("BLOCKS!!")
     console.log(response.data.blocked_times)
+    scheduleData.value = response.data.schedule
     showWarning(response.data.configured)
     convertSchedule(response.data.schedule, response.data.blocked_times)
   }).catch((error) => {

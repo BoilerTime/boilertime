@@ -495,8 +495,13 @@ public class Utils {
      * @param target The string in question, with days separate by a coma followed by a space
      * @return The array result, with none where no day of week was found to be
      */
-    public static WeekDays[] strListToDayList(String target) {
-        String[] aDays = target.split(",");
+    public static WeekDays[] strListToDayList(String target, boolean mode) {
+        String[] aDays;
+        if(mode) {
+            aDays = target.split(",");
+        } else {
+            aDays = target.split(", ");
+        }
         WeekDays[] res = new WeekDays[aDays.length];
         for(int i = 0; i < aDays.length; i++) {
             res[i] = strToDay(aDays[i]);

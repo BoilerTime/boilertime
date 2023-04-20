@@ -575,7 +575,6 @@ import axios from 'axios'
 import { useUserStore } from "../../store/user";
 import { useGuestStore } from "../../store/guest";
 import ProgressBar from "../../components/ProgressBar.vue";
-const { $toast } = useNuxtApp()
 import { VueDraggableNext as draggable2 } from 'vue-draggable-next'
 import draggable from 'vuedraggable'
 
@@ -588,7 +587,8 @@ import {
 } from '@headlessui/vue'
 
 import { BookmarkIcon, TrashIcon } from "@heroicons/vue/24/outline"
-const { $socket } = useNuxtApp()
+const { $toast } = useNuxtApp()
+
 var connection;
 
 const data = ref([])
@@ -748,7 +748,7 @@ const filteredResults = computed(() => {
 
 onMounted(() => {
 
-  connection = new WebSocket("ws://localhost:3002");
+  connection = new WebSocket("wss://ws.boilerti.me");
   connection.onopen = () => {
     console.log("Connected")
     console.log("Are we open? " + isOpen.value)
@@ -1014,9 +1014,8 @@ function submit() {
 
 function sendToOptimizer(courses, blocks, configurations) {
   if(connection.readyState != connection.OPEN) {
-    toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
+    $toast.error("Error: Couldn't connect to algorithm. Please reload this page and try again", {
           timeout: 5000,
-          position: POSITION.BOTTOM_RIGHT
         });
   }
   //We first need to send them number of classes we will be optimzing by
@@ -1395,9 +1394,8 @@ function showSectionConfig() {
     isAddingBlock.value = false;
     blockOption.value = "Add Block"
   } else {
-    toast.error("You can't add anymore blocks!", {
+    $toast.error("You can't add anymore blocks!", {
             timeout: 5000,
-            position: POSITION.BOTTOM_RIGHT
     });
   }
 }
@@ -1407,9 +1405,8 @@ function saveBlock() {
   let starting = startTime.value;
   let ending = endTime.value;
   if(starting == "" || ending == "") {
-    toast.error("You haven't configured times yet!", {
+    $toast.error("You haven't configured times yet!", {
             timeout: 5000,
-            position: POSITION.BOTTOM_RIGHT
     });
     return;
   }
@@ -1423,25 +1420,22 @@ function saveBlock() {
   let endingMinute = parseInt(endingSplit[1]);
 
   if(startingHour > endingHour) {
-    toast.error("You can't start after you end!", {
+    $toast.error("You can't start after you end!", {
             timeout: 5000,
-            position: POSITION.BOTTOM_RIGHT
     });
     return;
   } else if(startingHour == endingHour) {
       if(startingMinute > endingMinute) {
-        toast.error("You can't start after you end!", {
+        $toast.error("You can't start after you end!", {
               timeout: 5000,
-              position: POSITION.BOTTOM_RIGHT
       });
       return;
     }
   }
 
   if(!block_name.value || /^\s*$/.test(block_name.value)) {
-    toast.error("You need to enter a name for your block!", {
+    $toast.error("You need to enter a name for your block!", {
               timeout: 5000,
-              position: POSITION.BOTTOM_RIGHT
       });
       return;
   }
@@ -1454,9 +1448,8 @@ function saveBlock() {
     }
   }
   if(daysWeek.length == 0) {
-    toast.error("You need to enter some days of the week!", {
+    $toast.error("You need to enter some days of the week!", {
               timeout: 5000,
-              position: POSITION.BOTTOM_RIGHT
       });
       return;
   }
@@ -1545,7 +1538,7 @@ function saveScheduleToDB() {
       configured: configured,
       blocked_times: calculateOutgoingArray()})
   if(!isAGuest.value) {
-    axios.post('http://localhost:3001/api/saveschedule', {
+    axios.post('https://api.boilerti.me/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
