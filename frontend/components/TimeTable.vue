@@ -7,7 +7,7 @@
       {{ className }}
     </div>
     <div v-if="showInfo"
-         class="px-2 py-1 text-xs text-white bg-black rounded-md">
+         class="font-size: 100px; px-2 py-1 text-xs text-white bg-black rounded-md">
       {{ classInfo }}
     </div>
   </div>

@@ -57,7 +57,7 @@
           </div>
         </div>
         <section class="flex flex-col md:flex-row gap-10">
-          <div class="bg-white rounded-lg shadow-lg  dark:bg-neutral-500">
+          <div class="bg-white rounded-lg shadow-lg dark:bg-neutral-500">
             <div v-if="userSchedules.length !== 0">
               <!-- Data items -->
               <div class="flex flex-col items-center justify-between p-10 md:flex-row md:flex-wrap gap-10">
@@ -74,11 +74,20 @@
                   @click="getScheduleView(schedule.term_id)"
                   class="flex flex-col justify-between mb-4 overflow-x-hidden overflow-y-scroll bg-white border-2 border-black rounded-lg cursor-pointer h-72 w-80 dark:bg-neutral-700 dark:text-white"
                 >
-                  <h1 class="px-2 py-2 text-xl font-bold text-center bg-yellow-500">
-                    {{ formatTitle(schedule.term_id) }}
-                  </h1>
-                  <div v-for="course in resultSchedule">
-                    <TimeTable :course="course" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" />
+                 <div class="flex items-center justify-between px-2 py-2">
+                    <h1 class="px-2 py-2 text-xl font-bold text-center bg-yellow-500">
+                      {{ formatTitle(schedule.term_id) }}
+                    </h1>
+                    <TrashIcon class="w-4 h-4 mr-2 text-gray-500 hover:text-red-500" @click.stop="deleteSchedule(schedule.term_id)" />
+                  </div>
+                  <div v-if=isOptimized v-for="course in resultSchedule" style="font-size: 100px;">
+                    <TimeTable :course="course.title" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" />
+                  </div>
+                  <div v-else>
+                    <span class="flex items-center text-red-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 17v.01"></path>
+                      This schedule has not been optimized yet.
+                    </span>
                   </div>
                   <h2 class="px-2 py-2 italic text-center bg-yellow-500 text-md">
                     {{ schedule.timestamp }}
@@ -931,6 +940,7 @@
 import { onUnmounted } from "vue";
 import { Bars3Icon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { PlusIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon } from '@heroicons/vue/20/solid'
 import { ref } from "vue";
 import axios from "axios";
 import { onMounted } from "vue";
@@ -989,10 +999,11 @@ onBeforeMount(async () => {
     )
     .then((response) => {
       userSchedules.value = response.data;
-      numSchedules =
-        userSchedules.value[userSchedules.value.length - 1].num_schedules;
+      numSchedules = userSchedules.value[userSchedules.value.length - 1].num_schedules;
+      console.log('success we got the schedules');
       console.log(numSchedules + " this is the num schedules");
       userSchedules.value.pop();
+      console.log(userSchedules);
     });
   if (!isAGuest.value) {
     if (numSchedules === 0 && guestStore.schedule) {
@@ -1027,7 +1038,30 @@ onBeforeMount(async () => {
       }, 2000); // Wait 1 second before showing the toast message
     }
   }
-  await checkWindowSize();
+
+  console.log(userSchedules.value.length + ' << LENGTH');
+  console.log(userSchedules.value + ' << VALUE');
+  for (var i = 0; i < userSchedules.value.length; i++) {
+    console.log(userSchedules.value[i].term_id + ' term_id');
+    axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
+      user_id: userStore.user_id,
+      term_id: userSchedules.value[i].term_id,
+    }, config).then((response) => {
+        console.log('response');
+        console.log(response.data + response.data.time);
+        scheduleData.value = response.data.schedule
+        convertSchedule(response.data.schedule)
+        console.log(resultSchedule.value);
+    }).catch((error) => {
+      isOptimized.value = false;
+      console.log("THIS IS THE ERROR " + error)
+
+    });
+  }
+  console.log('THIS IS THE VALUE ' + resultSchedule.value);
+  getUserInfo();
+  fetch();
+  checkWindowSize();
 });
 
 let interval;
@@ -1044,6 +1078,7 @@ const classrooms = ref([]);
 const courses = ref([]);
 const tas = ref([]);
 const tas_inv = ref([]);
+const isOptimized = ref(true);
 
 var lastname = ref("");
 var firstname = ref("");
@@ -1060,7 +1095,7 @@ var guestStore = useGuestStore();
 var isAGuest = ref(true);
 var resultSchedule = ref([]);
 
-onMounted(async () => {
+onMounted(() => {
   if (userStore.user_id) {
     isAGuest.value = false;
   }
@@ -1396,6 +1431,22 @@ async function submitNecssaryCookies() {
     });
 }
 
+async function deleteSchedule(term_id) {
+  await axios.post('http://localhost:3001/api/delete/term/schedule', {
+    user_id: userStore.user_id,
+    term_id: term_id,
+  }, config).then((response) => {
+    $toast.success(`Deleted ${term_id} Schedule`, {
+      timeout: 2000,
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000); 
+  }).catch((error) => {
+    console.error(error)
+  });
+}
+
 async function convertSchedule(schedule) {
   for (const course of schedule) {
     for (const meeting of course.meetings) {
@@ -1451,20 +1502,4 @@ async function convertSchedule(schedule) {
 }
 
 
-onBeforeMount(async () => {
-  await getUserInfo();
-  await fetch();
-
-  await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
-    user_id: userStore.user_id,
-    term_id: "spring_2023",
-  }, config).then((response) => {
-      console.log(response.data + response.data.time);
-      scheduleData.value = response.data.schedule
-      convertSchedule(response.data.schedule)
-      console.log(resultSchedule.value);
-  }).catch((error) => {
-    console.log("THIS IS THE ERROR " + error)
-  });
-});
 </script>

@@ -83,7 +83,10 @@ async function getAllUserSchedules(user_id) {
   const collections = await userSchedules.listCollections();
 
   for (var i = 0; i < collections.length; i++) {
-    doc = await userSchedules.collection(collections[i].id).doc("schedule").get();
+    doc = await userSchedules.collection(collections[i].id).doc("generated_schedule").get();
+    if (!doc.exists) {
+      continue;
+    }
     doc = await doc.data();
     newDate =  dayjs.unix(doc.timestamp.seconds + doc.timestamp.nanoseconds/1000000).$d;
     const jsonObj = {

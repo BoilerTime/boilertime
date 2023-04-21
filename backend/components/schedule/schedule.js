@@ -20,7 +20,8 @@ module.exports = {
   hotClasses,
   takenTogether,
   getGeneratedSchedule,
-  getClassMates
+  getClassMates,
+  deleteSchedule
 }
 
 /** 
@@ -159,7 +160,17 @@ async function getGeneratedSchedule(user_id) {
   } catch (e) {
     return undefined;
   }
+}
 
+async function deleteSchedule(user_id, term_id) {
+    let generatedSchedule = await schedules.doc(user_id).collection(term_id).doc('generated_schedule').get();
+    let createdSchedule = await schedules.doc(user_id).collection(term_id).doc('schedule').get();
+    if (generatedSchedule.exists) {
+      await generatedSchedule.ref.delete();
+    }
+    if (createdSchedule.exists) {
+      await createdSchedule.ref.delete();
+    }
 }
 
 async function classCounterDecrement(user_id, generated_schedule) {
