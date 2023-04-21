@@ -1579,7 +1579,7 @@ function parseCoursesResponse(output) {
         }
         blockFormat.blockName = blocks[i][j].blockName;
         //blockFormat.blockStartTime = padTime(blocks[i][j].blockStartTime);
-        blockFormat.blockStartTime = convertTime(blocks[i][j].blockStartTime)//sEasternStartTime;
+        blockFormat.blockStartTime = blocks[i][j].blockStartTime//sEasternStartTime;
         blockFormat.blockEndTime = blocks[i][j].blockDuration//sEaasternEndTime;//blocks[i][j].blockDuration;
         blockFormat.blockDaysOfWeek = blocks[i][j].daysOfWeek
         console.log(blocks[i][j])
@@ -1939,7 +1939,7 @@ function saveBlock() {
   //We won all the conditions, now we just need to save to the list
   const format = {
     name: block_name.value,
-    start: startingHour + ":" + startingMinute,
+    start: startingSplit[0] + ":" + startingSplit[1],
     duration: calculateDuration(
       startingHour + ":" + startingMinute,
       endingHour + ":" + endingMinute
