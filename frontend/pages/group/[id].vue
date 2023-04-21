@@ -7,26 +7,13 @@
                 <h1 class="font-bold text-2xl mb-5 text-center">
                     You are the only member in {{ group_name }}. Invite your friends to see your schedules.
                 </h1>
-                <center>
                     <qrcode-vue :value="qr_value" :size="300" level="H" />
-                </center>
                 <h2 class="mt-4 pb-4 text-center text-2x1">https://boilerti.me/group/join/?group_id={{ group }}</h2>
             </div>
         </div>
-        <div v-else class="bg-neutral-100 dark:bg-neutral-400 rounded-lg max-w-1/2 mb-5 p-4 content-center text-center">
-            <h1 class="font-bold text-2xl mb-3">Group: {{ group_name }}</h1>
-            <ul class="list-inside list-item mb-6 items-center text-center">
-                <li v-for="(item, index) in schedules" :key="index">
-                    <div class="font-bold text-lg">{{ member_names[index] }}'s schedule</div>
-                    <!--Check to see if user has a schedule-->
-                    <div v-if="item.value=='empty'">This user has not created a schedule yet.</div>
-                    <!--Present calendar-->
-                    <div id="calendar" v-if="result.length > 0">
-                        <FullCalendar :options="calendarOptions" />
-                    </div>
-                </li>
-            </ul>
-        </div>
+
+          <FullCalendar :options="calendarOptions" />
+
     </div>
 </template>
   
@@ -42,6 +29,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 var userStore = useUserStore();
 var user_id = userStore.user_id;
 var accessToken = userStore.accessToken;
+
 const config = {
     headers: {
         'authorization': `Bearer ${accessToken}`
@@ -49,14 +37,13 @@ const config = {
 }
 var member_names = ref([]);
 var member_ids = ref([]);
-var schedules = ref([]);
 var group_name = ref();
 const route = useRoute();
 const group = route.params.id;
 var group_size = ref(false);
 var qr_value = "https://boilerti.me/group/join/?group_id=" + group;
 
-let result=[];
+var result=ref([]);
 let click = ''
 const calendarOptions = ref({
   plugins: [timeGridPlugin],
@@ -66,7 +53,7 @@ const calendarOptions = ref({
   weekends: false,
   height: "100vh",
   aspectRatio: 10,
-  events: result, //the array that converts the output of the schedule
+  events: result.value, //the array that converts the output of the schedule
   eventClick: function(info) {
     // console.log(info.event.extendedProps.data)
     console.log(info.event.id)
@@ -78,13 +65,18 @@ const calendarOptions = ref({
   }
 })
 
+var colors = [ "red", "green", "yellow", "blue", "orange" ]
+
 /**
  * This function is used to convert a JSON into a calendar.
  */
-async function convertSchedule(schedule, blocks) {
+async function convertSchedule(schedule, blocks, memberID, index) {
   console.log(schedule)
   console.log(blocks)
+  console.log("INDEX = " + index)
   for (const course of schedule) {
+    console.log("IN Course" );
+    console.log(course);
     for (const meeting of course.meetings) {
       console.log(meeting.startTime)
       const startDateTime = new Date(meeting.startTime);
@@ -108,14 +100,17 @@ async function convertSchedule(schedule, blocks) {
         }, config)
         return response?.data?.avgRating || 0.0
       }
-      result.push({
+      console.log("ID = " + memberID);
+      result.value.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
         title: course.subject+" "+course.number,
         id: id,
+        color: colors[index],
         expandRows: true,
         daysOfWeek: daysOfWeek,
       });
+      console.log(result.value);
     }
   }
 }
@@ -146,16 +141,17 @@ async function convertSchedule(schedule, blocks) {
  * This function will get the calendars of all users in the group.
  */
  async function getCalendars() {
+  var index = 0; 
   for (var id in member_ids.value) {
     axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
       term_id: "spring_2023",
       user_id: member_ids.value[id]
     }, config)
       .then((res) => {
-        schedules.value.push(res.data)
+        convertSchedule(res.data.schedule, res.data.blocked_times, member_ids.value[id], index++);
+        //schedules.value.push(res.data, member_ids.value[id])
       })
       .catch(function (error) {
-        schedules.value.push("empty");
         console.error("error");
         alert("A member of your group does not have an optimized schedule.");
       })
@@ -168,13 +164,6 @@ async function convertSchedule(schedule, blocks) {
 onMounted(async () => {
     await getGroup().then(() => {
         getCalendars();
-        //convert schedule here
-        for (let i = 0; i < schedules.length; i++) {
-          console.log(schedules[i].schedule);
-          console.log(schedules[i].blocked_times);
-          convertSchedule(schedules[i].schedule, schedules[i].blocked_times);
-          console.log(result[i]);
-        }
     });
 });
 </script>
