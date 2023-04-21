@@ -1,13 +1,12 @@
 <template>
-  <div class="flex items-center space-x-2">
-    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-    <div class="text-sm font-medium text-gray-800 cursor-pointer"
+  <div class="block text-center p-2 gap-2">
+    <div class="text-lg font-bold cursor-help"
          @mouseover="showInfo = true"
          @mouseleave="showInfo = false">
       {{ className }}
     </div>
     <div v-if="showInfo"
-         class="font-size: 100px; px-2 py-1 text-xs text-white bg-black rounded-md">
+         class="px-2 py-1 text-sm font-medium text-indigo-700 bg-indigo-200 rounded-lg">
       {{ classInfo }}
     </div>
   </div>
