@@ -1,30 +1,47 @@
 <!--resetpassword.vue is a page dedicated to allowing users to begin the password reset process.
     It will ask for the user's email, then sending an email that they will-->
 <template>
-  <div class="h-screen bg-gradient-to-b from-gray-100 to-gray-300">
-    <br />
-    <div class="mx-auto my-10 5px max-w-sm p-6 bg-white border rounded-lg shadow sm:p-8 md:p-8 dark:bg-white">
-
+  <div class="h-screen bg-gray-300 flex items-center">
+    <div class="mx-auto w-72 p-6 bg-white border rounded-lg shadow">
       <!--Reset Password Text-->
-      <h1 class="pb-4 text-center text-2x1 font-bold">Reset Password</h1>
+      <h1 class="pb-2 text-center text-2xl font-bold">Reset Password</h1>
 
       <form @submit.prevent="() => resetpassword()">
         <!--Password text & input box-->
-        <label for="password" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">New
-          Password</label>
-        <input type="password" id="password" aria-describedby="helper-text-explanation"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="password" required>
+        <label
+          for="password"
+          class="block py-2 text-sm font-bold"
+          >New Password</label
+        >
+        <input
+          type="password"
+          id="password"
+          class="bg-gray-50 border border-black text-sm rounded-lg block w-full p-2.5"
+          placeholder="Enter your new password"
+          v-model="password"
+          required
+        />
         <!--Confirm Passord text & input box-->
-        <label for="confpassword" class="pt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-black">Confirm
-          Password</label>
-        <input type="password" id="confpassword" aria-describedby="helper-text-explanation"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500" v-model="confpassword" required>
+        <label
+          for="confpassword"
+          class="block py-2 text-sm font-bold"
+          >Confirm Password</label
+        >
+        <input
+          type="password"
+          id="confpassword"
+          class="bg-gray-50 border border-black text-sm rounded-lg block w-full p-2.5"
+          placeholder="Confirm your new password"
+          v-model="confpassword"
+          required
+        />
 
         <!--Attempts to login-->
-        <div class="container py-7 px-5 min-w-full flex flex-col items-center">
-          <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-10 rounded">
+        <div class="py-4 flex flex-col items-center">
+          <button
+            type="submit"
+            class="bg-black hover:bg-gray-900 text-white font-bold py-2 px-6 rounded-lg"
+          >
             Reset Password
           </button>
         </div>
@@ -34,38 +51,44 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import sha256 from 'js-sha256'
-
-const route = useRoute()
-
-const user_id = route.query.user_id
-const password = ref('')
-const confpassword = ref('')
+import { ref } from "vue";
+import axios from "axios";
+import sha256 from "js-sha256";
+const route = useRoute();
+const user_id = route.query.user_id;
+const password = ref("");
+const confpassword = ref("");
+const { $toast } = useNuxtApp();
 
 /**
  * A function that will make sure the user_id is correct and will then
- * change the newly inputted password. 
+ * change the newly inputted password.
  */
 async function resetpassword() {
   var newpassword = sha256(password.value);
   var newconfpassword = sha256(confpassword.value);
   if (newpassword === newconfpassword) {
-    await axios.post('https://api.boilerti.me/api/resetpassword', {
-      user_id: user_id,
-      password: newpassword
-    })
+    await axios
+      .post("https://api.boilerti.me/api/resetpassword", {
+        user_id: user_id,
+        password: newpassword,
+      })
       .then(function () {
-        alert("Password has been reset.")
-        navigateTo("/auth/login")
+        //alert("Password has been reset.")
+        $toast.success("Password has been reset.", {
+        });
+        navigateTo("/auth/login");
       })
       .catch(function (error) {
-        console.error(error)
-        alert("Email does not exist. Please re-enter.")
+        //console.error(error)
+        //alert("Email does not exist. Please re-enter.")
+        $toast.error("Email does not exist. Please re-enter.", {
+        });
       });
   } else {
-    alert("Passwords do not match")
+    //alert("Passwords do not match")
+    $toast.error("Passwords do not match", {
+    });
   }
 }
 </script>

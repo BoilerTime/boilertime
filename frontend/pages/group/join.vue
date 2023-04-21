@@ -1,8 +1,13 @@
 <!--join.vue is accessed when clicking on a group link. The page will
     prompt the user whether or not they would like to join a group.-->
 <template>
-    <NavBar />
-    <div class="h-screen p-16 bg-gray-200">
+    <div v-if="!isMobile">
+        <NavBar />
+    </div>
+    <div>
+        <NavBarMobile />
+    </div>
+    <div class="h-screen p-16 bg-gray-200 dark:bg-neutral-700">
         <!--Join Group-->
         <div class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
             <div v-if="group_exists">
@@ -40,6 +45,15 @@ var isDataLoaded = ref(false);
 var route = useRoute();
 var group_id = route.query.group_id;
 var group_name = ref("");
+var isMobile = ref(false);
+
+async function checkWindowSize() {
+    if (window.innerWidth <= 768) {
+        isMobile.value = true;
+    } else {
+        isMobile.value = false;
+    }
+}
 var group_exists = true
 
 /**
@@ -96,5 +110,6 @@ async function getname() {
  */
 onMounted(async () => {
   await getname();
+  await checkWindowSize();
 });
 </script>

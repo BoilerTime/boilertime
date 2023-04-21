@@ -343,6 +343,17 @@ app.post('/api/get/term/optimizedschedule', async (req, res) => {
   });
 })
 
+app.post('/api/delete/term/schedule', async (req, res) => {
+  await schedule.deleteSchedule(req.body.user_id, req.body.term_id).then(async (schedule) => {
+    return res.sendStatus(200);
+  }).catch(err => {
+    console.log(err)
+    return res.sendStatus(err.error || 500);
+  });
+})
+
+
+
 app.post('/api/createschedule', jwt.authenticateToken, async (req, res) => {
   const authenticationHeader = req.headers['authorization'];
   const token = authenticationHeader && authenticationHeader.split(' ')[1];

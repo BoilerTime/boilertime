@@ -1,11 +1,16 @@
 <!--create.vue is used for creating groups, which includes naming it
     and forming the invite link.-->
 <template>
-  <NavBar />
-  <div class="h-screen p-16 dark:bg-neutral-500 bg-gray-200">
+  <div v-if="!isMobile">
+    <NavBar />
+  </div>
+  <div v-else>
+    <NavBarMobile />
+  </div>
+  <div class="h-screen p-16 dark:bg-neutral-700 bg-gray-200">
     <!--Create Group-->
     <div
-      class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-700 border border-black rounded-lg shadow-lg grid grid-flow-row">
+      class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-500 border border-black rounded-lg shadow-lg grid grid-flow-row">
       <h1 class="font-bold text-2xl mb-5 text-center dark:text-gray-200">
         Create a Group
       </h1>
@@ -14,7 +19,7 @@
           Group Name
         </label>
         <input type="group_name" id="group_name"
-          class="bg-gray-50 outline-none border border-black text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-neutral-500 dark:placeholder-white dark:text-gray-200"
+          class="bg-gray-50 outline-none border border-black text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-neutral-700 dark:placeholder-white dark:text-gray-200"
           v-model="group_name" required /><br />
         <div class="grid grid-flow-col gap-4mb-5">
           <button type="submit" class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg">
@@ -62,6 +67,11 @@ const config = {
 };
 var group_name = ref("");
 var group_id = "";
+var isMobile = ref(false);
+
+async function checkWindowSize() {
+  isMobile.value = window.innerWidth <= 768;
+}
 
 /**
  * A function that will take a user_id and group_name and create a group.
@@ -86,4 +96,8 @@ async function creategroup() {
       alert(error);
     });
 }
+
+onBeforeMount(() => {
+  checkWindowSize();
+});
 </script>
