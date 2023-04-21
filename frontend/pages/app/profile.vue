@@ -262,6 +262,21 @@
                   />
                 </Switch>
               </div>
+              <div class="flex flex-col items-center gap-2">
+                <label for="pairs" class="font-bold dark:text-gray-200"
+                  >Stop Receiving Email Notifications</label
+                >
+                <Switch
+                  v-model="emailNotifications"
+                  :class="emailNotifications ? 'bg-indigo-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full"
+                >
+                  <span
+                    :class="emailNotifications ? 'translate-x-6' : 'translate-x-1'"
+                    class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                  />
+                </Switch>
+              </div>
             </div>
             <!--Get All User Data Button-->
             <button
@@ -590,6 +605,8 @@ var pairs = ref(false);
 var bookmarkedClasses = ref([]);
 var groups = ref([]);
 
+var emailNotifications = ref(false)
+
 var user_id = userStore.user_id;
 var accessToken = userStore.accessToken;
 const config = {
@@ -668,6 +685,7 @@ async function history() {
 async function deleteAccount() {
   try {
     var pwd = sha256(password.value);
+    console.log(pwd)
     const res = await axios
       .post(
         "https://api.boilerti.me/api/deleteuser",

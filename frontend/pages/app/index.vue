@@ -5,7 +5,7 @@
     <Modal
       @closed="closePrivacyPopup()"
       v-if="privacyPopup"
-      class="absolute inset-y-1"
+      class="absolute inset-y-1 z-50"
     >
       <template #header>
         <div class="flex flex-col justify-start">
