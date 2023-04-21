@@ -940,6 +940,8 @@ const displayTips = ref(false);
 const blockConfig = ref(false);
 const mins = ref("");
 const courseCount = ref("5");
+var lastEntered = ref("");
+var together_classes = ref([]);
 var trending_classes = ref([]);
 var together_classes = ref([]);
 var configured = false;
@@ -1146,7 +1148,17 @@ onMounted(() => {
 const selectedRequiredCourses = ref([]);
 const isSearchActive = ref(false);
 
-function addToSelected(item) {
+async function get_takentogether(course) {
+  await axios.post('https://api.boilerti.me/api/takentogether', {
+    class: course,
+  }).then((response) => {
+    together_classes.value = response.data;
+  });
+}
+
+async function addToSelected(item) {
+  lastEntered.value = item;
+  await get_takentogether(item)
   console.log(item);
   if (
     selectedRequiredCourses.value.length < 5 &&
@@ -1197,7 +1209,9 @@ const filteredOptionalResults = computed(() => {
 const selectedOptionalCourses = ref([]);
 const isOptionalSearchActive = ref(false);
 
-function addToSelectedOptional(item) {
+async function addToSelectedOptional(item) {
+  lastEntered.value = item;
+  await get_takentogether(item)
   if (
     selectedOptionalCourses.value.length < 5 &&
     !selectedOptionalCourses.value.includes(item) &&

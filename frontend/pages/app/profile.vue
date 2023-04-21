@@ -561,7 +561,6 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
-import { saveAs } from "file-saver";
 import {
   Switch,
   TabGroup,
@@ -654,10 +653,16 @@ async function history() {
     ],
     { type: "text/plain;charset=utf-8" }
   );
-  saveAs(blob, "boilergrades.txt").catch((err) => {
-    alert("Error saving file");
-    console.log(err);
-  });
+  // create a link element
+    const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+
+  // set the file name
+  const date = new Date().toISOString().substring(0, 10);
+  link.download = `history_${date}.txt`;
+
+  // trigger a download when the link is clicked
+  link.click();
 }
 
 async function deleteAccount() {
