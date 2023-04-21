@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="mb-6 bg-amber-100 p-6 rounded-lg" :id="data.subject+data.number" v-if="isDataLoaded" @click="open = true">
+    <div class="mb-6 bg-yellow-100 p-6 rounded-lg" :id="data.subject+data.number" v-if="isDataLoaded" @click="open = true">
       <h1 class="text-xl font-bold"><span>{{ data.subject }}&nbsp;</span>{{ data.number }}</h1>
       <h1 class="font-bold">{{ data.name }}</h1>
       <ul class="mt-3 mb-3">

@@ -9,7 +9,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="fixed inset-0 bg-black bg-opacity-25" />
+        <div class="fixed inset-0" />
       </TransitionChild>
 
       <div class="fixed inset-0">
@@ -22,7 +22,7 @@
             leave-from="opacity-100"
             leave-to="opacity-0"
           >
-            <DialogPanel class="text-left bg-white dark:bg-neutral-700 p-6 rounded-lg">
+            <DialogPanel class="text-left bg-white dark:bg-neutral-700 p-6 rounded-lg shadow-lg">
               <DialogTitle class="text-lg font-medium leading-6 text-black dark:text-gray-200">
                 Edit rating for {{ title }}
               </DialogTitle>

@@ -346,5 +346,4 @@ onMounted(async () => {
     getRatings();
     getSchedules();
 });
-
 </script>
