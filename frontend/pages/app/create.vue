@@ -1089,7 +1089,7 @@ onBeforeMount(() => {
       time_pref.value = guestStore.schedule.time || "none";
       configured = guestStore.schedule.configured || false;
       configureState(guestStore.schedule.preference_list);
-      configureBlocks(guestStore.data.blocked_times);
+      configureBlocks(guestStore.schedule.blocked_times);
     } else {
       console.log("undefined");
     }
