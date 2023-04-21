@@ -1088,95 +1088,63 @@ function parseCoursesResponse(output) {
   console.log("Parsing Response!!!!!");
   displayingResults();
   let timePref = getTimePref();
-  let data = output.lectures;
+  let lectures = output.lectures;
   let blocks = output.blocks;
   const formatString = "course_name at course_time on course_week_days"
   const blockFormatString = "block_name at block_time on block_days_of_week for block_duration minutes"
   var userOutput = [];
-  console.log(data)
+  console.log("DATA + ");
+  console.log(lectures)
   console.log(blocks)
-  for(let i = 0; i < data.length; i++) {
+  for(let i = 0; i < lectures.length; i++) {
+    let specificOutput = [];
+    for(let j = 0; j < lectures[i].length; j++) {
+      let outputFormat = {
+        "courseName": "",
+        "startTime": "",
+        "endTime": "",
+        "hasSecondary": true,
+        "secondaryStartTime": "",
+        "secondaryEndTime": ""
+      }
+      console.log(lectures[i][j]);
+      let courseIndex = findCourse(lectures[i][j].courseID)
+      outputFormat.courseName = courseList[courseIndex].name
+      let specificInd = getCollectionIndex(lectures[i][j].collectionID, courseIndex);
+      ///console.log(courseList[courseIndex].sections[specificInd].secondary[]);
+      const todayDate = new Date()
+      const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
+      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: false });
+      outputFormat.startTime = easternStartTime;
+      const easternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].primary.duration) * 60 * 1000);
+      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+      outputFormat.endTime = easternEndTime;
+      console.log(lectures[i][j])
+      if(lectures[i][j].secondary !== "none") {
+        outputFormat.hasSecondary = true;
+        let recitationInd = getSecondaryDetails(courseIndex, specificInd, lectures[i][j].secondary);
+        const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(0,2), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(2,4));
+        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: false });
+        outputFormat.secondaryStartTime = sEasternStartTime;
+        const sEaasternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration) * 60 * 1000);
+        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+        outputFormat.secondaryEndTime = sEaasternEndTime;
+      } else {
+        outputFormat.hasSecondary = false;
+      }
 
-    //let thisFormat = [];
-    let thisFormat = "";
-    for(let j = 0; j < data[i].length; j++) {
-      let string = "";
-      if(data[i].length > 1 && j == data[i].length - 1) {
-        console.log("TWT")
-        string += "and "
-      }
-      let tempForm = new String(formatString);
-      string+= tempForm;
-      console.log(data[i][j]);
-      string = string.replace("course_name", data[i][j].courseID);
-      string = string.replace("course_time", fto2(data[i][j].courseStartTime));
-      string = string.replace("course_week_days", (data[i][j].daysOfWeek));
-      if(j != data[i].length - 1) {
-        string += ", "
-      }
-      thisFormat += (string)
+      specificOutput.push(outputFormat);
+      //console.log(outputFormat)
+      //userOutput.push(outputFormat);
+      //console.log("J = " + lectures[i].courseID[j]);
+      //let index = findCourse(lectures[i]);
+      //console.log("INDEX = " + index);
     }
-    if(blocks.length > 0 && blocks[i].length > 0) {
-      thisFormat += ". Time off: "
-      for(let j = 0; j < blocks[i].length; j++) {
-        let string = "";
-        if(j == blocks[i].length - 1) {
-          console.log("TWT")
-          string += "and "
-        }
-        let tempForm = new String(blockFormatString);
-        string+= tempForm;
-        console.log(data[i][j]);
-        string = string.replace("block_name", blocks[i][j].blockName);
-        string = string.replace("block_time", fto2(blocks[i][j].blockStartTime));
-        string = string.replace("block_duration", blocks[i][j].blockDuration);
-        string = string.replace("block_days_of_week", (blocks[i][j].daysOfWeek));
-        if(j != blocks[i].length - 1) {
-        string += ", "
-      }
-      thisFormat += (string)
-      }
-    }
-    userOutput.push(thisFormat)
+    userOutput.push(specificOutput);
   }
-
-  schedule.value = userOutput;
-  console.log("Temp Form = " + userOutput);
-
+  console.log(userOutput)
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
-  for(let j = 0; j < data.length; j++) {
-    let serverOutput = {"configured": configured, "schedule": [], "blocked_times": []};
-
-    for(let i = 0; i < data[j].length; i++) {
-      let name = data[j][i].courseID;
-      let thisFormat = JSON.parse(JSON.stringify(serverFormat));
-      let indexForTarget = findCourse(name);
-      //console.log("index = " + indexForTarget)
-      //console.log("Data = " + JSON.stringify(data[i]))
-      let indexIn = findIDIndex(indexForTarget, data[j][i].sectionId);
-      thisFormat.subject = name.split(' ')[0];
-      thisFormat.number = name.split(' ')[1];
-
-      thisFormat.userSections.sectionID = (courseList[indexForTarget].collectionIDs[indexIn])
-      thisFormat.userSections.meetings.push(data[j][i].sectionId);
-      serverOutput.schedule.push(thisFormat)
-    }
-    if(blocks.length == 0) {
-      resultsList.push(serverOutput);
-      continue;
-    }
-    for(let i = 0; i < blocks[j].length; i++) {
-      let thisFormat = JSON.parse(JSON.stringify(blockFormat));
-      thisFormat.name = blocks[j][i].blockName;
-      thisFormat.start_time = padTime(blocks[j][i].blockStartTime);
-      thisFormat.duration = blocks[j][i].blockDuration;
-      thisFormat.days_of_week = blocks[j][i].daysOfWeek.split(", ");
-      console.log(thisFormat)
-      serverOutput.blocked_times.push(thisFormat);
-    }
-    resultsList.push(serverOutput);
-  }
   console.log("DATA = ")
   console.log(resultsList);
 }
@@ -1185,6 +1153,24 @@ function parseCoursesResponse(output) {
 function findCourse(target) {
   for(let i = 0; i < courseList.length; i++) {
     if(courseList[i].name == target) {
+      return i;
+    }
+  }
+}
+
+function getCollectionIndex(target, index) {
+  for(let i = 0; i < courseList[index].collections.length; i++) {
+    if(courseList[index].collections[i] == target) {
+      return i;
+    }
+  }
+}
+
+function getSecondaryDetails(courseIndex, specificInd, recitationID) {
+  console.log(courseList[courseIndex].sections[specificInd].secondary[0])
+  console.log(recitationID)
+  for(let i = 0; i < courseList[courseIndex].sections[specificInd].secondary.length; i++) {
+    if(courseList[courseIndex].sections[specificInd].secondary[i].ID == recitationID) {
       return i;
     }
   }
