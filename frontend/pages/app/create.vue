@@ -233,23 +233,29 @@
                 <p class="text-xs text-gray-500"><i>Note, becuase optimization relies on ML, some options may not look correct. </i></p>
               </div>
                           <!-- Data items -->
-            <div v-for="(schedule, index) in schedule" :key="schedule" class="p-4 cursor-pointer"
+            <div v-for="(schedule, index) in schedule" :key="schedule" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
               @click="getScheduleView(index)">
-              <div
-                class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
-                <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
+              <div>
+                <div class="flex flex-col justify-left w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300" >
                   <div>
-                    <div v-for="(entry, i) in schedule">
-                      <span class="text-sm text-black"
-                      >{{ entry.courseName }} lecture from {{entry.startTime}} until {{entry.endTime}}.
-                      <span v-if="entry.hasSecondary"><li>{{entry.secondaryType}} from {{entry.secondaryStartTime}} until {{entry.secondaryEndTime}}</li></span>
-                    </span>
+                    <div v-for="(entry, i) in schedule" >
+                        <div v-if="entry.type == 'class'">
+                        <span class="text-sm text-black"
+                        >{{ entry.courseName }} lecture from {{entry.startTime}} until {{entry.endTime}} on {{entry.daysOfWeek}}.
+                        <span v-if="entry.hasSecondary">{{entry.secondaryType}} from {{entry.secondaryStartTime}} until {{entry.secondaryEndTime}} on {{entry.secondaryDaysOfWeek}}</span>
+                        </span>
+                        <br/><br/>
+                    </div>
+                  <div v-else>
                     <br/>
-                  </div>
-
+                    <span class="text-sm text-black"
+                      >Time off for {{entry.blockName}} at {{entry.blockStartTime}} until {{ entry.blockEndTime }} on {{ entry.blockDaysOfWeek }}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 </div>
+            </div>
             </div>
             </DialogPanel>
           </TransitionChild>
@@ -670,40 +676,40 @@ onBeforeMount(() => {
   else {
     console.log('is a guest is true');
   }
-  axios.get('https://api.boilerti.me/api/searchnew').then((response) => {
+  axios.get('http://localhost:3001/api/searchnew').then((response) => {
     data.value = response.data
   })
-  axios.get('https://api.boilerti.me/api/searchnew').then((response) => {
+  axios.get('http://localhost:3001/api/searchnew').then((response) => {
     optionalData.value = response.data
   })
-  axios.post('https://api.boilerti.me/api/getclasses', {
+  axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedRequiredCourses.value = response.data.required_classes
   })
-  axios.post('https://api.boilerti.me/api/getclasses', {
+  axios.post('http://localhost:3001/api/getclasses', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     selectedOptionalCourses.value = response.data.optional_classes
   })
-  axios.post('https://api.boilerti.me/api/getbookmarks', {
+  axios.post('http://localhost:3001/api/getbookmarks', {
     user_id: userStore.user_id,
   }, config).then((response) => {
     bookmarked_classes.value = response.data.bookmarks
   })
-  axios.get('https://api.boilerti.me/api/hotclasses').then((response) => {
+  axios.get('http://localhost:3001/api/hotclasses').then((response) => {
     trending_classes.value = response.data
   })
 
   if (!isAGuest.value) {
     console.log('here in not a guest');
-    axios.post('https://api.boilerti.me/api/getclasses', {
+    axios.post('http://localhost:3001/api/getclasses', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       selectedRequiredCourses.value = response.data.required_classes
       courseCount.value = response.data.num_courses;
     })
-    axios.post('https://api.boilerti.me/api/getclasses', {
+    axios.post('http://localhost:3001/api/getclasses', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       selectedOptionalCourses.value = response.data.optional_classes
@@ -712,7 +718,7 @@ onBeforeMount(() => {
       configureState(response.data.preference_list);
       configureBlocks(response.data.blocked_times)
     })
-    axios.post('https://api.boilerti.me/api/getbookmarks', {
+    axios.post('http://localhost:3001/api/getbookmarks', {
       user_id: userStore.user_id,
     }, config).then((response) => {
       bookmarked_classes.value = response.data.bookmarks
@@ -757,7 +763,7 @@ onMounted(() => {
 
   connection.onmessage = ((data) => {
     console.log("data", (data.data))
-    try {
+   // try {
       let response = JSON.parse(data.data);
       console.log("STATUS" + response.status)
       if(response?.message == "schedule") {
@@ -774,9 +780,9 @@ onMounted(() => {
           });
 
         }
-    } catch (e) {
-      console.log("Wasnt JSON!!" + e)
-    }
+    //} catch (e) {
+      //console.log("Wasnt JSON!!" + e)
+    //}
   })
 
   connection.onclose = function () {
@@ -865,7 +871,7 @@ function removeOptional(index) {
 
 function removeFromBookmarked(index) {
   bookmarked_classes.value.splice(index, 1);
-  axios.post('https://api.boilerti.me/api/removebookmark', {
+  axios.post('http://localhost:3001/api/removebookmark', {
     user_id: userStore.user_id,
     class_name: bookmarked_classes.value
   }, config).then(() => {
@@ -905,7 +911,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
     if (!isAGuest.value) {
       console.log(`New bookmark added: ${newBookmark}`)
       console.log(bookmarked_classes.value)
-      axios.post('https://api.boilerti.me/api/addbookmark', {
+      axios.post('http://localhost:3001/api/addbookmark', {
         user_id: userStore.user_id,
         class_name: bookmarked_classes.value
       }, config).then(() => {
@@ -923,7 +929,7 @@ watch(bookmarked_classes, (newVal, oldVal) => {
     console.log(`Bookmark removed: ${removedBookmark}`)
     console.log(bookmarked_classes.value)
       console.log(`Bookmark removed: ${removedBookmark}`)
-      axios.post('https://api.boilerti.me/api/removebookmark', {
+      axios.post('http://localhost:3001/api/removebookmark', {
         user_id: userStore.user_id,
         class_name: bookmarked_classes.value
       }, config).then(() => {
@@ -1091,36 +1097,50 @@ function parseCoursesResponse(output) {
   let timePref = getTimePref();
   let lectures = output.lectures;
   let blocks = output.blocks;
-  const formatString = "course_name at course_time on course_week_days"
-  const blockFormatString = "block_name at block_time on block_days_of_week for block_duration minutes"
+  
+  
   var userOutput = [];
+  var serverOutput = []
   console.log("DATA + ");
   console.log(lectures)
   console.log(blocks)
+  const todayDate = new Date()
   for(let i = 0; i < lectures.length; i++) {
-    let specificOutput = [];
+    let specificServerOutput = {"configured": configured, "schedule": [], "blocked_times": []};
+    var specificOutput = []
     for(let j = 0; j < lectures[i].length; j++) {
       let outputFormat = {
+        "type": "class",
         "courseName": "",
         "startTime": "",
         "endTime": "",
+        "daysOfWeek": "",
         "hasSecondary": true,
         "secondaryStartTime": "",
         "secondaryEndTime": "",
-        "secondaryType": ""
+        "secondaryType": "",
+        "secondaryDaysOfWeek": ""
       }
+
+      let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
+
       console.log(lectures[i][j]);
       let courseIndex = findCourse(lectures[i][j].courseID)
       outputFormat.courseName = courseList[courseIndex].name
       let specificInd = getCollectionIndex(lectures[i][j].collectionID, courseIndex);
       ///console.log(courseList[courseIndex].sections[specificInd].secondary[]);
-      const todayDate = new Date()
+      serverFormat.subject = courseList[courseIndex].name.split(" ")[0];
+      serverFormat.number = courseList[courseIndex].name.split(" ")[1];
+      serverFormat.userSections.sectionID = lectures[i][j].collectionID;
+      serverFormat.userSections.meetings.push(courseList[courseIndex].sections[specificInd].primary.ID);
+      
       const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
       const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit'  });
       outputFormat.startTime = easternStartTime;
       const easternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].primary.duration) * 60 * 1000);
       const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', {hour12: true, hour: '2-digit', minute:'2-digit'  });
       outputFormat.endTime = easternEndTime;
+      outputFormat.daysOfWeek = courseList[courseIndex].sections[specificInd].primary.daysOfWeek
       console.log(lectures[i][j])
       if(lectures[i][j].secondary !== "none") {
         outputFormat.hasSecondary = true;
@@ -1128,30 +1148,57 @@ function parseCoursesResponse(output) {
         const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(0,2), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(2,4));
         const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
         outputFormat.secondaryStartTime = sEasternStartTime;
+        console.log(sStartDateTime)
         const sEaasternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration) * 60 * 1000);
         const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
         outputFormat.secondaryEndTime = sEaasternEndTime;
         outputFormat.secondaryType = courseList[courseIndex].sections[specificInd].secondary[recitationInd].type
+        outputFormat.secondaryDaysOfWeek = courseList[courseIndex].sections[specificInd].secondary[recitationInd].daysOfWeek
+        serverFormat.userSections.meetings.push(courseList[courseIndex].sections[specificInd].secondary[recitationInd].ID);
         if(outputFormat.secondaryType == "Practice Study Observation") {
           outputFormat.secondaryType = "PSO"
         }
       } else {
         outputFormat.hasSecondary = false;
       }
-
+      console.log(outputFormat)
+      specificServerOutput.schedule.push(serverFormat);
+      //server.push(serverFormat);
       specificOutput.push(outputFormat);
-      //console.log(outputFormat)
-      //userOutput.push(outputFormat);
-      //console.log("J = " + lectures[i].courseID[j]);
-      //let index = findCourse(lectures[i]);
-      //console.log("INDEX = " + index);
     }
-    userOutput.push(specificOutput);
+    for(let j = 0; j < blocks[i]?.length || 0; j++) {
+        let blockFormat = {
+          "type": "block",
+          "blockName": "",
+          "blockStartTime": "",
+          "blockEndTime": "",
+          "blockDaysOfWeek": "",
+        }
+        blockFormat.blockName = blocks[i][j].blockName;
+        //blockFormat.blockStartTime = padTime(blocks[i][j].blockStartTime);
+        const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), padTime(blocks[i][j].blockStartTime).substring(0,2), padTime(blocks[i][j].blockStartTime).substring(2,4));
+        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
+        blockFormat.blockStartTime = sEasternStartTime;
+        const sEaasternEndTimeDateTime = new Date(sStartDateTime.getTime() + (blocks[i][j].blockDuration) * 60 * 1000);
+        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
+        blockFormat.blockEndTime = sEaasternEndTime;//blocks[i][j].blockDuration;
+        blockFormat.blockDaysOfWeek = blocks[i][j].daysOfWeek
+        console.log(blocks[i][j])
+        let serverBlockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
+        serverBlockFormat.name = blockFormat.blockName;
+        serverBlockFormat.start_time = padTime(blocks[i][j].blockStartTime);
+        serverBlockFormat.duration = blocks[i][j].blockDuration;
+        serverBlockFormat.days_of_week = blocks[i][j].daysOfWeek.split(", ");
+        specificOutput.push(blockFormat);
+        specificServerOutput.blocked_times.push(serverBlockFormat);
+    }
+      userOutput.push(specificOutput);
+      serverOutput.push(specificServerOutput);
   }
   schedule.value = userOutput;
   console.log(userOutput)
-  let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
-  let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
+  console.log(serverOutput);
+  resultsList = serverOutput;
   console.log("DATA = ")
   console.log(resultsList);
 }
@@ -1192,7 +1239,7 @@ function findIDIndex(position, target) {
 }
 
 function saveOptimizedSchedule(schedule) {
-  axios.post('https://api.boilerti.me/api/saveoptimizedschedule', {
+  axios.post('http://localhost:3001/api/saveoptimizedschedule', {
     data: schedule,
     user_id: userStore.user_id
   }).then(() => {
@@ -1551,7 +1598,7 @@ function saveScheduleToDB() {
       configured: configured,
       blocked_times: calculateOutgoingArray()})
   if(!isAGuest.value) {
-    axios.post('https://api.boilerti.me/api/saveschedule', {
+    axios.post('http://localhost:3001/api/saveschedule', {
       user_id: userStore.user_id,
       required_classes: selectedRequiredCourses.value,
       optional_classes: selectedOptionalCourses.value,
@@ -1572,7 +1619,7 @@ function saveScheduleToDB() {
       }
     })
   } else {
-    axios.post('https://api.boilerti.me/api/saveschedule/guest', {
+    axios.post('http://localhost:3001/api/saveschedule/guest', {
       user_id: userStore.user_id,
         required_classes: selectedRequiredCourses.value,
         optional_classes: selectedOptionalCourses.value,
