@@ -4,6 +4,7 @@ import optimizer.algorithm.Schedule;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.Constants;
 import optimizer.constants.EventType;
 import optimizer.constants.WeekDays;
@@ -160,7 +161,27 @@ public class RequiredAnalyzer {
         return Math.abs(num - total);
     }
 
-    public int calculateBlockSufficiency(Schedule target) {
+    private int calculateSecondarySufficiency(Schedule target) {
+        HashMap<String, Integer> courseCount = new HashMap<String, Integer>();
+        HashMap<String, Integer> sectionCount = new HashMap<String, Integer>();
+        SecondaryMeeting[] secondary = target.getSecondaries();
+        for(int i = 0; i < secondary.length; i++) {
+            String parent = secondary[i].getParentCourse();
+            if(courseCount.containsKey(parent)) {
+                int count = courseCount.get(parent).intValue();
+                courseCount.put(parent, Integer.valueOf(++count));
+            }
+
+            String section = secondary[i].getParentSection();
+            if(sectionCount.containsKey(section)) {
+                int count = sectionCount.get(section).intValue();
+                sectionCount.put(section, Integer.valueOf(++count));
+            }
+        }
+        return 0;
+    }
+
+    private int calculateBlockSufficiency(Schedule target) {
         Block[] blocks = target.getBlocks();
         return Math.abs(blocks.length - this.numBlocks);
     }

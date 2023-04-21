@@ -13,6 +13,7 @@ public class Secondary {
     private HashMap<String, SecondaryMeeting> idSection; 
     private String[] sectionIds;
     private String parentSections;
+    private String parentCourse;
 
 
     public Secondary(SecondaryOverview info) {
@@ -40,7 +41,7 @@ public class Secondary {
         for(int i = 0; i < meetings.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Constants.SECONDARY + Utils.arrToString(id);
-            meetings[i] = new SecondaryMeeting(this, template.getTimes()[i], template.getDurations()[i], template.getWeekDays()[i], sid);
+            meetings[i] = new SecondaryMeeting(this, parentCourse, template.getTimes()[i], template.getDurations()[i], template.getWeekDays()[i], sid);
             idSection.put(sid, meetings[i]);
         }
         return meetings;

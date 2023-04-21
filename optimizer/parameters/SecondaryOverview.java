@@ -2,7 +2,7 @@ package optimizer.parameters;
 
 import optimizer.constants.WeekDays;
 
-public class SecondaryOverview {
+public final class SecondaryOverview {
     private int[] courseTimes;
     private int[] courseDurations;
     private WeekDays[][] courseDaysOfWeek; 
@@ -10,6 +10,7 @@ public class SecondaryOverview {
     private final String parentSections;
     private final String secondaryType;
     private final int numberOfSecondaries;
+    private final String parentCourse;
 
     public SecondaryOverview(SecondaryOverviewHelper sec) {
         this.courseTimes = sec.getTimes(); 
@@ -19,6 +20,7 @@ public class SecondaryOverview {
         this.parentSections = sec.getParentSections();
         this.secondaryType = sec.getType();
         this.numberOfSecondaries =  sec.getNumberOfSecondaries();
+        this.parentCourse = sec.getParentCourse();
     }
 
     public int[] getTimes() {
@@ -55,5 +57,9 @@ public class SecondaryOverview {
 
     public int getNumberOfSecondaries() {
         return this.numberOfSecondaries;
+    }
+
+    public String getParentCourse() {
+        return this.parentCourse;
     }
 }

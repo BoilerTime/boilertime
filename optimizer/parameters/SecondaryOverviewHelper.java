@@ -19,6 +19,7 @@ public class SecondaryOverviewHelper {
     private int sectionIdsPtr;
 
     private String parentSection;
+    private String parentCourse;
     private int numberOfSecondaries;
 
 
@@ -31,8 +32,9 @@ public class SecondaryOverviewHelper {
         this.courseDurationsPtr = -1;
         this.weekDaysPtr = -1;
         this.sectionIdsPtr = -1;
-        secondaryName = null;
-        parentSection = null;
+        this.secondaryName = null;
+        this.parentSection = null;
+        this.parentCourse = null;
         this.numberOfSecondaries = -1;
     }
 
@@ -42,6 +44,14 @@ public class SecondaryOverviewHelper {
      */
     public void addName(String name) {
         this.secondaryName = name;
+    }
+
+    /**
+     * Adds the name of the parent course to the helper
+     * @param name The name to be added
+     */
+    public void addParentCourse(String name) {
+        this.parentCourse = name;
     }
 
     /**
@@ -142,5 +152,9 @@ public class SecondaryOverviewHelper {
 
     public int getNumberOfSecondaries() {
         return this.numberOfSecondaries;
+    }
+
+    public String getParentCourse() {
+        return this.parentCourse;
     }
 }

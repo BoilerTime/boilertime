@@ -184,15 +184,16 @@ public class ScheduleClient extends Thread  {
         //System.out.println("Called to get course info!");
         CourseOverviewHelper x = new CourseOverviewHelper();
         try {
-            String temp; 
+            
             //ystem.out.println("In try at getCourseInfo!");
             //first, we assign the course a name
-            temp = network.getIncomingMessage();
-            if(temp == null) {
+            String courseName = network.getIncomingMessage();
+            if(courseName == null) {
                 return null;
             }
-            x.addCourseName(temp);
+            x.addCourseName(courseName);
             //System.out.println("Added a name to the course!");
+            String temp; 
             temp = network.getIncomingMessage();
             System.out.println("Required message: " + temp);
             if(temp.equalsIgnoreCase("True")) {
@@ -237,6 +238,7 @@ public class ScheduleClient extends Thread  {
                     message = network.getIncomingMessage();
                     s.addSectionId(message);
                     s.addParentSection(PID);
+                    s.addParentCourse(courseName);
                 }
                 x.addRelatedSecondary(s);
                 //System.out.println("Added a section combo: " + i);
