@@ -56,14 +56,14 @@
             </div>
           </div>
         </div>
-        <section class="flex flex-row gap-10">
-          <div class="bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
+        <section class="flex flex-col md:flex-row gap-10">
+          <div class=" bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
             <div v-if="userSchedules.length !== 0">
               <!-- Data items -->
-              <div class="flex flex-col md:flex-row justify-center gap-10 p-10">
+              <div class="flex flex-col md:flex-row md:flex-wrap justify-between items-center gap-10 p-10">
                 <!-- Add button -->
                 <button
-                  class="p-6 flex justify-center items-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
+                  class="p-6 flex justify-center items-center w-80 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                   @click="navigateToCreateSchedule()"
                 >
                   <PlusIcon class="w-12 h-12" />
