@@ -9,6 +9,7 @@ public class SecondaryOverview {
     private String[] sectionIds;
     private final String parentSections;
     private final String secondaryType;
+    private final int numberOfSecondaries;
 
     public SecondaryOverview(SecondaryOverviewHelper sec) {
         this.courseTimes = sec.getTimes(); 
@@ -17,6 +18,7 @@ public class SecondaryOverview {
         this.sectionIds = sec.getSectionIDs();
         this.parentSections = sec.getParentSections();
         this.secondaryType = sec.getType();
+        this.numberOfSecondaries =  sec.getNumberOfSecondaries();
     }
 
     public int[] getTimes() {
@@ -49,5 +51,9 @@ public class SecondaryOverview {
 
     public String getSecondaryType() {
         return this.secondaryType;
+    }
+
+    public int getNumberOfSecondaries() {
+        return this.numberOfSecondaries;
     }
 }

@@ -7,6 +7,7 @@ import optimizer.algorithm.Analyzer.QualityAnalyzer;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.Constants;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
@@ -14,14 +15,16 @@ import optimizer.network.NetworkHandler;
 import optimizer.parameters.BlockOverview;
 import optimizer.parameters.Course;
 import optimizer.parameters.CourseOverview;
+import optimizer.parameters.Secondary;
+import optimizer.parameters.SecondaryOverview;
 
 public class Optimizer {
 
     private Course[] registerdCourses;
     private Block[] blocks;
+    private Secondary[] registeredSecondaries;
     private HashMap<String, Event> idEvent;
     private final int scheduleSize;
-    private final int courseSize;
     private final int generationSize = 32;
     private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
@@ -46,8 +49,7 @@ public class Optimizer {
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
 
-        this.courseSize = this.calculateScheduleSize(registeredC.length, totalClasses);// = registeredC.length;
-        this.scheduleSize = this.courseSize + this.blocks.length;
+        this.scheduleSize = this.calculateScheduleSize(registeredC.length, totalClasses) + this.blocks.length;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
         
@@ -71,15 +73,19 @@ public class Optimizer {
     private void parseEventOverviews(CourseOverview[] c, BlockOverview[] b) {
         int totalSections = 0;
         int totalSecondaries = 0;
+        int totalSecondaryOverviews = 0;
         int totalBlocks = b.length;
         this.registerdCourses = new Course[c.length];
         this.blocks = new Block[b.length];
+        SecondaryOverview secondaries[][] = new SecondaryOverview[c.length][];
 
         ArrayList<Lecture> singleCount = new ArrayList<Lecture>();
         for(int i = 0; i < c.length; i++) {
             //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
             totalSecondaries += c[i].getTotalNumberOfSecondaries();
+            secondaries[i] = c[i].getRelatedSecondaries();
+            totalSecondaryOverviews += secondaries[i].length;
             if(c[i].isRequired()) {
                 numRequired ++;
             }
@@ -119,6 +125,30 @@ public class Optimizer {
             System.out.println("SID = " + sID);
             this.blocks[i] = new Block(b[i], sID);
             idEvent.put(sID, (Event) this.blocks[i]);
+        }
+
+        /*
+         * Instantiate secondary courses
+         */
+        SecondaryOverview[] temp = new SecondaryOverview[totalSecondaryOverviews];
+        int ctr = 0;
+        for(int i  = 0; i < secondaries.length; i++) {
+            for(int j = 0; j < secondaries[i].length; j++) {
+                System.out.println(i + " " + j + " " + ctr);
+                if(secondaries[i][j].getNumberOfSecondaries() > 0) {
+                    temp[ctr++] = secondaries[i][j];
+                }
+            }
+        }
+
+        this.registeredSecondaries = new Secondary[ctr];
+        for(int i = 0; i < ctr; i++) {
+            this.registeredSecondaries[i] = new Secondary(temp[i]);
+            SecondaryMeeting[] instSecondaries = this.registeredSecondaries[i].instantiate(minCount, repBits);
+            for(int j = 0; j < instSecondaries.length; j++) {
+                idEvent.put(instSecondaries[j].getID(), (Event) instSecondaries[j]);
+            }
+            minCount += instSecondaries.length;
         }
 
         if(singleCount.size() > 0) {
