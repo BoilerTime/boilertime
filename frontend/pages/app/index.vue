@@ -78,7 +78,7 @@
                     <div class="px-2 py-2 text-xl font-bold text-center">
                       {{ formatTitle(schedule.term_id) }}
                     </div>
-                    <TrashIcon class="w-4 h-4 mr-2 text-gray-500 hover:text-red-500" @click.stop="deleteSchedule(schedule.term_id)" />
+                    <TrashIcon class="w-7 h-7 mr-2 text-gray-500 hover:text-red-500" @click.stop="deleteSchedule(schedule.term_id)" />
                   </div>
                   <div v-if=isOptimized v-for="course in resultSchedule" style="font-size: 100px;">
                     <TimeTable :course="course.title" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" />

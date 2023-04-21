@@ -1,7 +1,7 @@
 <template>
-  <TransitionRoot :show="open" style="z-index: 9999;">
+  <TransitionRoot :show="open" style="z-index: 9999">
     <Dialog class="z-50" @close="$emit('update:open', false)">
-      <TransitionChild 
+      <TransitionChild
         enter="duration-500"
         leave="duration-700"
         enter-from="opacity-0"
@@ -11,68 +11,151 @@
         class="bg-black fixed inset-0 bg-opacity-75 z-40"
       />
       <div class="fixed absolute inset-0 right-0 max-w-full z-50">
-          <div class="fixed right-0 max-w-full">
-            <TransitionChild 
-              enter="duration-500"
-              leave="duration-700"
-              enter-from="translate-x-full"
-              leave-from="translate-x-0"
-              enter-to="translate-x-0"
-              leave-to="translate-x-full"
-             >
-              <DialogPanel class="bg-white dark:bg-neutral-500 h-screen w-screen pb-12 max-w-xl flex-col overflow-y-scroll overflow-x-hidden">
-                <div class="bg-yellow-500 p-6 mb-4">
-                  <span class="text-3xl font-semibold text-white">{{ data.subject }} {{ data.number }}</span>
+        <div class="fixed right-0 max-w-full">
+          <TransitionChild
+            enter="duration-500"
+            leave="duration-700"
+            enter-from="translate-x-full"
+            leave-from="translate-x-0"
+            enter-to="translate-x-0"
+            leave-to="translate-x-full"
+          >
+            <DialogPanel
+              class="bg-white dark:bg-neutral-500 h-screen w-screen pb-12 max-w-xl flex-col overflow-y-scroll overflow-x-hidden"
+            >
+              <div class="bg-yellow-500 p-6 mb-4 flex flex-row items-center gap-8 md:justify-between">
+                <div class="flex flex-col">
+                  <span class="text-3xl font-semibold text-white"
+                    >{{ data.subject }} {{ data.number }}</span
+                  >
                   <p class="text-xl text-white mt-1">{{ data.name }}</p>
                 </div>
-                <div v-for="(meeting, index) in data.meetings" :key="index" class="relative">
-                  <div class="relative px-6 pt-4">
-                    <h1 class="text-2xl font-bold dark:text-gray-200">{{ meeting.type }}</h1>
-                    <h1 class="text-lg font-bold mb-4 dark:text-gray-200">{{ meeting.instructorName }}</h1>
-                    <h1 v-for="days in meeting.daysOfWeek" class="text-sm dark:text-gray-200" :key="days">{{ days }}</h1>
-                    <h1 class="text-sm mt-4 dark:text-gray-200">{{ begin_times[index] }}-{{ fin_times[index] }}</h1>
-                    <h1 class="text-sm mb-4 dark:text-gray-200">{{ meeting.buildingCode }} {{ meeting.roomNumber }}</h1>
+                <XMarkIcon @click="closeModal" class="cursor-grab h-8 w-8"></XMarkIcon>
+              </div>
+              <div
+                v-for="(meeting, index) in data.meetings"
+                :key="index"
+                class="relative"
+              >
+                <div class="relative px-6 pt-4">
+                  <h1 class="text-2xl font-bold dark:text-gray-200">
+                    {{ meeting.type }}
+                  </h1>
+                  <h1 class="text-lg font-bold mb-4 dark:text-gray-200">
+                    {{ meeting.instructorName }}
+                  </h1>
+                  <h1
+                    v-for="days in meeting.daysOfWeek"
+                    class="text-sm dark:text-gray-200"
+                    :key="days"
+                  >
+                    {{ days }}
+                  </h1>
+                  <h1 class="text-sm mt-4 dark:text-gray-200">
+                    {{ begin_times[index] }}-{{ fin_times[index] }}
+                  </h1>
+                  <h1 class="text-sm mb-4 dark:text-gray-200">
+                    {{ meeting.buildingCode }} {{ meeting.roomNumber }}
+                  </h1>
+                </div>
+                <iframe
+                  width="600"
+                  height="250"
+                  style="border: 0"
+                  loading="lazy"
+                  scrolling="no"
+                  gestureHandling="none"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  :src="
+                    'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' +
+                    meeting.buildingName +
+                    'Purdue+University,West+Lafayette+IN'
+                  "
+                >
+                </iframe>
+                <div class="relative px-6 pt-4 pb-6">
+                  <div>
+                    <h1 class="text-lg font-bold dark:text-gray-200">
+                      Avg GPA
+                    </h1>
+                    <h1 class="text-md dark:text-gray-200">
+                      For this specific class
+                    </h1>
+                    <h1
+                      v-if="prof_stats[index] != undefined"
+                      class="text-lg mb-4 dark:text-gray-200"
+                    >
+                      {{ class_stats[index] }}
+                    </h1>
+                    <h1 v-else class="text-lg mb-4 dark:text-gray-200">
+                      No data
+                    </h1>
+                    <h1 class="text-md dark:text-gray-200">
+                      For all the classes taught by this professor
+                    </h1>
+                    <h1
+                      v-if="prof_stats[index] != undefined"
+                      class="text-lg mb-4 dark:text-gray-200"
+                    >
+                      {{ prof_stats[index] }}
+                    </h1>
+                    <h1 v-else class="text-lg mb-4 dark:text-gray-200">
+                      No data
+                    </h1>
                   </div>
-                  <iframe
-                    width="600"
-                    height="250"
-                    style="border:0"
-                    loading="lazy"
-                    scrolling="no"
-                    gestureHandling="none"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDZSvQc9nGqbNtJ66CTu1IGrBl-9RHllIU&q=' + meeting.buildingName + 'Purdue+University,West+Lafayette+IN'">
-                  </iframe>
-                  <div class="relative px-6 pt-4 pb-6">
-                      <div>
-                        <h1 class="text-lg font-bold dark:text-gray-200">Avg GPA</h1>
-                        <h1 class="text-md dark:text-gray-200">For this specific class</h1>
-                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ class_stats[index] }}</h1>
-                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
-                        <h1 class="text-md dark:text-gray-200">For all the classes taught by this professor</h1>
-                        <h1 v-if="prof_stats[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ prof_stats[index] }}</h1>
-                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
-                      </div>
-                      <div>
-                        <h1 class="text-lg font-bold dark:text-gray-200">Rate My Professors</h1>
-                        <h1 class="text-md dark:text-gray-200">Average rating</h1>
-                        <h1 v-if="rmp_rating[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ rmp_rating[index] }} out of 5</h1>
-                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
-                        <h1 class="text-md dark:text-gray-200">Average difficulty</h1>
-                        <h1 v-if="rmp_difficulty[index] != undefined" class="text-lg mb-4 dark:text-gray-200">{{ rmp_difficulty[index] }} out of 5</h1>
-                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
-                        <h1 class="text-md dark:text-gray-200">Would take again</h1>
-                        <h1 v-if="rmp_again[index] != undefined" class="text-lg mb-4">{{ rmp_again[index] }}%</h1>
-                        <h1 v-else class="text-lg mb-4 dark:text-gray-200">No data</h1>
-                      </div>
-                      <div>
-                        <h1 class="text-lg font-bold dark:text-gray-200 mb-1">Your Classmates</h1>
-                        <ul>
-                          <li v-for="classmate in classmates" :key="classmate" class="text-md dark:text-gray-20 mb-1">{{ classmate }}</li>
-                        </ul>
-                      </div>
+                  <div>
+                    <h1 class="text-lg font-bold dark:text-gray-200">
+                      Rate My Professors
+                    </h1>
+                    <h1 class="text-md dark:text-gray-200">Average rating</h1>
+                    <h1
+                      v-if="rmp_rating[index] != undefined"
+                      class="text-lg mb-4 dark:text-gray-200"
+                    >
+                      {{ rmp_rating[index] }} out of 5
+                    </h1>
+                    <h1 v-else class="text-lg mb-4 dark:text-gray-200">
+                      No data
+                    </h1>
+                    <h1 class="text-md dark:text-gray-200">
+                      Average difficulty
+                    </h1>
+                    <h1
+                      v-if="rmp_difficulty[index] != undefined"
+                      class="text-lg mb-4 dark:text-gray-200"
+                    >
+                      {{ rmp_difficulty[index] }} out of 5
+                    </h1>
+                    <h1 v-else class="text-lg mb-4 dark:text-gray-200">
+                      No data
+                    </h1>
+                    <h1 class="text-md dark:text-gray-200">Would take again</h1>
+                    <h1
+                      v-if="rmp_again[index] != undefined"
+                      class="text-lg mb-4 dark: text-gray-200"
+                    >
+                      {{ rmp_again[index] }}%
+                    </h1>
+                    <h1 v-else class="text-lg mb-4 dark:text-gray-200">
+                      No data
+                    </h1>
+                  </div>
+                  <div>
+                    <h1 class="text-lg font-bold dark:text-gray-200 mb-1">
+                      Your Classmates
+                    </h1>
+                    <ul>
+                      <li
+                        v-for="classmate in classmates"
+                        :key="classmate"
+                        class="text-md dark:text-gray-20 mb-1 dark:text-gray-200"
+                      >
+                        {{ classmate }}
+                      </li>
+                    </ul>
                   </div>
                 </div>
+              </div>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -82,107 +165,143 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { defineProps } from 'vue'
-import { useUserStore } from '../store/user';
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import axios from "axios";
+import { defineProps } from "vue";
+import { useUserStore } from "../store/user";
+import {
+  Dialog,
+  DialogPanel,
+  TransitionChild,
+  TransitionRoot,
+} from "@headlessui/vue";
+import { XMarkIcon } from "@heroicons/vue/24/solid"
 
 const props = defineProps({
   header: {
     type: String,
-    require: true
+    require: true,
   },
   data: {
     type: Object,
-    require: true
+    require: true,
   },
   open: {
     type: Boolean,
-    require: true
-  }
-})
+    require: true,
+  },
+});
 
-let prof_stats = []
-let class_stats = []
+let prof_stats = [];
+let class_stats = [];
 
-let rmp_rating = []
-let rmp_difficulty = []
-let rmp_again = []
+let rmp_rating = [];
+let rmp_difficulty = [];
+let rmp_again = [];
 
-let begin_times = []
-let fin_times = []
+let begin_times = [];
+let fin_times = [];
 
-let classmates = ref([])
+let classmates = ref([]);
 
-var userStore = useUserStore()
+var userStore = useUserStore();
 var accessToken = userStore.accessToken;
 const config = {
   headers: {
-    'authorization': `Bearer ${accessToken}`
-  }
+    authorization: `Bearer ${accessToken}`,
+  },
+};
+
+const emits = defineEmits(['closed']);
+
+const closeModal = () => {
+  emits('update:open', false);
 }
 
 async function get_profgpa(prof_name) {
-  const response = await axios.post('https://api.boilerti.me/api/getoverall_gpa', {
-    "prof_name": prof_name
-  })
-  prof_stats.push(response.data.overall_gpa)
+  const response = await axios.post(
+    "https://api.boilerti.me/api/getoverall_gpa",
+    {
+      prof_name: prof_name,
+    }
+  );
+  prof_stats.push(response.data.overall_gpa);
 }
 
 async function getgpa(prof_name, class_name) {
-  const response = await axios.post('https://api.boilerti.me/api/getgpa', {
-    "prof_name": prof_name,
-    "class_name": class_name
-  })
-  class_stats.push(response.data.averageGPA)
+  const response = await axios.post("https://api.boilerti.me/api/getgpa", {
+    prof_name: prof_name,
+    class_name: class_name,
+  });
+  class_stats.push(response.data.averageGPA);
 }
 
 async function getrmp(prof_name) {
-  const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
-    "prof_name": prof_name
-  })
-  rmp_rating.push(response.data.avgRating)
-  rmp_difficulty.push(response.data.avgDifficulty)
-  rmp_again.push(response.data.wouldTakeAgainPercent)
+  const response = await axios.post(
+    "https://api.boilerti.me/api/ratemyprofessor",
+    {
+      prof_name: prof_name,
+    }
+  );
+  rmp_rating.push(response.data.avgRating);
+  rmp_difficulty.push(response.data.avgDifficulty);
+  rmp_again.push(response.data.wouldTakeAgainPercent);
 }
 
 async function converttime(startTime, duration) {
-
   const startDateTime = new Date(startTime);
-  const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: true });
+  const easternStartTime = startDateTime.toLocaleTimeString("en-US", {
+    timeZone: "America/New_York",
+    hour12: true,
+  });
 
   duration = duration.slice(2).toLowerCase();
-  const durationParts = duration.split(/h|m/).map(part => parseInt(part));
+  const durationParts = duration.split(/h|m/).map((part) => parseInt(part));
 
-  const easternEndTimeDateTime = new Date(startDateTime.getTime() + (durationParts[0] * 60 + durationParts[1]) * 60 * 1000);
-  const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: true });
+  const easternEndTimeDateTime = new Date(
+    startDateTime.getTime() +
+      (durationParts[0] * 60 + durationParts[1]) * 60 * 1000
+  );
+  const easternEndTime = easternEndTimeDateTime.toLocaleTimeString("en-US", {
+    timeZone: "America/New_York",
+    hour12: true,
+  });
 
-  begin_times.push(easternStartTime)
-  fin_times.push(easternEndTime)
+  begin_times.push(easternStartTime);
+  fin_times.push(easternEndTime);
 }
 
 onMounted(() => {
   // props.data is accessible here
   for (let i = 0; i < props.data.meetings.length; i++) {
-    get_profgpa(props.data.meetings[i].instructorName)
-    getgpa(props.data.meetings[i].instructorName, props.data.subject + props.data.number)
-    getrmp(props.data.meetings[i].instructorName)
-    converttime(props.data.meetings[i].startTime, props.data.meetings[i].duration)
+    get_profgpa(props.data.meetings[i].instructorName);
+    getgpa(
+      props.data.meetings[i].instructorName,
+      props.data.subject + props.data.number
+    );
+    getrmp(props.data.meetings[i].instructorName);
+    converttime(
+      props.data.meetings[i].startTime,
+      props.data.meetings[i].duration
+    );
   }
-  console.log(props.data.subject + " " + props.data.number)
-  axios.post('https://api.boilerti.me/api/get/classmates', {
-    "user_id": userStore.user_id,
-    "course": props.data.subject + " " + props.data.number
-  }, config)
+  console.log(props.data.subject + " " + props.data.number);
+  axios
+    .post(
+      "https://api.boilerti.me/api/get/classmates",
+      {
+        user_id: userStore.user_id,
+        course: props.data.subject + " " + props.data.number,
+      },
+      config
+    )
     .then(function (response) {
-      classmates.value = response.data
+      classmates.value = response.data;
     })
     .catch(function (error) {
       console.log(error);
     });
   nextTick(() => {
-  //  document.getElementById('gpa').click()
-  })
-})
-
+    //  document.getElementById('gpa').click()
+  });
+});
 </script>
