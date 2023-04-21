@@ -201,7 +201,7 @@ const config = {
 var friend_id = route.query.id;
 
 onBeforeMount(async () => {
-
+  await new Promise(resolve => setTimeout(resolve, 1000));
   console.log("GroupID:" + friend_id)
   if (friend_id != undefined) {
     await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
