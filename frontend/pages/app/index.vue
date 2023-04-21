@@ -56,40 +56,25 @@
             </div>
           </div>
         </div>
-        <section class="flex flex-col md:flex-row gap-10">
+        <section class="flex flex-row gap-10">
           <div class="bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
             <div v-if="userSchedules.length !== 0">
-              <div
-                class="flex flex-col md:flex-row md:flex-wrap justify-between items-center gap-10 p-10"
-              >
+              <!-- Data items -->
+              <div class="flex flex-row justify-center gap-10 p-10">
                 <!-- Add button -->
                 <button
-                  class="p-6 flex justify-center items-center w-80 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
+                  class="p-6 flex justify-center items-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                   @click="navigateToCreateSchedule()"
                 >
                   <PlusIcon class="w-12 h-12" />
                 </button>
-                <div
-                  v-for="(schedule, index) in userSchedules"
-                  :key="index"
-                  @click="getScheduleView(schedule.term_id)"
-                  class="cursor-pointer flex flex-col mb-4 justify-between h-72 w-80 border-2 border-black overflow-x-hidden overflow-y-scroll bg-white rounded-lg dark:bg-neutral-700 dark:text-white"
-                >
-                  <h1>
-                    {{ formatTitle(schedule.term_id) }}
-                  </h1>
-                  <div class="">
-                    put time table here
-                  </div>
-                  <h2>
-                    {{ schedule.timestamp }}
-                  </h2>
-                </div>
               </div>
             </div>
             <div v-else>
-              <div class="h-fit dark:bg-neutral-500 p-10">
-                <button
+              <div
+                class="flex items-start justify-start h-screen dark:bg-neutral-500"
+              >
+                <div
                   class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
                   @click="navigateToCreateSchedule()"
                 >
@@ -99,12 +84,12 @@
                   <span class="ml-4 text-lg text-black-400 dark:text-gray-200"
                     >Create a new schedule</span
                   >
-                </button>
+                </div>
               </div>
             </div>
           </div>
-          <div v-if="!isMobile">
-            <div class="mb-4">
+          <div>
+            <div v-if="!isMobile" class="mb-4">
               <!--Start Search Bar-->
               <div class="w-full max-w-md">
                 <div class="flex">
@@ -132,7 +117,7 @@
                   </div>
                   <div class="relative">
                     <select
-                      class="h-full px-3 py-2 bg-white border border-gray-400 appearance-none pr-6 rounded-r-md"
+                      class="h-full px-3 py-2 bg-white border border-gray-400 appearance-none pr-9 rounded-r-md"
                       v-model="searchType"
                     >
                       <option>Professor</option>
@@ -158,7 +143,7 @@
                 </div>
               </div>
             </div>
-            <div>
+            <div v-if="!isMobile">
               <!--Hub content -->
               <div class="grid grid-cols-1 gap-4">
                 <section aria-labelledby="section-2-title">
@@ -990,6 +975,7 @@ onBeforeMount(async () => {
       userSchedules.value = response.data;
       numSchedules =
         userSchedules.value[userSchedules.value.length - 1].num_schedules;
+      console.log(numSchedules + " this is the num schedules");
       userSchedules.value.pop();
     });
   if (!isAGuest.value) {
