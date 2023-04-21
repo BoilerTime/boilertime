@@ -26,7 +26,7 @@ const getScheduleTerm = async function(user, term_id) {
     let userProfile = await schedules.doc(user).collection(term_id).doc('generated_schedule').get();
 
     
-    let userSchedule = await userProfile.data();
+    let userSchedule = userProfile.data();
     //console.log(userSchedule)
     let response = {"configured": userSchedule.configured, "schedule": [], "blocked_times": userSchedule.blocked_times};
     //let classDetails = {};
@@ -35,7 +35,8 @@ const getScheduleTerm = async function(user, term_id) {
         //console.log(userSchedule.schedule[i])
         //Get the information about the class and each section the user is in
         let currentClass = await classes.doc("spring_2023").collection(userSchedule.schedule[i].subject).doc(userSchedule.schedule[i].number).get();
-        currentClass = await currentClass.data();
+        currentClass = currentClass.data();
+        console.log(currentClass)
         let classInformation = {
             "subject": userSchedule.schedule[i].subject,
             "number": userSchedule.schedule[i].number,
@@ -44,12 +45,14 @@ const getScheduleTerm = async function(user, term_id) {
             "name": currentClass.name,
             "meetings": []
         }
-        let sections = await classes.doc("spring_2023").collection(userSchedule.schedule[i].subject).doc(userSchedule.schedule[i].number).collection(userSchedule.schedule[i].userSections.sectionID);
-        
+        let sections =  classes.doc("spring_2023").collection(userSchedule.schedule[i].subject).doc(userSchedule.schedule[i].number).collection(userSchedule.schedule[i].userSections.sectionID);
+        //console.log('sections = ');
+        //console.log(sections);
         for(let j = 0; j<userSchedule.schedule[i].userSections.meetings.length; j++) {
-            let classInSection = await sections.doc(userSchedule.schedule[i].userSections.meetings[0]).get();
+            let classInSection = await sections.doc(userSchedule.schedule[i].userSections.meetings[j]).get();
+            console.log("Meetings = " +userSchedule.schedule[i].userSections.meetings);
             //console.log(userSchedule.schedule[i].userSections.meetings[0]);
-            classInSection = await classInSection.data();
+            classInSection = classInSection.data();
             //console.log(classInSection)
             let sectionInformation = {
                 "instructorName": classInSection?.instructor?.Name || "N/A",
@@ -59,7 +62,8 @@ const getScheduleTerm = async function(user, term_id) {
                 "type": classInSection?.type || "12:00",
                 "buildingCode": classInSection?.room?.Building?.ShortCode || "12:00",
                 "buildingName": classInSection?.room?.Building?.Name || "12:00",
-                "roomNumber": classInSection?.room?.Number || "12:00"
+                "roomNumber": classInSection?.room?.Number || "12:00",
+                "type": classInSection?.type || "lecture",
             }
             classInformation.meetings.push(sectionInformation);
         }
