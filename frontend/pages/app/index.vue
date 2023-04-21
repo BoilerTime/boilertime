@@ -1042,7 +1042,7 @@ var resultData = ref([]);
 var userStore = useUserStore();
 var guestStore = useGuestStore();
 var isAGuest = ref(true);
-let resultSchedule = [];
+var resultSchedule = ref([]);
 
 onMounted(async () => {
   if (userStore.user_id) {
@@ -1426,21 +1426,11 @@ onBeforeMount(async () => {
     term_id: "spring_2023",
   }, config).then((response) => {
       console.log(response.data + response.data.time);
-      console.log("BLOCKS!!")
-      console.log(response.data.blocked_times)
       scheduleData.value = response.data.schedule
-      showWarning(response.data.configured)
       convertSchedule(response.data.schedule)
-      console.log(result);
+      console.log(resultSchedule);
   }).catch((error) => {
     console.log("THIS IS THE ERROR " + error)
-      if (error.response.status == 500) {
-        console.log(error);
-        $toast.error("You have not optimized this schedule yet!", {
-            timeout: 5000,
-        });
-        navigateTo('/app/create')
-      }
   });
 });
 </script>
