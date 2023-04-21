@@ -22,16 +22,16 @@
           tracked, so we have provided you with the option to opt out of certain
           cookies. However, this may result in a degraded experience.
         </h1>
-        <div class="flex flex-row gap-4 justify-center mt-6 -mb-6">
+        <div class="flex flex-row justify-center mt-6 -mb-6 gap-4">
           <button
             @click="submitAllCookies"
-            class="text-center w-full bg-indigo-500 hover:bg-indigo-700 p-3 text-white rounded-lg font-bold"
+            class="w-full p-3 font-bold text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-700"
           >
             Accept all cookies
           </button>
           <button
             @click="submitNecssaryCookies"
-            class="text-center w-full bg-indigo-200 p-3 text-indigo-600 rounded-lg font-bold hover:bg-indigo-700 hover:text-white"
+            class="w-full p-3 font-bold text-center text-indigo-600 bg-indigo-200 rounded-lg hover:bg-indigo-700 hover:text-white"
           >
             Necessary cookies only
           </button>
@@ -48,7 +48,7 @@
       </div>
       <div class="px-4 mx-auto max-w-7xl md:px-8">
         <div class="block py-5">
-          <div class="items-center flex gap-8">
+          <div class="flex items-center gap-8">
             <div>
               <p class="text-4xl font-semibold text-black dark:text-white">
                 Welcome, {{ firstname }}
@@ -57,13 +57,13 @@
           </div>
         </div>
         <section class="flex flex-row gap-10">
-          <div class="bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
+          <div class="bg-white rounded-lg shadow-lg dark:bg-neutral-500">
             <div v-if="userSchedules.length !== 0">
               <!-- Data items -->
-              <div class="flex flex-col md:flex-row justify-center gap-10 p-10">
+              <div class="flex flex-col justify-center p-10 md:flex-row gap-10">
                 <!-- Add button -->
                 <button
-                  class="p-6 flex justify-center items-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
+                  class="flex items-center justify-center w-64 p-6 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                   @click="navigateToCreateSchedule()"
                 >
                   <PlusIcon class="w-12 h-12" />
@@ -72,15 +72,15 @@
                   v-for="(schedule, index) in userSchedules"
                   :key="index"
                   @click="getScheduleView(schedule.term_id)"
-                  class="cursor-pointer flex flex-col mb-4 justify-between h-72 w-80 border-2 border-black overflow-x-hidden overflow-y-scroll bg-white rounded-lg dark:bg-neutral-700 dark:text-white"
+                  class="flex flex-col justify-between mb-4 overflow-x-hidden overflow-y-scroll bg-white border-2 border-black rounded-lg cursor-pointer h-72 w-80 dark:bg-neutral-700 dark:text-white"
                 >
-                  <h1 class="text-center py-2 px-2 bg-yellow-500 text-xl font-bold">
+                  <h1 class="px-2 py-2 text-xl font-bold text-center bg-yellow-500">
                     {{ formatTitle(schedule.term_id) }}
                   </h1>
-                  <div class="">
-                    put time table here
+                  <div v-for="course in resultSchedule">
+                    <TimeTable :course="course" :className="course.title" :classInfo="course.startTime + '-' + course.endTime" />
                   </div>
-                  <h2 class="text-center py-2 px-2 bg-yellow-500 text-md italic">
+                  <h2 class="px-2 py-2 italic text-center bg-yellow-500 text-md">
                     {{ schedule.timestamp }}
                   </h2>
                 </div>
@@ -119,7 +119,7 @@
                     />
                     <ul
                       v-if="isSearchActive && filteredResults.length > 0"
-                      class="absolute z-10 w-full mt-1 overflow-scroll bg-white dark:bg-neutral-500 shadow-lg rounded-lg max-h-48"
+                      class="absolute z-10 w-full mt-1 overflow-scroll bg-white rounded-lg shadow-lg dark:bg-neutral-500 max-h-48"
                     >
                       <li
                         v-for="result in filteredResults"
@@ -133,7 +133,7 @@
                   </div>
                   <div class="relative">
                     <select
-                      class="h-full px-3 py-2 bg-white dark:bg-neutral-500 border dark:text-white border-gray-400 appearance-none pr-6 rounded-r-lg"
+                      class="h-full px-3 py-2 pr-6 bg-white border border-gray-400 rounded-r-lg appearance-none dark:bg-neutral-500 dark:text-white"
                       v-model="searchType"
                     >
                       <option>Professor</option>
@@ -164,7 +164,7 @@
               <div class="grid grid-cols-1 gap-4">
                 <section aria-labelledby="section-2-title">
                   <div
-                    class="overflow-scroll bg-white dark:bg-neutral-500 shadow-lg rounded-lg h-96"
+                    class="overflow-scroll bg-white rounded-lg shadow-lg dark:bg-neutral-500 h-96"
                   >
                     <div class="p-6">
                       <div v-if="resultData && isDataLoaded">
@@ -377,7 +377,7 @@
                               </iframe>
                             </div>
                             <div
-                              class="mb-3 flex-wrap text-center items-center"
+                              class="flex-wrap items-center mb-3 text-center"
                               v-if="advanced_result['building']"
                             >
                               <span class="text-base font-medium text-indigo-700 dark:text-white"
@@ -389,7 +389,7 @@
                               >
                             </div>
                             <div
-                              class="mb-2 flex-wrap text-center items-center"
+                              class="flex-wrap items-center mb-2 text-center"
                               v-if="advanced_result['url']"
                             >
                               <span class="text-base font-medium text-indigo-700 dark:text-white"
@@ -613,7 +613,7 @@
                               </iframe>
                             </div>
                             <div
-                              class="mb-3 flex-wrap text-center items-center"
+                              class="flex-wrap items-center mb-3 text-center"
                               v-if="advanced_result['building']"
                             >
                               <span class="text-base font-medium text-indigo-700 dark:text-white"
@@ -625,7 +625,7 @@
                               >
                             </div>
                             <div
-                              class="mb-2 flex-wrap text-center items-center"
+                              class="flex-wrap items-center mb-2 text-center"
                               v-if="advanced_result['url']"
                             >
                               <span class="text-base font-medium text-indigo-700 dark:text-white"
