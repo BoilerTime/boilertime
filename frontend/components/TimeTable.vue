@@ -7,7 +7,7 @@
     </div>
     <div v-if="showInfo"
          class="px-2 py-1 text-sm font-medium text-indigo-700 bg-indigo-200 rounded-lg">
-      {{ classInfo }}
+      {{ classInfo }}  <br>  {{ daysOfWeek }}
     </div>
   </div>
 </template>
@@ -25,6 +25,10 @@ export default {
       required: true
     },
     classInfo: {
+      type: String,
+      required: true
+    },
+    daysOfWeek: {
       type: String,
       required: true
     }

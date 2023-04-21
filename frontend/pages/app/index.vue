@@ -78,10 +78,10 @@
                     <div class="px-2 py-2 text-xl font-bold text-center">
                       {{ formatTitle(schedule.term_id) }}
                     </div>
-                    <TrashIcon class="w-7 h-7 mr-2 text-gray-500 hover:text-red-500" @click.stop="deleteSchedule(schedule.term_id)" />
+                    <TrashIcon class="mr-2 text-gray-500 w-7 h-7 hover:text-red-500" @click.stop="deleteSchedule(schedule.term_id)" />
                   </div>
                   <div v-if=isOptimized v-for="course in resultSchedule" style="font-size: 100px;">
-                    <TimeTable :course="course.title" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" />
+                    <TimeTable :course="course.title" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" :daysOfWeek="course.daysOfWeek"  />
                   </div>
                   <div v-else>
                     <span class="flex items-center text-red-500">
@@ -1129,6 +1129,13 @@ async function flag(id, type) {
   }
 }
 
+function fixType(type) {
+  if(type == "Practice Study Observation") {
+    return "PSO"
+  }
+  return type;
+}
+
 async function logout() {
   console.log("logout");
   userStore.logOut();
@@ -1458,7 +1465,7 @@ async function convertSchedule(schedule) {
       const durationParts = duration.split(/h|m/).map(part => parseInt(part));
       const easternEndTimeDateTime = new Date(startDateTime.getTime() + (durationParts[0] * 60 + durationParts[1]) * 60 * 1000);
       var easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
-      const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
+      var daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
         const response = await axios.post('https://api.boilerti.me/api/getgpa', {
@@ -1490,12 +1497,13 @@ async function convertSchedule(schedule) {
       console.log(formattedStartTime + " << start time");
       console.log(formattedEndTime + " << end time");
 
+      meeting.daysOfWeek = meeting.daysOfWeek.join(", ");
 
       resultSchedule.value.push({
         startTime: formattedStartTime,
         endTime: formattedEndTime,
-        title: course.subject + " " + course.number,
-        daysOfWeek: daysOfWeek,
+        title: course.subject + " " + course.number + ' - ' + fixType(meeting.type),
+        daysOfWeek: meeting.daysOfWeek,
         id: id,
       });
     }
