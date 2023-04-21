@@ -4,25 +4,31 @@ import java.util.*;
 
 import optimizer.Utils;
 import optimizer.algorithm.Analyzer.QualityAnalyzer;
+import optimizer.algorithm.Analyzer.RequiredAnalyzer;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.Constants;
+import optimizer.constants.EventType;
 import optimizer.constants.PreferenceList;
 import optimizer.constants.TimeOfDay;
 import optimizer.network.NetworkHandler;
 import optimizer.parameters.BlockOverview;
 import optimizer.parameters.Course;
 import optimizer.parameters.CourseOverview;
+import optimizer.parameters.Secondary;
+import optimizer.parameters.SecondaryOverview;
 
 public class Optimizer {
 
     private Course[] registerdCourses;
     private Block[] blocks;
+    private Secondary[] registeredSecondaries;
     private HashMap<String, Event> idEvent;
+    private HashMap<String, Secondary> sectionIDSecondaryMeetings;
     private final int scheduleSize;
-    private final int courseSize;
-    private final int generationSize = 32;
+    private final int generationSize = 16;
     private final int maxIterations = 100000;
     private final int maxScheduleSize = 5;
     private final int numBlocks;
@@ -37,17 +43,18 @@ public class Optimizer {
     private final int numOptions = 3;
     private int numSatisfied; 
     private QualityAnalyzer analyzer; 
+    private int coursesWithSecondaries; 
     Random r;
 
     public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences, int totalClasses) {
-        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
+        
 
         this.idEvent = new HashMap<String, Event>();
+        this.sectionIDSecondaryMeetings = new HashMap<String, Secondary>();
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
-
-        this.courseSize = this.calculateScheduleSize(registeredC.length, totalClasses);// = registeredC.length;
-        this.scheduleSize = this.courseSize + this.blocks.length;
+        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length, this.coursesWithSecondaries, Math.min(registeredC.length, totalClasses));
+        this.scheduleSize = this.calculateScheduleSize(registeredC.length, totalClasses) + this.blocks.length + this.coursesWithSecondaries;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
         
@@ -70,23 +77,35 @@ public class Optimizer {
      */
     private void parseEventOverviews(CourseOverview[] c, BlockOverview[] b) {
         int totalSections = 0;
+        int totalSecondaries = 0;
+        int totalSecondaryOverviews = 0;
         int totalBlocks = b.length;
+        this.coursesWithSecondaries = 0;
         this.registerdCourses = new Course[c.length];
         this.blocks = new Block[b.length];
+        SecondaryOverview secondaries[][] = new SecondaryOverview[c.length][];
 
         ArrayList<Lecture> singleCount = new ArrayList<Lecture>();
         for(int i = 0; i < c.length; i++) {
             //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
+            totalSecondaries += c[i].getTotalNumberOfSecondaries();
+            if(c[i].getTotalNumberOfSecondaries() > 0) {
+                this.coursesWithSecondaries++;
+            }
+            secondaries[i] = c[i].getRelatedSecondaries();
+            totalSecondaryOverviews += secondaries[i].length;
             if(c[i].isRequired()) {
                 numRequired ++;
             }
             registerdCourses[i] = new Course(c[i]);
         }
 
-        System.out.println("Num required = " + numRequired);
 
-        int repBits = calculateNameBits(totalSections, totalBlocks);
+        System.out.println("Num required = " + numRequired);
+        System.out.println("Num of secondaries = " + totalSecondaries);
+
+        int repBits = calculateNameBits(totalSections, totalBlocks, totalSecondaries);
 
         this.sectionLen = repBits + 2;
         int minCount = 0;
@@ -117,16 +136,41 @@ public class Optimizer {
             idEvent.put(sID, (Event) this.blocks[i]);
         }
 
+        /*
+         * Instantiate secondary courses
+         */
+        SecondaryOverview[] temp = new SecondaryOverview[totalSecondaryOverviews];
+        int ctr = 0;
+        for(int i  = 0; i < secondaries.length; i++) {
+            for(int j = 0; j < secondaries[i].length; j++) {
+                System.out.println(i + " " + j + " " + ctr);
+                if(secondaries[i][j].getNumberOfSecondaries() > 0) {
+                    temp[ctr++] = secondaries[i][j];
+                }
+            }
+        }
+
+        this.registeredSecondaries = new Secondary[ctr];
+        for(int i = 0; i < ctr; i++) {
+            this.registeredSecondaries[i] = new Secondary(temp[i]);
+            sectionIDSecondaryMeetings.put(this.registeredSecondaries[i].getParentSectionID(), this.registeredSecondaries[i]);
+            SecondaryMeeting[] instSecondaries = this.registeredSecondaries[i].instantiate(minCount, repBits);
+            for(int j = 0; j < instSecondaries.length; j++) {
+                idEvent.put(instSecondaries[j].getID(), (Event) instSecondaries[j]);
+            }
+            minCount += instSecondaries.length;
+        }
+
         if(singleCount.size() > 0) {
-            this.isSatisfiable = analyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
+            this.isSatisfiable = new RequiredAnalyzer(this.numBlocks, this.registerdCourses.length, this.coursesWithSecondaries, 5).calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
             System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;
         }
     }
 
-    private int calculateNameBits(int courseLen, int blockLen) {
-        return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
+    private int calculateNameBits(int courseLen, int blockLen, int secondaries) {
+        return (int) Math.ceil(Utils.LogB(courseLen + blockLen +  secondaries, 2));
     }
 
     private int calculateScheduleSize(int size, int prefered) {
@@ -169,13 +213,13 @@ public class Optimizer {
         for(int i = 0; i < gene1.length; i++) {
 
             if(s1.getEvents()[i] == null) {
-                gene1[i] = Utils.stringToBoolArray(generate1s());//Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
+                gene1[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
                 gene1[i] = Utils.stringToBoolArray(s1.getEvents()[i].getID());
             } 
 
             if(s2.getEvents()[i] == null) {
-                gene2[i] = Utils.stringToBoolArray(generate1s());
+                gene2[i] = Utils.stringToBoolArray(generateSeed().getEvents()[0].getID());
             } else {
                 gene2[i] = Utils.stringToBoolArray(s2.getEvents()[i].getID());
             } 
@@ -225,9 +269,35 @@ public class Optimizer {
                 }
             }
         }
-
         //Now, we must make a new Section
-        return new Schedule(idEvent, gener);
+        return this.fixSecondaries(new Schedule(idEvent, gener));
+    }
+
+    private Schedule fixSecondaries(Schedule target) {
+        Lecture[] lectures = target.getLectures();
+        Event[] events = target.getEvents();
+        SecondaryMeeting[] secondaries = target.getSecondaries();
+        int invalid = events.length - lectures.length - secondaries.length - target.getBlocks().length;
+        int[] secondaryLocations = new int[secondaries.length + invalid];
+        int ptr=0;
+        for(int i = 0; i < events.length; i++) {
+            if(events[i] != null && Utils.getEventType(events[i].getID()) == EventType.SECONDARY || events[i] == null) {
+                secondaryLocations[ptr++] = i;
+            }
+        }
+
+        ptr = 0;
+        int i = 0;
+        while(ptr < secondaryLocations.length && i < lectures.length) {
+            //System.out.println(lectures[i].getSectionId());
+            //System.out.println(sectionIDSecondaryMeetings.keySet().toString());
+            if(sectionIDSecondaryMeetings.containsKey(lectures[i].getSectionId())) {
+                SecondaryMeeting[] temp = sectionIDSecondaryMeetings.get(lectures[i].getSectionId()).getSecondaryMeetings();
+                events[ptr++] = temp[Utils.randInRange(r, 0, temp.length-1)];
+            }
+            i++;
+        }
+        return new Schedule(events);
     }
 
     private String generate1s() {
@@ -296,7 +366,7 @@ public class Optimizer {
         Utils.sortScheduleArray(fitPool, 0, fitPool.length - 1);
         int iterationCount = 0;
         while(this.shouldContinue(iterationCount)) {
-            //System.out.println(iterationCount);
+            System.out.println(iterationCount);
             //System.out.println(iterationCount);
             iterationCount++;
                         //System.out.println("\nNew Generation = " + iterationCount );
@@ -322,7 +392,9 @@ public class Optimizer {
                     rand1 = Utils.randInRange(r, 0, this.generationSize - 1);
                 }
                 thisGen[i] = this.crossOver(fitPool[rand1], fitPool[rand2]);
+                //this.mutateSchedule(thisGen[i]);
             }
+            
 
             analyzer.calculateTotalFitnessScores(thisGen, numRequired);
             //System.out.println(thisGen[0].getRequiredScore());

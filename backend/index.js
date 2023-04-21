@@ -23,6 +23,7 @@ const saveSchedule = require('./components/schedule/saveschedule');
 const courseRatings = require('./components/ratings/courses');
 const classroomRatings = require('./components/ratings/classrooms');
 const taRatings = require('./components/ratings/tas');
+const cron = require('./components/cron/cron')
 const optimizer = require('./components/optimizer/optimizer');
 const group = require('./components/groups/group');
 const { JavaCaller } = require("java-caller");
@@ -34,6 +35,15 @@ const java = new JavaCaller({
 const purdueio = require('./components/datasources/purdueios.js');
 const boilergrades = require('./components/datasources/boilergrades.js');
 const path = require('path');
+
+const API_KEY = process.env.MAILGUN_API_KEY;
+const DOMAIN = process.env.MAILGUN_DOMAIN;
+
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
+const mailgun = new Mailgun(formData);
+
+const mg = mailgun.client({username: 'api', key: process.env.MAILGUN_API_KEY});
 
 app.use(express.json());
 
@@ -154,14 +164,25 @@ const cryptr = new Cryptr(process.env.RESET);
 app.post('/api/forgotpassword', (req, res) => {
   const email = req.body.email;
   //getuid
-  utils.getUID({ email }).then(user => {
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: `${email}`,
-      subject: 'Reset BoilerTime Password',
-      html: `<a href="https://boilerti.me/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}">Reset Password</a>`
+  utils.getUID({ email }).then(async user => {
+    const touser = {
+      from: 'BoilerTime Trust & Safety <donotreply@mg.boilerti.me>',
+      to: email,
+      subject: 'BoilerTime – Reset password',
+      template: 'resetpw',
+      'h:X-Mailgun-Variables': JSON.stringify({
+        name: email,
+        link: `https://boilerti.me/auth/resetpassword?user_id=${cryptr.encrypt(user_id)}`,
+        email: email,
+      }),
+      'h:Reply-To': 'boilertimepurdue@gmail.com',
+    };
+    try {
+      const response = await mg.messages.create("mg.boilerti.me", touser);
+      console.log(response);
+    } catch {
+      console.log("Failed to send email to user");
     }
-    sendEmail.sendEmail({ mailOptions });
     return res.sendStatus(200);
   }).catch(err => {
     console.error(err)
@@ -1246,6 +1267,10 @@ app.post('/api/set/darkmode', jwt.authenticateToken, async (req, res) => {
     return res.sendStatus(200);
   }
 });
+
+app.post('/api/notifyusers', async (req, res) => {
+  cron.runCron();
+})
 
 app.post('/api/optimizer/isfull', async (req, res) => {
   const subject = req.body.subject;

@@ -3,6 +3,7 @@ import java.util.HashMap;
 
 import optimizer.Utils;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.Constants;
 
 public class Course {
@@ -15,6 +16,9 @@ public class Course {
     private final double maxRating; 
     private HashMap<String, Lecture> idSection; 
     private String[] sectionIds;
+    private String[] parentSections;
+    private final boolean hasSecondaryComponents;
+    private final SecondaryOverview[] secondaryComponents;
 
 
     public Course(CourseOverview info) {
@@ -27,6 +31,9 @@ public class Course {
         this.ratingsArr = info.getRatings();
         this.maxRating = this.calculateMaxRating();
         this.sectionIds = info.getSectionIds();
+        this.parentSections = info.getParentSections();
+        this.hasSecondaryComponents = info.hasSecondaries();
+        this.secondaryComponents = info.getRelatedSecondaries();
     }
 
     /**
@@ -45,7 +52,7 @@ public class Course {
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Constants.LECTURE + Utils.arrToString(id);
-            sections[i] = new Lecture(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
+            sections[i] = new Lecture(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i], i);
             idSection.put(sid, sections[i]);
         }
         return sections;
@@ -100,4 +107,15 @@ public class Course {
         return this.maxRating;
     }
 
+    public boolean hasSecondaries() {
+        return this.hasSecondaryComponents;
+    }
+
+    public String[] getParentSections() {
+        return this.parentSections;
+    }
+
+    public String getSpecificSecton(int index) {
+        return this.parentSections[index];
+    }
 }

@@ -1,4 +1,5 @@
 config.json
+backend/cronlogs.txt
 
 # Logs
 logs
@@ -114,3 +115,6 @@ node_modules
 package-lock.json
 yarn.lock
 output.txt
+/test-results/
+/playwright-report/
+/playwright/.cache/

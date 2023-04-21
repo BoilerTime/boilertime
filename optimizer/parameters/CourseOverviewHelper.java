@@ -22,6 +22,12 @@ public class CourseOverviewHelper {
     private String[] sectionIds;
     private int sectionIdsPtr;
 
+    private String parentSections[];
+    private int parentSectionsPtr;
+
+    private SecondaryOverviewHelper[] relatedSecondaries;
+    private int relatedSecondariesPtr;
+
     /**
      * Constructor to create a wrapper class that assists in instantaiting a CourseOverview method.
      */
@@ -32,6 +38,8 @@ public class CourseOverviewHelper {
         this.weekDaysPtr = -1;
         this.ratingsPtr = -1;
         this.sectionIdsPtr = -1;
+        this.parentSectionsPtr = -1;
+        this.relatedSecondariesPtr = -1;
         courseName = null;
     }
 
@@ -43,6 +51,18 @@ public class CourseOverviewHelper {
         this.courseName = name;
     }
 
+    /**
+     * A helper method to set the parent ID of the course that is in question
+     * @param name A string that represents the ID. 
+     */
+    public int addParentSection(String name) {
+        if(this.parentSectionsPtr < 0) {
+            return -1;
+        }
+        this.parentSections[this.parentSectionsPtr++] = name; 
+        return 1;
+    }
+    
     /**
      * Adds a flag of whether or not the course is required
      * @param r A boolean true if the course is required, otherwise false. 
@@ -96,7 +116,12 @@ public class CourseOverviewHelper {
         if(this.ratingsPtr < 0 || this.ratings.length != this.ratingsPtr) {
             return null; 
         }
-        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required, ratings, sectionIds);
+
+        if(this.parentSectionsPtr < 0 || this.relatedSecondariesPtr <0)  {
+            return null;
+        }
+    
+        return new CourseOverview(courseName, courseTimes, courseDurations, weekDays, required, ratings, sectionIds, parentSections, relatedSecondaries);
     }
 
     public int addWeekDays(String days) {
@@ -128,6 +153,12 @@ public class CourseOverviewHelper {
         //Ids
         this.sectionIds = new String[length];
         this.sectionIdsPtr = 0;
+        //Parent sections
+        this.parentSections = new String[length];
+        this.parentSectionsPtr = 0;
+        //Secondary components
+        this.relatedSecondaries = new SecondaryOverviewHelper[length];
+        this.relatedSecondariesPtr = 0;
     }
 
     public double addRating(double r) {
@@ -144,6 +175,14 @@ public class CourseOverviewHelper {
         }
         this.sectionIds[sectionIdsPtr++] = id;
         return id;
+    }
+
+    public int addRelatedSecondary(SecondaryOverviewHelper data) {
+        if(this.relatedSecondariesPtr == -1) {
+            return -1;
+        }
+        this.relatedSecondaries[this.relatedSecondariesPtr++] = data;
+        return 1;
     }
     
 }
