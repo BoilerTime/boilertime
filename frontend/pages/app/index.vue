@@ -1042,7 +1042,7 @@ var resultData = ref([]);
 var userStore = useUserStore();
 var guestStore = useGuestStore();
 var isAGuest = ref(true);
-let result = [];
+let resultSchedule = [];
 
 onMounted(async () => {
   if (userStore.user_id) {
@@ -1405,7 +1405,7 @@ async function convertSchedule(schedule) {
         }, config)
         return response?.data?.avgRating || 0.0
       }
-      result.push({
+      resultSchedule.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
         title: course.subject + " " + course.number,
