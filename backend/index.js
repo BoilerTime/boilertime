@@ -66,6 +66,11 @@ app.use(function (req, res, next) {
 /*
  * This function gets a path for /api
  */
+
+app.get('/', (req, res) => {
+  return res.redirect('https://boilerti.me')
+});
+
 app.get('/api', (req, res) => {
   return res.send('API live!')
 });
