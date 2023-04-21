@@ -241,15 +241,15 @@
                     <div v-for="(entry, i) in schedule" >
                         <div v-if="entry.type == 'class'">
                         <span class="text-sm text-black"
-                        >{{ entry.courseName }} lecture from {{entry.startTime}} until {{entry.endTime}} on {{entry.daysOfWeek}}.
-                        <span v-if="entry.hasSecondary">{{entry.secondaryType}} from {{entry.secondaryStartTime}} until {{entry.secondaryEndTime}} on {{entry.secondaryDaysOfWeek}}</span>
+                        >{{ entry.courseName }} lecture from {{entry.startTime}} for {{entry.endTime}} mins on {{entry.daysOfWeek}}.
+                        <span v-if="entry.hasSecondary">{{entry.secondaryType}} from {{entry.secondaryStartTime}} for {{entry.secondaryEndTime}} mins on {{entry.secondaryDaysOfWeek}}</span>
                         </span>
                         <br/><br/>
                     </div>
                   <div v-else>
                     <br/>
                     <span class="text-sm text-black"
-                      >Time off for {{entry.blockName}} at {{entry.blockStartTime}} until {{ entry.blockEndTime }} on {{ entry.blockDaysOfWeek }}
+                      >Time off for {{entry.blockName}} at {{entry.blockStartTime}} for {{ entry.blockEndTime }} mins on {{ entry.blockDaysOfWeek }}
                       </span>
                     </div>
                   </div>
@@ -1038,6 +1038,8 @@ function sendToOptimizer(courses, blocks, configurations) {
   /*
     * Take care of the courses that the user has entered
   */
+  const todayDate = new Date();
+  console.log("TODAY DATE = " + todayDate);
   for(let i = 0; i < courses.length; i++) {
     //First, we can send the name of the course
     connection.send(courses[i].name)
@@ -1047,10 +1049,12 @@ function sendToOptimizer(courses, blocks, configurations) {
     connection.send(courses[i].sections.length);
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < courses[i].sections.length; j++) {
-      const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
       //First, we can send the start time
-      connection.send(fixTime(courses[i].sections[j].primary.startTime));
-      console.log("FIXING TIME!!" + fixTime(courses[i].sections[j].primary.startTime));
+      //console.log("EASTERN START = " + easternStartTime);
+      //console.log(converTie(courses[i].sections[j].primary.startTime).substring(0,2), fixTime(courses[i].sections[j].primary.startTime).substring(2,4))
+      connection.send(convertTime(courses[i].sections[j].primary.startTime).split(':')[0]+""+convertTime(courses[i].sections[j].primary.startTime).split(':')[1]);
+      //console.log("FIXING TIME!!" + fixTime(courses[i].sections[j].primary.startTime));
+      console.log("RESULTING TIME = " + convertTime(courses[i].sections[j].primary.startTime).split(':')[0]+""+convertTime(courses[i].sections[j].primary.startTime).split(':')[1]);
       //Durations
       connection.send(courses[i].sections[j].primary.duration);
       //Week days
@@ -1069,7 +1073,7 @@ function sendToOptimizer(courses, blocks, configurations) {
         //Type
         connection.send(courses[i].sections[j].secondary[k].type);
         //Start time
-        connection.send(courses[i].sections[j].secondary[k].startTime);
+        connection.send(convertTime(courses[i].sections[j].secondary[k].startTime).split(":")[0]+""+convertTime(courses[i].sections[j].secondary[k].startTime).split(":")[1]);
         //duration
         connection.send(courses[i].sections[j].secondary[k].duration);
         //Week 
@@ -1136,24 +1140,15 @@ function parseCoursesResponse(output) {
       serverFormat.userSections.sectionID = lectures[i][j].collectionID;
       serverFormat.userSections.meetings.push(courseList[courseIndex].sections[specificInd].primary.ID);
       
-      const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
-      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit'  });
-      outputFormat.startTime = easternStartTime;
-      const easternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].primary.duration) * 60 * 1000);
-      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', {hour12: true, hour: '2-digit', minute:'2-digit'  });
-      outputFormat.endTime = easternEndTime;
+      outputFormat.startTime = convertTime(courseList[courseIndex].sections[specificInd].primary.startTime);
+      outputFormat.endTime = courseList[courseIndex].sections[specificInd].primary.duration;
       outputFormat.daysOfWeek = courseList[courseIndex].sections[specificInd].primary.daysOfWeek
       console.log(lectures[i][j])
       if(lectures[i][j].secondary !== "none") {
         outputFormat.hasSecondary = true;
         let recitationInd = getSecondaryDetails(courseIndex, specificInd, lectures[i][j].secondary);
-        const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(0,2), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(2,4));
-        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
-        outputFormat.secondaryStartTime = sEasternStartTime;
-        console.log(sStartDateTime)
-        const sEaasternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration) * 60 * 1000);
-        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
-        outputFormat.secondaryEndTime = sEaasternEndTime;
+        outputFormat.secondaryStartTime = convertTime(courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime);
+        outputFormat.secondaryEndTime = (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration)//convertTime(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration) * 60 * 1000);
         outputFormat.secondaryType = courseList[courseIndex].sections[specificInd].secondary[recitationInd].type
         outputFormat.secondaryDaysOfWeek = courseList[courseIndex].sections[specificInd].secondary[recitationInd].daysOfWeek
         serverFormat.userSections.meetings.push(courseList[courseIndex].sections[specificInd].secondary[recitationInd].ID);
@@ -1178,12 +1173,8 @@ function parseCoursesResponse(output) {
         }
         blockFormat.blockName = blocks[i][j].blockName;
         //blockFormat.blockStartTime = padTime(blocks[i][j].blockStartTime);
-        const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), padTime(blocks[i][j].blockStartTime).substring(0,2), padTime(blocks[i][j].blockStartTime).substring(2,4));
-        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
-        blockFormat.blockStartTime = sEasternStartTime;
-        const sEaasternEndTimeDateTime = new Date(sStartDateTime.getTime() + (blocks[i][j].blockDuration) * 60 * 1000);
-        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
-        blockFormat.blockEndTime = sEaasternEndTime;//blocks[i][j].blockDuration;
+        blockFormat.blockStartTime = convertTime(blocks[i][j].blockStartTime)//sEasternStartTime;
+        blockFormat.blockEndTime = blocks[i][j].blockDuration//sEaasternEndTime;//blocks[i][j].blockDuration;
         blockFormat.blockDaysOfWeek = blocks[i][j].daysOfWeek
         console.log(blocks[i][j])
         let serverBlockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
@@ -1214,6 +1205,18 @@ function findCourse(target) {
   }
 }
 
+function convertTime(time) {
+  time = fixTime(time);
+  let hours = parseInt(time.substring(0, 2));
+  let minutes = (time.substring(2, 4));
+  hours = hours-5;
+  if(hours < 10 && hours >= 0) {
+    return  '0'+hours+':'+minutes;
+  } else if(hours < 0) {
+    return  '0'+'00'+':'+minutes;
+  }
+  return hours +':'+minutes;
+}
 function getCollectionIndex(target, index) {
   for(let i = 0; i < courseList[index].collections.length; i++) {
     if(courseList[index].collections[i] == target) {
@@ -1295,9 +1298,11 @@ function getScheduleView(index) {
 }
 
 function fixTime(time) {
-  let hours = time.substring(0, 2)
-  hours = parseInt(hours - 5);
-  return new String(hours) + time.substring(2, 4);
+  for(let i = 0; i < 4-time.length; i++) {
+    time = time+"0";
+    console.log("FIXING" + time);
+  }
+  return time;
 }
 
 function waitingForData() {
