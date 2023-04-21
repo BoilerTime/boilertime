@@ -10,6 +10,7 @@ public class Schedule {
     private final Event[] events;
     private final Lecture[] lectures;
     private final Block[] blocks;
+    private final SecondaryMeeting[] secondaries;
     private int invalidCount; 
     private int requiredFitnessScore;
     private int optionalFitnessScore;
@@ -20,6 +21,7 @@ public class Schedule {
         this.events = s;
         this.lectures = findLectures();
         this.blocks = findBlocks();
+        this.secondaries = findSecondaries();
         this.invalidCount = 0;
         this.hasRequiredScore = false;
         this.hasOptionalScore = false;
@@ -29,6 +31,7 @@ public class Schedule {
         this.events = this.configure(idEvent, result);
         this.lectures = findLectures();
         this.blocks = findBlocks();
+        this.secondaries = findSecondaries();
         this.hasRequiredScore = false; 
         this.hasOptionalScore = false;
     } 
@@ -114,7 +117,21 @@ public class Schedule {
         return blocks.toArray(new Block[blocks.size()]);
     }
 
+    private SecondaryMeeting[] findSecondaries() {
+        ArrayList<SecondaryMeeting> secondaries = new ArrayList<SecondaryMeeting>();
+        for(int i = 0; i < events.length; i++) {
+            if(this.events[i] != null && Utils.getEventType(this.events[i].getID()) == EventType.SECONDARY) {
+                secondaries.add((SecondaryMeeting) this.events[i]);
+            }
+        }
+        return secondaries.toArray(new SecondaryMeeting[secondaries.size()]);
+    }
+
     public Block[] getBlocks() {
         return this.blocks;
+    }
+
+    public SecondaryMeeting[] getSecondaries() {
+        return this.secondaries;
     }
 }
