@@ -19,7 +19,7 @@ public class SecondaryMeeting extends Event {
     }
 
     public String getAssignedName() {
-        return this.secondaryType;
+        return this.secondaryType+""+parentCourse;
     }
 
     public String getParentSection() {

@@ -9,6 +9,7 @@ import optimizer.constants.Constants;
 import optimizer.constants.EventType;
 import optimizer.constants.WeekDays;
 
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,11 +19,14 @@ public class RequiredAnalyzer {
     private int numBlocks;
     private int numLectures;
     private int numSecondaries;
+    private final int scheduleSize;
     
-    public RequiredAnalyzer(int numBlocks, int numLectures, int numSecondaries) {
+    public RequiredAnalyzer(int numBlocks, int numLectures, int numSecondaries, int scheduleSize) {
         this.requiredScores = new ArrayList<Integer>();
         this.numBlocks = numBlocks;
         this.numLectures = numLectures;
+        this.numSecondaries = numSecondaries;
+        this.scheduleSize = scheduleSize;
     }
 
 
@@ -79,7 +83,7 @@ public class RequiredAnalyzer {
         return Utils.findNumSConflicts(c);
     }
 
-    private boolean hasWeekDay(WeekDays[] days, int i) {
+    private static boolean hasWeekDay(WeekDays[] days, int i) {
         WeekDays target = WeekDays.values()[i];
         for(int j = 0; j < days.length; j++) {
             if(days[j] == target) {
@@ -140,12 +144,18 @@ public class RequiredAnalyzer {
         fitnessScore += calculateTimeConflicts(x) * Constants.timeConflictPenalty;
         fitnessScore += calculateNameConflicts(x) * Constants.nameConflictPenalty;
         fitnessScore += calculateRequiredSatisifability(x, requiredCount) * Constants.unfulfilledRequirementPenalty;
+        fitnessScore += calculateScheduleSizeSatisfiablility(x) * Constants.insufficientCoursesPenalty;
         fitnessScore += calculateBlockSufficiency(x) * Constants.insufficientBlockPenalty;
+        fitnessScore += calculateSecondarySufficiency(x) * Constants.secondaryInsuffiencyPenalty;
         //System.out.println("Insufficient block penalty =" + calculateBlockSufficiency(x) * Constants.insufficientBlockPenalty);
         //results[i] = fitnessScore;
         //System.out.println("Fitness Score = " + fitnessScore);
         x.setRequiredScore(fitnessScore);
         return fitnessScore;
+    }
+
+    private int calculateScheduleSizeSatisfiablility(Schedule target) {
+        return Math.abs(target.getLectures().length - this.scheduleSize);
     }
 
     private int calculateRequiredSatisifability(Schedule target, int num) {
@@ -170,15 +180,36 @@ public class RequiredAnalyzer {
             if(courseCount.containsKey(parent)) {
                 int count = courseCount.get(parent).intValue();
                 courseCount.put(parent, Integer.valueOf(++count));
+            } else {
+                courseCount.put(parent, Integer.valueOf(1));
             }
 
             String section = secondary[i].getParentSection();
             if(sectionCount.containsKey(section)) {
                 int count = sectionCount.get(section).intValue();
                 sectionCount.put(section, Integer.valueOf(++count));
+            } else {
+                sectionCount.put(section, Integer.valueOf(1));
             }
         }
-        return 0;
+
+        int satisfiedCount = Math.abs(this.numSecondaries - courseCount.size());
+        int matchedSecondary = Math.abs(this.numSecondaries - sectionCount.size());
+        return satisfiedCount + matchedSecondary;
+    }
+
+    private int calculateSecondaryLectureSectionMatch(Schedule target) {
+        HashMap<String, Integer> sectionCount = new HashMap<String, Integer>();
+        SecondaryMeeting[] secondary = target.getSecondaries();
+        for(int i = 0; i < secondary.length; i++) {
+            String section = secondary[i].getParentSection();
+            if(sectionCount.containsKey(section)) {
+                int count = sectionCount.get(section).intValue();
+                sectionCount.put(section, Integer.valueOf(++count));
+            } else {
+                sectionCount.put(section, Integer.valueOf(1));
+            }
+        }
     }
 
     private int calculateBlockSufficiency(Schedule target) {

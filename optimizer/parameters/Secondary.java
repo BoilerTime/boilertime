@@ -23,6 +23,7 @@ public class Secondary {
         this.isRunnable = false;
         this.sectionIds = info.getSectionIds();
         this.parentSections = info.getParentSections();
+        this.parentCourse = info.getParentCourse();
     }
 
     /**

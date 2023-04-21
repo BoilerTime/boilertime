@@ -4,6 +4,7 @@ import java.util.*;
 
 import optimizer.Utils;
 import optimizer.algorithm.Analyzer.QualityAnalyzer;
+import optimizer.algorithm.Analyzer.RequiredAnalyzer;
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Event;
 import optimizer.algorithm.Events.Lecture;
@@ -49,7 +50,7 @@ public class Optimizer {
         this.idEvent = new HashMap<String, Event>();
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
-        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length, this.coursesWithSecondaries);
+        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length, this.coursesWithSecondaries, totalClasses);
         this.scheduleSize = this.calculateScheduleSize(registeredC.length, totalClasses) + this.blocks.length + this.coursesWithSecondaries;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
@@ -157,7 +158,7 @@ public class Optimizer {
         }
 
         if(singleCount.size() > 0) {
-            this.isSatisfiable = analyzer.calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
+            this.isSatisfiable = new RequiredAnalyzer(this.numBlocks, this.registerdCourses.length, this.coursesWithSecondaries, 5).calculateTimeConflicts(new Schedule(singleCount.toArray(new Lecture[singleCount.size()]))) == 0;
             System.out.println(this.isSatisfiable);
         } else {
             this.isSatisfiable = true;

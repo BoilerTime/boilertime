@@ -21,7 +21,7 @@ async function optimizeSchedule(schedule) {
     let requiredLength = schedule.required_classes.length;
     let optionalLength = schedule.optional_classes.length;
 
-    for(let i = 0; i < Math.min(requiredLength+optionalLength, 5); i++) {
+    for(let i = 0; i < requiredLength+optionalLength; i++) {
         if(i >= requiredLength) {
             optimizecourses.push(schedule.optional_classes[i % optionalLength]);
         } else {
@@ -29,7 +29,9 @@ async function optimizeSchedule(schedule) {
         }
     }
 
+    console.log(optimizecourses)
     var output = await getCollections(optimizecourses, requiredLength);
+    console.log(output)
     //console.log(output[0].collections.length)
     for(let i = 0; i < output.length; i++) {
       console.log("UWU")
@@ -91,6 +93,7 @@ async function optimizeSchedule(schedule) {
     //console.log(output)
     //output = await getIsFull(output);
     output = await getRating(output)
+    console.log(output)
     //console.log(JSON.stringify(output));
     return output;
 }
