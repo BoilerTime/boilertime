@@ -57,7 +57,8 @@ async function convertSchedule(schedule, blocks) {
   console.log(blocks)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
-      console.log(meeting.startTime)
+      console.log("Start = " + meeting.startTime)
+      console.log(meeting.type)
       const startDateTime = new Date(meeting.startTime);
       const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const duration = meeting.duration.slice(2).toLowerCase();
@@ -79,13 +80,25 @@ async function convertSchedule(schedule, blocks) {
         }, config)
         return response?.data?.avgRating || 0.0
       }
+
+      let thisColor = "blue"
+
+      if(meeting.type == "Lecture") {
+        console.log("Welre a lecture");
+        thisColor = "green";
+      } else {
+        console.log("We're smth else!!");
+      }
+
       result.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
-        title: course.subject+" "+course.number,
+        title: course.subject+" "+course.number + " " + fixType(meeting.type),
+        info: course.type,
         id: id,
         expandRows: true,
         daysOfWeek: daysOfWeek,
+        color: thisColor
       });
     }
   }
@@ -236,6 +249,13 @@ function showWarning(configured) {
           timeout: 5000,
         });
   }
+}
+
+function fixType(type) {
+  if(type == "Practice Study Observation") {
+    return "PSO"
+  }
+  return type;
 }
 </script>
 

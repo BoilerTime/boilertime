@@ -51,7 +51,7 @@
     "firebase-admin": "^11.5.0",
     "jsdoc": "^4.0.1",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.22"
   },
   "mocha": {
     "require": "mocha-suppress-logs"

@@ -13,6 +13,7 @@ import optimizer.constants.WeekDays;
 import optimizer.parameters.BlockOverview;
 import optimizer.parameters.CourseOverview;
 import optimizer.parameters.CourseOverviewHelper;
+import optimizer.parameters.SecondaryOverviewHelper;
 
 public class ScheduleClient extends Thread  {
     
@@ -183,15 +184,16 @@ public class ScheduleClient extends Thread  {
         //System.out.println("Called to get course info!");
         CourseOverviewHelper x = new CourseOverviewHelper();
         try {
-            String temp; 
+            
             //ystem.out.println("In try at getCourseInfo!");
             //first, we assign the course a name
-            temp = network.getIncomingMessage();
-            if(temp == null) {
+            String courseName = network.getIncomingMessage();
+            if(courseName == null) {
                 return null;
             }
-            x.addCourseName(temp);
+            x.addCourseName(courseName);
             //System.out.println("Added a name to the course!");
+            String temp; 
             temp = network.getIncomingMessage();
             System.out.println("Required message: " + temp);
             if(temp.equalsIgnoreCase("True")) {
@@ -201,31 +203,45 @@ public class ScheduleClient extends Thread  {
             }
 
             //next, we need to determine how many courses are going to be transmitted
-            String t = network.getIncomingMessage();
-            if(t == null) {
-                return null;
-            }
-            int numOfTimes = Integer.parseInt(t);
+            int numOfTimes = this.getNumber(network);
             //System.out.println("Num of times: " + numOfTimes);
             //First, we instantiate the times for each
             x.instantiateHelper(numOfTimes);
 
             for(int i = 0; i < numOfTimes; i++) {
+                x.addCourseTime(this.getNumber(network));
+
+                x.addDuration(this.getNumber(network));
+
                 String message = network.getIncomingMessage();
-                x.addCourseTime(Integer.parseInt(message));
-
-                message = network.getIncomingMessage();
-                x.addDuration(Integer.parseInt(message));
-
-                message = network.getIncomingMessage();
                 System.out.println("Week days = "  + message);
                 x.addWeekDays(message);
 
                 message = network.getIncomingMessage();
                 x.addRating(Double.parseDouble(message));
 
-                message = network.getIncomingMessage();
-                x.addSectionId(message);
+                String msg = network.getIncomingMessage();
+                System.out.println("MSG = " + message);
+                x.addSectionId(msg);
+
+                String PID = network.getIncomingMessage();
+                x.addParentSection(PID);
+
+                int numberOfSecondaries = this.getNumber(network);
+                SecondaryOverviewHelper s = new SecondaryOverviewHelper();
+                s.instantiateHelper(numberOfSecondaries);
+                System.out.println("About to start helper!!" + numberOfSecondaries + " " + i + " " + numOfTimes);
+                for(int j = 0; j < numberOfSecondaries; j++) {
+                    s.addName(network.getIncomingMessage());
+                    s.addTime(this.getNumber(network));
+                    s.addDuration(this.getNumber(network));
+                    s.addWeekDays(network.getIncomingMessage());
+                    message = network.getIncomingMessage();
+                    s.addSectionId(message);
+                    s.addParentSection(msg);
+                    s.addParentCourse(courseName);
+                }
+                x.addRelatedSecondary(s);
                 //System.out.println("Added a section combo: " + i);
             }
             return x.toCourseOverview();
@@ -235,6 +251,19 @@ public class ScheduleClient extends Thread  {
         return null;
     }
 
+    private int getNumber(NetworkHandler net) {
+        while(true) {
+            String s = net.getIncomingMessage();
+            try {
+                int res = Integer.parseInt(s);
+                net.sendMessage("{\"status\":200,\"message\":\"Got valid numerical data\",\"data\":null}");
+                return res;
+            } catch (NumberFormatException e) {
+                System.err.println("Received illegal number! " + e);
+                net.sendMessage("{\"status\":400,\"message\":\"Got illegal numerical data\",\"data\":null}");
+            }
+        }
+    }
     private BlockOverview getBlockOverview(NetworkHandler network) {
         try {
             String name = network.getIncomingMessage();
