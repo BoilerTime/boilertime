@@ -1440,7 +1440,7 @@ async function submitNecssaryCookies() {
 }
 
 async function deleteSchedule(term_id) {
-  await axios.post('http://localhost:3001/api/delete/term/schedule', {
+  await axios.post('https://api.boilerti.me/api/delete/term/schedule', {
     user_id: userStore.user_id,
     term_id: term_id,
   }, config).then((response) => {

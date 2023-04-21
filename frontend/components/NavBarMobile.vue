@@ -287,7 +287,7 @@ async function setThemePref() {
   userStore.user.dark_mode = $isDarkMode;
   axios
     .post(
-      "http://localhost:3001/api/set/darkmode/",
+      "https://api.boilerti.me/api/set/darkmode/",
       {
         user_id: userStore.user_id,
         dark_mode: isDarkMode.value,
