@@ -1,6 +1,6 @@
 <template>
   <main
-    class="flex flex-col h-screen overflow-y-scroll pb-10 bg-gray-100 dark:bg-neutral-700"
+    class="flex flex-col h-screen pb-10 overflow-y-scroll bg-gray-100 dark:bg-neutral-700"
   >
     <Modal
       @closed="closePrivacyPopup()"
@@ -938,6 +938,7 @@ import { useGuestStore } from "../../store/guest";
 const { $toast } = useNuxtApp();
 const route = useRoute();
 const userSchedules = ref([]);
+const scheduleData = ref([]);
 var numSchedules;
 var isMobile = ref(false);
 var privacyPopup = ref(false);
@@ -1055,6 +1056,7 @@ var resultData = ref([]);
 var userStore = useUserStore();
 var guestStore = useGuestStore();
 var isAGuest = ref(true);
+let result = [];
 
 onMounted(async () => {
   if (userStore.user_id) {
@@ -1124,6 +1126,7 @@ async function fetch() {
     console.error(error);
   }
 }
+
 
 const filteredResults = computed(() => {
   resultData.value = [];
@@ -1391,9 +1394,67 @@ async function submitNecssaryCookies() {
     });
 }
 
+async function convertSchedule(schedule) {
+  for (const course of schedule) {
+    for (const meeting of course.meetings) {
+      console.log(meeting.startTime)
+      const startDateTime = new Date(meeting.startTime);
+      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+      const duration = meeting.duration.slice(2).toLowerCase();
+      const durationParts = duration.split(/h|m/).map(part => parseInt(part));
+      const easternEndTimeDateTime = new Date(startDateTime.getTime() + (durationParts[0] * 60 + durationParts[1]) * 60 * 1000);
+      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+      const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
+      const id = `${course.subject}${course.number}`;
+      async function getgpa(prof_name, class_name) {
+        const response = await axios.post('https://api.boilerti.me/api/getgpa', {
+          "prof_name": prof_name,
+          "class_name": class_name
+        }, config)
+        return response?.data?.averageGPA || 0.0
+      }
+      async function getrmp(prof_name) {
+        const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
+          "prof_name": prof_name
+        }, config)
+        return response?.data?.avgRating || 0.0
+      }
+      result.push({
+        startTime: easternStartTime,
+        endTime: easternEndTime,
+        title: course.subject + " " + course.number,
+        daysOfWeek: daysOfWeek,
+        id: id,
+      });
+    }
+  }
+}
+
+
 onBeforeMount(async () => {
   await getUserInfo();
   await fetch();
-  await openPrivacyPopup();
+
+  await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
+    user_id: userStore.user_id,
+    term_id: "spring_2023",
+  }, config).then((response) => {
+      console.log(response.data + response.data.time);
+      console.log("BLOCKS!!")
+      console.log(response.data.blocked_times)
+      scheduleData.value = response.data.schedule
+      showWarning(response.data.configured)
+      convertSchedule(response.data.schedule)
+      console.log(result);
+  }).catch((error) => {
+    console.log("THIS IS THE ERROR " + error)
+      if (error.response.status == 500) {
+        console.log(error);
+        $toast.error("You have not optimized this schedule yet!", {
+            timeout: 5000,
+        });
+        navigateTo('/app/create')
+      }
+  });
 });
 </script>
