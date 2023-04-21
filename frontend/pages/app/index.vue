@@ -1405,7 +1405,7 @@ async function convertSchedule(schedule) {
         }, config)
         return response?.data?.avgRating || 0.0
       }
-      resultSchedule.push({
+      resultSchedule.value.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
         title: course.subject + " " + course.number,
@@ -1428,7 +1428,7 @@ onBeforeMount(async () => {
       console.log(response.data + response.data.time);
       scheduleData.value = response.data.schedule
       convertSchedule(response.data.schedule)
-      console.log(resultSchedule);
+      console.log(resultSchedule.value);
   }).catch((error) => {
     console.log("THIS IS THE ERROR " + error)
   });
