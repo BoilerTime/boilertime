@@ -68,14 +68,14 @@ async function convertSchedule(schedule, blocks) {
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
-        const response = await axios.post('http://localhost:3001/api/getgpa', {
+        const response = await axios.post('https://api.boilerti.me/api/getgpa', {
           "prof_name": prof_name,
           "class_name": class_name
         }, config)
         return response?.data?.averageGPA || 0.0
       }
       async function getrmp(prof_name) {
-        const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
+        const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
           "prof_name": prof_name
         }, config)
         return response?.data?.avgRating || 0.0
@@ -204,7 +204,7 @@ onBeforeMount(async () => {
 
   console.log("GroupID:" + friend_id)
   if (friend_id != undefined) {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
       user_id: friend_id,
       term_id: route.params.term,
     }, config).then((response) => {
@@ -213,7 +213,7 @@ onBeforeMount(async () => {
       convertSchedule(response.data.schedule, response.data.blocked_times)
     })
   } else {
-    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
+    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
