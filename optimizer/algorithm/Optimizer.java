@@ -40,16 +40,17 @@ public class Optimizer {
     private final int numOptions = 3;
     private int numSatisfied; 
     private QualityAnalyzer analyzer; 
+    private int coursesWithSecondaries; 
     Random r;
 
     public Optimizer(CourseOverview[] registeredC, BlockOverview[] blocks, NetworkHandler network, TimeOfDay timePreference, PreferenceList[] preferences, int totalClasses) {
-        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length);
+        
 
         this.idEvent = new HashMap<String, Event>();
         this.parseEventOverviews(registeredC, blocks);
         this.numBlocks = blocks.length;
-
-        this.scheduleSize = this.calculateScheduleSize(registeredC.length, totalClasses) + this.blocks.length;
+        this.analyzer = new QualityAnalyzer(preferences, timePreference, blocks.length, registeredC.length, this.coursesWithSecondaries);
+        this.scheduleSize = this.calculateScheduleSize(registeredC.length, totalClasses) + this.blocks.length + this.coursesWithSecondaries;
         System.out.println("Schedule size = " + this.scheduleSize);
         r = new Random(100);
         
@@ -75,6 +76,7 @@ public class Optimizer {
         int totalSecondaries = 0;
         int totalSecondaryOverviews = 0;
         int totalBlocks = b.length;
+        this.coursesWithSecondaries = 0;
         this.registerdCourses = new Course[c.length];
         this.blocks = new Block[b.length];
         SecondaryOverview secondaries[][] = new SecondaryOverview[c.length][];
@@ -84,6 +86,9 @@ public class Optimizer {
             //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
             totalSecondaries += c[i].getTotalNumberOfSecondaries();
+            if(c[i].getTotalNumberOfSecondaries() > 0) {
+                this.coursesWithSecondaries++;
+            }
             secondaries[i] = c[i].getRelatedSecondaries();
             totalSecondaryOverviews += secondaries[i].length;
             if(c[i].isRequired()) {

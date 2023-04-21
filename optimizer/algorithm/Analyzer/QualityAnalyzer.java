@@ -21,8 +21,8 @@ public class QualityAnalyzer extends RequiredAnalyzer {
      * @param t The time of day that is prefered
      */
 
-    public QualityAnalyzer(PreferenceList[] prefs, TimeOfDay t, int numBlocks, int numCourses) {
-        super(numBlocks, numCourses);
+    public QualityAnalyzer(PreferenceList[] prefs, TimeOfDay t, int numBlocks, int numCourses, int numSecondaries) {
+        super(numBlocks, numCourses, numSecondaries);
         this.overallScores = new ArrayList<Integer>();
         this.fft = new ArrayList<Double>();
         this.bestSchedules = new ArrayList<Schedule>();

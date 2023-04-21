@@ -16,8 +16,9 @@ public class RequiredAnalyzer {
     private ArrayList<Integer> requiredScores;
     private int numBlocks;
     private int numLectures;
+    private int numSecondaries;
     
-    public RequiredAnalyzer(int numBlocks, int numLectures) {
+    public RequiredAnalyzer(int numBlocks, int numLectures, int numSecondaries) {
         this.requiredScores = new ArrayList<Integer>();
         this.numBlocks = numBlocks;
         this.numLectures = numLectures;
