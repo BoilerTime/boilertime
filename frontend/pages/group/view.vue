@@ -6,9 +6,9 @@
     <div v-else>
         <NavBarMobile />
     </div>
-    <div class="p-16 bg-gray-200 overflow-auto dark:bg-neutral-500">
+    <div class="p-8 bg-gray-100 overflow-auto dark:bg-neutral-700">
         <!--Groups Page-->
-        <div class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-700 border border-black rounded-lg shadow-lg grid grid-flow-row">
+        <div class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-500 border border-black rounded-lg shadow-lg flex flex-col">
             <h1 class="font-bold text-2xl mb-5 text-center dark:text-gray-200">Groups Page</h1>
             <!--Flex grouping for groups-->
             <div class="bg-neutral-200 dark:bg-neutral-400 rounded-lg max-w-full mb-5 mt-5 p-4 text-center">
@@ -22,7 +22,7 @@
                                 {{ item }}
                             </li>
                             <li class="mb-2 font-bold">Invite Link:</li>
-                            <li class="mb-2 font-light divide-y divide-dashed">{{ "https://boilerti.me/group/join/?group_id=" +
+                            <li class="mb-2 font-light divide-y divide-dashed overflow-scroll">{{ "https://boilerti.me/group/join/?group_id=" +
                                 item.group_id }}</li>
                             <button type="copy" class="mb-2 w-1/8 bg-blue-500 hover:bg-blue-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg hover:"
                                 @click="copyLink(item.group_id)">
