@@ -5,10 +5,15 @@
     <div class="h-screen p-16 bg-gray-200">
         <!--Join Group-->
         <div class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
-            <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">Would you like to join "{{ group_name }}"?</h1>
-            <button type="submit" class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg" @click="joingroup">
-                Join Group
-            </button>
+            <div v-if="group_exists">
+                <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">Would you like to join "{{ group_name }}"?</h1>
+                <button type="submit" class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg" @click="joingroup">
+                    Join Group
+                </button>
+            </div>
+            <div v-else>
+                <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">The group you are attempting to join does not exist.</h1>
+            </div>
         </div>
     </div>
 </template>
@@ -35,6 +40,7 @@ var isDataLoaded = ref(false);
 var route = useRoute();
 var group_id = route.query.group_id;
 var group_name = ref("");
+var group_exists = true
 
 /**
  * This function is used for making sure users meet the prerequisites of joining
@@ -73,6 +79,10 @@ async function getname() {
     })
     .then((res) => {
         group_name.value = res.data.group_name
+        if (group_name.value==undefined) {
+            group_exists = false;
+            alert("The group you are trying to join does not exist.")
+        }
         isDataLoaded.value = true;
     })
     .catch(function (error) {
