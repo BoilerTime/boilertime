@@ -1640,36 +1640,6 @@ function getSecondaryDetails(courseIndex, specificInd, recitationID) {
   }
 }
 
-function convertTime(time) {
-  time = fixTime(time);
-  let hours = parseInt(time.substring(0, 2));
-  let minutes = (time.substring(2, 4));
-  hours = hours-5;
-  if(hours < 10 && hours >= 0) {
-    return  '0'+hours+':'+minutes;
-  } else if(hours < 0) {
-    return  '0'+'00'+':'+minutes;
-  }
-  return hours +':'+minutes;
-}
-function getCollectionIndex(target, index) {
-  for(let i = 0; i < courseList[index].collections.length; i++) {
-    if(courseList[index].collections[i] == target) {
-      return i;
-    }
-  }
-}
-
-function getSecondaryDetails(courseIndex, specificInd, recitationID) {
-  console.log(courseList[courseIndex].sections[specificInd].secondary[0])
-  console.log(recitationID)
-  for(let i = 0; i < courseList[courseIndex].sections[specificInd].secondary.length; i++) {
-    if(courseList[courseIndex].sections[specificInd].secondary[i].ID == recitationID) {
-      return i;
-    }
-  }
-}
-
 function findIDIndex(position, target) {
   for (let i = 0; i < courseList[position].sectionIDs.length; i++) {
     if (courseList[position].sectionIDs[i] == target) {
