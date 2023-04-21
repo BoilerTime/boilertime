@@ -52,7 +52,7 @@ public class Course {
         for(int i = 0; i < sections.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Constants.LECTURE + Utils.arrToString(id);
-            sections[i] = new Lecture(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i]);
+            sections[i] = new Lecture(this, template.getCourseTimes()[i], template.getCourseDurations()[i], sid, template.getWeekDays()[i], this.required, template.getRatings()[i], this.sectionIds[i], i);
             idSection.put(sid, sections[i]);
         }
         return sections;
@@ -105,5 +105,9 @@ public class Course {
 
     public double getMaxRating() {
         return this.maxRating;
+    }
+
+    public boolean hasSecondaries() {
+        return this.hasSecondaryComponents;
     }
 }

@@ -11,6 +11,7 @@ import optimizer.constants.WeekDays;
 
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class RequiredAnalyzer {
@@ -174,6 +175,7 @@ public class RequiredAnalyzer {
     private int calculateSecondarySufficiency(Schedule target) {
         HashMap<String, Integer> courseCount = new HashMap<String, Integer>();
         HashMap<String, Integer> sectionCount = new HashMap<String, Integer>();
+        HashMap<String, String> courseID = new HashMap<String, String>();
         SecondaryMeeting[] secondary = target.getSecondaries();
         for(int i = 0; i < secondary.length; i++) {
             String parent = secondary[i].getParentCourse();
@@ -191,25 +193,35 @@ public class RequiredAnalyzer {
             } else {
                 sectionCount.put(section, Integer.valueOf(1));
             }
+            courseID.put(parent, section);
+        }
+
+        Lecture[] primary = target.getLectures();
+        HashMap<String, String> nameID = new HashMap<String, String>();
+        for(int i = 0; i < primary.length; i++) {
+            nameID.put(primary[i].getParent().getCourseName(), primary[i].getSectionId());
+        }
+
+        String[] courseNames = nameID.keySet().toArray(new String[nameID.keySet().size()]);
+        int mismatch = 0;
+        int invalid = 0;
+        System.out.println(courseID.keySet().toString());
+        System.out.println(courseID.entrySet().toString());
+        System.out.println("Official: " + nameID.entrySet().toString());
+        //System.out.println(Arrays.toString(courseNames));
+        for(int i = 0; i < nameID.size(); i++) {
+            System.out.println(courseID.get(courseNames[i]) + " " + nameID.get(courseNames[i]));
+            if(courseID.get(courseNames[i]) != null && nameID.get(courseNames[i]) != null && !courseID.get(courseNames[i]).equals(nameID.get(courseNames[i]))) {
+                System.out.println("VALID!!!");
+                mismatch++;
+            } else if(courseID.get(courseNames[i]) != null || nameID.get(courseNames[i]) != null) {
+                invalid++;
+            }
         }
 
         int satisfiedCount = Math.abs(this.numSecondaries - courseCount.size());
         int matchedSecondary = Math.abs(this.numSecondaries - sectionCount.size());
-        return satisfiedCount + matchedSecondary;
-    }
-
-    private int calculateSecondaryLectureSectionMatch(Schedule target) {
-        HashMap<String, Integer> sectionCount = new HashMap<String, Integer>();
-        SecondaryMeeting[] secondary = target.getSecondaries();
-        for(int i = 0; i < secondary.length; i++) {
-            String section = secondary[i].getParentSection();
-            if(sectionCount.containsKey(section)) {
-                int count = sectionCount.get(section).intValue();
-                sectionCount.put(section, Integer.valueOf(++count));
-            } else {
-                sectionCount.put(section, Integer.valueOf(1));
-            }
-        }
+        return satisfiedCount + matchedSecondary + mismatch;// + (100 * invalid);
     }
 
     private int calculateBlockSufficiency(Schedule target) {

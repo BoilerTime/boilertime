@@ -59,6 +59,7 @@ public class SecondaryOverviewHelper {
      * @param name A string that represents the ID. 
      */
     public void addParentSection(String name) {
+        System.out.println("PARENT SECTION = " + name);
         this.parentSection = name;
     }
     

@@ -220,8 +220,9 @@ public class ScheduleClient extends Thread  {
                 message = network.getIncomingMessage();
                 x.addRating(Double.parseDouble(message));
 
-                message = network.getIncomingMessage();
-                x.addSectionId(message);
+                String msg = network.getIncomingMessage();
+                System.out.println("MSG = " + message);
+                x.addSectionId(msg);
 
                 String PID = network.getIncomingMessage();
                 x.addParentSection(PID);
@@ -237,7 +238,7 @@ public class ScheduleClient extends Thread  {
                     s.addWeekDays(network.getIncomingMessage());
                     message = network.getIncomingMessage();
                     s.addSectionId(message);
-                    s.addParentSection(PID);
+                    s.addParentSection(msg);
                     s.addParentCourse(courseName);
                 }
                 x.addRelatedSecondary(s);
