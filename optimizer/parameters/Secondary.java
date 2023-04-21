@@ -40,7 +40,7 @@ public class Secondary {
         for(int i = 0; i < meetings.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Constants.SECONDARY + Utils.arrToString(id);
-            meetings[i] = new SecondaryMeeting(template, i, sid);
+            meetings[i] = new SecondaryMeeting(this, template.getTimes()[i], template.getDurations()[i], template.getWeekDays()[i], sid);
             idSection.put(sid, meetings[i]);
         }
         return meetings;
@@ -56,6 +56,14 @@ public class Secondary {
         } else {
             return template.getDurations().length;
         }
+    }
+
+    public String getType() {
+        return this.template.getSecondaryType();
+    }
+
+    public String getParentSectionID() {
+        return this.template.getParentSections();
     }
 
 }

@@ -3,6 +3,7 @@ import java.util.HashMap;
 
 import optimizer.Utils;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.Constants;
 
 public class Course {
@@ -17,6 +18,7 @@ public class Course {
     private String[] sectionIds;
     private String[] parentSections;
     private final boolean hasSecondaryComponents;
+    private final SecondaryOverview[] secondaryComponents;
 
 
     public Course(CourseOverview info) {
@@ -31,6 +33,7 @@ public class Course {
         this.sectionIds = info.getSectionIds();
         this.parentSections = info.getParentSections();
         this.hasSecondaryComponents = info.hasSecondaries();
+        this.secondaryComponents = info.getRelatedSecondaries();
     }
 
     /**
@@ -103,5 +106,4 @@ public class Course {
     public double getMaxRating() {
         return this.maxRating;
     }
-
 }

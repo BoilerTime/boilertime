@@ -70,6 +70,7 @@ public class Optimizer {
      */
     private void parseEventOverviews(CourseOverview[] c, BlockOverview[] b) {
         int totalSections = 0;
+        int totalSecondaries = 0;
         int totalBlocks = b.length;
         this.registerdCourses = new Course[c.length];
         this.blocks = new Block[b.length];
@@ -78,15 +79,18 @@ public class Optimizer {
         for(int i = 0; i < c.length; i++) {
             //System.out.println(c[i]);
             totalSections += c[i].getNumberOfSections();
+            totalSecondaries += c[i].getTotalNumberOfSecondaries();
             if(c[i].isRequired()) {
                 numRequired ++;
             }
             registerdCourses[i] = new Course(c[i]);
         }
 
-        System.out.println("Num required = " + numRequired);
 
-        int repBits = calculateNameBits(totalSections, totalBlocks);
+        System.out.println("Num required = " + numRequired);
+        System.out.println("Num of secondaries = " + totalSecondaries);
+
+        int repBits = calculateNameBits(totalSections, totalBlocks, totalSecondaries);
 
         this.sectionLen = repBits + 2;
         int minCount = 0;
@@ -125,8 +129,8 @@ public class Optimizer {
         }
     }
 
-    private int calculateNameBits(int courseLen, int blockLen) {
-        return (int) Math.ceil(Utils.LogB(courseLen + blockLen, 2));
+    private int calculateNameBits(int courseLen, int blockLen, int secondaries) {
+        return (int) Math.ceil(Utils.LogB(courseLen + blockLen +  secondaries, 2));
     }
 
     private int calculateScheduleSize(int size, int prefered) {
