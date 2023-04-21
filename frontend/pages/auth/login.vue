@@ -112,7 +112,7 @@ async function login() {
       // end temp fix
       navigateTo(`/app?verified=${route.query.verified}`);
       if (isMobile) {
-        $toast.error("Warning: Mobile mode has access to limited functionality", {
+        $toast.error("Warning: Mobile view has access to limited functionality.BoilerTime is better viewed on larger screens!", {
           timeout: 5000,
         });
       }
