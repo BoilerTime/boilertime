@@ -1012,6 +1012,9 @@ onBeforeMount(async () => {
           "https://api.boilerti.me/api/saveschedule",
           {
             user_id: userStore.user_id,
+            num_courses: guestStore.schedule.num_courses,
+            configured: guestStore.schedule.configured,
+            preference_list: guestStore.schedule.preference_list,
             required_classes: guestStore.schedule.required_classes,
             optional_classes: guestStore.schedule.optional_classes,
             time: guestStore.schedule.time,
@@ -1034,7 +1037,7 @@ onBeforeMount(async () => {
           });
         });
       setTimeout(() => {
-        window.location.reload();
+        //window.location.reload();
       }, 2000); // Wait 1 second before showing the toast message
     }
   }
