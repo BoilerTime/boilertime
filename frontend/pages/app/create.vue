@@ -239,17 +239,18 @@
                 class="flex flex-col justify-between w-full h-full overflow-hidden bg-gray-100 border-2 border-gray-400 rounded-lg hover:bg-blue-100 transition duration-300">
                 <div class="flex items-center flex-grow justify-left" style="margin-left: 5%; margin-top: 5%; margin-right: 5%;">
                   <div>
-                   <span class="text-sm text-black"
-                      >{{ schedule }} <br/>
-                    </span><br/>
+                    <div v-for="(entry, i) in schedule">
+                      <span class="text-sm text-black"
+                      >{{ entry.courseName }} lecture from {{entry.startTime}} until {{entry.endTime}}.
+                      <span v-if="entry.hasSecondary"><li>{{entry.secondaryType}} from {{entry.secondaryStartTime}} until {{entry.secondaryEndTime}}</li></span>
+                    </span>
+                    <br/>
+                  </div>
+
                   </div>
                 </div>
                 </div>
             </div>
-
-
-
-
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -1105,7 +1106,8 @@ function parseCoursesResponse(output) {
         "endTime": "",
         "hasSecondary": true,
         "secondaryStartTime": "",
-        "secondaryEndTime": ""
+        "secondaryEndTime": "",
+        "secondaryType": ""
       }
       console.log(lectures[i][j]);
       let courseIndex = findCourse(lectures[i][j].courseID)
@@ -1114,21 +1116,25 @@ function parseCoursesResponse(output) {
       ///console.log(courseList[courseIndex].sections[specificInd].secondary[]);
       const todayDate = new Date()
       const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
-      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: false });
+      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit'  });
       outputFormat.startTime = easternStartTime;
       const easternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].primary.duration) * 60 * 1000);
-      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', {hour12: true, hour: '2-digit', minute:'2-digit'  });
       outputFormat.endTime = easternEndTime;
       console.log(lectures[i][j])
       if(lectures[i][j].secondary !== "none") {
         outputFormat.hasSecondary = true;
         let recitationInd = getSecondaryDetails(courseIndex, specificInd, lectures[i][j].secondary);
         const sStartDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(0,2), courseList[courseIndex].sections[specificInd].secondary[recitationInd].startTime.substring(2,4));
-        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: false });
+        const sEasternStartTime = sStartDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
         outputFormat.secondaryStartTime = sEasternStartTime;
         const sEaasternEndTimeDateTime = new Date(startDateTime.getTime() + (courseList[courseIndex].sections[specificInd].secondary[recitationInd].duration) * 60 * 1000);
-        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: false });
+        const sEaasternEndTime = sEaasternEndTimeDateTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit' });
         outputFormat.secondaryEndTime = sEaasternEndTime;
+        outputFormat.secondaryType = courseList[courseIndex].sections[specificInd].secondary[recitationInd].type
+        if(outputFormat.secondaryType == "Practice Study Observation") {
+          outputFormat.secondaryType = "PSO"
+        }
       } else {
         outputFormat.hasSecondary = false;
       }
@@ -1142,6 +1148,7 @@ function parseCoursesResponse(output) {
     }
     userOutput.push(specificOutput);
   }
+  schedule.value = userOutput;
   console.log(userOutput)
   let serverFormat = {"subject": "", "number": "", "userSections": {"meetings": [], "sectionID": ""}};
   let blockFormat = {"name": "", "start_time": "", "duration": "", "days_of_week": []}
@@ -1226,9 +1233,11 @@ function fto2(time) {
 }
 function cancel() {
   //$socket.close()
+  connection.close()
   console.log("CLOSING!!!")
   connection.close();
-  navigateTo('/app')
+  //window.
+  location.reload()
 }
 
 function getScheduleView(index) {
