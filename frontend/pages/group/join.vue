@@ -11,13 +11,14 @@
         <!--Join Group-->
         <div class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
             <div v-if="group_exists">
-                <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">Would you like to join "{{ group_name }}"?</h1>
-                <button type="submit" class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg" @click="joingroup">
-                    Join Group
+                <h1 class="font-bold text-2xl mb-5 text-center">Would you like to join "{{ group_name }}"?</h1>
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg" @click="joingroup">
                 </button>
             </div>
             <div v-else>
-                <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">The group you are attempting to join does not exist.</h1>
+                <h1 v-if="isDataLoaded" class="font-bold text-2xl mb-5 text-center">
+                    The group you are attempting to join does not exist.
+                </h1>
             </div>
         </div>
     </div>

@@ -3,24 +3,29 @@
   <NavBar />
   <div class="h-screen p-16 bg-gray-200 overflow-auto dark:bg-neutral-500">
       <div v-if="group_size" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
-          <div class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
-              <h1 class="font-bold text-2xl mb-5 text-center">
-                  You are the only member in {{ group_name }}. Invite your friends to see your schedules.
-              </h1>
-                  <qrcode-vue :value="qr_value" :size="300" level="H" />
-              <h2 class="mt-4 pb-4 text-center text-2x1">https://boilerti.me/group/join/?group_id={{ group }}</h2>
-          </div>
-      </div>
-      <div v-else>
-        <h1 class="text-6xl">Group: {{group_name}}</h1>
-        <FullCalendar :options="calendarOptions" />
-
-        <h1 class="text-4xl text-yellow-600">Group Members</h1>
-        <li v-for="(name, index) in member_names">
-          {{name}} ( {{colors[index]}} )
-        </li>
-      </div>
+        <div class="mx-auto max-w-3xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
+          <h1 class="mb-6 font-bold text-2xl text-center">
+            You are the only member in {{ group_name }}.
+          </h1>
+          <center>
+            <qrcode-vue :value="qr_value" :size="300" level="H" />
+          </center>
+          <!--Copy link Button-->
+          <button type="copy" class="mt-6 w-1/8 bg-blue-500 hover:bg-blue-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
+            @click="copyLink(group_id)">
+            Copy Group Invite Link                                
+          </button>
+        </div>
     </div>
+    <div v-else>
+      <h1 class="text-6xl">Group: {{group_name}}</h1>
+      <FullCalendar :options="calendarOptions" />
+      <h1 class="text-4xl text-yellow-600">Group Members</h1>
+      <li v-for="(name, index) in member_names">
+        {{name}} ( {{colors[index]}} )
+      </li>
+    </div>
+  </div>
 </template>
 
 
@@ -155,6 +160,19 @@ for (var id in member_ids.value) {
       alert("A member of your group does not have an optimized schedule.");
     })
 }
+}
+
+/**
+ * This function is used to copy the group invite link when pressing a button.
+ */
+ async function copyLink(group_id) {
+    try {
+        await navigator.clipboard.writeText("https://boilerti.me/group/join/?group_id=" + group_id);
+        console.log("https://boilerti.me/group/join/?group_id=" + group_id)
+        alert("Copied link");
+    } catch(error) {
+        alert("Cannot copy");
+    }
 }
 
 /**
