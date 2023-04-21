@@ -3,11 +3,12 @@ import java.util.*;
 
 import optimizer.algorithm.Events.Block;
 import optimizer.algorithm.Events.Lecture;
+import optimizer.algorithm.Events.SecondaryMeeting;
 import optimizer.constants.WeekDays;
 public class OptimizerDecoder {
     public static String decodeOptimizedSchedule(Schedule[] best) {
         String result = "{\"status\": 200, \"message\": \"schedule\", \"data\": {\"lectures\": [";
-        String courseFormatString = "{\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\"},";
+        String courseFormatString = "{\"collectionID\": \"collection_id\",\"primaryID\": \"primary_id\",\"courseID\": \"course_id\", \"courseStartTime\": \"course_start_time\", \"courseDuration\": \"course_duration\", \"sectionId\": \"section_id\", \"daysOfWeek\": \"days_of_week\", \"secondary\": \"secondary_id\"},";
         String blockFormatString = "{\"blockName\": \"block_name\", \"blockStartTime\": \"block_start_time\", \"blockDuration\": \"block_duration\", \"daysOfWeek\": \"days_of_week\"},";
         
 
@@ -29,6 +30,12 @@ public class OptimizerDecoder {
             }
             //Pull the string that represents the best individual 
             Lecture[] classes = best[j].getLectures();
+            SecondaryMeeting[] secondaries = best[j].getSecondaries();
+    
+            HashMap<String, String> courseNameID = new HashMap<String, String>();
+            for(int k = 0; k < secondaries.length; k++) {
+                courseNameID.put(secondaries[k].getParentCourse(), secondaries[k].getCurrentID());
+            }
             //String schedule = optIndividual.getIndividual();
             //System.out.println("Schedule = " + schedule);
             int numCourses = classes.length;
@@ -36,11 +43,18 @@ public class OptimizerDecoder {
             //courseTimes.forEach((key, value) -> System.out.printf("Key: %s Value: %s", key, value));
             for(int i = 0; i < numCourses; i++) {
                 String finalCourseDetails = courseFormatString;
+                finalCourseDetails = finalCourseDetails.replace("collection_id", classes[i].getParent().getSpecificSecton(classes[i].getIndex()));
+                finalCourseDetails = finalCourseDetails.replace("primary_id", classes[i].getSectionId());
                 finalCourseDetails = finalCourseDetails.replace("course_id", classes[i].getAssignedName());
                 finalCourseDetails = finalCourseDetails.replace("course_start_time", Integer.toString(classes[i].getStartTime()));
                 finalCourseDetails = finalCourseDetails.replace("course_duration", Integer.toString(classes[i].getDuration()));
                 finalCourseDetails = finalCourseDetails.replace("section_id", classes[i].getSectionId());
                 finalCourseDetails = finalCourseDetails.replace("days_of_week", convertDaysToString(classes[i].getDaysOfDays()));
+                if(courseNameID.containsKey(classes[i].getAssignedName())) {
+                    finalCourseDetails = finalCourseDetails.replace("secondary_id", courseNameID.get(classes[i].getAssignedName()));
+                } else {
+                    finalCourseDetails = finalCourseDetails.replace("secondary_id", "none");
+                }
                 thisResult+=finalCourseDetails;
             }
             courseResults[j] = thisResult.substring(0, thisResult.length()-1) + "]";

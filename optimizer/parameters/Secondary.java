@@ -42,7 +42,7 @@ public class Secondary {
         for(int i = 0; i < meetings.length; i++) {
             int[] id = Utils.numToBin(i + minIndex, length);
             String sid = Constants.SECONDARY + Utils.arrToString(id);
-            this.meetings[i] = new SecondaryMeeting(this, parentCourse, template.getTimes()[i], template.getDurations()[i], template.getWeekDays()[i], sid);
+            this.meetings[i] = new SecondaryMeeting(this, parentCourse, template.getTimes()[i], template.getDurations()[i], template.getWeekDays()[i], sid, this.sectionIds[i]);
             idSection.put(sid, this.meetings[i]);
         }
         return this.meetings;

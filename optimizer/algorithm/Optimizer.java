@@ -289,8 +289,8 @@ public class Optimizer {
         ptr = 0;
         int i = 0;
         while(ptr < secondaryLocations.length && i < lectures.length) {
-            System.out.println(lectures[i].getSectionId());
-            System.out.println(sectionIDSecondaryMeetings.keySet().toString());
+            //System.out.println(lectures[i].getSectionId());
+            //System.out.println(sectionIDSecondaryMeetings.keySet().toString());
             if(sectionIDSecondaryMeetings.containsKey(lectures[i].getSectionId())) {
                 SecondaryMeeting[] temp = sectionIDSecondaryMeetings.get(lectures[i].getSectionId()).getSecondaryMeetings();
                 events[ptr++] = temp[Utils.randInRange(r, 0, temp.length-1)];

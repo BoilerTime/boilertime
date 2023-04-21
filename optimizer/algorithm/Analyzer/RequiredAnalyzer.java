@@ -205,9 +205,9 @@ public class RequiredAnalyzer {
         String[] courseNames = nameID.keySet().toArray(new String[nameID.keySet().size()]);
         int mismatch = 0;
         int invalid = 0;
-        System.out.println(courseID.keySet().toString());
-        System.out.println(courseID.entrySet().toString());
-        System.out.println("Official: " + nameID.entrySet().toString());
+        //System.out.println(courseID.keySet().toString());
+        //System.out.println(courseID.entrySet().toString());
+        //System.out.println("Official: " + nameID.entrySet().toString());
         //System.out.println(Arrays.toString(courseNames));
         for(int i = 0; i < nameID.size(); i++) {
             System.out.println(courseID.get(courseNames[i]) + " " + nameID.get(courseNames[i]));

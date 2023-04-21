@@ -110,4 +110,12 @@ public class Course {
     public boolean hasSecondaries() {
         return this.hasSecondaryComponents;
     }
+
+    public String[] getParentSections() {
+        return this.parentSections;
+    }
+
+    public String getSpecificSecton(int index) {
+        return this.parentSections[index];
+    }
 }
