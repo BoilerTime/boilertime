@@ -1062,6 +1062,7 @@ onBeforeMount(async () => {
   getUserInfo();
   fetch();
   checkWindowSize();
+  openPrivacyPopup();
 });
 
 let interval;
