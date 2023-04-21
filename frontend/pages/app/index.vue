@@ -88,7 +88,7 @@
             </div>
             <div v-else>
               <div
-                class="flex items-start justify-start h-screen dark:bg-neutral-500"
+                class="flex justify-center items-center h-fit p-10 rounded-lg dark:bg-neutral-500"
               >
                 <div
                   class="flex px-8 py-6 border border-black rounded-lg shadow-lg bg-white-500"
