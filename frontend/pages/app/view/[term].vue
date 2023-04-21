@@ -57,7 +57,8 @@ async function convertSchedule(schedule, blocks) {
   console.log(blocks)
   for (const course of schedule) {
     for (const meeting of course.meetings) {
-      console.log(meeting.startTime)
+      console.log("Start = " + meeting.startTime)
+      console.log(meeting.type)
       const startDateTime = new Date(meeting.startTime);
       const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const duration = meeting.duration.slice(2).toLowerCase();
@@ -67,25 +68,37 @@ async function convertSchedule(schedule, blocks) {
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
-        const response = await axios.post('https://api.boilerti.me/api/getgpa', {
+        const response = await axios.post('http://localhost:3001/api/getgpa', {
           "prof_name": prof_name,
           "class_name": class_name
         }, config)
         return response?.data?.averageGPA || 0.0
       }
       async function getrmp(prof_name) {
-        const response = await axios.post('https://api.boilerti.me/api/ratemyprofessor', {
+        const response = await axios.post('http://localhost:3001/api/ratemyprofessor', {
           "prof_name": prof_name
         }, config)
         return response?.data?.avgRating || 0.0
       }
+
+      let thisColor = "blue"
+
+      if(meeting.type == "Lecture") {
+        console.log("Welre a lecture");
+        thisColor = "green";
+      } else {
+        console.log("We're smth else!!");
+      }
+
       result.push({
         startTime: easternStartTime,
         endTime: easternEndTime,
-        title: course.subject+" "+course.number,
+        title: course.subject+" "+course.number + " " + fixType(meeting.type),
+        info: course.type,
         id: id,
         expandRows: true,
         daysOfWeek: daysOfWeek,
+        color: thisColor
       });
     }
   }
@@ -191,7 +204,7 @@ onBeforeMount(async () => {
 
   console.log("GroupID:" + friend_id)
   if (friend_id != undefined) {
-    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
+    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
       user_id: friend_id,
       term_id: route.params.term,
     }, config).then((response) => {
@@ -200,7 +213,7 @@ onBeforeMount(async () => {
       convertSchedule(response.data.schedule, response.data.blocked_times)
     })
   } else {
-    await axios.post('https://api.boilerti.me/api/get/term/optimizedschedule', {
+    await axios.post('http://localhost:3001/api/get/term/optimizedschedule', {
     user_id: userStore.user_id,
     term_id: route.params.term,
   }, config).then((response) => {
@@ -236,6 +249,13 @@ function showWarning(configured) {
           timeout: 5000,
         });
   }
+}
+
+function fixType(type) {
+  if(type == "Practice Study Observation") {
+    return "PSO"
+  }
+  return type;
 }
 </script>
 

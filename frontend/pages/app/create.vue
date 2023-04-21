@@ -1047,8 +1047,10 @@ function sendToOptimizer(courses, blocks, configurations) {
     connection.send(courses[i].sections.length);
     //Next, we iterate through each of the options and send the parameters of that option
     for(let j = 0; j < courses[i].sections.length; j++) {
+      const startDateTime = new Date(todayDate.getYear(), todayDate.getMonth(), todayDate.getDay(), courseList[courseIndex].sections[specificInd].primary.startTime.substring(0,2), courseList[courseIndex].sections[specificInd].primary.startTime.substring(2,4));
       //First, we can send the start time
       connection.send(fixTime(courses[i].sections[j].primary.startTime));
+      console.log("FIXING TIME!!" + fixTime(courses[i].sections[j].primary.startTime));
       //Durations
       connection.send(courses[i].sections[j].primary.duration);
       //Week days
