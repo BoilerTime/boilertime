@@ -266,12 +266,21 @@
             <!--Get All User Data Button-->
             <button
               type="button"
-              class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-2 rounded-lg"
+              class="w-1/8 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-2 rounded-lg -mb-4"
               @click="history"
             >
               Get All User Data
             </button>
           </div>
+        </template>
+        <template #footer>
+          <button
+            type="button"
+            class="w-1/8 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-2 rounded-lg"
+            @click="submit"
+          >
+            Submit
+          </button>
         </template>
       </Modal>
     </TransitionRoot>
@@ -1076,6 +1085,7 @@ async function submit() {
         };
       }
       isModalVisible.value = false;
+      closeEditPrivacyModal();
     })
     .catch((error) => {
       console.error(error);

@@ -50,7 +50,7 @@
         <div class="block py-5">
           <div class="items-center flex gap-8">
             <div>
-              <p class="text-2xl font-semibold text-black dark:text-white">
+              <p class="text-4xl font-semibold text-black dark:text-white">
                 Welcome, {{ firstname }}
               </p>
             </div>
@@ -60,7 +60,7 @@
           <div class="bg-white dark:bg-neutral-500 shadow-lg rounded-lg">
             <div v-if="userSchedules.length !== 0">
               <!-- Data items -->
-              <div class="flex flex-row justify-center gap-10 p-10">
+              <div class="flex flex-col md:flex-row justify-center gap-10 p-10">
                 <!-- Add button -->
                 <button
                   class="p-6 flex justify-center items-center w-64 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
@@ -68,6 +68,22 @@
                 >
                   <PlusIcon class="w-12 h-12" />
                 </button>
+                <div
+                  v-for="(schedule, index) in userSchedules"
+                  :key="index"
+                  @click="getScheduleView(schedule.term_id)"
+                  class="cursor-pointer flex flex-col mb-4 justify-between h-72 w-80 border-2 border-black overflow-x-hidden overflow-y-scroll bg-white rounded-lg dark:bg-neutral-700 dark:text-white"
+                >
+                  <h1 class="text-center py-2 px-2 bg-yellow-500 text-xl font-bold">
+                    {{ formatTitle(schedule.term_id) }}
+                  </h1>
+                  <div class="">
+                    put time table here
+                  </div>
+                  <h2 class="text-center py-2 px-2 bg-yellow-500 text-md italic">
+                    {{ schedule.timestamp }}
+                  </h2>
+                </div>
               </div>
             </div>
             <div v-else>
@@ -96,19 +112,19 @@
                   <div class="relative z-10">
                     <input
                       v-model="searchTerm"
-                      class="w-64 px-3 py-2 border border-gray-400 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                      class="w-64 px-3 py-2 border border-gray-400 dark:bg-neutral-500 dark:text-white rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:placeholder-white"
                       type="text"
                       placeholder="Search"
                       @keyup.enter="addSingleResultToSelected"
                     />
                     <ul
                       v-if="isSearchActive && filteredResults.length > 0"
-                      class="absolute z-10 w-full mt-1 overflow-scroll bg-white shadow-lg rounded-md max-h-48"
+                      class="absolute z-10 w-full mt-1 overflow-scroll bg-white dark:bg-neutral-500 shadow-lg rounded-lg max-h-48"
                     >
                       <li
                         v-for="result in filteredResults"
                         :key="result"
-                        class="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white"
+                        class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white dark:text-white"
                         @click="navigate(result, searchType)"
                       >
                         <span>{{ result }}</span>
@@ -117,7 +133,7 @@
                   </div>
                   <div class="relative">
                     <select
-                      class="h-full px-3 py-2 bg-white border border-gray-400 appearance-none pr-9 rounded-r-md"
+                      class="h-full px-3 py-2 bg-white dark:bg-neutral-500 border dark:text-white border-gray-400 appearance-none pr-6 rounded-r-lg"
                       v-model="searchType"
                     >
                       <option>Professor</option>
@@ -148,7 +164,7 @@
               <div class="grid grid-cols-1 gap-4">
                 <section aria-labelledby="section-2-title">
                   <div
-                    class="overflow-scroll bg-white shadow-xl rounded-xl h-96"
+                    class="overflow-scroll bg-white dark:bg-neutral-500 shadow-lg rounded-lg h-96"
                   >
                     <div class="p-6">
                       <div v-if="resultData && isDataLoaded">
@@ -163,12 +179,12 @@
                                 v-if="advanced_result['email']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Email</span
                                 >
                                 <a
                                   :href="'mailto:' + advanced_result['email']"
-                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  class="text-base font-medium text-indigo-700 dark:text-white hover:text-indigo-300"
                                   >{{ advanced_result["email"] }}</a
                                 >
                               </div>
@@ -177,11 +193,11 @@
                                 v-if="advanced_result['title']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Title</span
                                 >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >{{ advanced_result["title"] }}</span
                                 >
                               </div>
@@ -190,44 +206,44 @@
                                 v-if="advanced_result['office phone']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Phone</span
                                 >
                                 <a
                                   :href="
                                     'tel:' + advanced_result['office phone']
                                   "
-                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  class="text-base font-medium text-indigo-700 dark:text-white hover:text-indigo-300"
                                   >{{ advanced_result["office phone"] }}</a
                                 >
                               </div>
                             </div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Department</span
                               >
                               <span
-                                class="text-base font-medium text-blue-700"
+                                class="text-base font-medium text-indigo-700 dark:text-white"
                                 v-if="resultData[1]"
                                 >{{ resultData[1].department }}</span
                               >
                             </div>
                             <div class="flex justify-between mb-4">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Averaged from</span
                               >
                               <span
-                                class="text-base font-medium text-blue-700"
+                                class="text-base font-medium text-indigo-700 dark:text-white"
                                 v-if="resultData[1]"
                                 >{{ resultData[1].numRatings }} ratings</span
                               >
                             </div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average GPA</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="resultData[0]"
                                 >{{ resultData[0].overall_gpa }}</span
                               >
@@ -237,7 +253,7 @@
                               v-if="resultData[0]"
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width: resultData[0].percentage * 100 + '%',
                                 }"
@@ -245,11 +261,11 @@
                             </div>
                             <div v-else>No data available</div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average difficulty</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="
                                   resultData[1] &&
                                   resultData[1].avgDifficulty > 0
@@ -269,7 +285,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     (resultData[1].avgDifficulty / 5.0) * 100 +
@@ -279,11 +295,11 @@
                             </div>
                             <div v-else>No data available</div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average rating</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="
                                   resultData[1] && resultData[1].avgRating > 0
                                 "
@@ -302,7 +318,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     (resultData[1].avgRating / 5.0) * 100 + '%',
@@ -311,11 +327,11 @@
                             </div>
                             <div v-else>No data available</div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Would take again</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="
                                   resultData[1] &&
                                   resultData[1].wouldTakeAgainPercent >= 0
@@ -335,7 +351,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     resultData[1].wouldTakeAgainPercent + '%',
@@ -364,11 +380,11 @@
                               class="mb-3 flex-wrap text-center items-center"
                               v-if="advanced_result['building']"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Office<br
                               /></span>
                               <span
-                                class="text-base font-medium text-blue-700"
+                                class="text-base font-medium text-indigo-700 dark:text-white"
                                 >{{ advanced_result["building"] }}</span
                               >
                             </div>
@@ -376,12 +392,12 @@
                               class="mb-2 flex-wrap text-center items-center"
                               v-if="advanced_result['url']"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Website<br
                               /></span>
                               <a
                                 :href="advanced_result['url']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                class="text-base font-medium text-indigo-700 hover:text-indigo-300"
                                 >{{ advanced_result["url"] }}</a
                               >
                             </div>
@@ -393,12 +409,12 @@
                                 v-if="advanced_result['email']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Email</span
                                 >
                                 <a
                                   :href="'mailto:' + advanced_result['email']"
-                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  class="text-base font-medium text-indigo-700 dark:text-white hover:text-indigo-300"
                                   >{{ advanced_result["email"] }}</a
                                 >
                               </div>
@@ -407,11 +423,11 @@
                                 v-if="advanced_result['title']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Title</span
                                 >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >{{ advanced_result["title"] }}</span
                                 >
                               </div>
@@ -420,14 +436,14 @@
                                 v-if="advanced_result['office phone']"
                               >
                                 <span
-                                  class="text-base font-medium text-blue-700"
+                                  class="text-base font-medium text-indigo-700 dark:text-white"
                                   >Phone</span
                                 >
                                 <a
                                   :href="
                                     'tel:' + advanced_result['office phone']
                                   "
-                                  class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                  class="text-base font-medium text-indigo-700 dark:text-white hover:text-indigo-300"
                                   >{{ advanced_result["office phone"] }}</a
                                 >
                               </div>
@@ -436,11 +452,11 @@
                               class="flex justify-between mb-1"
                               v-if="resultData[0].overall_gpa"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average GPA</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="resultData[0]"
                                 >{{ resultData[0].overall_gpa }}</span
                               >
@@ -450,7 +466,7 @@
                               v-if="resultData[0].overall_gpa"
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width: resultData[0].percentage * 100 + '%',
                                 }"
@@ -461,11 +477,11 @@
                               class="flex justify-between mb-1"
                               v-if="resultData[0].department"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Department</span
                               >
                               <span
-                                class="text-base font-medium text-blue-700"
+                                class="text-base font-medium text-indigo-700 dark:text-white"
                                 >{{ resultData[0].department }}</span
                               >
                             </div>
@@ -473,19 +489,19 @@
                               class="flex justify-between mb-4"
                               v-if="resultData[0].numRatings"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Averaged from</span
                               >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >{{ resultData[0].numRatings }} ratings</span
                               >
                             </div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average difficulty</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700"
                                 v-if="
                                   resultData[0] &&
                                   resultData[0].avgDifficulty > 0
@@ -505,7 +521,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     (resultData[0].avgDifficulty / 5.0) * 100 +
@@ -515,11 +531,11 @@
                             </div>
                             <div v-else>No data available</div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Average rating</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="
                                   resultData[0] && resultData[0].avgRating > 0
                                 "
@@ -538,7 +554,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     (resultData[0].avgRating / 5.0) * 100 + '%',
@@ -547,11 +563,11 @@
                             </div>
                             <div v-else>No data available</div>
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Would take again</span
                               >
                               <span
-                                class="text-sm font-medium text-blue-700"
+                                class="text-sm font-medium text-indigo-700 dark:text-white"
                                 v-if="
                                   resultData[0] &&
                                   resultData[0].wouldTakeAgainPercent >= 0
@@ -571,7 +587,7 @@
                               "
                             >
                               <div
-                                class="bg-blue-600 h-2.5 rounded-full"
+                                class="bg-indigo-600 h-2.5 rounded-full"
                                 :style="{
                                   width:
                                     resultData[0].wouldTakeAgainPercent + '%',
@@ -600,11 +616,11 @@
                               class="mb-3 flex-wrap text-center items-center"
                               v-if="advanced_result['building']"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Office<br
                               /></span>
                               <span
-                                class="text-base font-medium text-blue-700"
+                                class="text-base font-medium text-indigo-700 dark:text-white"
                                 >{{ advanced_result["building"] }}</span
                               >
                             </div>
@@ -612,12 +628,12 @@
                               class="mb-2 flex-wrap text-center items-center"
                               v-if="advanced_result['url']"
                             >
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Website<br
                               /></span>
                               <a
                                 :href="advanced_result['url']"
-                                class="text-base font-medium text-blue-700 hover:text-blue-300"
+                                class="text-base font-medium text-indigo-700 dark:text-white hover:text-indigo-300"
                                 >{{ advanced_result["url"] }}</a
                               >
                             </div>
@@ -803,7 +819,7 @@
                         >
                           <div class="w-full max-w-md">
                             <div class="flex justify-between mb-1">
-                              <span class="text-base font-medium text-blue-700"
+                              <span class="text-base font-medium text-indigo-700 dark:text-white"
                                 >Involved with</span
                               >
                               <div class="flex items-center">
@@ -813,7 +829,7 @@
                                     :key="index"
                                   >
                                     <p
-                                      class="text-base font-medium text-blue-700"
+                                      class="text-base font-medium text-indigo-700 dark:text-white"
                                     >
                                       {{ course }}
                                     </p>

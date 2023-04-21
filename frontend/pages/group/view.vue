@@ -1,6 +1,11 @@
 <!--view.vue is a page for viewing the groups that a user is in.-->
 <template>
-    <NavBar />
+    <div v-if="!isMobile">
+        <NavBar />
+    </div>
+    <div v-else>
+        <NavBarMobile />
+    </div>
     <div class="p-16 bg-gray-200 overflow-auto dark:bg-neutral-500">
         <!--Groups Page-->
         <div class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-700 border border-black rounded-lg shadow-lg grid grid-flow-row">
@@ -67,6 +72,11 @@ const config = {
 var groups = ref([]);
 var group_name = ref();
 var isOwner = ref(false);
+var isMobile = ref(false);
+
+async function checkWindowSize() {
+  isMobile.value = window.innerWidth <= 768;
+}
 
 /**
  * This function is used to get the information of groups a user is in.
@@ -144,5 +154,6 @@ async function copyLink(group_id) {
  */
 onMounted(async () => {
     await getGroups();
+    checkWindowSize();
 });
 </script>
