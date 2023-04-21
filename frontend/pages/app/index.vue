@@ -9,7 +9,7 @@
     >
       <template #header>
         <div class="flex flex-col justify-start">
-          <LockClosedIcon class="h-24 w-24 text-indigo-500"></LockClosedIcon>
+          <LockClosedIcon class="w-24 h-24 text-indigo-500"></LockClosedIcon>
           <h1 class="text-3xl font-bold dark:text-gray-200">
             Your <span class="text-yellow-500">Privacy</span>
           </h1>
@@ -56,14 +56,14 @@
             </div>
           </div>
         </div>
-        <section class="flex flex-row gap-10">
-          <div class="bg-white rounded-lg shadow-lg dark:bg-neutral-500">
+        <section class="flex flex-col md:flex-row gap-10">
+          <div class="bg-white rounded-lg shadow-lg  dark:bg-neutral-500">
             <div v-if="userSchedules.length !== 0">
               <!-- Data items -->
-              <div class="flex flex-col justify-center p-10 md:flex-row gap-10">
+              <div class="flex flex-col items-center justify-between p-10 md:flex-row md:flex-wrap gap-10">
                 <!-- Add button -->
                 <button
-                  class="flex items-center justify-center w-64 p-6 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
+                  class="flex items-center justify-center p-6 text-indigo-500 bg-white border-2 border-indigo-500 border-dashed rounded-lg w-80 h-72 dark:bg-neutral-700 hover:text-indigo-700 hover:bg-gray-100"
                   @click="navigateToCreateSchedule()"
                 >
                   <PlusIcon class="w-12 h-12" />
