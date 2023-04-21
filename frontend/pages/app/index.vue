@@ -78,7 +78,7 @@
                     {{ formatTitle(schedule.term_id) }}
                   </h1>
                   <div v-for="course in resultSchedule">
-                    <TimeTable :course="course" :className="course.title" :classInfo="course.startTime + '-' + course.endTime" />
+                    <TimeTable :course="course" :className="course.title" :classInfo="course.startTime + ' - ' + course.endTime" />
                   </div>
                   <h2 class="px-2 py-2 italic text-center bg-yellow-500 text-md">
                     {{ schedule.timestamp }}
@@ -1401,11 +1401,11 @@ async function convertSchedule(schedule) {
     for (const meeting of course.meetings) {
       console.log(meeting.startTime)
       const startDateTime = new Date(meeting.startTime);
-      const easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+      var easternStartTime = startDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const duration = meeting.duration.slice(2).toLowerCase();
       const durationParts = duration.split(/h|m/).map(part => parseInt(part));
       const easternEndTimeDateTime = new Date(startDateTime.getTime() + (durationParts[0] * 60 + durationParts[1]) * 60 * 1000);
-      const easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+      var easternEndTime = easternEndTimeDateTime.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
       const daysOfWeek = meeting.daysOfWeek.map(day => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day));
       const id = `${course.subject}${course.number}`;
       async function getgpa(prof_name, class_name) {
@@ -1421,9 +1421,27 @@ async function convertSchedule(schedule) {
         }, config)
         return response?.data?.avgRating || 0.0
       }
+      easternStartTime = easternStartTime.slice(0, -3);
+      let [hours, minutes] = easternStartTime.split(':');
+      hours = parseInt(hours);
+      let period = (hours >= 12) ? 'PM' : 'AM';
+      hours = (hours > 12) ? hours - 12 : hours;
+      hours = hours.toString();
+      let formattedStartTime = hours + ':' + minutes + ' ' + period;
+      easternEndTime = easternEndTime.slice(0, -3);
+      [hours, minutes] = easternEndTime.split(':');
+      hours = parseInt(hours);
+      period = (hours >= 12) ? 'PM' : 'AM';
+      hours = (hours > 12) ? hours - 12 : hours;
+      hours = hours.toString();
+      let formattedEndTime = hours + ':' + minutes + ' ' + period;
+      console.log(formattedStartTime + " << start time");
+      console.log(formattedEndTime + " << end time");
+
+
       resultSchedule.value.push({
-        startTime: easternStartTime,
-        endTime: easternEndTime,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
         title: course.subject + " " + course.number,
         daysOfWeek: daysOfWeek,
         id: id,
