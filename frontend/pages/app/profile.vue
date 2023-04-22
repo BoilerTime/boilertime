@@ -262,6 +262,21 @@
                   />
                 </Switch>
               </div>
+              <div class="flex flex-col items-center gap-2">
+                <label for="pairs" class="font-bold dark:text-gray-200"
+                  >Stop Receiving Email Notifications</label
+                >
+                <Switch
+                  v-model="emailNotifications"
+                  :class="emailNotifications ? 'bg-indigo-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full"
+                >
+                  <span
+                    :class="emailNotifications ? 'translate-x-6' : 'translate-x-1'"
+                    class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                  />
+                </Switch>
+              </div>
             </div>
             <!--Get All User Data Button-->
             <button
@@ -561,7 +576,6 @@ import { useUserStore } from "../../store/user";
 import Modal from "../../components/Modal.vue";
 import { TransitionRoot } from "@headlessui/vue";
 import sha256 from "js-sha256";
-import { saveAs } from "file-saver";
 import {
   Switch,
   TabGroup,
@@ -590,6 +604,8 @@ var privacy = ref(false);
 var pairs = ref(false);
 var bookmarkedClasses = ref([]);
 var groups = ref([]);
+
+var emailNotifications = ref(false)
 
 var user_id = userStore.user_id;
 var accessToken = userStore.accessToken;
@@ -654,15 +670,22 @@ async function history() {
     ],
     { type: "text/plain;charset=utf-8" }
   );
-  saveAs(blob, "boilergrades.txt").catch((err) => {
-    alert("Error saving file");
-    console.log(err);
-  });
+  // create a link element
+    const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+
+  // set the file name
+  const date = new Date().toISOString().substring(0, 10);
+  link.download = `history_${date}.txt`;
+
+  // trigger a download when the link is clicked
+  link.click();
 }
 
 async function deleteAccount() {
   try {
     var pwd = sha256(password.value);
+    console.log(pwd)
     const res = await axios
       .post(
         "https://api.boilerti.me/api/deleteuser",

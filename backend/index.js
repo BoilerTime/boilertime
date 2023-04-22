@@ -66,6 +66,11 @@ app.use(function (req, res, next) {
 /*
  * This function gets a path for /api
  */
+
+app.get('/', (req, res) => {
+  return res.redirect('https://boilerti.me')
+});
+
 app.get('/api', (req, res) => {
   return res.send('API live!')
 });
@@ -285,6 +290,7 @@ app.post('/api/deleteuser', jwt.authenticateToken, async (req, res) => {
     return res.sendStatus(418);
   }
   else {
+    console.log(req.body)
     await deleteuser.deleteAccount(req.body.user_id, req.body.password).then(async (user) => {
       console.log(`Deleted user: ${req.body.user_id}`)
       return res.json(user);

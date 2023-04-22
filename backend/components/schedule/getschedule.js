@@ -89,6 +89,9 @@ async function getAllUserSchedules(user_id) {
   for (var i = 0; i < collections.length; i++) {
     doc = await userSchedules.collection(collections[i].id).doc("generated_schedule").get();
     if (!doc.exists) {
+      doc = await userSchedules.collection(collections[i].id).doc("schedule").get();
+    }
+    if (!doc.exists) {
       continue;
     }
     doc = await doc.data();

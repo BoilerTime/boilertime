@@ -5,7 +5,7 @@
     <Modal
       @closed="closePrivacyPopup()"
       v-if="privacyPopup"
-      class="absolute inset-y-1"
+      class="absolute inset-y-1 z-50"
     >
       <template #header>
         <div class="flex flex-col justify-start">
@@ -1012,6 +1012,9 @@ onBeforeMount(async () => {
           "https://api.boilerti.me/api/saveschedule",
           {
             user_id: userStore.user_id,
+            num_courses: guestStore.schedule.num_courses,
+            configured: guestStore.schedule.configured,
+            preference_list: guestStore.schedule.preference_list,
             required_classes: guestStore.schedule.required_classes,
             optional_classes: guestStore.schedule.optional_classes,
             time: guestStore.schedule.time,
@@ -1440,7 +1443,7 @@ async function submitNecssaryCookies() {
 }
 
 async function deleteSchedule(term_id) {
-  await axios.post('http://localhost:3001/api/delete/term/schedule', {
+  await axios.post('https://api.boilerti.me/api/delete/term/schedule', {
     user_id: userStore.user_id,
     term_id: term_id,
   }, config).then((response) => {
