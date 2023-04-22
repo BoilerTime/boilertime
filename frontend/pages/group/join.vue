@@ -18,7 +18,7 @@
         </h1>
         <button
           type="submit"
-          class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg"
+          class="w-full bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg"
           @click="joingroup"
         >
           Join Group

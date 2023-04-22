@@ -9,8 +9,7 @@
   </div>
   <div class="h-screen p-16 dark:bg-neutral-700 bg-gray-200">
     <!--Create Group-->
-    <div
-      class="mx-auto max-w-6xl p-8 bg-white dark:bg-neutral-500 border border-black rounded-lg shadow-lg grid grid-flow-row">
+    <div class="mx-auto max-w-2xl p-8 bg-white dark:bg-neutral-500 border border-black rounded-lg shadow-lg grid grid-flow-row">
       <h1 class="font-bold text-2xl mb-5 text-center dark:text-gray-200">
         Create a Group
       </h1>
@@ -19,8 +18,8 @@
           Group Name
         </label>
         <input type="group_name" id="group_name"
-          class="bg-gray-50 outline-none border border-black text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-neutral-700 dark:placeholder-white dark:text-gray-200"
-          v-model="group_name" required /><br />
+          class="bg-gray-50 outline-none border border-black text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 placeholder-gray-600 dark:bg-neutral-700 dark:placeholder-white dark:text-gray-200"
+          placeholder="Enter a Group Name" v-model="group_name" required /><br />
         <div class="grid grid-flow-col gap-4mb-5">
           <button type="submit" class="w-1/8 bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-2 rounded-lg">
             Create Group
@@ -32,17 +31,18 @@
       <div v-if="isModalVisible"
         class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
         <div class="mx-auto max-w-6xl p-8 bg-white border rounded-lg shadow-lg grid grid-flow-row">
-          <h1 class="font-bold text-2xl mb-5 text-center">
+          <h1 class="mb-6 font-bold text-2xl text-center">
             Your group "{{ group_name }}" has been created!
-          </h1>
-          <h1 class="pt-3 block mb-2 text-2x1 font-medium text-gray-900 dark:text-black text-center">
-            Here is your Invite Link. Send this to others to have them join your
-            group.
           </h1>
           <center>
             <qrcode-vue :value="group_id" :size="300" level="H" />
           </center>
-          <h2 class="pb-4 text-center text-2x1">{{ group_id }}</h2>
+          <!--Copy link Button-->
+          <button type="copy"
+            class="mt-6 w-1/8 bg-blue-500 hover:bg-blue-700 text-white font-bold border dark:border-black py-2 px-2 rounded-lg"
+            @click="copyLink(group_id)">
+            Copy Group Invite Link
+          </button>
         </div>
       </div>
       <div v-if="isModalVisible" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
@@ -95,6 +95,19 @@ async function creategroup() {
       console.error(error);
       alert(error);
     });
+}
+
+/**
+ * This function is used to copy the group invite link when pressing a button.
+ */
+ async function copyLink(group_id) {
+    try {
+        await navigator.clipboard.writeText("https://boilerti.me/group/join/?group_id=" + group_id);
+        console.log("https://boilerti.me/group/join/?group_id=" + group_id)
+        alert("Copied link");
+    } catch(error) {
+        alert("Cannot copy");
+    }
 }
 
 onBeforeMount(() => {
